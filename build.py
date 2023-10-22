@@ -257,8 +257,8 @@ with open('app/index.html', "r+") as f:
     f.write(data)
     f.truncate()
 
-with open('app/index.html', 'rb') as f_in, gzip.open('app/index.html.gz', 'wb') as f_out: f_out.writelines(f_in)
-if (remove_non_gz): os.remove("app/index.html")
+# with open('app/index.html', 'rb') as f_in, gzip.open('app/index.html.gz', 'wb') as f_out: f_out.writelines(f_in)
+# if (remove_non_gz): os.remove("app/index.html")
 
 ###############################################################
 ###                           ESP                           ###
