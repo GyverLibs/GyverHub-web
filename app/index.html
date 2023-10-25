@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GyverHub v0.51.1b</title>
+  <title>GyverHub v0.51.2b</title>
   <meta name="description" content="Arduino/ESP8266/ESP32 Web Control Panel">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <style>
@@ -70,7 +70,7 @@ function http_fetch_blob(url,onprogress){return new Promise((res,rej)=>{onprogre
 xhr.timeout=this.tout;xhr.ontimeout=()=>rej("Timeout");xhr.open('GET',url,true);xhr.send();});}
 function http_post(url,data){return new Promise((res,rej)=>{let xhr=new XMLHttpRequest();xhr.onreadystatechange=()=>{if(xhr.readyState==4){if(xhr.status==200)res(xhr.responseText);else rej(xhr.responseText);}}
 xhr.open('POST',url,true);xhr.send(data);});}
-function checkIP(ip){return Boolean(ip.match(/^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\.(?!$)|$)){4}$/));}
+function checkIP(ip){return Boolean(ip&&ip.match(/^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\.(?!$)|$)){4}$/));}
 function getIPs(ip,netmask){if(!checkIP(ip)){alert('Wrong local IP!');return null;}
 let ip_a=ip.split('.');let sum_ip=(ip_a[0]<<24)|(ip_a[1]<<16)|(ip_a[2]<<8)|ip_a[3];let cidr=Number(netmask);let mask=~(0xffffffff>>>cidr);let network=0,broadcast=0,start_ip=0,end_ip=0;if(cidr===32){network=sum_ip;broadcast=network;start_ip=network;end_ip=network;}else{network=sum_ip&mask;broadcast=network+(~mask);if(cidr===31){start_ip=network;end_ip=broadcast;}else{start_ip=network+1;end_ip=broadcast-1;}}
 let ips=['192.168.4.1'];for(let ip=start_ip;ip<=end_ip;ip++){ips.push(`${(ip >>> 24) & 0xff}.${(ip >>> 16) & 0xff}.${(ip >>> 8) & 0xff}.${ip & 0xff}`);}
@@ -283,7 +283,7 @@ cx.beginPath();cx.arc(centerX,centerY,R*1.15,0,2*Math.PI,false);cx.lineWidth=R/2
 if(dpressed)callback({x:x,y:y});if(!x&&!y)dpressed=0;}else{cx.beginPath();cx.arc(centerX,centerY,R,0,2*Math.PI,false);let grd=cx.createRadialGradient(centerX,centerY,R*2/3,centerX,centerY,R);grd.addColorStop(0,'#00000005');grd.addColorStop(1,'#00000030');cx.fillStyle=grd;cx.fill();cx.beginPath();cx.arc(movedX,movedY,r,0,2*Math.PI,false);grd=cx.createRadialGradient(movedX,movedY,0,movedX,movedY,r);grd.addColorStop(0,adjust(color,0.4));grd.addColorStop(1,color);cx.fillStyle=grd;cx.fill();if(!pressed)return;if(exp){x=((x*x+255)>>8)*(x>0?1:-1);y=((y*y+255)>>8)*(y>0?1:-1);}
 callback({x:x,y:y});}}
 redraw();});
-const app_title='GyverHub';const non_esp='__ESP__';const non_app='';const app_version='0.51.1b';const hub=new GyverHub();const colors={ORANGE:0xd55f30,YELLOW:0xd69d27,GREEN:0x37A93C,MINT:0x25b18f,AQUA:0x2ba1cd,BLUE:0x297bcd,VIOLET:0x825ae7,PINK:0xc8589a,};const fonts=['monospace','system-ui','cursive','Arial','Verdana','Tahoma','Trebuchet MS','Georgia','Garamond',];const themes={DARK:0,LIGHT:1};const baudrates=[4800,9600,19200,38400,57600,74880,115200,230400,250000,500000,1000000,2000000];const theme_cols=[['#1b1c20','#26272c','#eee','#ccc','#141516','#444','#0e0e0e','dark','#222','#000'],['#eee','#fff','#111','#333','#ddd','#999','#bdbdbd','light','#fff','#000000a3']];let deferredPrompt=null;let screen='main';let focused=null;let cfg_changed=false;let cfg={serial_offset:2000,use_pin:false,pin:'',theme:'DARK',maincolor:'GREEN',font:'monospace',check_upd:true,};function isSSL(){return window.location.protocol=='https:';}
+const app_title='GyverHub';const non_esp='__ESP__';const non_app='';const app_version='0.51.2b';const hub=new GyverHub();const colors={ORANGE:0xd55f30,YELLOW:0xd69d27,GREEN:0x37A93C,MINT:0x25b18f,AQUA:0x2ba1cd,BLUE:0x297bcd,VIOLET:0x825ae7,PINK:0xc8589a,};const fonts=['monospace','system-ui','cursive','Arial','Verdana','Tahoma','Trebuchet MS','Georgia','Garamond',];const themes={DARK:0,LIGHT:1};const baudrates=[4800,9600,19200,38400,57600,74880,115200,230400,250000,500000,1000000,2000000];const theme_cols=[['#1b1c20','#26272c','#eee','#ccc','#141516','#444','#0e0e0e','dark','#222','#000'],['#eee','#fff','#111','#333','#ddd','#999','#bdbdbd','light','#fff','#000000a3']];let deferredPrompt=null;let screen='main';let focused=null;let cfg_changed=false;let cfg={serial_offset:2000,use_pin:false,pin:'',theme:'DARK',maincolor:'GREEN',font:'monospace',check_upd:true,};function isSSL(){return window.location.protocol=='https:';}
 function isLocal(){return window_ip()!='127.0.0.1'&&(window.location.href.startsWith('file')||checkIP(window_ip())||window_ip()=='localhost');}
 function isApp(){return!non_app;}
 function isPWA(){return(window.matchMedia('(display-mode: standalone)').matches)||(window.navigator.standalone)||document.referrer.includes('android-app://');}
