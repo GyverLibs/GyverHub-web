@@ -117,7 +117,7 @@ function show_info() {
 
 // =========== HANDLERS ===========
 function resize_h() {
-  showGauges();
+  // showGauges();// TODO
 }
 function test_h() {
   show_screen('test');
