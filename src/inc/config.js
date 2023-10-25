@@ -98,10 +98,14 @@ function update_theme() {
   /*NON-ESP*/
   display('mq_block', hub.cfg.use_mqtt ? b : n);
   EL('mqtt_label').style.color = hub.cfg.use_mqtt ? f : f3;
-  display('bt_block', hub.cfg.use_bt ? b : n);
-  EL('bt_label').style.color = hub.cfg.use_bt ? f : f3;
-  display('serial_block', hub.cfg.use_serial ? b : n);
-  EL('serial_label').style.color = hub.cfg.use_serial ? f : f3;
+
+  let bt = hub.cfg.use_bt && hasBT();
+  display('bt_block', bt ? b : n);
+  EL('bt_label').style.color = bt ? f : f3;
+
+  let ser = hub.cfg.use_serial && hasSerial();
+  display('serial_block', ser ? b : n);
+  EL('serial_label').style.color = ser ? f : f3;
   /*/NON-ESP*/
 }
 function save_devices() {

@@ -42,9 +42,16 @@ function applyUpdates(name, data) {
     else EL('winner#' + name).classList.remove('widget_noback');
   }
 
+  // dsbl
+  if ('dsbl' in data) {
+    if (data.dsbl == 1) EL('widget#' + name).classList.add('widget_dsbl');
+    else EL('widget#' + name).classList.remove('widget_dsbl');
+  }
+
   // types
   for (let key in data) {
     let val = data[key];
+
     switch (type) {
       case 'input':
       case 'pass':
@@ -53,6 +60,7 @@ function applyUpdates(name, data) {
           case 'value': el.value = val; break;
           case 'regex': el.pattern = val; break;
           case 'max': el.maxlength = Math.ceil(val); break;
+          case 'dsbl': setDsbl(el, val); break;
         }
         break;
       case 'button':
@@ -60,6 +68,7 @@ function applyUpdates(name, data) {
           case 'text': if (!isESP()) el.innerHTML = val; break;
           case 'color': el.style.color = intToCol(val); break;
           case 'size': el.style.fontSize = val + 'px'; break;
+          case 'dsbl': setDsbl(el, val); break;
         }
         break;
     } // switch type

@@ -137,7 +137,7 @@ function showControls(controls, from_buffer = false, conn = Conn.NONE, ip = null
     <div class="widget" style="width:${ctrl.width}%">
       <div class="widget_inner id="winner#${ctrl.id}" ${(ctrl.noback && ctrl.noback == 1) ? 'widget_noback' : ''}">
         <div class="widget_label" id="wlabel_cont#${ctrl.id}" style="${label ? '' : 'display:none'}"><span id="wlabel#${ctrl.id}" title="${hint}" onclick="alert(this.title)">${label}</span><span class="plabel" id="plabel#${ctrl.id}"></span></div>
-        <div class="widget_block" id=widget#${ctrl.id}></div>
+        <div class="widget_block ${ctrl.dsbl ? 'widget_dsbl' : ''}" id=widget#${ctrl.id}></div>
       </div>
     </div>
     `;

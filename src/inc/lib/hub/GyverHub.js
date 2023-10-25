@@ -88,8 +88,8 @@ class GyverHub {
     }
     /*NON-ESP*/
     if (this.cfg.use_mqtt) this.mqtt.discover();
-    if (this.cfg.use_serial) this.serial.discover();
-    if (this.cfg.use_bt) this.bt.discover();
+    if (this.cfg.use_serial && "serial" in navigator) this.serial.discover();
+    if (this.cfg.use_bt && "bluetooth" in navigator) this.bt.discover();
     /*/NON-ESP*/
     if (this.cfg.use_local && !isSSL()) this.http.discover();
     this._checkDiscoverEnd();
@@ -97,8 +97,8 @@ class GyverHub {
   search() {
     /*NON-ESP*/
     if (this.cfg.use_mqtt) this.mqtt.search();
-    if (this.cfg.use_serial) this.serial.search();
-    if (this.cfg.use_bt) this.bt.search();
+    if (this.cfg.use_serial && "serial" in navigator) this.serial.search();
+    if (this.cfg.use_bt && "bluetooth" in navigator) this.bt.search();
     /*/NON-ESP*/
     if (this.cfg.use_local && !isSSL()) this.http.search();
     this._checkDiscoverEnd();

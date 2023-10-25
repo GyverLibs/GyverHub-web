@@ -84,13 +84,15 @@ window.onload = () => {
     }
     /*NON-ESP*/
     else if (!Boolean(window.webkitRTCPeerConnection || window.mozRTCPeerConnection)) return;
-    getLocalIP().then((ip) => {
-      if (ip.indexOf("local") < 0) {
-        EL('local_ip').value = ip;
-        hub.cfg.local_ip = ip;
-      }
-      return;
-    });
+    getLocalIP()
+      .then((ip) => {
+        if (ip.indexOf("local") < 0) {
+          EL('local_ip').value = ip;
+          hub.cfg.local_ip = ip;
+        }
+        return;
+      })
+      .catch(e => console.log(e));
     /*/NON-ESP*/
   }
 }

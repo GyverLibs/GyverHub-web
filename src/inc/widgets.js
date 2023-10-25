@@ -9,6 +9,16 @@ let prompts = {};
 let confirms = {};
 let dis_scroll_f = false;
 
+function setDsbl(el, dsbl) {
+  if (dsbl) {
+    el.setAttribute('disabled', 'disabled');
+    el.classList.add('dsbl');
+  } else {
+    el.removeAttribute('disabled', 'disabled');
+    el.classList.remove('dsbl');
+  }
+}
+
 // input/pass
 function addInput(wid, ctrl) {
   let id = '#' + ctrl.id;
@@ -18,6 +28,7 @@ function addInput(wid, ctrl) {
     </div>
   `;
   addInputColor(EL(id), ctrl.color);
+  setDsbl(EL(id), ctrl.dsbl);
 }
 function addPass(wid, ctrl) {
   let id = '#' + ctrl.id;
@@ -30,6 +41,7 @@ function addPass(wid, ctrl) {
     </div>
   `;
   addInputColor(EL(id), ctrl.color);
+  setDsbl(EL(id), ctrl.dsbl);
 }
 function addInputColor(el, color) {
   if (color) el.style.boxShadow = '0px 2px 0px 0px ' + intToCol(color);
@@ -64,5 +76,6 @@ function addButton(wid, ctrl) {
   if (isESP()) ctrl.text = "";
   EL(wid).innerHTML = `
     <button id="#${ctrl.id}" style="font-size:${ctrl.size ?? 45}px;color:${intToCol(ctrl.color) ?? 'var(--prim)'}" class="icon w_btn" onclick="set_h('${ctrl.id}',2)" onmousedown="if(!touch)click_h('${ctrl.id}',1)" onmouseup="if(!touch&&pressId)click_h('${ctrl.id}',0)" onmouseleave="if(pressId&&!touch)click_h('${ctrl.id}',0);" ontouchstart="touch=1;click_h('${ctrl.id}',1)" ontouchend="click_h('${ctrl.id}',0)">${ctrl.text ?? ''}</button>`
-  ;
+    ;
+  setDsbl(EL('#' + ctrl.id), ctrl.dsbl);
 }

@@ -1,5 +1,18 @@
 // =========== MAIN ===========
 function render_main() {
+  // BODY
+  document.body.innerHTML = `
+  <div id="notice" class="notice"></div>
+  <div class="head" id="head_cont"></div>
+  <div class="test" id="test_cont"></div>
+  <div class="projects" id="projects_cont"></div>
+  <div class="main" id="main_cont"></div>
+  <div class="cli" id="cli_cont"></div>
+  <div class="footer" id="footer_cont"></div>
+  <div id="qrcode" style="display: none"></div>
+  `;
+
+  // HEAD
   head_cont.innerHTML = `
   <div class="title" id="title_cont">
     <div class="title_inn">
@@ -20,11 +33,14 @@ function render_main() {
     </div>
   </div>
   `;
+
   /*NON-ESP*/
+  // TEST
   test_cont.innerHTML = `
   <div class="test_text">А тут пока ничего нет. Но будет онлайн-тест интерфейса, в котором можно будет поиграться и проверить свой билд без загрузки прошивки</div>
   `;
 
+  // PROJECTS
   projects_cont.innerHTML = `
   <div class="projects_inn">
     <div id="projects" class="projects"></div>
@@ -42,6 +58,7 @@ function render_main() {
   `;
   /*/NON-ESP*/
 
+  // CLI
   cli_cont.innerHTML = `
   <div class="cli_block">
     <div class="cli_area" id="cli"></div>
@@ -54,6 +71,7 @@ function render_main() {
   `;
 
   /*NON-ESP*/
+  // FOOTER
   footer_cont.innerHTML = `
   <div class="footer_inner">
     <!--<a href="https://alexgyver.ru/support_alex/" target="_blank"><span class="icon icon_inline i_footer"></span>Support</a>-->
@@ -65,6 +83,7 @@ function render_main() {
   `;
   /*/NON-ESP*/
 
+  // MAIN
   main_cont.innerHTML = `
   <div id="menu_overlay" onclick="menu_show(0)"></div>
   <div id="menu" class="main_col menu">
@@ -384,20 +403,16 @@ function render_main() {
         </div>
 
       </div>
-      <!--/NON-ESP-->
-
-      <div class="ui_col">
-        <div class="ui_row ui_head">
-          <label class="ui_label"><span class="icon icon_ui"></span>Search</label>
-          <div>
-            <button class="icon icon_btn_big" onclick="search();back_h();" title="Find new devices"></button>
-          </div>
-        </div>
-      </div>
+      <!--/NON-ESP-->         
 
       <div class="ui_col">
         <div class="ui_row ui_head">
           <label class="ui_label"><span class="icon icon_ui"></span>Settings</label>
+        </div>
+
+        <div class="ui_row">
+          <label class="ui_label">Search</label>
+          <button class="icon icon_btn_big" onclick="search();back_h();" title="Find new devices"></button>
         </div>
 
         <div class="ui_row">

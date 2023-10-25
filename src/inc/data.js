@@ -235,7 +235,7 @@ function getMaskList() {
 function getLocalIP() {
   return new Promise(function (resolve, reject) {
     var RTCPeerConnection = window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
-    if (!RTCPeerConnection) reject('Not supported');
+    if (!RTCPeerConnection) reject('Auto local IP not supported');
 
     var rtc = new RTCPeerConnection({ iceServers: [] });
     var addrs = {};
