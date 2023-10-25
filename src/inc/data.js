@@ -75,10 +75,10 @@ function isTouch() {
   return navigator.maxTouchPoints || 'ontouchstart' in document.documentElement;
 }
 function hasSerial() {
-  return "serial" in navigator;
+  return ("serial" in navigator) || isApp();
 }
 function hasBT() {
-  return "bluetooth" in navigator;
+  return ("bluetooth" in navigator) || isApp();
 }
 
 // ====================== FUNC ======================

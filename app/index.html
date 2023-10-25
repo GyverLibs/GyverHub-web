@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GyverHub v0.51.2b</title>
+  <title>GyverHub v0.51.3b</title>
   <meta name="description" content="Arduino/ESP8266/ESP32 Web Control Panel">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <style>
@@ -56,8 +56,9 @@ async onmessage(data){}
 async onclose(){}
 async onerror(e){}
 state(){return(this._port!=null);}
-async select(){await this.close();const ports=await navigator.serial.getPorts();for(let port of ports)await port.forget();try{await navigator.serial.requestPort();await this.onportchange(true);}catch(e){this.onerror(e);await this.onportchange(false);}}
-async open(baud){try{if(this._port)throw"Already open";const ports=await navigator.serial.getPorts();if(!ports.length)throw"No port";this._port=ports[0];try{await this._port.open({baudRate:baud});this.onopen();await this._readLoop();}finally{await this._port.close();this._port=null;this.onclose();}}catch(e){this.onerror(e);}}
+async getPorts(){return await navigator.serial.getPorts();}
+async select(){await this.close();const ports=await this.getPorts();for(let port of ports)await port.forget();try{await navigator.serial.requestPort();await this.onportchange(true);}catch(e){this.onerror(e);await this.onportchange(false);}}
+async open(baud){try{if(this._port)throw"Already open";const ports=await this.getPorts();if(!ports.length)throw"No port";this._port=ports[0];try{await this._port.open({baudRate:baud});this.onopen();await this._readLoop();}finally{await this._port.close();this._port=null;this.onclose();}}catch(e){this.onerror(e);}}
 async close(){this._closing=true;if(this._reader)await this._reader.cancel();}
 async send(text){if(!this._port)return this.onerror("Not open");try{const encoder=new TextEncoder();const writer=this._port.writable.getWriter();await writer.write(encoder.encode(text));writer.releaseLock();}catch(e){this.onerror(e);}}
 async toggle(baud){if(this.state())await this.close();else await this.open(baud);}
@@ -125,6 +126,7 @@ this.ser.onclose=()=>{this.log('Disconnected');this.onConnChange(false);}
 this.ser.onerror=(e)=>this.err(e);this.ser.onmessage=(data)=>this.buf.process(data);}
 async discover(){if(this.discovering||!this.ser.state())return;for(let pref of this._hub._preflist())await this.send(pref);this._discoverTimer(this.tout);}
 async search(){if(this.discovering||!this.ser.state())return;await this.send(this._hub.cfg.prefix);this._discoverTimer(this.tout);}
+async getPorts(){return await this.ser.getPorts();}
 async select(){await this.ser.select();}
 async open(){await this.ser.open(this._hub.cfg.baudrate);}
 async close(){await this.ser.close();}
@@ -283,14 +285,14 @@ cx.beginPath();cx.arc(centerX,centerY,R*1.15,0,2*Math.PI,false);cx.lineWidth=R/2
 if(dpressed)callback({x:x,y:y});if(!x&&!y)dpressed=0;}else{cx.beginPath();cx.arc(centerX,centerY,R,0,2*Math.PI,false);let grd=cx.createRadialGradient(centerX,centerY,R*2/3,centerX,centerY,R);grd.addColorStop(0,'#00000005');grd.addColorStop(1,'#00000030');cx.fillStyle=grd;cx.fill();cx.beginPath();cx.arc(movedX,movedY,r,0,2*Math.PI,false);grd=cx.createRadialGradient(movedX,movedY,0,movedX,movedY,r);grd.addColorStop(0,adjust(color,0.4));grd.addColorStop(1,color);cx.fillStyle=grd;cx.fill();if(!pressed)return;if(exp){x=((x*x+255)>>8)*(x>0?1:-1);y=((y*y+255)>>8)*(y>0?1:-1);}
 callback({x:x,y:y});}}
 redraw();});
-const app_title='GyverHub';const non_esp='__ESP__';const non_app='';const app_version='0.51.2b';const hub=new GyverHub();const colors={ORANGE:0xd55f30,YELLOW:0xd69d27,GREEN:0x37A93C,MINT:0x25b18f,AQUA:0x2ba1cd,BLUE:0x297bcd,VIOLET:0x825ae7,PINK:0xc8589a,};const fonts=['monospace','system-ui','cursive','Arial','Verdana','Tahoma','Trebuchet MS','Georgia','Garamond',];const themes={DARK:0,LIGHT:1};const baudrates=[4800,9600,19200,38400,57600,74880,115200,230400,250000,500000,1000000,2000000];const theme_cols=[['#1b1c20','#26272c','#eee','#ccc','#141516','#444','#0e0e0e','dark','#222','#000'],['#eee','#fff','#111','#333','#ddd','#999','#bdbdbd','light','#fff','#000000a3']];let deferredPrompt=null;let screen='main';let focused=null;let cfg_changed=false;let cfg={serial_offset:2000,use_pin:false,pin:'',theme:'DARK',maincolor:'GREEN',font:'monospace',check_upd:true,};function isSSL(){return window.location.protocol=='https:';}
+const app_title='GyverHub';const non_esp='__ESP__';const non_app='';const app_version='0.51.3b';const hub=new GyverHub();const colors={ORANGE:0xd55f30,YELLOW:0xd69d27,GREEN:0x37A93C,MINT:0x25b18f,AQUA:0x2ba1cd,BLUE:0x297bcd,VIOLET:0x825ae7,PINK:0xc8589a,};const fonts=['monospace','system-ui','cursive','Arial','Verdana','Tahoma','Trebuchet MS','Georgia','Garamond',];const themes={DARK:0,LIGHT:1};const baudrates=[4800,9600,19200,38400,57600,74880,115200,230400,250000,500000,1000000,2000000];const theme_cols=[['#1b1c20','#26272c','#eee','#ccc','#141516','#444','#0e0e0e','dark','#222','#000'],['#eee','#fff','#111','#333','#ddd','#999','#bdbdbd','light','#fff','#000000a3']];let deferredPrompt=null;let screen='main';let focused=null;let cfg_changed=false;let cfg={serial_offset:2000,use_pin:false,pin:'',theme:'DARK',maincolor:'GREEN',font:'monospace',check_upd:true,};function isSSL(){return window.location.protocol=='https:';}
 function isLocal(){return window_ip()!='127.0.0.1'&&(window.location.href.startsWith('file')||checkIP(window_ip())||window_ip()=='localhost');}
 function isApp(){return!non_app;}
 function isPWA(){return(window.matchMedia('(display-mode: standalone)').matches)||(window.navigator.standalone)||document.referrer.includes('android-app://');}
 function isESP(){return!non_esp;}
 function isTouch(){return navigator.maxTouchPoints||'ontouchstart'in document.documentElement;}
-function hasSerial(){return"serial"in navigator;}
-function hasBT(){return"bluetooth"in navigator;}
+function hasSerial(){return("serial"in navigator)||isApp();}
+function hasBT(){return("bluetooth"in navigator)||isApp();}
 function dataTotext(data){return b64ToText(data.split('base64,')[1]);}
 function b64ToText(base64){const binString=atob(base64);return new TextDecoder().decode(Uint8Array.from(binString,(m)=>m.codePointAt(0)));}
 function confirmDialog(msg){return new Promise(function(resolve,reject){let confirmed=window.confirm(msg);return confirmed?resolve(true):reject(false);});}
@@ -876,7 +878,7 @@ function bt_change(opened){display('bt_open',opened?'none':'inline-block');displ
 function serial_show_ok(state){display('serial_ok',state?'inline-block':'none');}
 function serial_change(opened){display('serial_open',opened?'none':'inline-block');display('serial_close',opened?'inline-block':'none');}
 async function serial_toggle(state){serial_show_ok(false);serial_change(false);if(!state)hub.serial.close();serial_check_ports();}
-async function serial_check_ports(){if(!hasSerial())return;const ports=await navigator.serial.getPorts();display('serial_open',ports.length?'inline-block':'none');}
+async function serial_check_ports(){if(!hasSerial())return;const ports=await hub.serial.getPorts();display('serial_open',ports.length?'inline-block':'none');}
 function showInfo(info){function addInfo(el,label,value,title=''){EL(el).innerHTML+=`
 <div class="ui_row info">
 <label>${label}</label>

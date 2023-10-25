@@ -35,6 +35,9 @@ class SERIALconn extends Discover {
   }
 
   // core
+  async getPorts() {
+    return await this.ser.getPorts();
+  }
   async select() {
     await this.ser.select();
   }

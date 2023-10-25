@@ -2,7 +2,7 @@
 # pip install rcssmin
 # pip install rjsmin
 
-version = '0.51.1b'
+version = '0.51.3b'
 notes = 'New version!'
 # remove_non_gz = False
 remove_non_gz = True

@@ -110,7 +110,7 @@ function http_post(url, data) {
 
 // ip
 function checkIP(ip) {
-  return Boolean(ip.match(/^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\.(?!$)|$)){4}$/));
+  return Boolean(ip && ip.match(/^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\.(?!$)|$)){4}$/));
 }
 function getIPs(ip, netmask) {
   if (!checkIP(ip)) {

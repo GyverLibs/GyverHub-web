@@ -9,9 +9,12 @@ class SerialJS {
   state() {
     return (this._port != null);
   }
+  async getPorts() {
+    return await navigator.serial.getPorts();
+  }
   async select() {
     await this.close();
-    const ports = await navigator.serial.getPorts();
+    const ports = await this.getPorts();
     for (let port of ports) await port.forget();
     try {
       await navigator.serial.requestPort();
@@ -24,7 +27,7 @@ class SerialJS {
   async open(baud) {
     try {
       if (this._port) throw "Already open";
-      const ports = await navigator.serial.getPorts();
+      const ports = await this.getPorts();
       if (!ports.length) throw "No port";
       this._port = ports[0];
       try {

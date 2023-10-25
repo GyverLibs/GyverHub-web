@@ -668,7 +668,7 @@ async function serial_toggle(state) {
 }
 async function serial_check_ports() {
   if (!hasSerial()) return;
-  const ports = await navigator.serial.getPorts();
+  const ports = await hub.serial.getPorts();
   display('serial_open', ports.length ? 'inline-block' : 'none');
 }
 
