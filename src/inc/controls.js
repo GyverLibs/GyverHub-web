@@ -209,8 +209,20 @@ function addMenu(ctrl) {
       inner += `<div onclick="menuClick(${i})" class="menu_item ${sel}">${labels[i].trim()}</div>`;
     }
   }
-  document.querySelector(':root').style.setProperty('--menu_h', ((labels.length + 3) * 35 + 10) + 'px');
   EL('menu_user').innerHTML = inner;
+  EL('menu_system').innerHTML = '<div id="menu_info" class="menu_item" onclick="info_h()">Info</div>';
+  let count = 1;
+  let dev = hub.dev(focused);
+
+  if (dev.module(Modules.FILES)) {
+    count++;
+    EL('menu_system').innerHTML += '<div id="menu_fsbr" class="menu_item" onclick="fsbr_h()">Files</div>';
+  }
+  if (dev.module(Modules.OTA) || dev.module(Modules.OTA_URL)) {
+    count++;
+    EL('menu_system').innerHTML += '<div id="menu_ota" class="menu_item" onclick="ota_h()">OTA</div>';
+  }
+  document.querySelector(':root').style.setProperty('--menu_h', ((labels.length + count) * 35 + 10) + 'px');
 }
 function menuClick(num) {
   menu_show(0);
@@ -221,5 +233,5 @@ function menuClick(num) {
 function menuDeact() {
   let els = Array.from(document.getElementById('menu_user').children).filter(el => el.tagName == 'DIV');
   els.push(EL('menu_info'), EL('menu_fsbr'), EL('menu_ota'));
-  for (let el in els) els[el].classList.remove('menu_act');
+  for (let el in els) if (els[el]) els[el].classList.remove('menu_act');
 }

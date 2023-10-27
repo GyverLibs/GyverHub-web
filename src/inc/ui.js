@@ -9,7 +9,7 @@ function show_screen(nscreen) {
   show_keypad(false);
 
   ['conn_icons', 'test_cont', 'projects_cont', 'config', 'devices',
-    'controls', 'info', 'icon_menu', 'icon_cfg', 'fsbr', 'ota', 'back', 'icon_refresh',
+    'controls', 'info', 'icon_menu', 'icon_cfg', 'files', 'ota', 'back', 'icon_refresh',
     'footer_cont', 'conn'].forEach(e => display(e, 'none'));
 
   display('main_cont', 'block');
@@ -71,13 +71,14 @@ function show_screen(nscreen) {
       show_info();
       break;
 
-    case 'fsbr':
-      display('fsbr', 'block');
+    case 'files':
+      display('files', 'block');
       display('icon_menu', 'inline-block');
       display('back', 'inline-block');
       display('conn', 'inline-block');
       display('icon_refresh', 'inline-block');
       EL('title').innerHTML = dev.info.name + '/fs';
+      EL('file_upload_btn').innerHTML = 'Upload';
       break;
 
     case 'ota':
@@ -103,11 +104,12 @@ function show_info() {
   EL('info_cli_sw').checked = EL('cli_cont').style.display == 'block';
 
   EL('info_id').innerHTML = focused;
-  EL('info_set').innerHTML = dev.info.prefix + '/' + focused + '/set/*';
-  EL('info_read').innerHTML = dev.info.prefix + '/' + focused + '/read/*';
+  EL('info_set').innerHTML = dev.info.prefix + '/' + focused + '/*/set/*';
+  EL('info_read').innerHTML = dev.info.prefix + '/' + focused + '/*/read/*';
   EL('info_get').innerHTML = dev.info.prefix + '/hub/' + focused + '/get/*';
   EL('info_status').innerHTML = dev.info.prefix + '/hub/' + focused + '/status';
   display('reboot_btn', dev.module(Modules.REBOOT) ? 'block' : 'none');
+  display('info_topics', dev.module(Modules.MQTT) ? 'block' : 'none');
 
   EL('info_version').innerHTML = '';
   EL('info_net').innerHTML = '';
@@ -132,7 +134,13 @@ function refresh_h() {
   else discover();
 }
 function back_h() {
-  if (focused) hub.dev(focused).fsStop();
+  if (focused) {
+    let dev = hub.dev(focused);
+    if (dev.fsBusy()) {
+      showPopupError(dev.fs_mode + ' aborted');
+      dev.fsStop();
+    }
+  }
   if (EL('fsbr_edit').style.display == 'block') {
     editor_cancel();
     return;
@@ -148,7 +156,7 @@ function back_h() {
       close_device();
       break;
     case 'info':
-    case 'fsbr':
+    case 'files':
     case 'ota':
       menuDeact();
       showControls(hub.dev(focused).controls);
@@ -186,14 +194,14 @@ function info_h() {
 function fsbr_h() {
   menuDeact();
   menu_show(0);
-  if (hub.dev(focused).module(Modules.FSBR)) {
-    post('fsbr');
+  if (hub.dev(focused).module(Modules.FILES)) {
+    post('files');
     EL('fsbr_inner').innerHTML = waiter();
   }
-  display('fs_browser', hub.dev(focused).module(Modules.FSBR) ? 'block' : 'none');
+  display('fs_browser', hub.dev(focused).module(Modules.FILES) ? 'block' : 'none');
   display('fs_upload', hub.dev(focused).module(Modules.UPLOAD) ? 'block' : 'none');
   display('fs_format', hub.dev(focused).module(Modules.FORMAT) ? 'inline-block' : 'none');
-  show_screen('fsbr');
+  show_screen('files');
   EL('menu_fsbr').classList.add('menu_act');
 }
 function format_h() {
@@ -309,6 +317,14 @@ function delete_h(id) {
   }
   return 0;
 }
+function dev_up_h(id) {
+  hub.moveDevice(id, -1);
+  render_devices();
+}
+function dev_down_h(id) {
+  hub.moveDevice(id, 1);
+  render_devices();
+}
 
 // ============== CLI =============
 function showCLI(v) {
@@ -335,7 +351,7 @@ function checkCLI(event) {
 }
 function sendCLI() {
   post('cli', 'cli', EL('cli_input').value);
-  EL('cli').innerHTML += "\n >" + EL('cli_input').value;
+  EL('cli').innerHTML += "\n>" + EL('cli_input').value;
   EL('cli').scrollTop = EL('cli').scrollHeight;
   EL('cli_input').value = "";
 }

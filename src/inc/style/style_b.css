@@ -583,31 +583,7 @@ input:checked+.chbutton_s {
   align-items: center;
 }
 
-/* log */
-.c_log {
-  width: 100% !important;
-  font-size: 15px;
-  color: var(--prim);
-  background: var(--dark);
-}
 
-.c_area_wrap {
-  white-space: pre;
-}
-
-.c_log::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
-}
-
-.c_log::-webkit-scrollbar-track {
-  background: #0000;
-}
-
-.c_log::-webkit-scrollbar-thumb {
-  background: var(--thumb);
-  border-radius: 4px;
-}
 
 .c_disp {
   background: var(--prim);

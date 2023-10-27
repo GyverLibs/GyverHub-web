@@ -89,11 +89,7 @@ function render_main() {
   <div id="menu" class="main_col menu">
     <div class="menu_inn">
       <div id="menu_user"></div>
-      <div>
-        <div id="menu_info" class="menu_item" onclick="info_h()">Info</div>
-        <div id="menu_fsbr" class="menu_item" onclick="fsbr_h()">File</div>
-        <div id="menu_ota" class="menu_item" onclick="ota_h()">OTA</div>
-      </div>
+      <div id="menu_system"></div>
     </div>
   </div>
 
@@ -188,10 +184,10 @@ function render_main() {
         </div>
         <div class="ui_row">
           <label>Wrap text</label>
-          <label class="switch"><input type="checkbox" id="editor_wrap" onchange="this.checked?editor_area.classList.remove('c_area_wrap'):editor_area.classList.add('c_area_wrap')"><span class="slider"></span></label>
+          <label class="switch"><input type="checkbox" id="editor_wrap" onchange="this.checked?editor_area.classList.remove('w_log_wrap'):editor_area.classList.add('w_log_wrap')"><span class="slider"></span></label>
         </div>
         <div class="ui_row">
-          <textarea rows=20 id="editor_area" class="ui_inp c_log c_area_wrap"></textarea>
+          <textarea rows=20 id="editor_area" class="ui_inp w_log w_log_wrap"></textarea>
         </div>
         <div class="ui_row">
           <button id="editor_save" onclick="editor_save()" class="ui_btn ui_btn_mini">Save & Upload</button>
@@ -200,7 +196,7 @@ function render_main() {
       </div>
     </div>
 
-    <div id="fsbr" class="main_col">
+    <div id="files" class="main_col">
       <div class="ui_col">
         <div class="ui_row ui_head">
           <label><span class="icon icon_ui"></span>Upload to</label>
@@ -593,20 +589,28 @@ function render_info() {
   }
 }
 function add_device(dev) {
-  let icon = (!isESP() && dev.icon.length) ? `<span class="icon icon_min" id="icon#${dev.id}">${dev.icon}</span>` : '';
-  EL('devices').innerHTML += `<div class="device offline" id="device#${dev.id}" onclick="device_h('${dev.id}')" title="${dev.id} [${dev.prefix}]">
+  EL('devices').innerHTML += `<div class="device ${dev.conn == Conn.NONE ? 'offline' : ''}" id="device#${dev.id}" onclick="device_h('${dev.id}')" title="${dev.id} [${dev.prefix}]">
   <div class="device_inner">
-    <div class="d_icon ${icon ? '' : 'd_icon_empty'}">${icon}</div>
+    <div class="d_icon ${dev.icon.length ? '' : 'd_icon_empty'}"><span class="icon icon_min ${dev.icon.length ? '' : 'd_icon_none'}" id="icon#${dev.id}">${dev.icon}</span></div>
       <div class="d_head">
         <span><span class="d_name" id="name#${dev.id}">${dev.name}</span><sup class="conn_dev" id="Serial#${dev.id}">S</sup><sup class="conn_dev" id="BT#${dev.id}">B</sup><sup class="conn_dev" id="HTTP#${dev.id}">L</sup><sup class="conn_dev" id="MQTT#${dev.id}">M</sup></span>
       </div>
-      <div class="icon d_delete" onclick="delete_h('${dev.id}')"></div>
+      <div class="d_btn_col">
+        <div class="icon d_btn d_btn_red" onclick="delete_h('${dev.id}');event.stopPropagation()"></div>
+        <div class="icon d_btn d_btn_green" onclick="dev_up_h('${dev.id}');event.stopPropagation()"></div>
+        <div class="icon d_btn d_btn_green" onclick="dev_down_h('${dev.id}');event.stopPropagation()"></div>
+      </div>
     </div>
   </div>`;
 }
 function render_devices() {
   EL('devices').innerHTML = '';
-  for (let dev of hub.devices) add_device(dev.info);
+  for (let dev of hub.devices) {
+    add_device(dev.info);
+    for (let i in dev.conn_arr) {
+      if (dev.conn_arr[i]) display(`${Conn.names[i]}#${dev.info.id}`, 'inline-block');
+    }
+  }
 }
 
 // ============= UI =============

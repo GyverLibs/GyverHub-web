@@ -61,9 +61,6 @@ hub.onAddDevice = (dev) => {
   add_device(dev);
 }
 hub.onUpdDevice = (dev) => {
-  /*NON-ESP*/
-  if (dev.icon.length) EL(`icon#${dev.id}`).innerHTML = dev.icon;
-  /*/NON-ESP*/
   EL(`name#${dev.id}`).innerHTML = dev.name ? dev.name : 'Unknown';
   EL(`device#${dev.id}`).title = `${dev.id} [${dev.prefix}]`;
 }
@@ -99,6 +96,7 @@ hub.onFsUploadError = (id, text) => {
 hub.onFsFetchStart = (id, index) => {
   if (id != focused) return;
   display('download#' + index, 'none');
+  display('edit#' + index, 'none');
   display('open#' + index, 'none');
   display('process#' + index, 'unset');
   EL('process#' + index).innerHTML = '';
@@ -182,9 +180,9 @@ hub.onOtaUrlEnd = (id) => {
   if (id != focused) return;
   showPopup('OTA done');
 }
-hub.onOtaUrlError = (id) => {
+hub.onOtaUrlError = (id, text) => {
   if (id != focused) return;
-  showPopupError('OTA error');
+  showPopupError('OTA error: ' + text);
 }
 // ============ SYSTEM ============
 hub.onFsError = (id) => {

@@ -10,18 +10,23 @@ const Conn = {
   ],
 };
 const Modules = {
-  INFO: (1 << 0),
-  FSBR: (1 << 1),
-  FORMAT: (1 << 2),
-  DOWNLOAD: (1 << 3),
-  UPLOAD: (1 << 4),
-  OTA: (1 << 5),
-  OTA_URL: (1 << 6),
-  REBOOT: (1 << 7),
-  SET: (1 << 8),
-  READ: (1 << 9),
-  DELETE: (1 << 10),
-  RENAME: (1 << 11)
+  UI: (1 << 0),
+  INFO: (1 << 1),
+  SET: (1 << 2),
+  READ: (1 << 3),
+  GET: (1 << 4),
+  DATA: (1 << 5),
+
+  REBOOT: (1 << 6),
+  FILES: (1 << 7),
+  FORMAT: (1 << 8),
+  DELETE: (1 << 9),
+  RENAME: (1 << 10),
+  FETCH: (1 << 11),
+  UPLOAD: (1 << 12),
+  OTA: (1 << 13),
+  OTA_URL: (1 << 14),
+  MQTT: (1 << 15),
 };
 
 // http
@@ -79,9 +84,9 @@ function http_fetch_blob(url, onprogress) {
         reader.onloadend = () => res(reader.result.split('base64,')[1]);
       } else {
         if (xhr.response) {
-        xhr.response.text()
-          .then(res => rej(res))
-          .catch(e => rej(e))
+          xhr.response.text()
+            .then(res => rej(res))
+            .catch(e => rej(e))
         } else {
           rej();
         }

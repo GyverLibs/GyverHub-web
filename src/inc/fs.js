@@ -16,7 +16,7 @@ function showFsbr(fs, total, used) {
         <div id="fs#${i}" class="fs_controls">
           <button ${hub.dev(focused).module(Modules.RENAME) ? '' : none} title="Rename" class="icon icon_btn_big" onclick="renameFile(${i})"></button>
           <button ${hub.dev(focused).module(Modules.DELETE) ? '' : none} title="Delete" class="icon icon_btn_big" onclick="deleteFile(${i})"></button>
-          <button ${hub.dev(focused).module(Modules.DOWNLOAD) ? '' : none} title="Fetch" class="icon icon_btn_big" onclick="fetchFile(${i},'${fs_arr[i]}')"></button>
+          <button ${hub.dev(focused).module(Modules.FETCH) ? '' : none} title="Fetch" class="icon icon_btn_big" onclick="fetchFile(${i},'${fs_arr[i]}')"></button>
           <label id="process#${i}"></label>
           <a id="download#${i}" title="Download" class="icon icon_btn_big" href="" download="" style="display:none"></a>
           <button id="open#${i}" title="Open" class="icon icon_btn_big" onclick="openFile(EL('download#${i}').href)" style="display:none"></button>
@@ -73,12 +73,12 @@ function editFile(data, idx) {
   EL('editor_area').value = dataTotext(data);
   EL('editor_area').scrollTop = 0;
   EL('edit_path').innerHTML = fs_arr[idx];
-  display('fsbr', 'none');
+  display('files', 'none');
   display('fsbr_edit', 'block');
   edit_idx = idx;
 }
 function editor_cancel() {
-  display('fsbr', 'block');
+  display('files', 'block');
   display('fsbr_edit', 'none');
 }
 function editor_save() {
@@ -88,4 +88,10 @@ function editor_save() {
   let name = fs_arr[edit_idx].slice(div + 1);
   //EL('download#' + edit_idx).href = ('data:' + getMime(name) + ';base64,' + window.btoa(EL('editor_area').value));
   uploadFile(new File([EL('editor_area').value], name, { type: getMime(name), lastModified: new Date() }), path);
+}
+
+// ============ OTA ============
+function otaUrl(url, type) {
+  post('ota_url', type, url);
+  showPopup('OTA start');
 }

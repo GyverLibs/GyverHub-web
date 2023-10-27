@@ -998,13 +998,13 @@ function addLog(ctrl) {
   if (ctrl.value.endsWith('\n')) ctrl.value = ctrl.value.slice(0, -1);
   if (wid_row_id) {
     let inner = `
-    <textarea id="#${ctrl.name}" title='${ctrl.name}' class="ui_inp c_log text_t" readonly>${ctrl.value}</textarea>
+    <textarea id="#${ctrl.name}" title='${ctrl.name}' class="ui_inp w_log text_t" readonly>${ctrl.value}</textarea>
     `;
     addWidget(ctrl.tab_w, ctrl.name, ctrl.wlabel, inner);
   } else {
     EL('controls').innerHTML += `
     <div class="control">
-      <textarea id="#${ctrl.name}" title='${ctrl.name}' class="ui_inp c_log text_t" readonly>${ctrl.value}</textarea>
+      <textarea id="#${ctrl.name}" title='${ctrl.name}' class="ui_inp w_log text_t" readonly>${ctrl.value}</textarea>
     </div>
   `;
   }
@@ -1174,6 +1174,6 @@ function formatToStep(val, step) {
   else return val;
 }
 function scrollDown() {
-  let logs = document.querySelectorAll(".c_log");
+  let logs = document.querySelectorAll(".w_log");
   logs.forEach((log) => log.scrollTop = log.scrollHeight);
 }

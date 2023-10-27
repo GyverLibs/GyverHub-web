@@ -38,7 +38,7 @@ class Device {
     if (cmd == 'set') {
       if (!this.module(Modules.SET)) return;
       if (name) this.prev_set[name] = { value: value, stamp: Date.now() };
-      if (this.controls) this._updateControls(this.controls, name, 'value', value);
+      this._updateControls(this.controls, name, 'value', value);
     }
 
     let uri0 = this.info.prefix + '/' + this.info.id + '/' + this._hub.cfg.client_id + '/' + cmd;
@@ -89,13 +89,14 @@ class Device {
 
   // fs
   fsStop() {
-    if (this.fs_mode) this.post('fs_abort');
+    if (this.fs_mode) this.post('fs_abort', this.fs_mode);
     this._fsEnd();  // clear tout + clear mode
   }
   fsBusy() {
     return !!this.fs_mode;
   }
   upload(file, path) {
+    if (!this.module(Modules.UPLOAD)) return;
     if (this.fsBusy()) {
       this._hub.onFsUploadError(this.info.id, 'FS busy');
       return;
@@ -124,17 +125,19 @@ class Device {
           .then((v) => {
             this._hub.onFsUploadEnd(this.info.id, v);
             this._fsEnd();
-            this.post('fsbr');
+            this.post('files');
           })
           .catch((e) => this._hub.onFsUploadError(this.info.id, e))
       } else {
         this.upl_bytes = Array.from(buffer);
         this.upl_size = this.upl_bytes.length;
-        this.post('upload', path);
+        this.post('upload', path, this.upl_size);
+        this._fsToutStart();
       }
     }
   }
   uploadOta(file, type) {
+    if (!this.module(Modules.OTA)) return;
     if (this.fsBusy()) {
       this._hub.onOtaError(this.info.id, 'FS busy');
       return;
@@ -164,13 +167,15 @@ class Device {
         this.upl_bytes = Array.from(buffer);
         this.upl_size = this.upl_bytes.length;
         this.post('ota', type);
+        this._fsToutStart();
       }
     }
   }
   fetch(idx, path) {
+    if (!this.module(Modules.FETCH)) return;
     let id = this.info.id;
     if (this.fsBusy()) {
-      this._hub.onFsFetchError(id, 'FS busy');
+      this._hub.onFsFetchError(id, idx, 'FS busy');
       return;
     }
 
@@ -186,6 +191,7 @@ class Device {
         .finally(() => this._fsEnd());
     } else {
       this.post('fetch', path);
+      this._fsToutStart();
     }
     this._hub.onFsFetchStart(id, idx);
   }
@@ -207,6 +213,7 @@ class Device {
 
   // private
   _updateControls(controls, name, key, value) {
+    if (!this.controls) return;
     for (let ctrl of controls) {
       if (ctrl.type == 'row' || ctrl.type == 'col') {
         this._updateControls(ctrl.data, name, key, value);
@@ -286,64 +293,55 @@ class Device {
         this._checkUpdates(data.updates);
         break;
 
-      // ============= UPLOAD =============
-      case 'upload_start':
-      case 'upload_next_chunk':
-        if (this.fs_mode != 'upload') break;
-        this._uploadNextChunk();
-        this._fsToutStart();
-        break;
-
-      case 'upload_end':
-        if (this.fs_mode != 'upload') break;
-        this._hub.onFsUploadEnd(id, 'Upload done');
-        this.post('fsbr');
-        this._fsEnd();
-        break;
-
-      case 'upload_err':
-        if (this.fs_mode != 'upload') break;
-        this._hub.onFsUploadError(id, 'Upload aborted');
-        this._fsEnd();
-        break;
-
       // ============= FETCH =============
       case 'fetch_start':
         if (this.fs_mode != 'fetch' && this.fs_mode != 'fetch_file') break;
+        this.fet_len = data.len;
         this.fet_buf = '';
-        this.post('fetch_chunk');
+        this.post('fetch_next');
         this._fsToutStart();
+        if (this.fs_mode == 'fetch') {
+          this._hub.onFsFetchPerc(id, this.fet_index, 0);
+        } else {
+          this._hub.onFetchPerc(id, this.files[0].name, 0);
+        }
         break;
 
-      case 'fetch_next_chunk':
-        if (this.fs_mode != 'fetch' && this.fs_mode != 'fetch_file') break;
-        this.fet_buf += data.data;
-        if (data.chunk == data.amount - 1) {
-          if (this.fs_mode == 'fetch') {
-            this._hub.onFsFetchEnd(id, this.fet_name, this.fet_index, this.fet_buf);
-            this._fsEnd();
-          } else {
-            let file = this.files[0];
-            this._hub.onFetchEnd(id, file.name, file.data, `data:${getMime(file.path)};base64,${this.fet_buf}`);
-            this._fsEnd();
-            this._nextFile();
+      case 'fetch_chunk':
+        if ((this.fs_mode != 'fetch' && this.fs_mode != 'fetch_file') || this.fet_buf == null) break;
+        this.fet_buf += atob(data.data);
+
+        if (data.last) {
+          if (this.fet_buf.length == this.fet_len) {
+            let b64 = btoa(this.fet_buf);
+            if (this.fs_mode == 'fetch') {
+              this._hub.onFsFetchEnd(id, this.fet_name, this.fet_index, b64);
+              this._fsEnd();
+            } else {
+              let file = this.files[0];
+              this._hub.onFetchEnd(id, file.name, file.data, `data:${getMime(file.path)};base64,${b64}`);
+              this._fsEnd();
+              this._nextFile();
+            }
           }
+          this.fet_buf = null;
         } else {
-          let perc = Math.round(data.chunk / data.amount * 100);
+          let perc = Math.round(this.fet_buf.length / this.fet_len * 100);
           if (this.fs_mode == 'fetch') {
             this._hub.onFsFetchPerc(id, this.fet_index, perc);
           } else {
             this._hub.onFetchPerc(id, this.files[0].name, perc);
           }
-          this.post('fetch_chunk');
+          this.post('fetch_next');
           this._fsToutStart();
         }
         break;
 
       case 'fetch_err':
         if (this.fs_mode != 'fetch' && this.fs_mode != 'fetch_file') break;
+        this.fet_buf = null;
         if (this.fs_mode == 'fetch') {
-          this._hub.onFsFetchError(id, this.fet_index, 'Fetch aborted');
+          this._hub.onFsFetchError(id, this.fet_index, 'Fetch error: ' + data.text);
           this._fsEnd();
         } else {
           this._hub.onFetchError(id, this.files[0].name, this.files[0].data);
@@ -352,15 +350,34 @@ class Device {
         }
         break;
 
+      // ============= UPLOAD =============
+      case 'upload_next':
+        if (this.fs_mode != 'upload') break;
+        this._uploadNextChunk();
+        this._fsToutStart();
+        break;
+
+      case 'upload_done':
+        if (this.fs_mode != 'upload') break;
+        this._hub.onFsUploadEnd(id, 'Upload done');
+        this._fsEnd();
+        this.post('files');
+        break;
+
+      case 'upload_err':
+        if (this.fs_mode != 'upload') break;
+        this._hub.onFsUploadError(id, 'Upload error: ' + data.text);
+        this._fsEnd();
+        break;
+
       // ============= OTA =============
-      case 'ota_start':
-      case 'ota_next_chunk':
+      case 'ota_next':
         if (this.fs_mode != 'ota') break;
         this._otaNextChunk();
         this._fsToutStart();
         break;
 
-      case 'ota_end':
+      case 'ota_done':
         if (this.fs_mode != 'ota') break;
         this._hub.onOtaEnd(id);
         this._fsEnd();
@@ -368,7 +385,7 @@ class Device {
 
       case 'ota_err':
         if (this.fs_mode != 'ota') break;
-        this._hub.onOtaError(id, 'OTA aborted');
+        this._hub.onOtaError(id, 'OTA error: ' + data.text);
         this._fsEnd();
         break;
     }
@@ -434,11 +451,13 @@ class Device {
           break;
 
         case 'fetch':
-          this._hub.onFsFetchError(this.info.id, 'Fetch timeout');
+          this._hub.onFsFetchError(this.info.id, this.fet_index, 'Fetch timeout');
+          this.fet_buf = null;
           break;
 
         case 'fetch_file':
           this._hub.onFetchError(this.info.id, this.files[0].name, this.files[0].data);
+          this.fet_buf = null;
           this._nextFile();
           break;
 
@@ -461,6 +480,7 @@ class Device {
   }
 
   conn = Conn.NONE;
+  conn_arr = [0, 0, 0, 0];
   controls = null;
   granted = false;
   focused = false;
@@ -474,7 +494,8 @@ class Device {
   upl_size = null;
   fet_name = '';
   fet_index = 0;
-  fet_buf = '';
+  fet_buf = null;
+  fet_len = 0;
   files = [];
   file_flag = false;
 };

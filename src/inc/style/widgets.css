@@ -119,7 +119,6 @@
 /* BUTTON */
 .w_btn {
   cursor: pointer;
-  margin: -3px 0;
 }
 
 .w_btn:hover {
@@ -128,4 +127,30 @@
 
 .w_btn:active {
   filter: brightness(0.7);
+}
+
+/* log */
+.w_log {
+  width: 100% !important;
+  font-size: 15px;
+  color: var(--prim);
+  background: var(--dark);
+}
+
+.w_log_wrap {
+  white-space: pre;
+}
+
+.w_log::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.w_log::-webkit-scrollbar-track {
+  background: #0000;
+}
+
+.w_log::-webkit-scrollbar-thumb {
+  background: var(--thumb);
+  border-radius: 3px;
 }

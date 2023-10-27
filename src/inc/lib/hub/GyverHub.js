@@ -40,7 +40,7 @@ class GyverHub {
   onOtaError(id, text) { }
   onOtaPerc(id, perc) { }
   onOtaUrlEnd(id) { }
-  onOtaUrlError(id) { }
+  onOtaUrlError(id, text) { }
 
   // fetch fs
   onFsFetchStart(id, index) { }
@@ -85,6 +85,7 @@ class GyverHub {
   discover() {
     for (let dev of this.devices) {
       dev.conn = Conn.NONE;
+      dev.conn_arr = [0, 0, 0, 0];
     }
     /*NON-ESP*/
     if (this.cfg.use_mqtt) this.mqtt.discover();
@@ -149,6 +150,7 @@ class GyverHub {
           flag = true;
         }
       }
+      device.conn_arr[conn] = 1;
       if (device.conn > conn) {  // priority
         device.conn = conn;
         flag = true;
@@ -169,6 +171,19 @@ class GyverHub {
       this.mqtt._sub_device(device.info.prefix, device.info.id);
       /*/NON-ESP*/
       this.onSaveDevices();
+    }
+  }
+  moveDevice(id, dir) {
+    if (this.devices.length == 1) return;
+    let idx = 0;
+    for (let d of this.devices) {
+      if (d.info.id == id) break;
+      idx++;
+    }
+    if ((dir == 1 && idx <= this.devices.length - 2) || (dir == -1 && idx >= 1)) {
+      let b = this.devices[idx];
+      this.devices[idx] = this.devices[idx + dir];
+      this.devices[idx + dir] = b;
     }
   }
 
@@ -242,7 +257,7 @@ class GyverHub {
           this.onAck(id, data.name);
           break;
 
-        case 'fs_error':
+        case 'fs_err':
           this.onFsError(id);
           break;
 
@@ -263,11 +278,11 @@ class GyverHub {
           break;
 
         case 'ui':
-          this.onUi(id, data.controls, conn, device.info.ip);
+          if (device.module(Modules.UI)) this.onUi(id, data.controls, conn, device.info.ip);
           break;
 
         case 'data':
-          this.onData(id, data.data);
+          if (device.module(Modules.DATA)) this.onData(id, data.data);
           break;
 
         case 'alert':
@@ -287,7 +302,7 @@ class GyverHub {
           break;
 
         case 'ota_url_err':
-          this.onOtaUrlError(id);
+          this.onOtaUrlError(id, data.text);
           break;
       }
     }
