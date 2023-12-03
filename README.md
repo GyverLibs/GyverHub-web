@@ -1,6 +1,9 @@
 # GyverHub-web
 Клиент платформы GyverHub
 
+### Приложение
+- В релизах [вот тут](https://github.com/GyverLibs/GyverHub-app/releases). [Скачать](https://github.com/GyverLibs/GyverHub-app/releases/download/0.1/app-release.apk) актуальную версию
+
 ### Папки
 - **app** - версия для приложения
 - **esp** - версия для esp (файлы разместить в FS по пути `/hub/`)
