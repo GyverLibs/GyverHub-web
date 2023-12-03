@@ -1,4 +1,6 @@
 class GyverHub {
+  onHubError(text) { }
+
   // devices
   onSaveDevices() { }
   onAddDevice(dev) { }
@@ -23,35 +25,35 @@ class GyverHub {
   onWsConnChange(id, state) { }
   onWaitAnswer(id, state) { }
   onPingLost(id) { }
-  onError(id, text) { }
+  onError(id, code) { }
 
   // fs
   onFsError(id) { }
 
   // upload
   onFsUploadStart(id) { }
-  onFsUploadEnd(id, text) { }
-  onFsUploadError(id, text) { }
+  onFsUploadEnd(id) { }
+  onFsUploadError(id, code) { }
   onFsUploadPerc(id, perc) { }
 
   // ota
   onOtaStart(id) { }
   onOtaEnd(id) { }
-  onOtaError(id, text) { }
+  onOtaError(id, code) { }
   onOtaPerc(id, perc) { }
   onOtaUrlEnd(id) { }
-  onOtaUrlError(id, text) { }
+  onOtaUrlError(id, code) { }
 
   // fetch fs
   onFsFetchStart(id, index) { }
   onFsFetchEnd(id, name, index, data) { }
-  onFsFetchError(id, index, text) { }
+  onFsFetchError(id, index, code) { }
   onFsFetchPerc(id, index, perc) { }
 
   // fetch
   onFetchStart(id, name) { }
   onFetchEnd(id, name, data, file) { }
-  onFetchError(id, name, data) { }
+  onFetchError(id, name, data, code) { }
   onFetchPerc(id, name, perc) { }
 
   // vars
@@ -62,7 +64,12 @@ class GyverHub {
     use_bt: false,
     use_serial: false, baudrate: 115200,
     use_mqtt: false, mq_host: 'test.mosquitto.org', mq_port: '8081', mq_login: '', mq_pass: '',
+    api_ver: 1
   };
+
+  skip_prd = 1000;  // skip updates
+  tout_prd = 2500;  // connection timeout
+  ping_prd = 3000;  // ping period > timeout
 
   constructor() {
     this.http = new HTTPconn(this);
@@ -193,6 +200,7 @@ class GyverHub {
   }
   err(e) {
     console.log('Error: ' + e.toString());
+    this.onHubError(e.toString());
   }
 
   // private
@@ -222,11 +230,13 @@ class GyverHub {
     try {
       data = JSON.parse(data);
     } catch (e) {
-      this.err('Wrong packet (JSON): ' + e + ' in: ' + data);
+      console.log('Wrong packet (JSON): ' + e + ' in: ' + data);
+      this.err('Wrong packet (JSON)');
       return;
     }
 
     if (!data.id) return this.err('Wrong packet (ID)');
+    if (data.client && this.cfg.client_id != data.client) return;
     let type = data.type;
     delete data.type;
 
@@ -246,11 +256,15 @@ class GyverHub {
       let id = data.id;
       switch (type) {
         case 'error':
-          this.onError(id, data.text);
+          this.onError(id, data.code);
           break;
 
         case 'refresh':
           this.post(id, 'ui');
+          break;
+
+        case 'script':
+          eval(data.script);
           break;
 
         case 'ack':
@@ -274,11 +288,12 @@ class GyverHub {
           break;
 
         case 'discover':
-          this.onDiscover(id, conn);
+          if (this._discovering()) this.onDiscover(id, conn);
           break;
 
         case 'ui':
           if (device.module(Modules.UI)) this.onUi(id, data.controls, conn, device.info.ip);
+          this.post(id, 'unix', Math.floor(new Date().getTime() / 1000));
           break;
 
         case 'data':
@@ -302,7 +317,7 @@ class GyverHub {
           break;
 
         case 'ota_url_err':
-          this.onOtaUrlError(id, data.text);
+          this.onOtaUrlError(id, data.code);
           break;
       }
     }

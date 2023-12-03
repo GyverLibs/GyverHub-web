@@ -58,6 +58,7 @@ window.onload = () => {
           break;
 
         case 192: // open cli on `
+          break;  // TODO console
           if (focused) {
             e.preventDefault();
             toggleCLI();
@@ -140,6 +141,17 @@ function startup() {
 
   serial_check_ports();
   /*/NON-ESP*/
+
+  if (isESP()) {
+    for (let dev of hub.devices) {
+      if (window.location.href.includes(dev.info.ip)) {
+        dev.conn = Conn.HTTP;
+        dev.conn_arr[Conn.HTTP] = 1;
+        device_h(dev.info.id);
+        return;
+      }
+    }
+  }
 }
 
 // =================== FUNC ===================
@@ -154,11 +166,7 @@ function discover() {
   }
 
   if (isESP()) {
-    let esplocal = false;
-    for (let dev of hub.devices) {
-      if (window.location.href.includes(dev.info.ip)) esplocal = true;
-    }
-    if (!esplocal) hub.http.discover_ip(window_ip(), hub.cfg.http_port);
+    hub.http.discover_ip(window_ip(), window.location.port ?? 80);
   }
   spinArrows(true);
   hub.discover();

@@ -1,6 +1,6 @@
 class HTTPconn extends Discover {
-  tout_btw = 10;
-  tout = 3000;
+  tout_btw = 15;
+  tout = 3300;
 
   constructor(hub) {
     super(hub);

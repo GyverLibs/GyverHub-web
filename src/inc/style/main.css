@@ -8,11 +8,12 @@
 
 /*NON-ESP*/
 @font-face {
-  font-family: "PTSans Narrow";
+  font-family: "Condensed";
   font-style: normal;
   font-weight: 400;
   font-display: block;
-  src: url(fonts/PTSans-Narrow.woff2) format("woff2");
+  /* src: url(fonts/PTSans-Narrow.woff2) format("woff2"); */
+  src: url(fonts/Robotocondensed.woff2) format("woff2");
 }
 
 /*/NON-ESP*/

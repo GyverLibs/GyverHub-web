@@ -1,6 +1,4 @@
 class Device {
-  tout_prd = 2800;
-  ping_prd = 3000;
 
   constructor(hub) {
     this._hub = hub;
@@ -22,6 +20,7 @@ class Device {
     ip: null,
     http_port: null,
     ws_port: 81,
+    http_t: 1,
   };
 
   connected() {
@@ -37,8 +36,10 @@ class Device {
 
     if (cmd == 'set') {
       if (!this.module(Modules.SET)) return;
-      if (name) this.prev_set[name] = { value: value, stamp: Date.now() };
-      this._updateControls(this.controls, name, 'value', value);
+      if (name) {
+        if (this.prev_set[name]) clearTimeout(this.prev_set[name]);
+        this.prev_set[name] = setTimeout(() => delete this.prev_set[name], this._hub.skip_prd);
+      }
     }
 
     let uri0 = this.info.prefix + '/' + this.info.id + '/' + this._hub.cfg.client_id + '/' + cmd;
@@ -77,7 +78,12 @@ class Device {
   focus() {
     this.focused = true;
     this.post('ui');
-    if (this.conn == Conn.HTTP && this.info.ws_port) this.ws.start();
+    if (this.conn == Conn.HTTP && this.info.ws_port) {
+      this.ws.start();
+      setTimeout(() => {
+        if (!this.ws.state()) this.ws.stop();
+      }, this._hub.tout_prd);
+    }
   }
   unfocus() {
     this.focused = false;
@@ -98,7 +104,7 @@ class Device {
   upload(file, path) {
     if (!this.module(Modules.UPLOAD)) return;
     if (this.fsBusy()) {
-      this._hub.onFsUploadError(this.info.id, 'FS busy');
+      this._hub.onFsUploadError(this.info.id, HubError.FsBusy);
       return;
     }
 
@@ -112,22 +118,24 @@ class Device {
       path += file.name;
 
       if (!confirm('Upload ' + path + ' (' + buffer.length + ' bytes)?')) {
-        this._hub.onFsUploadError(this.info.id, 'Upload cancelled');
+        this._hub.onFsUploadError(this.info.id, HubError.Cancelled);
         return;
       }
       this._hub.onFsUploadStart(this.info.id);
       this.fs_mode = 'upload';
+      this.crc32 = crc32(buffer);
 
-      if (this.conn == Conn.HTTP) {
+      if (this.conn == Conn.HTTP && this.info.http_t) {
         let formData = new FormData();
         formData.append('upload', file);
-        http_post(`http://${this.info.ip}:${this.info.http_port}/hub/upload?path=${path}`, formData)
-          .then((v) => {
-            this._hub.onFsUploadEnd(this.info.id, v);
+        http_post(`http://${this.info.ip}:${this.info.http_port}/hub/upload?path=${path}&crc32=${this.crc32}&client_id=${this._hub.cfg.client_id}&size=${buffer.length}`, formData)
+          .then(() => {
+            this._hub.onFsUploadEnd(this.info.id);
             this._fsEnd();
             this.post('files');
           })
           .catch((e) => this._hub.onFsUploadError(this.info.id, e))
+          .finally(() => this._fsEnd());
       } else {
         this.upl_bytes = Array.from(buffer);
         this.upl_size = this.upl_bytes.length;
@@ -139,7 +147,7 @@ class Device {
   uploadOta(file, type) {
     if (!this.module(Modules.OTA)) return;
     if (this.fsBusy()) {
-      this._hub.onOtaError(this.info.id, 'FS busy');
+      this._hub.onOtaError(this.info.id, HubError.FsBusy);
       return;
     }
     if (!file.name.endsWith(this.info.ota_t)) {
@@ -155,10 +163,10 @@ class Device {
       this._hub.onOtaStart(this.info.id);
       this.fs_mode = 'ota';
 
-      if (this.conn == Conn.HTTP) {
+      if (this.conn == Conn.HTTP && this.info.http_t) {
         let formData = new FormData();
         formData.append(type, file);
-        http_post(`http://${this.info.ip}:${this.info.http_port}/hub/ota?type=${type}`, formData)
+        http_post(`http://${this.info.ip}:${this.info.http_port}/hub/ota?type=${type}&client_id=${this._hub.cfg.client_id}`, formData)
           .then(() => this._hub.onOtaEnd(this.info.id))
           .catch((e) => this._hub.onOtaError(this.info.id, e))
           .finally(() => this._fsEnd());
@@ -175,7 +183,7 @@ class Device {
     if (!this.module(Modules.FETCH)) return;
     let id = this.info.id;
     if (this.fsBusy()) {
-      this._hub.onFsFetchError(id, idx, 'FS busy');
+      this._hub.onFsFetchError(id, idx, HubError.FsBusy);
       return;
     }
 
@@ -183,8 +191,8 @@ class Device {
     this.fet_name = path.split('/').pop();
     this.fet_index = idx;
 
-    if (this.conn == Conn.HTTP) {
-      http_fetch_blob(`http://${this.info.ip}:${this.info.http_port}/hub/fetch?path=${path}`,
+    if (this.conn == Conn.HTTP && this.info.http_t) {
+      http_fetch_blob(`http://${this.info.ip}:${this.info.http_port}/hub/fetch?path=${path}&client_id=${this._hub.cfg.client_id}`,
         perc => this._hub.onFsFetchPerc(id, idx, perc))
         .then(res => this._hub.onFsFetchEnd(id, this.fet_name, idx, res))
         .catch(e => this._hub.onFsFetchError(id, idx, e))
@@ -212,16 +220,6 @@ class Device {
   }
 
   // private
-  _updateControls(controls, name, key, value) {
-    if (!this.controls) return;
-    for (let ctrl of controls) {
-      if (ctrl.type == 'row' || ctrl.type == 'col') {
-        this._updateControls(ctrl.data, name, key, value);
-      } else {
-        if (ctrl.id == name) ctrl[key] = value;
-      }
-    }
-  }
   _fetchNextFile() {
     if (!this.files.length) return;
 
@@ -229,18 +227,18 @@ class Device {
     let file = this.files[0];
 
     if (this.fsBusy()) {
-      this._hub.onFetchError(id, file.name, file.data);
+      this._hub.onFetchError(id, file.name, file.data, HubError.FsBusy);
       return;
     }
 
     this.fs_mode = 'fetch_file';
     this._hub.onFetchStart(id, file.name);
 
-    if (this.conn == Conn.HTTP) {
+    if (this.conn == Conn.HTTP && this.info.http_t) {
       http_fetch_blob(`http://${this.info.ip}:${this.info.http_port}/hub/fetch?path=${file.path}`,
         perc => this._hub.onFetchPerc(id, file.name, perc))
         .then(res => this._hub.onFetchEnd(id, file.name, file.data, `data:${getMime(file.path)};base64,${res}`))
-        .catch(e => this._hub.onFetchError(id, file.name, file.data))
+        .catch(e => this._hub.onFetchError(id, file.name, file.data, Number(e)))
         .finally(() => {
           this._fsEnd();
           this._nextFile();
@@ -259,18 +257,8 @@ class Device {
   }
   _checkUpdates(updates) {
     for (let name in updates) {
-      let update = updates[name];
-      for (let key in update) {
-        let value = update[key];
-        if (key == 'value') {
-          if (this.prev_set[name] && this.prev_set[name].value == value && Date.now() - this.prev_set[name].stamp < this.tout_prd) {
-            delete update[key];
-            continue;
-          }
-        }
-        this._updateControls(this.controls, name, key, value);
-      }
-      this._hub.onUpdate(this.info.id, name, update);
+      if ('value' in updates[name] && this.prev_set[name]) delete updates[name].value;
+      if (Object.keys(updates[name]).length) this._hub.onUpdate(this.info.id, name, updates[name]);
     }
   }
   _parse(type, data) {
@@ -278,15 +266,12 @@ class Device {
     this._stop_tout();
     if (this.conn_lost) {
       this.conn_lost = false;
+      this._hub.onPingLost(id);
       if (this.focused) this._hub.onDeviceConnChange(id, true);
     }
 
     switch (type) {
       case 'OK':
-        break;
-
-      case 'ui':
-        this.controls = data.controls;
         break;
 
       case 'update':
@@ -311,21 +296,32 @@ class Device {
         if ((this.fs_mode != 'fetch' && this.fs_mode != 'fetch_file') || this.fet_buf == null) break;
         this.fet_buf += atob(data.data);
 
-        if (data.last) {
-          if (this.fet_buf.length == this.fet_len) {
+        if (data.last) {  // last chunk
+          let crc = crc32(this.fet_buf);
+          if (this.fet_buf.length == this.fet_len && crc == data.crc32) {  // size+crc match
             let b64 = btoa(this.fet_buf);
             if (this.fs_mode == 'fetch') {
               this._hub.onFsFetchEnd(id, this.fet_name, this.fet_index, b64);
-              this._fsEnd();
             } else {
               let file = this.files[0];
               this._hub.onFetchEnd(id, file.name, file.data, `data:${getMime(file.path)};base64,${b64}`);
-              this._fsEnd();
-              this._nextFile();
+            }
+          } else {
+            let code = (crc != data.crc32) ? HubError.CrcMiss : HubError.SizeMiss;
+            if (this.fs_mode == 'fetch') {
+              this._hub.onFsFetchError(id, this.fet_index, code);
+            } else {
+              this._hub.onFetchError(id, this.files[0].name, this.files[0].data, code);
             }
           }
           this.fet_buf = null;
-        } else {
+          if (this.fs_mode == 'fetch_file') {
+            this._fsEnd();  // clear fs_mode!!!!
+            this._nextFile();
+          } else {
+            this._fsEnd();
+          }
+        } else {  // not last chunk
           let perc = Math.round(this.fet_buf.length / this.fet_len * 100);
           if (this.fs_mode == 'fetch') {
             this._hub.onFsFetchPerc(id, this.fet_index, perc);
@@ -341,10 +337,10 @@ class Device {
         if (this.fs_mode != 'fetch' && this.fs_mode != 'fetch_file') break;
         this.fet_buf = null;
         if (this.fs_mode == 'fetch') {
-          this._hub.onFsFetchError(id, this.fet_index, 'Fetch error: ' + data.text);
+          this._hub.onFsFetchError(id, this.fet_index, data.code);
           this._fsEnd();
         } else {
-          this._hub.onFetchError(id, this.files[0].name, this.files[0].data);
+          this._hub.onFetchError(id, this.files[0].name, this.files[0].data, data.code);
           this._fsEnd();
           this._nextFile();
         }
@@ -359,14 +355,14 @@ class Device {
 
       case 'upload_done':
         if (this.fs_mode != 'upload') break;
-        this._hub.onFsUploadEnd(id, 'Upload done');
+        this._hub.onFsUploadEnd(id);
         this._fsEnd();
         this.post('files');
         break;
 
       case 'upload_err':
         if (this.fs_mode != 'upload') break;
-        this._hub.onFsUploadError(id, 'Upload error: ' + data.text);
+        this._hub.onFsUploadError(id, data.code);
         this._fsEnd();
         break;
 
@@ -385,7 +381,7 @@ class Device {
 
       case 'ota_err':
         if (this.fs_mode != 'ota') break;
-        this._hub.onOtaError(id, 'OTA error: ' + data.text);
+        this._hub.onOtaError(id, data.code);
         this._fsEnd();
         break;
     }
@@ -404,7 +400,7 @@ class Device {
       if (this.focused /*&& !this.fsBusy()*/) this._hub.onDeviceConnChange(this.info.id, false);//TODO
       this.conn_lost = true;
       this._stop_tout();
-    }, this.tout_prd);
+    }, this._hub.tout_prd);
   }
   _stop_ping() {
     if (this.ping) clearInterval(this.ping);
@@ -415,28 +411,31 @@ class Device {
     this.ping = setInterval(() => {
       if (this.conn_lost/* && !this.fsBusy()*/) this._hub.onPingLost(this.info.id);//TODO
       else this.post('ping');
-    }, this.ping_prd);
+    }, this._hub.ping_prd);
   }
   _otaNextChunk() {
     let i = 0;
     let data = '';
     while (true) {
       if (!this.upl_bytes.length) break;
-      i++;
       data += String.fromCharCode(this.upl_bytes.shift());
-      if (i >= this.info.max_upl * 3 / 4) break;
+      if (++i >= this.info.max_upl * 3 / 4 - 60) break;  // 60 ~ uri
     }
     this._hub.onOtaPerc(this.info.id, Math.round((this.upl_size - this.upl_bytes.length) / this.upl_size * 100));
     this.post('ota_chunk', (this.upl_bytes.length) ? 'next' : 'last', window.btoa(data));
   }
   _uploadNextChunk() {
+    if (this.crc32 !== null) {
+      this.post('upload_chunk', 'crc', this.crc32);
+      this.crc32 = null;
+      return;
+    }
     let i = 0;
     let data = '';
     while (true) {
       if (!this.upl_bytes.length) break;
-      i++;
       data += String.fromCharCode(this.upl_bytes.shift());
-      if (i >= this.info.max_upl * 3 / 4) break;
+      if (++i >= this.info.max_upl * 3 / 4 - 60) break; // 60 ~ uri
     }
     this._hub.onFsUploadPerc(this.info.id, Math.round((this.upl_size - this.upl_bytes.length) / this.upl_size * 100));
     this.post('upload_chunk', (this.upl_bytes.length) ? 'next' : 'last', window.btoa(data));
@@ -447,26 +446,27 @@ class Device {
       switch (this.fs_mode) {
 
         case 'upload':
-          this._hub.onFsUploadError(this.info.id, 'Upload timeout');
+          this._hub.onFsUploadError(this.info.id, HubError.Timeout);
           break;
 
         case 'fetch':
-          this._hub.onFsFetchError(this.info.id, this.fet_index, 'Fetch timeout');
+          this._hub.onFsFetchError(this.info.id, this.fet_index, HubError.Timeout);
           this.fet_buf = null;
           break;
 
         case 'fetch_file':
-          this._hub.onFetchError(this.info.id, this.files[0].name, this.files[0].data);
+          if (!this.files[0]) return;
+          this._hub.onFetchError(this.info.id, this.files[0].name, this.files[0].data, HubError.Timeout);
           this.fet_buf = null;
           this._nextFile();
           break;
 
         case 'ota':
-          this._hub.onOtaError(this.info.id, 'OTA timeout');
+          this._hub.onOtaError(this.info.id, HubError.Timeout);
           break;
       }
       this.fsStop();
-    }, this.tout_prd);
+    }, this._hub.tout_prd);
   }
   _fsToutEnd() {
     if (this.fs_tout) clearTimeout(this.fs_tout);
@@ -481,7 +481,6 @@ class Device {
 
   conn = Conn.NONE;
   conn_arr = [0, 0, 0, 0];
-  controls = null;
   granted = false;
   focused = false;
   tout = null;
@@ -490,6 +489,7 @@ class Device {
   prev_set = {};
   fs_mode = null;   // upload, fetch, ota, fetch_file
   fs_tout = null;
+  crc32 = null;
   upl_bytes = null;
   upl_size = null;
   fet_name = '';
@@ -498,4 +498,5 @@ class Device {
   fet_len = 0;
   files = [];
   file_flag = false;
+  cfg_flag = false;
 };

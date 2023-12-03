@@ -1,6 +1,6 @@
 /*NON-ESP*/
 class MQTTconn extends Discover {
-  tout = 1000;
+  tout = 1500;
 
   onConnChange(state) { }
 

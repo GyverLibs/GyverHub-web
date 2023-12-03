@@ -5,6 +5,10 @@ const non_app = '__APP__';
 const app_version = '__VER__';
 const hub = new GyverHub();
 
+const langs = {
+  English: 0,
+  Russian: 1,
+};
 const colors = {
   ORANGE: 0xd55f30,
   YELLOW: 0xd69d27,
@@ -39,6 +43,10 @@ const theme_cols = [
   ['#eee', '#fff', '#111', '#333', '#ddd', '#999', '#bdbdbd', 'light', '#fff', '#000000a3']
 ];
 
+function getError(code) {
+  return lang[cfg.lang].errors[code];
+}
+
 // ====================== VARS ======================
 let deferredPrompt = null;
 let screen = 'main';
@@ -53,6 +61,11 @@ let cfg = {
   maincolor: 'GREEN',
   font: 'monospace',
   check_upd: true,
+  ui_width: 450,
+  lang: 'English',
+  app_plugin_css: '',
+  app_plugin_js: '',
+  api_ver: 1,
 };
 
 // ====================== CHECK ======================
@@ -82,6 +95,21 @@ function hasBT() {
 }
 
 // ====================== FUNC ======================
+function addDOM(el_id, tag, text, target) {
+  if (EL(el_id)) EL(el_id).remove();
+  let el = document.createElement(tag);
+  el.textContent = text;
+  el.id = el_id;
+  target.appendChild(el);
+  return el;
+}
+function getErrColor() {
+  return '#8e1414';
+}
+function getDefColor() {
+  // return document.querySelector(':root').style.getPropertyValue('--prim');
+  return intToCol(colors[cfg.maincolor]);
+}
 function dataTotext(data) {
   return b64ToText(data.split('base64,')[1]);
 }
@@ -138,8 +166,46 @@ function intToColA(val) {
   if (val === null || val === undefined) return null;
   return "#" + Number(val).toString(16).padStart(8, '0');
 }
+function constrain(val, min, max) {
+  return val < min ? min : (val > max ? max : val);
+}
 function colToInt(str) {
   return parseInt(str.substr(1), 16);
+}
+function adjustColor(col, ratio) {
+  let intcol = 0;
+  col = col.toString();
+  if (col.startsWith('#')) {
+    col = col.slice(1);
+    if (col.length == 3) {
+      col = col[0] + col[0] + col[1] + col[1] + col[2] + col[2];
+    }
+    intcol = parseInt(col, 16);
+  } else if (col.startsWith("rgb(")) {
+    col.replace("rgb(", "").replace(")", "").replace(" ", "").split(',').forEach(v => intcol = (intcol << 8) | v);
+  } else {
+    intcol = Number(col);
+  }
+  let newcol = '#';
+  for (let i = 0; i < 3; i++) {
+    let comp = (intcol & 0xff0000) >> 16;
+    comp = Math.min(255, Math.floor((comp + 1) * ratio));
+    newcol += comp.toString(16).padStart(2, '0');
+    intcol <<= 8;
+  }
+  return newcol;
+}
+function crc32(data) {
+  let crc = new Uint32Array(1);
+  crc[0] = 0;
+  crc[0] = ~crc[0];
+  let str = (typeof (data) == 'string');
+  for (let i = 0; i < data.length; i++) {
+    crc[0] ^= str ? data[i].charCodeAt(0) : data[i];
+    for (let i = 0; i < 8; i++) crc[0] = (crc[0] & 1) ? ((crc[0] / 2) ^ 0x4C11DB7) : (crc[0] / 2);
+  }
+  crc[0] = ~crc[0];
+  return crc[0];
 }
 function random(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min)
@@ -154,7 +220,7 @@ function parseCSV(str) {
     arr[row][col] = arr[row][col] || '';
     if (cc == '"' && quote && nc == '"') { arr[row][col] += cc; ++c; continue; }
     if (cc == '"') { quote = !quote; continue; }
-    if (cc == ',' && !quote) { ++col; continue; }
+    if (cc == ';' && !quote) { ++col; continue; }
     if (cc == '\r' && nc == '\n' && !quote) { ++row; col = 0; ++c; continue; }
     if (cc == '\n' && !quote) { ++row; col = 0; continue; }
     if (cc == '\r' && !quote) { ++row; col = 0; continue; }
@@ -174,6 +240,10 @@ async function copyClip(text) {
     showPopupError('Error');
   }
 }
+function getIcon(icon) {
+  if (!icon) return '';
+  return icon.length == 1 ? icon : String.fromCharCode(Number('0x' + icon));
+}
 
 // ====================== BROWSER ======================
 function notSupported() {
@@ -188,23 +258,8 @@ function browser() {
   else if ((navigator.userAgent.includes("MSIE")) || (!!document.documentMode == true)) return 'IE';
   else return 'unknown';
 }
-function disableScroll() {
-  TopScroll = window.pageYOffset || document.documentElement.scrollTop;
-  LeftScroll = window.pageXOffset || document.documentElement.scrollLeft,
-    window.onscroll = function () {
-      window.scrollTo(LeftScroll, TopScroll);
-    };
-}
-function enableScroll() {
-  window.onscroll = function () { };
-}
 function ratio() {
   return window.devicePixelRatio;
-}
-function waitAnimationFrame() {
-  return new Promise(res => {
-    requestAnimationFrame(() => res());
-  });
 }
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -212,8 +267,37 @@ function sleep(ms) {
 function EL(id) {
   return document.getElementById(id);
 }
+function ID(id) {
+  return '__' + id;
+}
+function CMP(id) {
+  return EL(ID(id));
+}
 function display(id, value) {
   EL(id).style.display = value;
+}
+function getUnix(arg) {
+  return Math.floor(arg.valueAsNumber / 1000);
+}
+function showNotif(name, text) {
+  if (!("Notification" in window) || Notification.permission != 'granted') return;
+  let descr = name + ' (' + new Date(Date.now()).toLocaleString() + ')';
+  navigator.serviceWorker.getRegistration().then(function (reg) {
+    reg.showNotification(text, { body: descr, vibrate: true });
+  }).catch(e => console.log(e));
+  //new Notification(text, {body: descr});
+  //self.registration.showNotification(text, {body: descr});
+}
+
+// ===================== RENDER =====================
+function waitFrame() {
+  return new Promise(requestAnimationFrame);
+}
+async function waitRender(id) {
+  while (true) {
+    if (EL(id)) return Promise.resolve(1);
+    await waitFrame();
+  }
 }
 
 // ====================== NET ======================

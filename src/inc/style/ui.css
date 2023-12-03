@@ -536,11 +536,11 @@
 
 .offline {
   cursor: unset;
-  filter: opacity(0.3);
+  filter: opacity(0.4);
   user-select: none;
 }
 
-.d_head {
+.d_title {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -582,40 +582,40 @@
   display: none;
 }
 
-.d_btn {
-  color: var(--tab);
-  font-size: 14px;
-  padding: 1px 0;
+.d_btn_cont {
+  display: none;
+  width: 100%;
+  justify-content: space-evenly;
 }
 
-.device:hover .d_btn_red {
-  color: rgba(255, 0, 0, 0.4);
-  cursor: pointer;
+.d_btn_red {
+  color: rgba(255, 0, 0, 0.6);
+}
+.d_btn_red:hover {
+  color: rgba(255, 0, 0, 1);
 }
 
-.offline .d_btn_red {
-  color: rgba(255, 0, 0, 0.3);
-  cursor: pointer;
+.d_btn_green {
+  color: rgba(0, 255, 0, 0.6);
+}
+.d_btn_green:hover {
+  color: rgba(0, 255, 0, 1);
 }
 
-.device:hover .d_btn_green {
-  color: rgba(0, 255, 0, 0.4);
-  cursor: pointer;
-}
-
-.offline .d_btn_green {
-  color: rgba(0, 255, 0, 0.3);
-  cursor: pointer;
-}
-
-.d_btn_col {
+.d_btn_cfg {
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-  right: 5px;
-  color: var(--tab);
+  right: 4px;
+  top: -15px;
+  color: var(--back);
+  font-size: 17px;
 }
+.d_btn_cfg:hover {
+  color: var(--dark);
+}
+
 
 /* ====================================================================== */
 /* ================================ CONFIG ============================== */
@@ -690,6 +690,7 @@
 .ui_inp {
   font-size: 17px;
   border: none;
+  outline: none;
   font-family: var(--font_f);
   width: 100%;
   border-radius: 4px;

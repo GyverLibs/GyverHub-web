@@ -13,7 +13,7 @@ function save_cfg() {
 function load_cfg() {
   if (localStorage.hasOwnProperty('app_config')) {
     let cfg_r = JSON.parse(localStorage.getItem('app_config'));
-    if (Object.keys(cfg).length == Object.keys(cfg_r).length) { // no changes
+    if (cfg.api_ver === cfg_r.api_ver) {
       cfg = cfg_r;
       return;
     }
@@ -23,7 +23,7 @@ function load_cfg() {
 function load_cfg_hub() {
   if (localStorage.hasOwnProperty('hub_config')) {
     let cfg_r = JSON.parse(localStorage.getItem('hub_config'));
-    if (Object.keys(hub.cfg).length == Object.keys(cfg_r).length) { // no changes
+    if (hub.cfg.api_ver === cfg_r.api_ver) {
       hub.cfg = cfg_r;
       return;
     }
@@ -82,8 +82,13 @@ function update_theme() {
   r.style.setProperty('--scheme', theme_cols[v][7]);
   r.style.setProperty('--font_inv', theme_cols[v][8]);
   r.style.setProperty('--shad', theme_cols[v][9]);
+  r.style.setProperty('--ui_width', cfg.ui_width + 'px');
   r.style.setProperty('--prim', intToCol(colors[cfg.maincolor]));
   r.style.setProperty('--font_f', cfg.font);
+
+  EL('app_plugins').innerHTML = '';
+  addDOM('app_css', 'style', cfg.app_plugin_css, EL('app_plugins'));
+  addDOM('app_js', 'script', cfg.app_plugin_js, EL('app_plugins'));
 
   let b = 'block';
   let n = 'none';

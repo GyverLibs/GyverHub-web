@@ -34,6 +34,11 @@ function openFSctrl(i) {
   if (!current) display(`fs#${i}`, 'flex');
 }
 
+function create_h() {
+  post('mkfile', EL('file_create_path').value);
+}
+
+
 // ============ TRANSFER ============
 function uploadFile(file, path) {
   hub.dev(focused).upload(file, path);

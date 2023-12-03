@@ -2,6 +2,7 @@
 function render_main() {
   // BODY
   document.body.innerHTML = `
+  <noscript>Browser is not supported</noscript>
   <div id="notice" class="notice"></div>
   <div class="head" id="head_cont"></div>
   <div class="test" id="test_cont"></div>
@@ -77,7 +78,7 @@ function render_main() {
     <!--<a href="https://alexgyver.ru/support_alex/" target="_blank"><span class="icon icon_inline i_footer"></span>Support</a>-->
     <a style="cursor:pointer" onclick="projects_h()"><span class="icon icon_inline i_footer"></span>Projects</a>
     <!--<a style="cursor:pointer" onclick="test_h()"><span class="icon icon_inline i_footer"></span>Test</a>-->
-    <a style="cursor:pointer" onclick="window.open(window.window.location.origin+window.window.location.pathname+'/old')"><span class="icon icon_inline i_footer"></span>Old version</a>
+    <a style="cursor:pointer" onclick="window.open(window.window.location.origin+window.window.location.pathname+'/old')"><span class="icon icon_inline i_footer"></span>Old</a>
     <a href="https://github.com/GyverLibs/GyverHub/wiki" target="_blank"><span class="icon icon_inline i_footer"></span>Wiki</a>
   </div>
   `;
@@ -94,8 +95,10 @@ function render_main() {
   </div>
 
   <div class="main_inn">
+    <div id="plugins"></div>
+    <div id="app_plugins"></div>
     <div id="devices" class="main_col"></div>
-    <div id="controls" class="main_col"></div>
+    <div id="controls"></div>
     
     <div id="info" class="main_col">
       <div class="ui_col">
@@ -126,9 +129,21 @@ function render_main() {
           </div>
         </div>
         <div class="ui_row">
-          <label class="ui_label">UI width</label>
+          <label class="ui_label">Main width</label>
           <div class="ui_inp_row">
-            <input class="ui_inp" type="text" id="ui_width" onchange="ui_width_h(this)">
+            <input class="ui_inp" type="text" id="main_width" onchange="ui_width_h(this)">
+          </div>
+        </div>
+        <div class="ui_row">
+          <label class="ui_label">Plugin CSS</label>
+          <div class="ui_inp_row">
+            <textarea class="w_area" id="plugin_css" onchange="ui_plugin_css_h(this)"></textarea>
+          </div>
+        </div>
+        <div class="ui_row">
+          <label class="ui_label">Plugin JS</label>
+          <div class="ui_inp_row">
+            <textarea class="w_area" id="plugin_js" onchange="ui_plugin_js_h(this)"></textarea>
           </div>
         </div>
         <div style="height:5px"></div>
@@ -184,10 +199,10 @@ function render_main() {
         </div>
         <div class="ui_row">
           <label>Wrap text</label>
-          <label class="switch"><input type="checkbox" id="editor_wrap" onchange="this.checked?editor_area.classList.remove('w_log_wrap'):editor_area.classList.add('w_log_wrap')"><span class="slider"></span></label>
+          <label class="switch"><input type="checkbox" id="editor_wrap" onchange="this.checked?editor_area.classList.remove('w_area_wrap'):editor_area.classList.add('w_area_wrap')"><span class="slider"></span></label>
         </div>
         <div class="ui_row">
-          <textarea rows=20 id="editor_area" class="ui_inp w_log w_log_wrap"></textarea>
+          <textarea rows=20 id="editor_area" class="ui_inp w_area w_area_wrap"></textarea>
         </div>
         <div class="ui_row">
           <button id="editor_save" onclick="editor_save()" class="ui_btn ui_btn_mini">Save & Upload</button>
@@ -197,6 +212,19 @@ function render_main() {
     </div>
 
     <div id="files" class="main_col">
+      <div class="ui_col">
+        <div class="ui_row ui_head">
+          <label><span class="icon icon_ui"></span>FS browser</label>
+        </div>
+        <div id="fs_browser">
+          <div id="fsbr_inner"></div>
+          <div class="ui_row">
+            <div>
+              <button id="fs_format" onclick="format_h()" class="ui_btn ui_btn_mini">Format</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="ui_col">
         <div class="ui_row ui_head">
           <label><span class="icon icon_ui"></span>Upload to</label>
@@ -211,14 +239,12 @@ function render_main() {
       </div>
       <div class="ui_col">
         <div class="ui_row ui_head">
-          <label><span class="icon icon_ui"></span>FS Browser</label>
+          <label><span class="icon icon_ui"></span>Create file</label>
         </div>
-        <div id="fs_browser">
-          <div id="fsbr_inner"></div>
-          <div class="ui_row">
-            <div>
-              <button id="fs_format" onclick="format_h()" class="ui_btn ui_btn_mini">Format</button>
-            </div>
+        <div id="fs_create">
+          <div class="upl_row">
+            <input class="ui_inp ui_inp_wbtn" type="text" id="file_create_path" value="/">
+            <button onclick="create_h()" class="ui_btn upl_btn">Create</button>
           </div>
         </div>
       </div>
@@ -239,7 +265,7 @@ function render_main() {
               <input type="file" id="ota_upload_fs" style="display:none" onchange="uploadOta(this.files[0], 'fs')">
               <button onclick="ota_upload_fs.click()" class="ui_btn ui_btn_mini drop_area" ondrop="uploadOta(event.dataTransfer.files[0], 'fs')">Filesystem</button>
             </div>
-            <label style="font-size:18px" id="ota_label">IDLE</label>
+            <label style="font-size:18px" id="ota_label"></label>
           </div>
         </div>
       </div>
@@ -329,7 +355,7 @@ function render_main() {
           </div>
 
           <div class="ui_row">
-            <label class="ui_label">Port (WS TLS)</label>
+            <label class="ui_label">Port (WSS)</label>
             <div class="ui_inp_row"><input class="ui_inp" type="number" id="mq_port" onchange="update_cfg(this);hub.mqtt.stop()"></div>
           </div>
 
@@ -420,7 +446,8 @@ function render_main() {
 
         <div class="ui_row">
           <label class="ui_label">Client ID</label>
-          <div class="ui_inp_row"><input class="ui_inp" type="text" id="client_id" onchange="update_cfg(this)" oninput="if(this.value.length>8)this.value=this.value.slice(0,-1)">
+          <div class="ui_inp_row">
+            <input class="ui_inp" type="text" id="client_id" onchange="update_cfg(this)" oninput="if(this.value.length>8)this.value=this.value.slice(0,-1)">
           </div>
         </div>
 
@@ -442,6 +469,34 @@ function render_main() {
           <label class="ui_label">Font</label>
           <div class="ui_inp_row">
             <select class="ui_inp ui_sel" id='font' onchange="update_cfg(this)"></select>
+          </div>
+        </div>
+
+        <div class="ui_row">
+          <label class="ui_label">Lang</label>
+          <div class="ui_inp_row">
+            <select class="ui_inp ui_sel" id='lang' onchange="update_cfg(this)"></select>
+          </div>
+        </div>
+
+        <div class="ui_row">
+          <label class="ui_label">UI Width</label>
+          <div class="ui_inp_row">
+            <input class="ui_inp" type="text" id="ui_width" onchange="update_cfg(this);update_theme()">
+          </div>
+        </div>
+
+        <div class="ui_row">
+          <label class="ui_label">Plugin CSS</label>
+          <div class="ui_inp_row">
+            <textarea class="w_area" id="app_plugin_css" onchange="update_cfg(this);update_theme()"></textarea>
+          </div>
+        </div>
+
+        <div class="ui_row">
+          <label class="ui_label">Plugin JS</label>
+          <div class="ui_inp_row">
+            <textarea class="w_area" id="app_plugin_js" onchange="update_cfg(this);update_theme()"></textarea>
           </div>
         </div>
 
@@ -556,6 +611,11 @@ function render_selects() {
     <option value="${color}">${color}</option>`;
   }
 
+  for (let lang in langs) {
+    EL('lang').innerHTML += `
+    <option value="${lang}">${lang}</option>`;
+  }
+
   for (let font of fonts) {
     EL('font').innerHTML += `
     <option value="${font}">${font}</option>`;
@@ -589,19 +649,29 @@ function render_info() {
   }
 }
 function add_device(dev) {
-  EL('devices').innerHTML += `<div class="device ${dev.conn == Conn.NONE ? 'offline' : ''}" id="device#${dev.id}" onclick="device_h('${dev.id}')" title="${dev.id} [${dev.prefix}]">
-  <div class="device_inner">
-    <div class="d_icon ${dev.icon.length ? '' : 'd_icon_empty'}"><span class="icon icon_min ${dev.icon.length ? '' : 'd_icon_none'}" id="icon#${dev.id}">${dev.icon}</span></div>
-      <div class="d_head">
-        <span><span class="d_name" id="name#${dev.id}">${dev.name}</span><sup class="conn_dev" id="Serial#${dev.id}">S</sup><sup class="conn_dev" id="BT#${dev.id}">B</sup><sup class="conn_dev" id="HTTP#${dev.id}">L</sup><sup class="conn_dev" id="MQTT#${dev.id}">M</sup></span>
+  let icon = dev.icon;
+  if (icon.length && isESP()) icon = '';
+  EL('devices').innerHTML += `
+  <div class="device ${dev.conn == Conn.NONE ? 'offline' : ''}" id="device#${dev.id}" onclick="device_h('${dev.id}')" title="${dev.id} [${dev.prefix}]">
+    <div class="device_inner">
+      <div id="d_head#${dev.id}" style="display:contents">
+        <div class="d_icon ${icon.length ? '' : 'd_icon_empty'}"><span class="icon icon_min ${icon.length ? '' : 'd_icon_none'}" id="icon#${dev.id}">${getIcon(icon)}</span></div>
+        <div class="d_title">
+          <span><span class="d_name" id="name#${dev.id}">${dev.name}</span><sup class="conn_dev" id="Serial#${dev.id}">S</sup><sup class="conn_dev" id="BT#${dev.id}">B</sup><sup class="conn_dev" id="HTTP#${dev.id}">L</sup><sup class="conn_dev" id="MQTT#${dev.id}">M</sup></span>
+        </div>
       </div>
-      <div class="d_btn_col">
-        <div class="icon d_btn d_btn_red" onclick="delete_h('${dev.id}');event.stopPropagation()"></div>
-        <div class="icon d_btn d_btn_green" onclick="dev_up_h('${dev.id}');event.stopPropagation()"></div>
-        <div class="icon d_btn d_btn_green" onclick="dev_down_h('${dev.id}');event.stopPropagation()"></div>
+      <div id="d_cfg#${dev.id}" class="d_btn_cont">
+        <div class="icon d_btn_red" onclick="delete_h('${dev.id}');event.stopPropagation()"></div>
+        <div class="icon d_btn_green" onclick="dev_up_h('${dev.id}');event.stopPropagation()"></div>
+        <div class="icon d_btn_green" onclick="dev_down_h('${dev.id}');event.stopPropagation()"></div>
       </div>
+      <span class="icon d_btn_cfg" onclick="dev_cfg_h('${dev.id}');event.stopPropagation()"></span>
     </div>
   </div>`;
+
+  let device = hub.dev(dev.id);
+  EL('d_head#' + dev.id).style.display = device.cfg_flag ? 'none' : 'contents';
+  EL('d_cfg#' + dev.id).style.display = device.cfg_flag ? 'flex' : 'none';
 }
 function render_devices() {
   EL('devices').innerHTML = '';
@@ -611,6 +681,12 @@ function render_devices() {
       if (dev.conn_arr[i]) display(`${Conn.names[i]}#${dev.info.id}`, 'inline-block');
     }
   }
+}
+function dev_cfg_h(id) {
+  let dev = hub.dev(id);
+  dev.cfg_flag = !dev.cfg_flag;
+  EL('d_head#' + id).style.display = dev.cfg_flag ? 'none' : 'contents';
+  EL('d_cfg#' + id).style.display = dev.cfg_flag ? 'flex' : 'none';
 }
 
 // ============= UI =============
@@ -626,7 +702,7 @@ function showPopup(text, color = '#37a93c') {
   popupT2 = setTimeout(() => { popupT2 = null; EL('notice').style.animation = "fade-out 0.5s forwards" }, 3000);
 }
 function showPopupError(text) {
-  showPopup(text, '#a93737');
+  showPopup(text, /*getErrColor()*/'#a93737');
 }
 function errorBar(v) {
   EL('head_cont').style.background = v ? 'var(--err)' : 'var(--prim)';

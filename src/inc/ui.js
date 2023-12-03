@@ -2,7 +2,7 @@ let menu_f = false;
 let pin_id = null;
 
 // ============== SCREEN ==============
-function show_screen(nscreen) {
+async function show_screen(nscreen) {
   if (focused) hub.dev(focused).fsStop();
   spinArrows(false);
   screen = nscreen;
@@ -50,7 +50,6 @@ function show_screen(nscreen) {
       display('icon_refresh', 'inline-block');
       display('conn', 'inline-block');
       EL('title').innerHTML = dev.info.name;
-      showControls(dev.controls, true);
       break;
 
     case 'config':
@@ -98,14 +97,16 @@ function show_screen(nscreen) {
 function show_info() {
   let dev = hub.dev(focused);
   EL('ui_mode').value = dev.info.ui_mode;
-  EL('ui_width').value = dev.info.ui_width;
+  EL('main_width').value = dev.info.main_width;
   EL('ui_block_width').value = dev.info.ui_block_width;
   display('ui_block_width_cont', dev.info.ui_mode >= 2 ? 'flex' : 'none');
   EL('info_cli_sw').checked = EL('cli_cont').style.display == 'block';
+  EL('plugin_css').value = dev.info.plugin_css;
+  EL('plugin_js').value = dev.info.plugin_js;
 
   EL('info_id').innerHTML = focused;
-  EL('info_set').innerHTML = dev.info.prefix + '/' + focused + '/*/set/*';
-  EL('info_read').innerHTML = dev.info.prefix + '/' + focused + '/*/read/*';
+  EL('info_set').innerHTML = dev.info.prefix + '/' + focused + '/ID/set/*';
+  EL('info_read').innerHTML = dev.info.prefix + '/' + focused + '/ID/read/*';
   EL('info_get').innerHTML = dev.info.prefix + '/hub/' + focused + '/get/*';
   EL('info_status').innerHTML = dev.info.prefix + '/hub/' + focused + '/status';
   display('reboot_btn', dev.module(Modules.REBOOT) ? 'block' : 'none');
@@ -119,7 +120,11 @@ function show_info() {
 
 // =========== HANDLERS ===========
 function resize_h() {
-  // showGauges();// TODO
+  UiGauge.resize();
+  UiGaugeR.resize();
+  UiJoy.resize();
+  UiDpad.resize();
+  UiCanvas.resize();
 }
 function test_h() {
   show_screen('test');
@@ -133,11 +138,11 @@ function refresh_h() {
   if (focused) post(screen);
   else discover();
 }
-function back_h() {
+async function back_h() {
   if (focused) {
     let dev = hub.dev(focused);
     if (dev.fsBusy()) {
-      showPopupError(dev.fs_mode + ' aborted');
+      showPopupError(dev.fs_mode + ' ' + getError(HubError.Abort));
       dev.fsStop();
     }
   }
@@ -146,7 +151,7 @@ function back_h() {
     return;
   }
   if (menu_f) {
-    menuDeact();
+    Menu.deact();
     menu_show(0);
     return;
   }
@@ -158,9 +163,9 @@ function back_h() {
     case 'info':
     case 'files':
     case 'ota':
-      menuDeact();
-      showControls(hub.dev(focused).controls);
+      Menu.deact();
       show_screen('ui');
+      post('ui');
       break;
     case 'config':
       config_h();
@@ -185,14 +190,14 @@ function config_h() {
   }
 }
 function info_h() {
-  menuDeact();
+  Menu.deact();
   menu_show(0);
   if (hub.dev(focused).module(Modules.INFO)) post('info');
   show_screen('info');
   EL('menu_info').classList.add('menu_act');
 }
 function fsbr_h() {
-  menuDeact();
+  Menu.deact();
   menu_show(0);
   if (hub.dev(focused).module(Modules.FILES)) {
     post('files');
@@ -200,6 +205,7 @@ function fsbr_h() {
   }
   display('fs_browser', hub.dev(focused).module(Modules.FILES) ? 'block' : 'none');
   display('fs_upload', hub.dev(focused).module(Modules.UPLOAD) ? 'block' : 'none');
+  display('fs_create', hub.dev(focused).module(Modules.CREATE) ? 'block' : 'none');
   display('fs_format', hub.dev(focused).module(Modules.FORMAT) ? 'inline-block' : 'none');
   show_screen('files');
   EL('menu_fsbr').classList.add('menu_act');
@@ -208,7 +214,7 @@ function format_h() {
   if (confirm('Format filesystem?')) post('format');
 }
 function ota_h() {
-  menuDeact();
+  Menu.deact();
   menu_show(0);
   show_screen('ota');
   EL('menu_ota').classList.add('menu_act');
@@ -262,12 +268,22 @@ function ui_mode_h(el) {
   display('ui_block_width_cont', el.value >= 2 ? 'flex' : 'none');
 }
 function ui_width_h(el) {
-  hub.dev(focused).info.ui_width = el.value;
+  hub.dev(focused).info.main_width = el.value;
   save_devices();
 }
 function ui_block_width_h(el) {
   hub.dev(focused).info.ui_block_width = el.value;
   save_devices();
+}
+function ui_plugin_css_h(el) {
+  hub.dev(focused).info.plugin_css = el.value;
+  save_devices();
+  addDOM('device_css', 'style', el.value, EL('plugins'));
+}
+function ui_plugin_js_h(el) {
+  hub.dev(focused).info.plugin_js = el.value;
+  save_devices();
+  addDOM('device_js', 'script', el.value, EL('plugins'));
 }
 
 // ============== MENU =============
@@ -297,13 +313,36 @@ function open_device(id) {
   /*/NON-ESP*/
 
   focused = id;
+  let dev = hub.dev(id)
   EL('menu_user').innerHTML = '';
-  EL('conn').innerHTML = Conn.names[hub.dev(id).conn];
-  // showControls(hub.dev(id).controls, true);
+  EL('conn').innerHTML = Conn.names[dev.conn];
+  UiPlugin.enableStyle(id);
+  addDOM('device_css', 'style', dev.info.plugin_css, EL('plugins'));
+  addDOM('device_js', 'script', dev.info.plugin_js, EL('plugins'));
+  let ctrls = EL('controls#' + id);
+  if (ctrls) {
+    ctrls.style.visibility = 'visible';
+  }
   show_screen('ui');
-  hub.dev(id).focus();
+  dev.focus();
 }
 function close_device() {
+  UiHook.reset();
+  UiColor.reset();
+  UiGauge.reset();
+  UiGaugeR.reset();
+  UiCanvas.reset();
+  UiJoy.reset();
+  UiDpad.reset();
+
+  UiPlugin.disableStyle(focused);
+  UiJS.disable();
+  UiCSS.disable();
+  EL('plugins').innerHTML = '';
+  let ctrls = EL('controls#' + focused);
+  if (ctrls) ctrls.style.visibility = 'hidden';
+  EL('ota_label').innerHTML = "";
+
   errorBar(false);
   hub.dev(focused).unfocus();
   focused = null;

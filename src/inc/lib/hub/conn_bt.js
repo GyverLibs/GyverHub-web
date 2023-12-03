@@ -34,9 +34,9 @@ class BTconn extends Discover {
   }
   async open() {
     if (!this.bt.state()) {
-      await this.bt.open();
       this.log('Connecting');
       this.onConnChange('connecting');
+      await this.bt.open();
     }
   }
   async close() {

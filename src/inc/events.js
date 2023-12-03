@@ -7,18 +7,19 @@ hub.mqtt.onConnChange = (state) => {
 hub.bt.onConnChange = (state) => {
   switch (state) {
     case 'connecting':
-      EL('bt_device').innerHTML = 'Connecting...';
+      EL('bt_device').innerHTML = lang[cfg.lang].connecting;
       break;
 
     case 'open':
       bt_change(true);
       EL('bt_device').innerHTML = hub.bt.getName();
       bt_show_ok(true);
+      hub.bt.discover();
       break;
 
     case 'close':
       bt_change(false);
-      EL('bt_device').innerHTML = 'Not Connected';
+      EL('bt_device').innerHTML = lang[cfg.lang].disconnected;
       bt_show_ok(false);
       break;
   }
@@ -47,7 +48,16 @@ hub.onWaitAnswer = (id, state) => {
   if (id == focused) spinArrows(state);
 }
 hub.onPingLost = (id) => {
-  if (id == focused) hub.dev(id).post(screen);
+  if (id == focused) {
+    let cmd = '';
+    switch (screen) {
+      case 'ui': cmd = 'ui'; break;
+      case 'info': cmd = 'info'; break;
+      case 'files': cmd = 'files'; break;
+      default: cmd = 'ping'; break;
+    }
+    hub.dev(id).post(cmd);
+  }
 }
 
 // ============ DEVICES ============
@@ -56,8 +66,10 @@ hub.onSaveDevices = () => {
 }
 hub.onAddDevice = (dev) => {
   dev.ui_mode = 0;
-  dev.ui_width = 450;
-  dev.ui_block_width = 450;
+  dev.main_width = 450;
+  dev.ui_block_width = 250;
+  dev.plugin_css = '';
+  dev.plugin_js = '';
   add_device(dev);
 }
 hub.onUpdDevice = (dev) => {
@@ -80,17 +92,17 @@ hub.onFsUploadStart = (id) => {
 hub.onFsUploadPerc = (id, perc) => {
   if (id != focused) return;
   // EL('file_upload_btn').innerHTML = perc + '%';
-  showPopup('Uploading... ' + perc + '%');
+  showPopup(lang[cfg.lang].upload + '... ' + perc + '%');
 }
-hub.onFsUploadEnd = (id, text) => {
+hub.onFsUploadEnd = (id) => {
   if (id != focused) return;
-  EL('file_upload_btn').innerHTML = 'Upload';
-  showPopup(text);
+  EL('file_upload_btn').innerHTML = lang[cfg.lang].upload;
+  showPopup(`[${lang[cfg.lang].upload}] ` + lang[cfg.lang].done);
 }
-hub.onFsUploadError = (id, text) => {
+hub.onFsUploadError = (id, code) => {
   if (id != focused) return;
-  EL('file_upload_btn').innerHTML = 'Upload';
-  showPopupError(text);
+  EL('file_upload_btn').innerHTML = lang[cfg.lang].upload;
+  showPopupError(`[${lang[cfg.lang].upload}] ` + getError(code));
 }
 // =========== FETCH FS ===========
 hub.onFsFetchStart = (id, index) => {
@@ -114,10 +126,10 @@ hub.onFsFetchEnd = (id, name, index, data) => {
   display('edit#' + index, 'inline-block');
   display('process#' + index, 'none');
 }
-hub.onFsFetchError = (id, index, text) => {
+hub.onFsFetchError = (id, index, code) => {
   if (id != focused) return;
-  showPopupError(text);
-  EL('process#' + index).innerHTML = 'Error';
+  showPopupError(`[${lang[cfg.lang].fetch}] ` + getError(code));
+  EL('process#' + index).innerHTML = lang[cfg.lang].error;
 }
 
 // ============ FETCH ============
@@ -126,17 +138,18 @@ hub.onFetchStart = (id, name) => {
 }
 hub.onFetchPerc = (id, name, perc) => {
   if (id == focused) setPlabel(name, `[${perc}%]`);
+  // console.log('Fetch ' + name + ': ' + perc + '%');
 }
 hub.onFetchEnd = (id, name, data, file) => {
   if (id != focused) return;
   switch (data.type) {
     case 'img':
-      EL('#' + name).innerHTML = `<img style="width:100%" src="${file}">`;
+      UiImage.apply(name, file);
       setPlabel(name, '');
       break;
 
     case 'csv':
-      EL('#' + name).innerHTML = renderTable(dataTotext(file).replaceAll(/\\n/ig, "\n"), data.aligns, data.widths);
+      UiTable.apply(name, dataTotext(file).replaceAll(/\\n/ig, "\n"));
       setPlabel(name, '');
       break;
 
@@ -144,15 +157,51 @@ hub.onFetchEnd = (id, name, data, file) => {
       data.img.src = file;
       setPlabel(name, '');
       break;
+
+    case 'text':
+      UiText_f.apply(name, dataTotext(file));
+      setPlabel(name, '');
+      break;
+
+    case 'plugin_js':
+      UiPlugin.applyScript(id, dataTotext(file));
+      UiFunc.render(data.cont);
+      break;
+
+    case 'plugin_css':
+      UiPlugin.applyStyle(id, dataTotext(file));
+      break;
+
+    case 'js':
+      UiJS.apply(name, dataTotext(file), data.cont);
+      break;
+
+    case 'css':
+      UiCSS.apply(name, dataTotext(file), data.cont);
+      break;
+
+    case 'html':
+      UiHTML.apply(name, dataTotext(file));
+      setPlabel(name, '');
+      break;
+
+    case 'icon':
+      UiButton.apply(name, dataTotext(file));
+      setPlabel(name, '');
+      break;
+
+    case 'ui_json':
+      UiFile.apply(dataTotext(file), data);
+      break;
   }
 }
-hub.onFetchError = (id, name, data) => {
+hub.onFetchError = (id, name, data, code) => {
   if (id != focused) return;
   setPlabel(name, '[error]');
   switch (data.type) {
     case 'csv':
     case 'img':
-      // EL('#' + name).innerHTML = 'Error';
+      // CMP(name).innerHTML = 'Error';
       break;
   }
 }
@@ -164,13 +213,13 @@ hub.onOtaStart = (id) => {
 }
 hub.onOtaEnd = (id) => {
   if (id != focused) return;
-  showPopup('OTA done');
-  EL('ota_label').innerHTML = 'Done';
+  showPopup('[OTA] ' + lang[cfg.lang].done);
+  EL('ota_label').innerHTML = lang[cfg.lang].done;
 }
-hub.onOtaError = (id, text) => {
+hub.onOtaError = (id, code) => {
   if (id != focused) return;
-  showPopupError(text);
-  EL('ota_label').innerHTML = 'Error';
+  showPopupError('[OTA] ' + getError(code));
+  EL('ota_label').innerHTML = lang[cfg.lang].error;
 }
 hub.onOtaPerc = (id, perc) => {
   if (id != focused) return;
@@ -178,18 +227,18 @@ hub.onOtaPerc = (id, perc) => {
 }
 hub.onOtaUrlEnd = (id) => {
   if (id != focused) return;
-  showPopup('OTA done');
+  showPopup('[OTA] ' + lang[cfg.lang].done);
 }
-hub.onOtaUrlError = (id, text) => {
+hub.onOtaUrlError = (id, code) => {
   if (id != focused) return;
-  showPopupError('OTA error: ' + text);
+  showPopupError('[OTA url] ' + getError(code));
 }
 // ============ SYSTEM ============
 hub.onFsError = (id) => {
-  if (id == focused) EL('fsbr_inner').innerHTML = '<div class="fs_err">FS ERROR</div>';
+  if (id == focused) EL('fsbr_inner').innerHTML = `<div class="fs_err">FS ${lang[cfg.lang].error}</div>`;
 }
-hub.onError = (id, text) => {
-  if (id == focused) showPopupError(text);
+hub.onError = (id, code) => {
+  if (id == focused) showPopupError(getError(code));
 }
 hub.onAck = (id, name) => {
   if (id == focused) setPlabel(name, '');
@@ -197,7 +246,7 @@ hub.onAck = (id, name) => {
 hub.onUpdate = (id, name, data) => {
   if (id != focused) return;
   if (screen != 'ui') return;
-  applyUpdates(name, data);
+  applyUpdate(name, data);
 }
 hub.onInfo = (id, info) => {
   if (id == focused) showInfo(info);
@@ -209,7 +258,7 @@ hub.onPrint = (id, text, color) => {
   if (id == focused) printCLI(text, color);
 }
 hub.onUi = (id, controls, conn, ip) => {
-  if (id == focused) showControls(controls, false, conn, ip);
+  if (id == focused) showControls(id, controls, conn, ip);
 }
 hub.onData = (id, data) => {
   console.log('Data from ' + id + ': ' + data);
@@ -227,6 +276,10 @@ hub.onPush = (id, text) => {
   let date = (new Date).getTime();
   if (date - push_timer > 3000) {
     push_timer = date;
-    showNotif(hub.dev(id).info.name + ' (' + id + '): ', text);
+    showNotif(hub.dev(id).info.name + ': ', text);
   }
+}
+
+hub.onHubError = (text) => {
+  showPopupError(text);
 }

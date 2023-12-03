@@ -27,7 +27,8 @@ class WSconn {
     };
 
     this._ws.onerror = () => {
-      this.err(`${this.info.id}`);
+      // this.err(`${this.info.id}`);
+      this.log(`${this.info.id} error`);
     };
 
     this._ws.onmessage = (e) => {

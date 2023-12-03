@@ -1,14 +1,20 @@
 # GyverHub Web Builder
+
+# Для запуска нужно установить модули:
 # pip install rcssmin
 # pip install rjsmin
 
-version = '0.51.4b'
+version = '0.51.25b'
 notes = 'New version!'
-# remove_non_gz = False
-remove_non_gz = True
 
+# ESP
+esp_remove_non_gz = True    # удалить несжатые файлы
+esp_min_font = True         # использовать минимальный набор иконок
+
+##############################################################
 js_hub = [
     "src/inc/lib/hub/mqtt.min.js",
+    "src/inc/lib/hub/codes.js",
     "src/inc/lib/hub/bt.js",
     "src/inc/lib/hub/serial.js",
     "src/inc/lib/hub/utils.js",
@@ -27,11 +33,48 @@ js_files = [
     "src/inc/lib/qrcode.min.js",
     "src/inc/lib/sort-paths.min.js",
     "src/inc/lib/pickr.min.js",
-    "src/inc/lib/joy.js",
-    "src/inc/data.js",
-    "src/inc/widgets.js",
+    "src/inc/utils.js",
+
+    "src/inc/widgets/render.js",
+    "src/inc/widgets/menu.js",
+    "src/inc/widgets/widget.js",
+    "src/inc/widgets/button.js",
+    "src/inc/widgets/label.js",
+    "src/inc/widgets/title.js",
+    "src/inc/widgets/plugin.js",
+    "src/inc/widgets/switch.js",
+    "src/inc/widgets/swicon.js",
+    "src/inc/widgets/display.js",
+    "src/inc/widgets/image.js",
+    "src/inc/widgets/table.js",
+    "src/inc/widgets/datetime.js",
+    "src/inc/widgets/popup.js",
+    "src/inc/widgets/log.js",
+    "src/inc/widgets/text.js",
+    "src/inc/widgets/input.js",
+    "src/inc/widgets/pass.js",
+    "src/inc/widgets/area.js",
+    "src/inc/widgets/slider.js",
+    "src/inc/widgets/spinner.js",
+    "src/inc/widgets/custom.js",
+    "src/inc/widgets/func.js",
+    "src/inc/widgets/select.js",
+    "src/inc/widgets/color.js",
+    "src/inc/widgets/led.js",
+    "src/inc/widgets/ui_file.js",
+    "src/inc/widgets/hook.js",
+    "src/inc/widgets/gauge.js",
+    "src/inc/widgets/gauge_r.js",
+    "src/inc/widgets/joy.js",
+    "src/inc/widgets/dpad.js",
+    "src/inc/widgets/flags.js",
+    "src/inc/widgets/tabs.js",
+    "src/inc/widgets/canvas.js",
+    "src/inc/widgets/stream.js",
+
     "src/inc/controls.js",
     "src/inc/render.js",
+    "src/inc/lang.js",
     "src/inc/config.js",
     "src/inc/projects.js",
     "src/inc/ui.js",
@@ -52,7 +95,7 @@ css_files = [
 sw_cache = '''
   '/',
   '/fa-solid-900.woff2',
-  '/PTSans-Narrow.woff2',
+  '/Robotocondensed.woff2',
   '/favicon.svg',
   '/index.html',
   '/script.js',
@@ -142,7 +185,7 @@ metrika = '''
 '''
 
 shutil.copyfile('src/inc/style/fonts/fa-solid-900.woff2', 'host/fonts/fa-solid-900.woff2')
-shutil.copyfile('src/inc/style/fonts/PTSans-Narrow.woff2', 'host/fonts/PTSans-Narrow.woff2')
+shutil.copyfile('src/inc/style/fonts/Robotocondensed.woff2', 'host/fonts/Robotocondensed.woff2')
 
 for file in copy_web:
     shutil.copyfile('src/' + file, 'host/' + file)
@@ -203,13 +246,13 @@ fa_b64 = 'data:font/woff2;charset=utf-8;base64,'
 with open("src/inc/style/fonts/fa-solid-900.woff2", "rb") as f:
     fa_b64 += (base64.b64encode(f.read())).decode('ascii')
 
-pt_b64 = 'data:font/woff2;charset=utf-8;base64,'
-with open("src/inc/style/fonts/PTSans-Narrow.woff2", "rb") as f:
-    pt_b64 += (base64.b64encode(f.read())).decode('ascii')
+cond_64 = 'data:font/woff2;charset=utf-8;base64,'
+with open("src/inc/style/fonts/Robotocondensed.woff2", "rb") as f:
+    cond_64 += (base64.b64encode(f.read())).decode('ascii')
 
 css_min_l = css_min
 css_min_l = css_min_l.replace('url(fonts/fa-solid-900.woff2)', 'url(' + fa_b64 + ')')
-css_min_l = css_min_l.replace('url(fonts/PTSans-Narrow.woff2)', 'url(' + pt_b64 + ')')
+css_min_l = css_min_l.replace('url(fonts/Robotocondensed.woff2)', 'url(' + cond_64 + ')')
 
 icon_b64 = "<link rel='icon' href='data:image/svg+xml;base64,"
 with open("src/favicon.svg", "rb") as f:
@@ -258,7 +301,7 @@ with open('app/index.html', "r+") as f:
     f.truncate()
 
 # with open('app/index.html', 'rb') as f_in, gzip.open('app/index.html.gz', 'wb') as f_out: f_out.writelines(f_in)
-# if (remove_non_gz): os.remove("app/index.html")
+# if (esp_remove_non_gz): os.remove("app/index.html")
 
 ###############################################################
 ###                           ESP                           ###
@@ -300,7 +343,7 @@ for file in css_files:
     with open(file, 'r') as f:
         read = f.read()
         read = re.sub(r'\/\*NON-ESP\*\/([\s\S]*?)\/\*\/NON-ESP\*\/', '', read)
-        read = read.replace('url(fonts/fa-solid-900.woff2)', 'url(' + fa_min_b64 + ')')
+        read = read.replace('url(fonts/fa-solid-900.woff2)', 'url(' + (fa_min_b64 if esp_min_font else fa_b64) + ')')
         if ('.min.' not in file): read = cssmin(read)
         css_min += read + '\n'
 
@@ -325,9 +368,9 @@ with open('esp/index.html', "r+") as f:
 
 with open('esp/index.html', 'rb') as f_in, gzip.open('esp/index.html.gz', 'wb') as f_out: f_out.writelines(f_in)
 
-if (remove_non_gz): os.remove("esp/script.js")
-if (remove_non_gz): os.remove("esp/style.css")
-if (remove_non_gz): os.remove("esp/index.html")
+if (esp_remove_non_gz): os.remove("esp/script.js")
+if (esp_remove_non_gz): os.remove("esp/style.css")
+if (esp_remove_non_gz): os.remove("esp/index.html")
 
 ###############################################################
 ###                         ESP INC                         ###
@@ -351,3 +394,5 @@ def file_to_h(src, dest, name):
 file_to_h('esp/index.html.gz', 'esp_h/index.h', 'hub_index_h')
 file_to_h('esp/style.css.gz', 'esp_h/style.h', 'hub_style_h')
 file_to_h('esp/script.js.gz', 'esp_h/script.h', 'hub_script_h')
+
+print('Done')

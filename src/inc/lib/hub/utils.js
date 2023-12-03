@@ -22,11 +22,12 @@ const Modules = {
   FORMAT: (1 << 8),
   DELETE: (1 << 9),
   RENAME: (1 << 10),
-  FETCH: (1 << 11),
-  UPLOAD: (1 << 12),
-  OTA: (1 << 13),
-  OTA_URL: (1 << 14),
-  MQTT: (1 << 15),
+  CREATE: (1 << 11),
+  FETCH: (1 << 12),
+  UPLOAD: (1 << 13),
+  OTA: (1 << 14),
+  OTA_URL: (1 << 15),
+  MQTT: (1 << 16),
 };
 
 // http
@@ -78,7 +79,7 @@ function http_fetch_blob(url, onprogress) {
       onprogress(Math.round(e.loaded * 100 / e.total));
     };
     xhr.onloadend = (e) => {
-      if (e.loaded && e.loaded == e.total && xhr.status == 200) {
+      if (e.loaded == e.total && xhr.status == 200) {
         var reader = new FileReader();
         reader.readAsDataURL(xhr.response);
         reader.onloadend = () => res(reader.result.split('base64,')[1]);
@@ -99,7 +100,7 @@ function http_fetch_blob(url, onprogress) {
   });
 }
 
-function http_post(url, data) {
+function http_post(url, data) {//TODO tout
   return new Promise((res, rej) => {
     let xhr = new XMLHttpRequest();
     xhr.onreadystatechange = () => {
