@@ -26,6 +26,8 @@ function load_cfg_hub() {
     if (hub.cfg.api_ver === cfg_r.api_ver) {
       hub.cfg = cfg_r;
       return;
+    } else {
+      localStorage.setItem('devices', '[]');
     }
   }
   localStorage.setItem('hub_config', JSON.stringify(hub.cfg));

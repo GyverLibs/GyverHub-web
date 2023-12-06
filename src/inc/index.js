@@ -166,10 +166,12 @@ function discover() {
   }
 
   if (isESP()) {
-    hub.http.discover_ip(window_ip(), window.location.port ?? 80);
+    hub.http.discover_ip(window_ip(), window.location.port.length ? window.location.port : 80);
+  } else {
+    hub.discover();
   }
   spinArrows(true);
-  hub.discover();
+
 }
 function search() {
   spinArrows(true);

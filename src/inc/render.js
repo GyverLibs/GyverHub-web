@@ -78,7 +78,7 @@ function render_main() {
     <!--<a href="https://alexgyver.ru/support_alex/" target="_blank"><span class="icon icon_inline i_footer"></span>Support</a>-->
     <a style="cursor:pointer" onclick="projects_h()"><span class="icon icon_inline i_footer"></span>Projects</a>
     <!--<a style="cursor:pointer" onclick="test_h()"><span class="icon icon_inline i_footer"></span>Test</a>-->
-    <a style="cursor:pointer" onclick="window.open(window.window.location.origin+window.window.location.pathname+'/old')"><span class="icon icon_inline i_footer"></span>Old</a>
+    <a style="cursor:pointer" onclick="window.open('https://hub.gyver.ru/old/')"><span class="icon icon_inline i_footer"></span>Old</a>
     <a href="https://github.com/GyverLibs/GyverHub/wiki" target="_blank"><span class="icon icon_inline i_footer"></span>Wiki</a>
   </div>
   `;
@@ -713,10 +713,6 @@ function spinArrows(val) {
 }
 function waiter(size = 50, col = 'var(--prim)', block = true) {
   return `<div class="waiter ${block ? 'waiter_b' : ''}"><span style="font-size:${size}px;color:${col}" class="icon spinning"></span></div>`;
-}
-function setPlabel(name, text) {
-  let lb = EL('plabel#' + name);
-  if (lb) lb.innerHTML = text;
 }
 
 // ============= CONNECTION =============

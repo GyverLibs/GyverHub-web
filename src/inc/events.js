@@ -134,10 +134,10 @@ hub.onFsFetchError = (id, index, code) => {
 
 // ============ FETCH ============
 hub.onFetchStart = (id, name) => {
-  if (id == focused) setPlabel(name, '[fetch...]');
+  if (id == focused) Widget.setPlabel(name, '[fetch...]');
 }
 hub.onFetchPerc = (id, name, perc) => {
-  if (id == focused) setPlabel(name, `[${perc}%]`);
+  if (id == focused) Widget.setPlabel(name, `[${perc}%]`);
   // console.log('Fetch ' + name + ': ' + perc + '%');
 }
 hub.onFetchEnd = (id, name, data, file) => {
@@ -145,22 +145,22 @@ hub.onFetchEnd = (id, name, data, file) => {
   switch (data.type) {
     case 'img':
       UiImage.apply(name, file);
-      setPlabel(name, '');
+      Widget.setPlabel(name);
       break;
 
     case 'csv':
       UiTable.apply(name, dataTotext(file).replaceAll(/\\n/ig, "\n"));
-      setPlabel(name, '');
+      Widget.setPlabel(name);
       break;
 
     case 'cv_img':
       data.img.src = file;
-      setPlabel(name, '');
+      Widget.setPlabel(name);
       break;
 
     case 'text':
       UiText_f.apply(name, dataTotext(file));
-      setPlabel(name, '');
+      Widget.setPlabel(name);
       break;
 
     case 'plugin_js':
@@ -182,12 +182,12 @@ hub.onFetchEnd = (id, name, data, file) => {
 
     case 'html':
       UiHTML.apply(name, dataTotext(file));
-      setPlabel(name, '');
+      Widget.setPlabel(name);
       break;
 
     case 'icon':
       UiButton.apply(name, dataTotext(file));
-      setPlabel(name, '');
+      Widget.setPlabel(name);
       break;
 
     case 'ui_json':
@@ -197,7 +197,7 @@ hub.onFetchEnd = (id, name, data, file) => {
 }
 hub.onFetchError = (id, name, data, code) => {
   if (id != focused) return;
-  setPlabel(name, '[error]');
+  Widget.setPlabel(name, '[error]');
   switch (data.type) {
     case 'csv':
     case 'img':
@@ -241,7 +241,8 @@ hub.onError = (id, code) => {
   if (id == focused) showPopupError(getError(code));
 }
 hub.onAck = (id, name) => {
-  if (id == focused) setPlabel(name, '');
+  // if (id == focused) Widget.setPlabel(name);
+  if (id == focused) Ack.clear(name);
 }
 hub.onUpdate = (id, name, data) => {
   if (id != focused) return;
@@ -257,8 +258,8 @@ hub.onFsbr = (id, fs, total, used) => {
 hub.onPrint = (id, text, color) => {
   if (id == focused) printCLI(text, color);
 }
-hub.onUi = (id, controls, conn, ip) => {
-  if (id == focused) showControls(id, controls, conn, ip);
+hub.onUi = (id, controls) => {
+  if (id == focused) showControls(id, controls);
 }
 hub.onData = (id, data) => {
   console.log('Data from ' + id + ': ' + data);

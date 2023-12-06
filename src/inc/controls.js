@@ -1,3 +1,25 @@
+class Ack {
+  static set(id) {
+    Ack.clear(id);
+    Ack.buf[id] = setTimeout(() => {
+      Widget.setPlabel(id, '[' + lang[cfg.lang].error + ']');
+      delete Ack.buf[id];
+    }, 1500);
+  }
+  static clear(id) {
+    Widget.setPlabel(id);
+    if (Ack.buf[id]) {
+      clearTimeout(Ack.buf[id]);
+      delete Ack.buf[id];
+    }
+  }
+  static clearAll() {
+    for (let id in Ack.buf) Ack.clear(id);
+  }
+
+  static buf = {};
+};
+
 // ================== POST ==================
 const set_prd = 15;
 let set_prd_buf = {};
@@ -11,7 +33,8 @@ function post_click(name, dir) {
 }
 function post_set(name, value = '') {
   post('set', name, value);
-  setPlabel(name, '•');
+  // Widget.setPlabel(name, '•');
+  Ack.set(name);
 }
 function post_set_prd(name, value) {
   if (!(name in set_prd_buf)) set_prd_buf[name] = { value: null, tout: null };
@@ -38,10 +61,11 @@ function release_all() {
 
 // ================== SHOW ==================
 let ui_render = new UiRender();
+let render_busy = false;
 
 function showControls(id, controls) {
   function changeID(node) {
-    for (var i = 0; i < node.childNodes.length; i++) {
+    for (let i = 0; i < node.childNodes.length; i++) {
       let child = node.childNodes[i];
       changeID(child);
       if (child.id) child.id += '__old';
@@ -49,6 +73,9 @@ function showControls(id, controls) {
   }
 
   if (!controls) return;
+  if (render_busy) return;
+
+  render_busy = true;
   let dev = hub.dev(id);
   let cont = document.createElement("div");
   ui_render.root = cont;
@@ -94,5 +121,6 @@ function showControls(id, controls) {
       cont.id = 'controls#' + id;
     }
     cont.style.visibility = 'visible';
+    render_busy = false;
   });
 }

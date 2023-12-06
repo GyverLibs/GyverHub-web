@@ -80,6 +80,18 @@
   display: none;
 }
 
+.whint {
+  display: none;
+  color: var(--back);
+  background: var(--font3);
+  cursor: pointer;
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  line-height: 12px;
+  text-align: center;
+}
+
 .dsbl {
   cursor: default !important;
   user-select: none;

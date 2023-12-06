@@ -327,6 +327,7 @@ function open_device(id) {
   dev.focus();
 }
 function close_device() {
+  Ack.clearAll();
   UiHook.reset();
   UiColor.reset();
   UiGauge.reset();

@@ -4,8 +4,8 @@
 # pip install rcssmin
 # pip install rjsmin
 
-version = '0.51.25b'
-notes = 'New version!'
+version = '0.51.36b'
+notes = 'Update!'
 
 # ESP
 esp_remove_non_gz = True    # удалить несжатые файлы
@@ -380,6 +380,7 @@ def file_to_h(src, dest, name):
     with open(src, "rb") as f:
         bytes = bytearray(f.read())
         data = '#pragma once\n'
+        data += '// app v' + version + '\n\n'
         data += '#define ' + name + '_len ' + str(len(bytes)) + '\n\n'
         data += 'const uint8_t ' + name + '[] PROGMEM = {\n\t'
         count = 0

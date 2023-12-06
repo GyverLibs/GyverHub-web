@@ -2,7 +2,7 @@ class UiInput {
     constructor(cont, data) {
         cont.innerHTML = `
           <div class="w_inp_cont">
-            <input data-type="${data.type}" class="w_inp" type="text" value="${data.value ?? ''}" id="${ID(data.id)}" name="${data.id}" onkeydown="UiInput.checkDown(this,event)" oninput="UiInput.check(this)" pattern="${data.regex ?? ''}" maxlength="${data.maxlen ?? ''}" onfocusout="UiInput.send(this)">
+            <input data-type="${data.type}" class="w_inp" type="text" value="${data.value ?? ''}" id="${ID(data.id)}" name="${data.id}" onkeydown="UiInput.checkDown(this,event)" oninput="UiInput.check(this)" data-regex="${data.regex ?? ''}" maxlength="${data.maxlen ?? ''}" onfocusout="UiInput.send(this)">
           </div>
         `;
         UiInput.color(data.id, data.color);
@@ -13,7 +13,7 @@ class UiInput {
         let el = CMP(id);
         if ('color' in data) UiInput.color(id, data.color);
         if ('value' in data) el.value = data.value;
-        if ('regex' in data) el.pattern = data.regex;
+        if ('regex' in data) el.setAttribute("data-regex", data.regex);
         if ('maxlen' in data) el.maxlength = Math.ceil(data.maxlen);
         if ('dsbl' in data) Widget.disable(id, data.dsbl);
     }
@@ -23,8 +23,9 @@ class UiInput {
     }
 
     static send(arg, force = false) {
-        if (arg.pattern) {
-            const r = new RegExp(arg.pattern);
+        let pattern = arg.getAttribute("data-regex");
+        if (pattern.length) {
+            const r = new RegExp(pattern);
             if (!r.test(arg.value)) {
                 showPopupError("Wrong text!");
                 return;
@@ -37,7 +38,8 @@ class UiInput {
     }
 
     static check(arg) {
-        setPlabel(arg.name, '•');
+        // Widget.setPlabel(arg.name, '•');
+        Ack.set(arg.name);
         arg.setAttribute('data-changed', '1');
     }
 

@@ -38,7 +38,9 @@ class HTTPconn extends Discover {
   }
   send(ip, port, uri) {
     http_get(`http://${ip}:${port}/${uri}`)
-      .then(res => this._hub._parsePacket(Conn.HTTP, res, ip, port))
+      .then(res => {
+        if (res.length) this._hub._parsePacket(Conn.HTTP, res, ip, port);
+      })
       .catch(e => { });
   }
 

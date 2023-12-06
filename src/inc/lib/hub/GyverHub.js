@@ -13,7 +13,7 @@ class GyverHub {
   onInfo(id, info) { }
   onFsbr(id, fs, total, used) { }
   onPrint(id, text, color) { }
-  onUi(id, controls, conn, ip) { }
+  onUi(id, controls) { }
   onData(id, data) { }
   onAlert(id, text) { }
   onNotice(id, text, color) { }
@@ -221,6 +221,8 @@ class GyverHub {
     return list;
   }
   _parsePacket(conn, data, ip = null, port = null) {
+    if (!data.length) return;
+    
     data = data.trim()
       .replaceAll(/([^\\])\\([^\"\\nrt])/ig, "$1\\\\$2")
       .replaceAll(/\t/ig, "\\t")
@@ -292,7 +294,7 @@ class GyverHub {
           break;
 
         case 'ui':
-          if (device.module(Modules.UI)) this.onUi(id, data.controls, conn, device.info.ip);
+          if (device.module(Modules.UI)) this.onUi(id, data.controls);
           this.post(id, 'unix', Math.floor(new Date().getTime() / 1000));
           break;
 
