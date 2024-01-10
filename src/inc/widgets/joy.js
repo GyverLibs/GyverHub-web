@@ -2,7 +2,7 @@ class UiJoy {
     constructor(cont, data) {
         cont.innerHTML = `<canvas data-type="${data.type}" id="${ID(data.id)}"></canvas>`;
 
-        waitFrame().then(() => {
+        wait2Frame().then(() => {
             let id = data.id;
             let cb = function (d) {
                 post_set_prd(id, ((d.x + 255) << 16) | (d.y + 255));
@@ -14,7 +14,7 @@ class UiJoy {
             joy.redraw(false);
             UiJoy.joys[id] = joy;
         });
-        Widget.disable(data.id, data.dsbl);
+        Widget.disable(data.id, data.disable);
     }
 
     static update(id, data) {

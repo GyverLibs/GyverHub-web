@@ -13,7 +13,7 @@ class UiTabs {
 
         UiTabs.color(data.id, intToCol(data.color) ?? getDefColor());
         waitFrame().then(() => UiTabs.change(data.id, data.value ?? 0));
-        Widget.disable(data.id, data.dsbl);
+        Widget.disable(data.id, data.disable);
     }
 
     static click(id, num) {

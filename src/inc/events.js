@@ -7,7 +7,7 @@ hub.mqtt.onConnChange = (state) => {
 hub.bt.onConnChange = (state) => {
   switch (state) {
     case 'connecting':
-      EL('bt_device').innerHTML = lang[cfg.lang].connecting;
+      EL('bt_device').innerHTML = lang.connecting;
       break;
 
     case 'open':
@@ -19,7 +19,7 @@ hub.bt.onConnChange = (state) => {
 
     case 'close':
       bt_change(false);
-      EL('bt_device').innerHTML = lang[cfg.lang].disconnected;
+      EL('bt_device').innerHTML = lang.disconnected;
       bt_show_ok(false);
       break;
   }
@@ -30,6 +30,10 @@ hub.serial.onConnChange = (state) => {
   if (state) {
     setTimeout(() => hub.serial.discover(), cfg.serial_offset);
   }
+}
+hub.tg.onConnChange = (state) => {
+  display('tg_ok', state ? 'inline-block' : 'none');
+  tg_change(state);
 }
 hub.serial.onPortChange = (selected) => {
   display('serial_open', selected ? 'inline-block' : 'none');
@@ -92,17 +96,17 @@ hub.onFsUploadStart = (id) => {
 hub.onFsUploadPerc = (id, perc) => {
   if (id != focused) return;
   // EL('file_upload_btn').innerHTML = perc + '%';
-  showPopup(lang[cfg.lang].upload + '... ' + perc + '%');
+  showPopup(lang.upload + '... ' + perc + '%');
 }
 hub.onFsUploadEnd = (id) => {
   if (id != focused) return;
-  EL('file_upload_btn').innerHTML = lang[cfg.lang].upload;
-  showPopup(`[${lang[cfg.lang].upload}] ` + lang[cfg.lang].done);
+  EL('file_upload_btn').innerHTML = lang.upload;
+  showPopup(`[${lang.upload}] ` + lang.done);
 }
 hub.onFsUploadError = (id, code) => {
   if (id != focused) return;
-  EL('file_upload_btn').innerHTML = lang[cfg.lang].upload;
-  showPopupError(`[${lang[cfg.lang].upload}] ` + getError(code));
+  EL('file_upload_btn').innerHTML = lang.upload;
+  showPopupError(`[${lang.upload}] ` + getError(code));
 }
 // =========== FETCH FS ===========
 hub.onFsFetchStart = (id, index) => {
@@ -122,19 +126,19 @@ hub.onFsFetchEnd = (id, name, index, data) => {
   display('download#' + index, 'inline-block');
   EL('download#' + index).href = ('data:' + getMime(name) + ';base64,' + data);
   EL('download#' + index).download = name;
-  display('open#' + index, 'inline-block');
+  if (!isApp()) display('open#' + index, 'inline-block'); // TODO
   display('edit#' + index, 'inline-block');
   display('process#' + index, 'none');
 }
 hub.onFsFetchError = (id, index, code) => {
   if (id != focused) return;
-  showPopupError(`[${lang[cfg.lang].fetch}] ` + getError(code));
-  EL('process#' + index).innerHTML = lang[cfg.lang].error;
+  showPopupError(`[${lang.fetch}] ` + getError(code));
+  EL('process#' + index).innerHTML = lang.error;
 }
 
 // ============ FETCH ============
 hub.onFetchStart = (id, name) => {
-  if (id == focused) Widget.setPlabel(name, '[fetch...]');
+  if (id == focused) Widget.setPlabel(name, '[FETCH...]');
 }
 hub.onFetchPerc = (id, name, perc) => {
   if (id == focused) Widget.setPlabel(name, `[${perc}%]`);
@@ -197,7 +201,7 @@ hub.onFetchEnd = (id, name, data, file) => {
 }
 hub.onFetchError = (id, name, data, code) => {
   if (id != focused) return;
-  Widget.setPlabel(name, '[error]');
+  Widget.setPlabel(name, '[ERROR]');
   switch (data.type) {
     case 'csv':
     case 'img':
@@ -213,13 +217,13 @@ hub.onOtaStart = (id) => {
 }
 hub.onOtaEnd = (id) => {
   if (id != focused) return;
-  showPopup('[OTA] ' + lang[cfg.lang].done);
-  EL('ota_label').innerHTML = lang[cfg.lang].done;
+  showPopup('[OTA] ' + lang.done);
+  EL('ota_label').innerHTML = lang.done;
 }
 hub.onOtaError = (id, code) => {
   if (id != focused) return;
   showPopupError('[OTA] ' + getError(code));
-  EL('ota_label').innerHTML = lang[cfg.lang].error;
+  EL('ota_label').innerHTML = lang.error;
 }
 hub.onOtaPerc = (id, perc) => {
   if (id != focused) return;
@@ -227,7 +231,7 @@ hub.onOtaPerc = (id, perc) => {
 }
 hub.onOtaUrlEnd = (id) => {
   if (id != focused) return;
-  showPopup('[OTA] ' + lang[cfg.lang].done);
+  showPopup('[OTA] ' + lang.done);
 }
 hub.onOtaUrlError = (id, code) => {
   if (id != focused) return;
@@ -235,7 +239,7 @@ hub.onOtaUrlError = (id, code) => {
 }
 // ============ SYSTEM ============
 hub.onFsError = (id) => {
-  if (id == focused) EL('fsbr_inner').innerHTML = `<div class="fs_err">FS ${lang[cfg.lang].error}</div>`;
+  if (id == focused) EL('fsbr_inner').innerHTML = `<div class="fs_err">FS ${lang.error}</div>`;
 }
 hub.onError = (id, code) => {
   if (id == focused) showPopupError(getError(code));

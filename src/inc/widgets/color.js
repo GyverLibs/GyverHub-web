@@ -7,7 +7,7 @@ class UiColor {
           <button id="picker_btn#${data.id}" style="margin-left:-25px;color:${intToCol(data.value) ?? '#000'}" class="icon icon_btn_big" onclick="UiColor.open('${data.id}')"></button>
           `;
 
-        Widget.disable(data.id, data.dsbl);
+        Widget.disable(data.id, data.disable);
 
         waitFrame().then(() => {
             let el = EL('picker#' + data.id);

@@ -1,9 +1,10 @@
 window.onload = () => {
+  load_cfg();
+  load_cfg_hub();
+  updateLang();
   render_main();
   EL('hub_stat').innerHTML = 'GyverHub v' + app_version + ' ' + (isPWA() ? 'PWA ' : '') + (isSSL() ? 'SSL ' : '') + (isLocal() ? 'Local ' : '') + (isESP() ? 'ESP ' : '') + (isApp() ? 'App ' : '');
 
-  load_cfg();
-  load_cfg_hub();
   if (isESP()) hub.cfg.use_local = true;  // force local on esp
   update_ip();
   update_theme();
@@ -137,7 +138,10 @@ function startup() {
   if (isPWA() || isLocal() || isApp()) {
     display('pwa_block', 'none');
   }
-  if (isApp()) display('app_block', 'none');
+  if (isApp()) {
+    display('app_block', 'none');
+    display('cfg_export_import', 'none'); // TODO!
+  }
 
   serial_check_ports();
   /*/NON-ESP*/
@@ -156,6 +160,7 @@ function startup() {
 
 // =================== FUNC ===================
 function discover() {
+  spinArrows(true);   // before discover!
   for (let dev of hub.devices) {
     let id = dev.info.id;
     EL(`device#${id}`).className = "device offline";
@@ -170,8 +175,6 @@ function discover() {
   } else {
     hub.discover();
   }
-  spinArrows(true);
-
 }
 function search() {
   spinArrows(true);

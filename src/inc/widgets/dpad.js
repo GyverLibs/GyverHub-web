@@ -11,7 +11,7 @@ class UiDpad {
             pad.redraw(false);
             UiDpad.pads[id] = pad;
         });
-        Widget.disable(data.id, data.dsbl);
+        Widget.disable(data.id, data.disable);
     }
 
     static update(id, data) {

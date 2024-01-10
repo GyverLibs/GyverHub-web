@@ -85,8 +85,8 @@ class UiRender {
                     case 'pass': new UiPass(wid, ctrl); break;
                     case 'area': new UiArea(wid, ctrl); break;
                     case 'button': new UiButton(wid, ctrl); break;
-                    case 'switch': new UiSwitch(wid, ctrl); break;
-                    case 'swicon': new UiSwicon(wid, ctrl); break;
+                    case 'switch_t': new UiSwitch(wid, ctrl); break;
+                    case 'switch_i': new UiSwicon(wid, ctrl); break;
                     case 'title': new UiTitle(wid, ctrl); break;
                     case 'label': new UiLabel(wid, ctrl); break;
                     case 'text': new UiText(wid, ctrl); break;
@@ -103,15 +103,18 @@ class UiRender {
                     case 'select': new UiSelect(wid, ctrl); break;
                     case 'color': new UiColor(wid, ctrl); break;
                     case 'led': new UiLED(wid, ctrl); break;
+                    case 'icon': new UiIcon(wid, ctrl); break;
                     case 'html': new UiHTML(wid, ctrl); break;
                     case 'func': new UiFunc(focused, wid, ctrl); break;
                     case 'gauge': new UiGauge(wid, ctrl); break;
                     case 'gauge_r': new UiGaugeR(wid, ctrl); break;
+                    case 'gauge_l': new UiGaugeL(wid, ctrl); break;
                     case 'joy': new UiJoy(wid, ctrl); break;
                     case 'dpad': new UiDpad(wid, ctrl); break;
                     case 'flags': new UiFlags(wid, ctrl); break;
                     case 'tabs': new UiTabs(wid, ctrl); break;
                     case 'canvas': new UiCanvas(wid, ctrl); break;
+                    case 'plot': new UiPlot(wid, ctrl); break;
                     case 'stream': new UiStream(wid, ctrl); break;
                     default: break;
                 } // switch (ctrl.type)

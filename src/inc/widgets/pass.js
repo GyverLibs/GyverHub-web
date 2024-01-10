@@ -9,7 +9,7 @@ class UiPass {
       </div>
     `;
     UiInput.color(data.id, data.color);
-    Widget.disable(data.id, data.dsbl);
+    Widget.disable(data.id, data.disable);
   }
 
   static toggle(id) {
@@ -24,6 +24,6 @@ class UiPass {
     if ('value' in data) el.value = data.value;
     if ('regex' in data) el.setAttribute("data-regex", data.regex);
     if ('maxlen' in data) el.maxlength = Math.ceil(data.maxlen);
-    if ('dsbl' in data) Widget.disable(id, data.dsbl);
+    if ('disable' in data) Widget.disable(id, data.disable);
   }
 }

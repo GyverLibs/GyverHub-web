@@ -9,7 +9,7 @@ function render_main() {
   <div class="projects" id="projects_cont"></div>
   <div class="main" id="main_cont"></div>
   <div class="cli" id="cli_cont"></div>
-  <div class="footer" id="footer_cont"></div>
+  <div class="footer" id="footer_cont" style="display:none"></div>
   <div id="qrcode" style="display: none"></div>
   `;
 
@@ -24,6 +24,7 @@ function render_main() {
           <span id='bt_ok' class="icon icon_ui icon_ok"></span>
           <span id='mqtt_ok' class="icon icon_ui icon_ok"></span>
           <span id='serial_ok' class="icon icon_ui icon_ok"></span>
+          <span id='tg_ok' class="icon icon_ui icon_ok"></span>
         </div>
       </div>
       <div class="head_btns">
@@ -103,87 +104,87 @@ function render_main() {
     <div id="info" class="main_col">
       <div class="ui_col">
         <div class="ui_row ui_head">
-          <label><span class="icon icon_ui"></span>Settings</label>
+          <label><span class="icon icon_ui"></span>${lang.i_settings}</label>
         </div>
 
         <div class="ui_row">
-          <label>Console</label>
+          <label>${lang.i_console}</label>
           <label class="switch"><input type="checkbox" id="info_cli_sw" onchange="showCLI(this.checked);save_devices()">
           <span class="slider"></span></label>
         </div>
         <div class="ui_row">
-          <label>UI mode</label>
+          <label>${lang.i_mode}</label>
           <div class="ui_inp_row">
             <select class="ui_inp ui_sel" id="ui_mode" onchange="ui_mode_h(this)">
-              <option value="0">Default</option>
-              <option value="1">Single row</option>
-              <option value="2">Responsive</option>
-              <option value="3">Grid</option>
+              <option value="0">${lang.i_default}</option>
+              <option value="1">${lang.i_single}</option>
+              <option value="2">${lang.i_resp}</option>
+              <option value="3">${lang.i_grid}</option>
             </select>
           </div>          
         </div>
         <div class="ui_row" id="ui_block_width_cont">
-          <label class="ui_label">Block width</label>
+          <label class="ui_label">${lang.i_block}</label>
           <div class="ui_inp_row">
             <input class="ui_inp" type="text" id="ui_block_width" onchange="ui_block_width_h(this)">
           </div>
         </div>
         <div class="ui_row">
-          <label class="ui_label">Main width</label>
+          <label class="ui_label">${lang.i_main}</label>
           <div class="ui_inp_row">
             <input class="ui_inp" type="text" id="main_width" onchange="ui_width_h(this)">
           </div>
         </div>
         <div class="ui_row">
-          <label class="ui_label">Plugin CSS</label>
+          <label class="ui_label">${lang.i_css}</label>
           <div class="ui_inp_row">
             <textarea class="w_area" id="plugin_css" onchange="ui_plugin_css_h(this)"></textarea>
           </div>
         </div>
         <div class="ui_row">
-          <label class="ui_label">Plugin JS</label>
+          <label class="ui_label">${lang.i_js}</label>
           <div class="ui_inp_row">
             <textarea class="w_area" id="plugin_js" onchange="ui_plugin_js_h(this)"></textarea>
           </div>
         </div>
         <div style="height:5px"></div>
         <div class="ui_btn_row">
-          <button id="reboot_btn" class="ui_btn ui_btn_mini" onclick="reboot_h()"><span class="icon icon_inline"></span>Reboot</button>
-          <button id="devlink_btn" class="ui_btn ui_btn_mini" onclick="devlink_h()"><span class="icon icon_inline"></span>Link</button>
-          <!--NON-ESP--><button id="qr_btn" class="ui_btn ui_btn_mini" onclick="qr_h()"><span class="icon icon_inline"></span>QR code</button><!--/NON-ESP-->
+          <button id="reboot_btn" class="ui_btn ui_btn_mini" onclick="reboot_h()"><span class="icon icon_inline"></span>${lang.i_reboot}</button>
+          <button id="devlink_btn" class="ui_btn ui_btn_mini" onclick="devlink_h()"><span class="icon icon_inline"></span>${lang.i_link}</button>
+          <!--NON-ESP--><button id="qr_btn" class="ui_btn ui_btn_mini" onclick="qr_h()"><span class="icon icon_inline"></span>QR</button><!--/NON-ESP-->
         </div>
       </div>
 
       <div class="ui_col" id="info_topics">
         <div class="ui_row ui_head">
-          <label><span class="icon icon_ui"></span>Topics</label>
+          <label><span class="icon icon_ui"></span>${lang.i_topics}</label>
         </div>
       </div>
 
       <div class="ui_col">
         <div class="ui_row ui_head">
-          <label><span class="icon icon_ui"></span>Version</label>
+          <label><span class="icon icon_ui"></span>${lang.i_version}</label>
         </div>
         <div id="info_version"></div>
       </div>
 
       <div class="ui_col">
         <div class="ui_row ui_head">
-          <label><span class="icon icon_ui"></span>Network</label>
+          <label><span class="icon icon_ui"></span>${lang.i_net}</label>
         </div>
         <div id="info_net"></div>
       </div>
 
       <div class="ui_col">
         <div class="ui_row ui_head">
-          <label><span class="icon icon_ui"></span>Memory</label>
+          <label><span class="icon icon_ui"></span>${lang.i_memory}</label>
         </div>
         <div id="info_memory"></div>
       </div>
 
       <div class="ui_col">
         <div class="ui_row ui_head">
-          <label><span class="icon icon_ui"></span>System</label>
+          <label><span class="icon icon_ui"></span>${lang.i_system}</label>
         </div>
         <div id="info_system"></div>
       </div>
@@ -214,37 +215,37 @@ function render_main() {
     <div id="files" class="main_col">
       <div class="ui_col">
         <div class="ui_row ui_head">
-          <label><span class="icon icon_ui"></span>FS browser</label>
+          <label><span class="icon icon_ui"></span>${lang.fs_fsbr}</label>
         </div>
         <div id="fs_browser">
           <div id="fsbr_inner"></div>
-          <div class="ui_row">
+          <div class="ui_row" id="fs_format_row">
             <div>
-              <button id="fs_format" onclick="format_h()" class="ui_btn ui_btn_mini">Format</button>
+              <button id="fs_format" onclick="format_h()" class="ui_btn ui_btn_mini">${lang.fs_format}</button>
             </div>
           </div>
         </div>
       </div>
       <div class="ui_col">
         <div class="ui_row ui_head">
-          <label><span class="icon icon_ui"></span>Upload to</label>
+          <label><span class="icon icon_ui"></span>${lang.fs_upload_to}</label>
         </div>
         <div id="fs_upload">
           <div class="upl_row">
             <input class="ui_inp ui_inp_wbtn" type="text" id="file_upload_path" value="/">
             <input type="file" id="file_upload" style="display:none" onchange="uploadFile(this.files[0], file_upload_path.value)">
-            <button id="file_upload_btn" onclick="file_upload.click()" class="ui_btn upl_btn">Upload</button>
+            <button id="file_upload_btn" onclick="file_upload.click()" class="ui_btn upl_btn">${lang.fs_upload}</button>
           </div>
         </div>
       </div>
       <div class="ui_col">
         <div class="ui_row ui_head">
-          <label><span class="icon icon_ui"></span>Create file</label>
+          <label><span class="icon icon_ui"></span>${lang.fs_create_f}</label>
         </div>
         <div id="fs_create">
           <div class="upl_row">
             <input class="ui_inp ui_inp_wbtn" type="text" id="file_create_path" value="/">
-            <button onclick="create_h()" class="ui_btn upl_btn">Create</button>
+            <button onclick="create_h()" class="ui_btn upl_btn">${lang.fs_create}</button>
           </div>
         </div>
       </div>
@@ -292,7 +293,7 @@ function render_main() {
 
       <div class="ui_col">
         <div class="ui_row ui_head ui_tab" onclick="use_local.click()">
-          <label class="ui_label ui_tab" id="local_label"><span class="icon icon_ui"></span>Local</label>
+          <label class="ui_label ui_tab" id="local_label"><span class="icon icon_ui"></span>WiFi</label>
           <input type="checkbox" id="use_local" onchange="update_cfg(this)" style="display:none">
         </div>
         <div id="local_block" style="display:none">
@@ -302,7 +303,7 @@ function render_main() {
 
           <div id="http_settings">
             <div class="ui_row">
-              <label class="ui_label">Local IP</label>
+              <label class="ui_label">${lang.wifi_ip}</label>
               <div class="ui_inp_row">
                 <input class="ui_inp" type="text" id="local_ip" onchange="update_cfg(this)">
                 <div class="btn_inp_block">
@@ -312,19 +313,19 @@ function render_main() {
             </div>
 
             <div class="ui_row">
-              <label>Netmask</label>
+              <label>${lang.wifi_mask}</label>
               <div class="ui_inp_row">
                 <select class="ui_inp ui_sel" id="netmask" onchange="update_cfg(this)"></select>
               </div>
             </div>
 
             <div class="ui_row">
-              <label>HTTP port</label>
+              <label>${lang.wifi_port}</label>
               <div class="ui_inp_row"><input class="ui_inp" type="text" id="http_port" onchange="update_cfg(this)"></div>
             </div>
             
             <div class="ui_row">
-              <label class="ui_label">Add by IP</label>
+              <label class="ui_label">${lang.wifi_add}</label>
               <div class="ui_inp_row">
                 <input class="ui_inp" type="text" value="192.168.1.1" id="local_add_ip">
                 <div class="btn_inp_block">
@@ -350,33 +351,63 @@ function render_main() {
         <div id="mq_block" style="display:none">
 
           <div class="ui_row">
-            <label class="ui_label">Host</label>
+            <label class="ui_label">${lang.mq_host}</label>
             <div class="ui_inp_row"><input class="ui_inp" type="text" id="mq_host" onchange="update_cfg(this);hub.mqtt.stop()"></div>
           </div>
 
           <div class="ui_row">
-            <label class="ui_label">Port (WSS)</label>
+            <label class="ui_label">${lang.mq_port}</label>
             <div class="ui_inp_row"><input class="ui_inp" type="number" id="mq_port" onchange="update_cfg(this);hub.mqtt.stop()"></div>
           </div>
 
           <div class="ui_row">
-            <label class="ui_label">Login</label>
+            <label class="ui_label">${lang.mq_login}</label>
             <div class="ui_inp_row"><input class="ui_inp" type="text" id="mq_login" onchange="update_cfg(this);hub.mqtt.stop()"></div>
           </div>
 
           <div class="ui_row">
-            <label class="ui_label">Pass</label>
+            <label class="ui_label">${lang.mq_pass}</label>
             <div class="ui_inp_row"><input class="ui_inp" type="password" id="mq_pass" onchange="update_cfg(this);hub.mqtt.stop()">
             </div>
           </div>
           <div class="ui_row">
             <div></div>
             <div class="ui_btn_row">
-              <button class="ui_btn ui_btn_mini" onclick="hub.mqtt.start()" id="mq_start">Connect</button>
-              <button class="ui_btn ui_btn_mini" onclick="hub.mqtt.stop()" id="mq_stop" style="display:none">Disconnect</button>
+              <button class="ui_btn ui_btn_mini" onclick="hub.mqtt.start()" id="mq_start">${lang.connect}</button>
+              <button class="ui_btn ui_btn_mini" onclick="hub.mqtt.stop()" id="mq_stop" style="display:none">${lang.disconnect}</button>
             </div>
           </div>
 
+        </div>
+      </div>
+
+      <div class="ui_col" id="tg_col">
+        <div class="ui_row ui_head ui_tab" onclick="use_tg.click()">
+          <label class="ui_label ui_tab" id="tg_label"><span class="icon icon_ui"></span>Telegram</label>
+          <input type="checkbox" id="use_tg" onchange="update_cfg(this);hub.tg.stop()" style="display:none">
+        </div>
+
+        <div id="tg_block" style="display:none">
+          <div class="ui_row">
+            <label class="ui_label">${lang.tg_token}</label>
+            <div class="ui_inp_row">
+              <input class="ui_inp" type="text" id="tg_token" onchange="update_cfg(this);hub.tg.stop();hub.tg.bot.setToken(this.value)">
+            </div>
+          </div>
+
+          <div class="ui_row">
+            <label class="ui_label">${lang.tg_chat}</label>
+            <div class="ui_inp_row">
+              <input class="ui_inp" type="text" id="tg_chat" onchange="update_cfg(this)">
+            </div>
+          </div>
+          <div class="ui_row">
+            <div></div>
+            <div class="ui_btn_row">
+              <button class="ui_btn ui_btn_mini" onclick="hub.tg.start()" id="tg_start">${lang.connect}</button>
+              <button class="ui_btn ui_btn_mini" onclick="hub.tg.stop()" id="tg_stop" style="display:none">${lang.disconnect}</button>
+            </div>
+          </div>
         </div>
       </div>
       
@@ -388,21 +419,21 @@ function render_main() {
 
         <div id="serial_block" style="display:none">
           <div class="ui_row">
-            <label class="ui_label">Baudrate</label>
+            <label class="ui_label">${lang.sr_baud}</label>
             <div class="ui_inp_row">
               <select class="ui_inp ui_sel" id='baudrate' onchange="update_cfg(this)"></select>
             </div>
           </div>
           <div class="ui_row">
-            <label class="ui_label">Time offset</label>
+            <label class="ui_label">${lang.sr_offset}</label>
             <div class="ui_inp_row"><input class="ui_inp" type="text" id="serial_offset" onchange="update_cfg(this)"></div>
           </div>
           <div class="ui_row">
-            <label class="ui_label">Port</label>
+            <label class="ui_label">${lang.sr_port}</label>
             <div class="ui_btn_row">
-              <button class="ui_btn ui_btn_mini" onclick="hub.serial.select()">Select</button>
-              <button id="serial_open" class="ui_btn ui_btn_mini" onclick="hub.serial.open()" style="display:none">Connect</button>
-              <button id="serial_close" class="ui_btn ui_btn_mini" onclick="hub.serial.close()" style="display:none">Disconnect</button>
+              <button class="ui_btn ui_btn_mini" onclick="hub.serial.select()">${lang.select}</button>
+              <button id="serial_open" class="ui_btn ui_btn_mini" onclick="hub.serial.open()" style="display:none">${lang.connect}</button>
+              <button id="serial_close" class="ui_btn ui_btn_mini" onclick="hub.serial.close()" style="display:none">${lang.disconnect}</button>
             </div>
           </div>
         </div>
@@ -416,10 +447,10 @@ function render_main() {
 
         <div id="bt_block" style="display:none">
           <div class="ui_row">
-            <label class="ui_label" id="bt_device">Not Connected</label>
+            <label class="ui_label" id="bt_device">${lang.not_conn}</label>
             <div class="ui_btn_row">
-              <button id="bt_open" class="ui_btn ui_btn_mini" onclick="hub.bt.open()">Connect</button>
-              <button id="bt_close" class="ui_btn ui_btn_mini" onclick="hub.bt.close()" style="display:none">Disconnect</button>
+              <button id="bt_open" class="ui_btn ui_btn_mini" onclick="hub.bt.open()">${lang.connect}</button>
+              <button id="bt_close" class="ui_btn ui_btn_mini" onclick="hub.bt.close()" style="display:none">${lang.disconnect}</button>
             </div>
           </div>
         </div>
@@ -429,87 +460,87 @@ function render_main() {
 
       <div class="ui_col">
         <div class="ui_row ui_head">
-          <label class="ui_label"><span class="icon icon_ui"></span>Settings</label>
+          <label class="ui_label"><span class="icon icon_ui"></span>${lang.cfg_sett}</label>
         </div>
 
         <div class="ui_row">
-          <label class="ui_label">Search</label>
+          <label class="ui_label">${lang.cfg_search}</label>
           <button class="icon icon_btn_big" onclick="search();back_h();" title="Find new devices"></button>
         </div>
 
         <div class="ui_row">
-          <label class="ui_label">Prefix</label>
+          <label class="ui_label">${lang.cfg_prefix}</label>
           <div class="ui_inp_row">
             <input class="ui_inp" type="text" id="prefix" onchange="update_cfg(this)">
           </div>
         </div>
 
         <div class="ui_row">
-          <label class="ui_label">Client ID</label>
+          <label class="ui_label">${lang.cfg_id}</label>
           <div class="ui_inp_row">
             <input class="ui_inp" type="text" id="client_id" onchange="update_cfg(this)" oninput="if(this.value.length>8)this.value=this.value.slice(0,-1)">
           </div>
         </div>
 
         <div class="ui_row">
-          <label class="ui_label">Theme</label>
+          <label class="ui_label">${lang.cfg_theme}</label>
           <div class="ui_inp_row">
             <select class="ui_inp ui_sel" id='theme' onchange="update_cfg(this)"></select>
           </div>
         </div>
 
         <div class="ui_row">
-          <label class="ui_label">Main Color</label>
+          <label class="ui_label">${lang.cfg_color}</label>
           <div class="ui_inp_row">
             <select class="ui_inp ui_sel" id='maincolor' onchange="update_cfg(this)"></select>
           </div>
         </div>
 
         <div class="ui_row">
-          <label class="ui_label">Font</label>
+          <label class="ui_label">${lang.cfg_font}</label>
           <div class="ui_inp_row">
             <select class="ui_inp ui_sel" id='font' onchange="update_cfg(this)"></select>
           </div>
         </div>
 
         <div class="ui_row">
-          <label class="ui_label">Lang</label>
+          <label class="ui_label">Language</label>
           <div class="ui_inp_row">
             <select class="ui_inp ui_sel" id='lang' onchange="update_cfg(this)"></select>
           </div>
         </div>
 
         <div class="ui_row">
-          <label class="ui_label">UI Width</label>
+          <label class="ui_label">${lang.cfg_width}</label>
           <div class="ui_inp_row">
             <input class="ui_inp" type="text" id="ui_width" onchange="update_cfg(this);update_theme()">
           </div>
         </div>
 
         <div class="ui_row">
-          <label class="ui_label">Plugin CSS</label>
+          <label class="ui_label">${lang.cfg_css}</label>
           <div class="ui_inp_row">
             <textarea class="w_area" id="app_plugin_css" onchange="update_cfg(this);update_theme()"></textarea>
           </div>
         </div>
 
         <div class="ui_row">
-          <label class="ui_label">Plugin JS</label>
+          <label class="ui_label">${lang.cfg_js}</label>
           <div class="ui_inp_row">
             <textarea class="w_area" id="app_plugin_js" onchange="update_cfg(this);update_theme()"></textarea>
           </div>
         </div>
 
         <div class="ui_row">
-          <label>Check updates</label>
+          <label>${lang.cfg_updates}</label>
           <label class="switch"><input type="checkbox" id="check_upd" onchange="update_cfg(this)"><span class="slider"></span></label>
         </div>
 
-        <div class="ui_row">
-          <label class="ui_label">Settings</label>
+        <div class="ui_row" id="cfg_export_import">
+          <label class="ui_label">${lang.cfg_sett}</label>
           <div class="ui_btn_row">
-            <button class="ui_btn ui_btn_mini" onclick="cfg_export()">Export</button>
-            <button class="ui_btn ui_btn_mini" onclick="cfg_import()">Import</button>
+            <button class="ui_btn ui_btn_mini" onclick="cfg_export()">${lang.cfg_export}</button>
+            <button class="ui_btn ui_btn_mini" onclick="cfg_import()">${lang.cfg_import}</button>
           </div>
         </div>
       </div>
@@ -539,7 +570,7 @@ function render_main() {
             <button class="ui_btn ui_btn_mini ${!isSSL() ? 'ui_btn_dis' : ''}" onclick="pwa_install(true)">HTTPS</button>
           </div>
         </div>
-        <!--<span class="notice_block">HTTP app: <b>Local</b> and <b>MQTT</b><br>HTTPS app: only <b>MQTT</b></span>-->
+        <!--<span class="notice_block">HTTP app: <b>WiFi</b> and <b>MQTT</b><br>HTTPS app: only <b>MQTT</b></span>-->
         <span class="notice_block" id="pwa_unsafe">Enable <u>${browser()}://flags/#unsafely-treat-insecure-origin-as-secure</u> and add <u>${window.location.href}</u> to list</span>
       </div>
       <!--/NON-ESP-->
@@ -549,7 +580,7 @@ function render_main() {
         <label class="ui_label"><span class="icon icon_ui"></span>App</label>
           <div class="ui_btn_row">
             <button class="ui_btn ui_btn_mini" onclick="openURL('https://play.google.com/store/apps/details?id=ru.alexgyver.GyverHub')">Android</button>
-            <button class="ui_btn ui_btn_mini" onclick="openURL('https://github.com/GyverLibs/GyverHub/raw/main/app/GyverHub.apk')">.apk</button>
+            <button class="ui_btn ui_btn_mini" onclick="openURL('https://github.com/GyverLibs/GyverHub-app/releases/download/0.1/app-release.apk')">.apk</button>
           </div>
         </div>
       </div>
@@ -657,7 +688,7 @@ function add_device(dev) {
       <div id="d_head#${dev.id}" style="display:contents">
         <div class="d_icon ${icon.length ? '' : 'd_icon_empty'}"><span class="icon icon_min ${icon.length ? '' : 'd_icon_none'}" id="icon#${dev.id}">${getIcon(icon)}</span></div>
         <div class="d_title">
-          <span><span class="d_name" id="name#${dev.id}">${dev.name}</span><sup class="conn_dev" id="Serial#${dev.id}">S</sup><sup class="conn_dev" id="BT#${dev.id}">B</sup><sup class="conn_dev" id="HTTP#${dev.id}">L</sup><sup class="conn_dev" id="MQTT#${dev.id}">M</sup></span>
+          <span><span class="d_name" id="name#${dev.id}">${dev.name}</span><sup class="conn_dev" id="Serial#${dev.id}">S</sup><sup class="conn_dev" id="BT#${dev.id}">B</sup><sup class="conn_dev" id="HTTP#${dev.id}">L</sup><sup class="conn_dev" id="MQTT#${dev.id}">M</sup><sup class="conn_dev" id="TG#${dev.id}">T</sup></span>
         </div>
       </div>
       <div id="d_cfg#${dev.id}" class="d_btn_cont">
@@ -748,6 +779,11 @@ async function serial_check_ports() {
   display('serial_open', ports.length ? 'inline-block' : 'none');
 }
 
+function tg_change(opened) {
+  display('tg_start', opened ? 'none' : 'inline-block');
+  display('tg_stop', opened ? 'inline-block' : 'none');
+}
+
 // ============= INFO =============
 function showInfo(info) {
   function addInfo(el, label, value, title = '') {
@@ -771,7 +807,9 @@ function showInfo(info) {
       let mem = (used / 1000).toFixed(1) + ' kB';
       if (total) mem += ' [' + (used / total * 100).toFixed(0) + '%]';
       addInfo('info_memory', i, mem, `Total ${(total / 1000).toFixed(1)} kB`);
-    } else addInfo('info_memory', i, info.memory[i]);
+    } else {
+      addInfo('info_memory', i, info.memory[i]);
+    }
   }
   for (let i in info.system) {
     if (i == 'Uptime') {

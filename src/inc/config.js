@@ -102,9 +102,14 @@ function update_theme() {
   display('pin_block', cfg.use_pin ? b : n);
   EL('pin_label').style.color = cfg.use_pin ? f : f3;
 
+  updateLang();
+
   /*NON-ESP*/
   display('mq_block', hub.cfg.use_mqtt ? b : n);
   EL('mqtt_label').style.color = hub.cfg.use_mqtt ? f : f3;
+
+  display('tg_block', hub.cfg.use_tg ? b : n);
+  EL('tg_label').style.color = hub.cfg.use_tg ? f : f3;
 
   let bt = hub.cfg.use_bt && hasBT();
   display('bt_block', bt ? b : n);

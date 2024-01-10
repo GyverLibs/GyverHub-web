@@ -3,7 +3,7 @@ class UiSelect {
         cont.innerHTML = `<select data-type="${data.type}" class="w_select" style="color:${intToCol(data.color) ?? 'var(--prim)'}" id='${ID(data.id)}' value="${data.value ?? ''}" onchange="post_set('${data.id}',this.value)"></select>`;
 
         waitFrame().then(() => UiSelect.render(data.id, data.text, data.value ?? ''));
-        Widget.disable(data.id, data.dsbl);
+        Widget.disable(data.id, data.disable);
     }
 
     static async render(id, text, value) {

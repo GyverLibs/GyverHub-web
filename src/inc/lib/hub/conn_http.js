@@ -37,7 +37,7 @@ class HTTPconn extends Discover {
     this._discoverTimer(this.tout_btw * ips.length + this.tout);
   }
   send(ip, port, uri) {
-    http_get(`http://${ip}:${port}/${uri}`)
+    http_get(`http://${ip}:${port}/${uri}`, this.tout)
       .then(res => {
         if (res.length) this._hub._parsePacket(Conn.HTTP, res, ip, port);
       })

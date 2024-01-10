@@ -2,14 +2,14 @@ class UiCanvas {
     constructor(cont, data) {
         cont.innerHTML = `<div class="w_canvas"><canvas data-type="${data.type}" id="${ID(data.id)}" onclick="UiCanvas.click('${data.id}',event)"></canvas></div>`;
 
-        waitFrame().then(() => {
+        wait2Frame().then(() => {
             let cv = new Canvas(data.id, CMP(data.id), data.width, data.height, data.active);
             cv.update(data.data);
             cv.show();
             UiCanvas.canvases[data.id] = cv;
         });
 
-        Widget.disable(data.id, data.dsbl);
+        Widget.disable(data.id, data.disable);
     }
 
     static update(id, data) {
@@ -65,6 +65,7 @@ class Canvas {
 
     resize() {
         let rw = this.cv.parentNode.clientWidth;
+        if (!rw) return;
         let scale = rw / this.width;
         this.scale = scale * ratio();
         let rh = Math.floor(this.height * scale);

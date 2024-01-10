@@ -2,10 +2,10 @@ class UiSwicon {
     constructor(cont, data) {
         cont.innerHTML = `
         <style id="style#${data.id}"></style>
-        <div data-type="${data.type}" id="${ID(data.id)}" style="font-size:${data.fsize ?? 45}px;width:${data.fsize ? data.fsize * 1.8 : 80}px" class="icon icon_btn_big w_swicon ${data.value == '1' ? 'w_swicon_on' : ''}" onclick="UiSwicon.click('${data.id}')">${data.text ? getIcon(data.text) : ''}</div>`;
+        <div data-type="${data.type}" id="${ID(data.id)}" style="font-size:${data.fsize ?? 45}px;width:${data.fsize ? data.fsize * 1.7 : 75}px" class="icon icon_btn_big w_swicon ${data.value == '1' ? 'w_swicon_on' : ''}" onclick="UiSwicon.click('${data.id}')">${data.icon ? getIcon(data.icon) : ''}</div>`;
 
         UiSwicon.color(data.id, intToCol(data.color) ?? getDefColor());
-        Widget.disable(data.id, data.dsbl);
+        Widget.disable(data.id, data.disable);
     }
     
     static update(id, data) {
@@ -16,11 +16,11 @@ class UiSwicon {
         }
         if ('fsize' in data) {
             el.style.fontSize = data.fsize + 'px';
-            el.style.width = data.fsize * 1.8 + 'px';
+            el.style.width = data.fsize * 1.7 + 'px';
         }
-        if ('text' in data) el.innerHTML = getIcon(data.text);
+        if ('icon' in data) el.innerHTML = getIcon(data.icon);
         if ('color' in data) UiSwicon.color(id, intToCol(data.color));
-        if ('dsbl' in data) Widget.disable(id, data.dsbl);
+        if ('disable' in data) Widget.disable(id, data.disable);
     }
 
     static click(id) {

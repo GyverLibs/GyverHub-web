@@ -5,11 +5,11 @@ class Widget {
             <div id="widget_inner#${data.id}" class="widget_inner ${(data.notab && data.notab == 1) ? 'widget_notab' : ''}">
             <div id="wlabel_cont#${data.id}" class="widget_label ${data.nolabel ? 'wnolabel' : ''}">
                 <span id="whint#${data.id}" class="whint" onclick="alert(this.title)">?</span>
-                <span id="wlabel#${data.id}">${(data.label && data.label.length) ? data.label : data.type}</span>
+                <span id="wlabel#${data.id}">${(data.label && data.label.length) ? data.label : data.type.toUpperCase()}</span>
                 <span id="plabel#${data.id}" class="plabel"></span>
                 <span id="wsuffix#${data.id}" class="wsuffix">${data.suffix ?? ''}</span>
             </div>
-            <div id=widget#${data.id} class="widget_body ${data.dsbl ? 'widget_dsbl' : ''}" style="${(data.wheight && data.wheight > 25) ? ('min-height:' + data.wheight + 'px') : ''}"></div>
+            <div id=widget#${data.id} class="widget_body ${data.disable ? 'widget_dsbl' : ''}" style="${(data.wheight && data.wheight > 25) ? ('min-height:' + data.wheight + 'px') : ''}"></div>
             </div>
         </div>
         `;
@@ -20,7 +20,7 @@ class Widget {
 
     static update(id, type, data) {
         if ('label' in data) {
-            EL('wlabel#' + id).innerHTML = data.label.length ? data.label : type;
+            EL('wlabel#' + id).innerHTML = data.label.length ? data.label : type.toUpperCase();
         }
         if ('suffix' in data) {
             EL('wsuffix#' + id).innerHTML = data.suffix;
@@ -37,8 +37,8 @@ class Widget {
             if (data.notab) EL('widget_inner#' + id).classList.add('widget_notab');
             else EL('widget_inner#' + id).classList.remove('widget_notab');
         }
-        if ('dsbl' in data) {
-            if (data.dsbl) EL('widget#' + id).classList.add('widget_dsbl');
+        if ('disable' in data) {
+            if (data.disable) EL('widget#' + id).classList.add('widget_dsbl');
             else EL('widget#' + id).classList.remove('widget_dsbl');
         }
         if ('hint' in data) {
@@ -54,14 +54,14 @@ class Widget {
         hint.style.display = (text && text.length) ? 'inline-block' : 'none';
     }
 
-    static disable(id, dsbl) {
+    static disable(id, disable) {
         let el = CMP(id);
-        if (dsbl) {
+        if (disable) {
             el.setAttribute('disabled', '1');
-            el.classList.add('dsbl');
+            el.classList.add('disable');
         } else {  // null/undefined/0/false
             el.removeAttribute('disabled');
-            el.classList.remove('dsbl');
+            el.classList.remove('disable');
         }
     }
 

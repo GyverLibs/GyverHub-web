@@ -4,8 +4,8 @@
 # pip install rcssmin
 # pip install rjsmin
 
-version = '0.51.36b'
-notes = 'Update!'
+version = '0.53.5b'
+notes = 'Minor fixes'
 
 # ESP
 esp_remove_non_gz = True    # удалить несжатые файлы
@@ -16,11 +16,13 @@ js_hub = [
     "src/inc/lib/hub/mqtt.min.js",
     "src/inc/lib/hub/codes.js",
     "src/inc/lib/hub/bt.js",
+    "src/inc/lib/hub/tg.js",
     "src/inc/lib/hub/serial.js",
     "src/inc/lib/hub/utils.js",
     "src/inc/lib/hub/buffer.js",
     "src/inc/lib/hub/discover.js",
     "src/inc/lib/hub/conn_bt.js",
+    "src/inc/lib/hub/conn_tg.js",
     "src/inc/lib/hub/conn_http.js",
     "src/inc/lib/hub/conn_mqtt.js",
     "src/inc/lib/hub/conn_serial.js",
@@ -61,20 +63,23 @@ js_files = [
     "src/inc/widgets/select.js",
     "src/inc/widgets/color.js",
     "src/inc/widgets/led.js",
+    "src/inc/widgets/icon.js",
     "src/inc/widgets/ui_file.js",
     "src/inc/widgets/hook.js",
     "src/inc/widgets/gauge.js",
     "src/inc/widgets/gauge_r.js",
+    "src/inc/widgets/gauge_l.js",
     "src/inc/widgets/joy.js",
     "src/inc/widgets/dpad.js",
     "src/inc/widgets/flags.js",
     "src/inc/widgets/tabs.js",
     "src/inc/widgets/canvas.js",
     "src/inc/widgets/stream.js",
+    "src/inc/widgets/plot.js",
 
     "src/inc/controls.js",
-    "src/inc/render.js",
     "src/inc/lang.js",
+    "src/inc/render.js",
     "src/inc/config.js",
     "src/inc/projects.js",
     "src/inc/ui.js",
@@ -216,7 +221,7 @@ with open('lib/GyverHub.min.js', 'r') as f:
     js_min = f.read()
 
 for file in js_files:
-    with open(file, 'r') as f:
+    with open(file, 'r', encoding="utf8") as f:
         read = f.read()
         if ('.min.' not in file): read = jsmin(read)
         js_min += read + '\n'
@@ -225,7 +230,7 @@ js_min = js_min.replace('__VER__', version)
 js_min = js_min.replace('__NOTES__', notes)
 js_min = re.sub(r'(^\s+)', '' , js_min, flags=re.MULTILINE)
 
-with open('host/script.js', 'w') as f:
+with open('host/script.js', 'w', encoding="utf8") as f:
     f.write(js_min)
 
 # CSS
@@ -263,7 +268,7 @@ shutil.copyfile('src/index.html', 'local/GyverHub.html')
 inc_local = '<style>\n' + css_min_l + '\n</style>\n'
 inc_local += '<script>\n' + js_min + '\n</script>\n'
 
-with open('local/GyverHub.html', "r+") as f:
+with open('local/GyverHub.html', "r+", encoding="utf8") as f:
     data = f.read()
     data = re.sub(r'<!--INC-->([\s\S]*?)<!--\/INC-->', '__INC__', data)
     data = data.replace('__INC__', inc_local)
@@ -284,7 +289,7 @@ with open('local/GyverHub.html', "r+") as f:
 shutil.copyfile('src/index.html', 'app/index.html')
 inc_app = inc_local.replace('__APP__', '')
 
-with open('app/index.html', "r+") as f:
+with open('app/index.html', "r+", encoding="utf8") as f:
     data = f.read()
     data = re.sub(r'<!--INC-->([\s\S]*?)<!--\/INC-->', '__INC__', data)
     data = data.replace('__INC__', inc_app)
@@ -309,7 +314,7 @@ with open('app/index.html', "r+") as f:
 # JS
 js_min = ''
 for file in js_hub:
-    with open(file, 'r') as f:
+    with open(file, 'r', encoding="utf8") as f:
         read = f.read()
         read = re.sub(r'\/\*NON-ESP\*\/([\s\S]*?)\/\*\/NON-ESP\*\/', '', read)
         read = jsmin(read)
@@ -318,7 +323,7 @@ for file in js_hub:
 js_min = re.sub(r'(^\s+)', '' , js_min, flags=re.MULTILINE) # hub min js
 
 for file in js_files:
-    with open(file, 'r') as f:
+    with open(file, 'r', encoding="utf8") as f:
         read = f.read()
         read = re.sub(r'\/\*NON-ESP\*\/([\s\S]*?)\/\*\/NON-ESP\*\/', '', read)
         read = re.sub(r'<!--NON-ESP-->([\s\S]*?)<!--\/NON-ESP-->', '', read)
@@ -330,7 +335,7 @@ js_min = js_min.replace('__NOTES__', notes)
 js_min = js_min.replace('__ESP__', '')
 js_min = re.sub(r'(^\s+)', '' , js_min, flags=re.MULTILINE)
 
-with open('esp/script.js', 'w') as f: f.write(js_min)
+with open('esp/script.js', 'w', encoding="utf8") as f: f.write(js_min)
 with open('esp/script.js', 'rb') as f_in, gzip.open('esp/script.js.gz', 'wb') as f_out: f_out.writelines(f_in)
 
 # CSS
@@ -340,7 +345,7 @@ with open("src/inc/style/fonts/fa-solid-900.min.woff2", "rb") as f:
 
 css_min = ''
 for file in css_files:
-    with open(file, 'r') as f:
+    with open(file, 'r', encoding="utf8") as f:
         read = f.read()
         read = re.sub(r'\/\*NON-ESP\*\/([\s\S]*?)\/\*\/NON-ESP\*\/', '', read)
         read = read.replace('url(fonts/fa-solid-900.woff2)', 'url(' + (fa_min_b64 if esp_min_font else fa_b64) + ')')
@@ -352,7 +357,7 @@ with open('esp/style.css', 'rb') as f_in, gzip.open('esp/style.css.gz', 'wb') as
 
 # INDEX
 shutil.copyfile('src/index.html', 'esp/index.html')
-with open('esp/index.html', "r+") as f:
+with open('esp/index.html', "r+", encoding="utf8") as f:
     data = f.read()
     data = re.sub(r'<!--ICON-->([\s\S]*?)<!--\/ICON-->', '', data)
     data = re.sub(r'<!--INC-->([\s\S]*?)<!--\/INC-->', inc_min, data)

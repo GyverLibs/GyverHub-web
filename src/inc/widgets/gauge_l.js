@@ -1,34 +1,35 @@
-class UiGaugeR {
+class UiGaugeL {
     constructor(cont, data) {
         cont.innerHTML = `<canvas data-type="${data.type}" id="${ID(data.id)}"></canvas>`;
 
         wait2Frame()
             .then(() => {
-                let gauge = new GaugeR(CMP(data.id), data);
+                let gauge = new GaugeL(CMP(data.id), data);
                 gauge.redraw();
-                UiGaugeR.gauges[data.id] = gauge;
+                UiGaugeL.gauges[data.id] = gauge;
             });
     }
 
     static update(id, data) {
-        let gauge = UiGaugeR.gauges[id];
+        let gauge = UiGaugeL.gauges[id];
         if (gauge) gauge.update(data);
     }
 
     static resize() {
-        for (let gag in UiGaugeR.gauges) {
-            UiGaugeR.gauges[gag].redraw();
+        for (let gag in UiGaugeL.gauges) {
+            UiGaugeL.gauges[gag].redraw();
         }
     }
 
     static reset() {
-        UiGaugeR.gauges = {};
+        UiGaugeL.gauges = {};
     }
 
     static gauges = {};
 };
 
-class GaugeR {
+class GaugeL {
+
     constructor(cv, data) {
         this.perc = null;
         this.value = Number(data.value ?? 0);
@@ -36,6 +37,7 @@ class GaugeR {
         this.max = Number(data.max ?? 100);
         this.dec = Number(data.dec ?? 0);
         this.unit = data.unit ?? '';
+        this.icon = data.icon ?? '';
         this.color = intToCol(data.color) ?? getDefColor();
         this.cv = cv;
         this.tout = null;
@@ -51,10 +53,15 @@ class GaugeR {
         let rw = cv.parentNode.clientWidth;
         if (!rw) return;
 
+        let height = 30;
+        let r = ratio();
+        let sw = 2 * r;
+        let off = 5 * r;
+
         cv.style.width = rw + 'px';
-        cv.style.height = cv.style.width;
-        cv.width = Math.floor(rw * ratio());
-        cv.height = cv.width;
+        cv.style.height = height + 'px';
+        cv.width = Math.floor(rw * r);
+        cv.height = Math.floor(height * r);
 
         let cx = cv.getContext("2d");
         let v = themes[cfg.theme];
@@ -68,49 +75,49 @@ class GaugeR {
             if (this.perc != perc) setTimeout(() => this.redraw(), 20);
         }
 
-        let joint = Math.PI * (0.5 + 2 * (this.perc / 100));
+        let wid = cv.width - sw - off * 2;
 
         cx.clearRect(0, 0, cv.width, cv.height);
-        cx.lineWidth = cv.width / 8;
-        cx.strokeStyle = theme_cols[v][4];
+        cx.fillStyle = theme_cols[v][0];
         cx.beginPath();
-        cx.arc(cv.width / 2, cv.height / 2, cv.width / 2 - cx.lineWidth, joint, Math.PI * 2.5);
-        cx.stroke();
-        
-        cx.strokeStyle = this.color;
-        cx.beginPath();
-        cx.arc(cv.width / 2, cv.height / 2, cv.width / 2 - cx.lineWidth, Math.PI / 2, joint);
-        cx.stroke();
+        cx.roundRect(off + sw / 2, sw / 2, wid, cv.height - sw, 5 * r);
+        cx.fill();
 
-        let font = cfg.font;
-        /*NON-ESP*/
-        font = 'Condensed';
-        /*/NON-ESP*/
+        // cx.strokeStyle = this.color;
+        // cx.lineWidth = sw;
+        // cx.beginPath();
+        // cx.roundRect(off + sw / 2, sw / 2, wid, cv.height - sw, 5);
+        // cx.stroke();
 
         cx.fillStyle = this.color;
-        cx.font = '10px ' + font;
+        cx.beginPath();
+        cx.roundRect(off + sw / 2, sw / 2, wid * this.perc / 100, cv.height - sw, 5 * r);
+        cx.fill();
+
+        if (this.value > this.max || this.value < this.min) cx.fillStyle = getErrColor();
+        else cx.fillStyle = theme_cols[v][2];
+
+        cx.font = (19 * r) + 'px ' + cfg.font;
         cx.textAlign = "center";
         cx.textBaseline = "middle";
 
-        let text = this.unit;
-        let len = Math.max(
-            (this.value.toFixed(this.dec) + text).length,
-            (this.min.toFixed(this.dec) + text).length,
-            (this.max.toFixed(this.dec) + text).length
-        );
-        if (len == 1) text += '  ';
-        else if (len == 2) text += ' ';
+        let txt = this.value.toFixed(this.dec) + this.unit;
+        cx.fillText(txt, cv.width / 2, cv.height * 0.52);
 
-        let w = Math.max(
-            cx.measureText(this.value.toFixed(this.dec) + text).width,
-            cx.measureText(this.min.toFixed(this.dec) + text).width,
-            cx.measureText(this.max.toFixed(this.dec) + text).width
-        );
+        if (this.icon) {
+            let tw = cx.measureText(txt).width;
+            cx.font = (20 * r) + 'px FA5';
+            cx.textAlign = "right";
+            cx.fillText(getIcon(this.icon), cv.width / 2 - tw / 2 - off, cv.height * 0.52);
+        }
 
-        if (this.value > this.max || this.value < this.min) cx.fillStyle = getErrColor();
-        else cx.fillStyle = theme_cols[v][3];
-        cx.font = cv.width * 0.5 * 10 / w + 'px ' + font;
-        cx.fillText(this.value.toFixed(this.dec) + this.unit, cv.width / 2, cv.height * 0.52);
+        cx.fillStyle = theme_cols[v][2];
+        cx.font = (12 * r) + 'px ' + cfg.font;
+        cx.textAlign = "left";
+        cx.fillText(this.min.toFixed(this.dec), off + sw / 2 + off, cv.height * 0.52);
+
+        cx.textAlign = "right";
+        cx.fillText(this.max.toFixed(this.dec), cv.width - (off + sw / 2 + off), cv.height * 0.52);
     }
 
     update(data) {
@@ -119,6 +126,7 @@ class GaugeR {
         if ('max' in data) this.max = Number(data.max);
         if ('dec' in data) this.dec = Number(data.dec);
         if ('unit' in data) this.unit = data.unit;
+        if ('icon' in data) this.icon = data.icon;
         if ('color' in data) this.color = intToCol(data.color);
         this.redraw();
     }

@@ -14,18 +14,23 @@ function showFsbr(fs, total, used) {
       let none = "style='display:none'";
       inner += `<div class="fs_file" onclick="openFSctrl(${i})">${fs_arr[i]}<div class="fs_weight">${(fs[fs_arr[i]] / 1000).toFixed(2)} kB</div></div>
         <div id="fs#${i}" class="fs_controls">
-          <button ${hub.dev(focused).module(Modules.RENAME) ? '' : none} title="Rename" class="icon icon_btn_big" onclick="renameFile(${i})"></button>
-          <button ${hub.dev(focused).module(Modules.DELETE) ? '' : none} title="Delete" class="icon icon_btn_big" onclick="deleteFile(${i})"></button>
-          <button ${hub.dev(focused).module(Modules.FETCH) ? '' : none} title="Fetch" class="icon icon_btn_big" onclick="fetchFile(${i},'${fs_arr[i]}')"></button>
+          <button ${hub.dev(focused).module(Modules.RENAME) ? '' : none} title="${lang.rename}" class="icon icon_btn_big" onclick="renameFile(${i})"></button>
+          <button ${hub.dev(focused).module(Modules.DELETE) ? '' : none} title="${lang.delete}" class="icon icon_btn_big" onclick="deleteFile(${i})"></button>
+          <button ${hub.dev(focused).module(Modules.FETCH) ? '' : none} title="${lang.fetch}" class="icon icon_btn_big" onclick="fetchFile(${i},'${fs_arr[i]}')"></button>
           <label id="process#${i}"></label>
-          <a id="download#${i}" title="Download" class="icon icon_btn_big" href="" download="" style="display:none"></a>
-          <button id="open#${i}" title="Open" class="icon icon_btn_big" onclick="openFile(EL('download#${i}').href)" style="display:none"></button>
-          <button ${hub.dev(focused).module(Modules.UPLOAD) ? '' : none} id="edit#${i}" title="Edit" class="icon icon_btn_big" onclick="editFile(EL('download#${i}').href,'${i}')" style="display:none"></button>
+          <a id="download#${i}" title="${lang.download}" class="icon icon_btn_big" href="" download="" style="display:none"></a>
+          <button id="open#${i}" title="${lang.open}" class="icon icon_btn_big" onclick="openFile(EL('download#${i}').href)" style="display:none"></button>
+          <button ${hub.dev(focused).module(Modules.UPLOAD) ? '' : none} id="edit#${i}" title="${lang.edit}" class="icon icon_btn_big" onclick="editFile(EL('download#${i}').href,'${i}')" style="display:none"></button>
         </div>`;
     }
   }
-  if (total) inner += `<div class="fs_info">Used ${(used / 1000).toFixed(2)}/${(total / 1000).toFixed(2)} kB [${Math.round(used / total * 100)}%]</div>`;
-  else inner += `<div class="fs_info">Used ${(used / 1000).toFixed(2)} kB</div>`;
+  if (total) {
+    let color = adjustColor(getDefColor(), 0.9);
+    let style = `background-repeat: no-repeat;background-image:linear-gradient(${color},${color});background-size: ${used / total * 100}% 100%;`;
+    inner += `<div style="${style}" class="fs_info">${lang.fs_used} ${(used / 1000).toFixed(2)}/${(total / 1000).toFixed(2)} kB [${Math.round(used / total * 100)}%]</div>`;
+  } else {
+    inner += `<div class="fs_info">${lang.fs_used} ${(used / 1000).toFixed(2)} kB</div>`;
+  }
   EL('fsbr_inner').innerHTML = inner;
 }
 function openFSctrl(i) {

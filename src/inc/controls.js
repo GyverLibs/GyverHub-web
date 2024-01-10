@@ -2,7 +2,7 @@ class Ack {
   static set(id) {
     Ack.clear(id);
     Ack.buf[id] = setTimeout(() => {
-      Widget.setPlabel(id, '[' + lang[cfg.lang].error + ']');
+      Widget.setPlabel(id, '[' + lang.error.toUpperCase() + ']');
       delete Ack.buf[id];
     }, 1500);
   }
@@ -64,14 +64,7 @@ let ui_render = new UiRender();
 let render_busy = false;
 
 function showControls(id, controls) {
-  function changeID(node) {
-    for (let i = 0; i < node.childNodes.length; i++) {
-      let child = node.childNodes[i];
-      changeID(child);
-      if (child.id) child.id += '__old';
-    }
-  }
-
+  Ack.clearAll();
   if (!controls) return;
   if (render_busy) return;
 
@@ -92,7 +85,7 @@ function showControls(id, controls) {
   let excont = EL('controls#' + id);
   if (excont) {
     cont.id += '_new';
-    changeID(excont);
+    addIdRecursive(excont, '__old');
   }
   EL('controls').appendChild(cont);
 
@@ -101,9 +94,11 @@ function showControls(id, controls) {
   UiColor.reset();
   UiGauge.reset();
   UiGaugeR.reset();
+  UiGaugeL.reset();
   UiJoy.reset();
   UiDpad.reset();
   UiCanvas.reset();
+  UiPlot.reset();
   ui_render.reset();
   Menu.clear();
   dev.resetFiles();
@@ -115,7 +110,7 @@ function showControls(id, controls) {
   hub.dev(focused).checkFiles();
   UiHook.update();
 
-  waitFrame().then(() => {
+  wait2Frame().then(() => {
     if (excont) {
       excont.remove();
       cont.id = 'controls#' + id;

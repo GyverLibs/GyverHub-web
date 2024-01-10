@@ -6,7 +6,7 @@ const Conn = {
   MQTT: 3,
   NONE: 4,
   names: [
-    'Serial', 'BT', 'HTTP', 'MQTT', 'None'
+    'Serial', 'BT', 'HTTP', 'MQTT', 'TG', 'None'
   ],
 };
 const Modules = {
@@ -31,10 +31,10 @@ const Modules = {
 };
 
 // http
-function http_get(url) {
+function http_get(url, tout) {
   return new Promise((res, rej) => {
     try {
-      var xhr = new XMLHttpRequest();
+      let xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function () {
         if (xhr.readyState == 4) {
           if (xhr.status == 200) res(xhr.responseText);
@@ -43,7 +43,7 @@ function http_get(url) {
       }
       xhr.ontimeout = () => rej("Timeout");
       xhr.onerror = () => rej("Error");
-      xhr.timeout = this.tout;
+      xhr.timeout = tout;
       xhr.open('GET', url, true);
       xhr.send();
     } catch (e) {
@@ -52,10 +52,10 @@ function http_get(url) {
   });
 }
 
-function http_fetch(url, onprogress) {
+function http_fetch(url, onprogress, tout) {
   return new Promise((res, rej) => {
     onprogress(0);
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.onprogress = (e) => {
       onprogress(Math.round(e.loaded * 100 / e.total));
     };
@@ -63,24 +63,24 @@ function http_fetch(url, onprogress) {
       if (e.loaded && e.loaded == e.total) res(xhr.responseText);
       else rej(xhr.responseText);
     }
-    xhr.timeout = this.tout;
-    xhr.ontimeout = () => rej("Timeout");
+    xhr.timeout = tout;
+    xhr.ontimeout = (e) => rej(HubErrors.Timeout);
     xhr.open('GET', url, true);
     xhr.send();
   });
 }
 
-function http_fetch_blob(url, onprogress) {
+function http_fetch_blob(url, onprogress, tout) {
   return new Promise((res, rej) => {
     onprogress(0);
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.responseType = 'blob';
     xhr.onprogress = (e) => {
       onprogress(Math.round(e.loaded * 100 / e.total));
     };
     xhr.onloadend = (e) => {
       if (e.loaded == e.total && xhr.status == 200) {
-        var reader = new FileReader();
+        let reader = new FileReader();
         reader.readAsDataURL(xhr.response);
         reader.onloadend = () => res(reader.result.split('base64,')[1]);
       } else {
@@ -93,8 +93,8 @@ function http_fetch_blob(url, onprogress) {
         }
       }
     }
-    xhr.timeout = this.tout;
-    xhr.ontimeout = () => rej("Timeout");
+    xhr.timeout = tout;
+    xhr.ontimeout = (e) => rej(HubErrors.Timeout);
     xhr.open('GET', url, true);
     xhr.send();
   });

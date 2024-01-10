@@ -1,14 +1,14 @@
 class UiButton {
     constructor(cont, data) {
         cont.innerHTML = `<button data-type="${data.type}" id="${ID(data.id)}" style="font-size:${data.fsize ?? 45}px;color:${intToCol(data.color) ?? 'var(--prim)'}" class="icon w_btn" onclick="post_set('${data.id}',2)" onmousedown="if(!UiButton.touch)post_click('${data.id}',1)" onmouseup="if(!UiButton.touch&&UiButton.pressID)post_click('${data.id}',0)" onmouseleave="if(UiButton.pressID&&!UiButton.touch)post_click('${data.id}',0);" ontouchstart="UiButton.touch=1;post_click('${data.id}',1)" ontouchend="post_click('${data.id}',0)" data-color="${intToCol(data.color) ?? 'var(--prim)'}" data-size="${data.fsize ?? 45}px"></button>`;
-        UiButton.setIcon(data.id, data.text);
-        Widget.disable(data.id, data.dsbl);
+        UiButton.setIcon(data.id, data.icon);
+        Widget.disable(data.id, data.disable);
     }
 
     static update(id, data) {
         let el = CMP(id);
-        if ('text' in data) {
-            UiButton.setIcon(id, data.text);
+        if ('icon' in data) {
+            UiButton.setIcon(id, data.icon);
         }
         if ('color' in data) {
             let col = intToCol(data.color);
@@ -23,8 +23,8 @@ class UiButton {
             else el.style.width = 'unset';
             el.setAttribute("data-size", size);
         }
-        if ('dsbl' in data) {
-            Widget.disable(id, data.dsbl);
+        if ('disable' in data) {
+            Widget.disable(id, data.disable);
         }
     }
 

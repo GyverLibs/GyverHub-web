@@ -12,7 +12,7 @@ class UiSpinner {
       `;
 
         waitFrame().then(() => UiSpinner.spin(data.id, 0, false));
-        Widget.disable(data.id, data.dsbl);
+        Widget.disable(data.id, data.disable);
     }
 
     static update(id, data) {

@@ -64,9 +64,11 @@ class GyverHub {
     use_bt: false,
     use_serial: false, baudrate: 115200,
     use_mqtt: false, mq_host: 'test.mosquitto.org', mq_port: '8081', mq_login: '', mq_pass: '',
-    api_ver: 1
+    use_tg: false, tg_token: '', tg_chat: '',
+    api_ver: 2
   };
 
+  api_v = 1;
   skip_prd = 1000;  // skip updates
   tout_prd = 2500;  // connection timeout
   ping_prd = 3000;  // ping period > timeout
@@ -75,6 +77,7 @@ class GyverHub {
     this.http = new HTTPconn(this);
     /*NON-ESP*/
     this.mqtt = new MQTTconn(this);
+    this.tg = new TGconn(this);
     this.serial = new SERIALconn(this);
     this.bt = new BTconn(this);
     /*/NON-ESP*/
@@ -84,6 +87,7 @@ class GyverHub {
   begin() {
     /*NON-ESP*/
     if (this.cfg.use_mqtt) this.mqtt.start();
+    if (this.cfg.use_tg) this.tg.start();
     /*/NON-ESP*/
   }
   post(id, cmd, name = '', value = '') {
@@ -96,6 +100,7 @@ class GyverHub {
     }
     /*NON-ESP*/
     if (this.cfg.use_mqtt) this.mqtt.discover();
+    if (this.cfg.use_tg) this.tg.discover();
     if (this.cfg.use_serial && "serial" in navigator) this.serial.discover();
     if (this.cfg.use_bt && "bluetooth" in navigator) this.bt.discover();
     /*/NON-ESP*/
@@ -105,6 +110,7 @@ class GyverHub {
   search() {
     /*NON-ESP*/
     if (this.cfg.use_mqtt) this.mqtt.search();
+    if (this.cfg.use_tg) this.tg.search();
     if (this.cfg.use_serial && "serial" in navigator) this.serial.search();
     if (this.cfg.use_bt && "bluetooth" in navigator) this.bt.search();
     /*/NON-ESP*/
@@ -209,7 +215,7 @@ class GyverHub {
   }
   _discovering() {
     /*NON-ESP*/
-    return (this.http.discovering || this.mqtt.discovering || this.serial.discovering || this.bt.discovering);
+    return (this.http.discovering || this.mqtt.discovering || this.tg.discovering || this.serial.discovering || this.bt.discovering);
     /*/NON-ESP*/
     return this.http.discovering;
   }
@@ -221,19 +227,32 @@ class GyverHub {
     return list;
   }
   _parsePacket(conn, data, ip = null, port = null) {
-    if (!data.length) return;
-    
+    if (!data || !data.length) return;
+
     data = data.trim()
+      .replaceAll("#{", "{")
+      .replaceAll("}#", "}")
       .replaceAll(/([^\\])\\([^\"\\nrt])/ig, "$1\\\\$2")
       .replaceAll(/\t/ig, "\\t")
       .replaceAll(/\n/ig, "\\n")
       .replaceAll(/\r/ig, "\\r");
 
+    for (let code in HubCodes) {
+      const re = new RegExp(`(#${Number(code).toString(16)})([:,\\]\\}])`, "ig");
+      data = data.replaceAll(re, `"${HubCodes[code]}"$2`);
+    }
+
+    const re = new RegExp(`(#[0-9a-f][0-9a-f])([:,\\]\\}])`, "ig");
+    if (data.match(re)) {
+      this.err('Device has newer API version. Update App!');
+      return;
+    }
+
     try {
       data = JSON.parse(data);
     } catch (e) {
       console.log('Wrong packet (JSON): ' + e + ' in: ' + data);
-      this.err('Wrong packet (JSON)');
+      // this.err('Wrong packet (JSON)');
       return;
     }
 

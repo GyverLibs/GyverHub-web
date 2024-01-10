@@ -2,19 +2,19 @@ class UiLED {
     constructor(cont, data) {
         cont.innerHTML = `
         <style id="style#${data.id}"></style>
-        <div data-type="${data.type}" id="${ID(data.id)}" class="w_led ${Number(data.value ?? 0) ? 'w_led_on' : 'w_led_off'}"></div>`;
+        <div data-type="${data.type}" id="${ID(data.id)}" class="w_led ${Number(data.value == 1) ? 'w_led_on' : ''}"></div>`;
 
         UiLED.color(data.id, intToCol(data.color) ?? getDefColor());
-        Widget.disable(data.id, data.dsbl);
+        Widget.disable(data.id, data.disable);
     }
 
     static update(id, data) {
         let el = CMP(id);
         if ('value' in data) {
-            el.classList.remove('w_led_on');
-            el.classList.remove('w_led_off');
+            // el.classList.remove('w_led_on');
+            // el.classList.remove('w_led_off');
             if (Number(data.value)) el.classList.add('w_led_on');
-            else el.classList.add('w_led_off');
+            else el.classList.remove('w_led_on');
         }
         if ('color' in data) UiLED.color(id, intToCol(data.color));
     }

@@ -18,8 +18,8 @@ function applyUpdate(id, data) {
       case 'pass': UiPass.update(id, data); break;
       case 'area': UiArea.update(id, data); break;
       case 'button': UiButton.update(id, data); break;
-      case 'switch': UiSwitch.update(id, data); break;
-      case 'swicon': UiSwicon.update(id, data); break;
+      case 'switch_t': UiSwitch.update(id, data); break;
+      case 'switch_i': UiSwicon.update(id, data); break;
       case 'label': UiLabel.update(id, data); break;
       case 'title': UiTitle.update(id, data); break;
       case 'display': UiDisplay.update(id, data); break;
@@ -39,13 +39,16 @@ function applyUpdate(id, data) {
       case 'select': UiSelect.update(id, data); break;
       case 'color': UiColor.update(id, data); break;
       case 'led': UiLED.update(id, data); break;
+      case 'icon': UiIcon.update(id, data); break;
       case 'gauge': UiGauge.update(id, data); break;
       case 'gauge_r': UiGaugeR.update(id, data); break;
+      case 'gauge_l': UiGaugeL.update(id, data); break;
       case 'joy': UiJoy.update(id, data); break;
       case 'dpad': UiDpad.update(id, data); break;
       case 'flags': UiFlags.update(id, data); break;
       case 'tabs': UiTabs.update(id, data); break;
       case 'canvas': UiCanvas.update(id, data); break;
+      case 'plot': UiPlot.update(id, data); break;
       case 'stream': UiStream.update(id, data); break;
     }
   } else {

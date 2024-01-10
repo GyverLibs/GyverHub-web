@@ -2,8 +2,7 @@ class UiGauge {
     constructor(cont, data) {
         cont.innerHTML = `<canvas data-type="${data.type}" id="${ID(data.id)}"></canvas>`;
 
-        waitFrame()
-            .then(() => waitFrame())
+        wait2Frame()
             .then(() => {
                 let gauge = new Gauge(CMP(data.id), data);
                 gauge.redraw();
@@ -65,9 +64,9 @@ class Gauge {
         if (perc > 100) perc = 100;
         if (this.perc == null) this.perc = perc;
         else {
-            if (Math.abs(this.perc - perc) <= 0.2) this.perc = perc;
-            else this.perc += (perc - this.perc) * 0.2;
-            if (this.perc != perc) setTimeout(() => this.redraw(), 30);
+            if (Math.abs(this.perc - perc) <= 0.15) this.perc = perc;
+            else this.perc += (perc - this.perc) * 0.15;
+            if (this.perc != perc) setTimeout(() => this.redraw(), 20);
         }
 
         cx.clearRect(0, 0, cv.width, cv.height);
@@ -123,7 +122,6 @@ class Gauge {
     }
 
     update(data) {
-        let g = this.data;
         if ('value' in data) this.value = Number(data.value);
         if ('min' in data) this.min = Number(data.min);
         if ('max' in data) this.max = Number(data.max);

@@ -5,7 +5,7 @@ class UiSlider {
 
         waitFrame().then(() => UiSlider.move(CMP(data.id), false));
         UiSlider.color(data.id, data.color);
-        Widget.disable(data.id, data.dsbl);
+        Widget.disable(data.id, data.disable);
     }
 
     static color(id, color) {

@@ -6,7 +6,7 @@ class UiFlags {
 
         UiFlags.render(data.id);
         UiFlags.color(data.id, intToCol(data.color) ?? getDefColor());
-        Widget.disable(data.id, data.dsbl);
+        Widget.disable(data.id, data.disable);
         waitFrame().then(() => UiFlags.resize(data.id));
     }
 

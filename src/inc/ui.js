@@ -57,7 +57,7 @@ async function show_screen(nscreen) {
       display('config', 'block');
       display('icon_cfg', 'inline-block');
       display('back', 'inline-block');
-      EL('title').innerHTML = 'Config';
+      EL('title').innerHTML = lang.config;
       break;
 
     case 'info':
@@ -77,7 +77,7 @@ async function show_screen(nscreen) {
       display('conn', 'inline-block');
       display('icon_refresh', 'inline-block');
       EL('title').innerHTML = dev.info.name + '/fs';
-      EL('file_upload_btn').innerHTML = 'Upload';
+      EL('file_upload_btn').innerHTML = lang.fs_upload;
       break;
 
     case 'ota':
@@ -122,9 +122,11 @@ function show_info() {
 function resize_h() {
   UiGauge.resize();
   UiGaugeR.resize();
+  UiGaugeL.resize();
   UiJoy.resize();
   UiDpad.resize();
   UiCanvas.resize();
+  UiPlot.resize();
 }
 function test_h() {
   show_screen('test');
@@ -142,7 +144,7 @@ async function back_h() {
   if (focused) {
     let dev = hub.dev(focused);
     if (dev.fsBusy()) {
-      showPopupError(dev.fs_mode + ' ' + getError(HubError.Abort));
+      showPopupError(dev.fs_mode + ' ' + getError(HubErrors.Abort));
       dev.fsStop();
     }
   }
@@ -206,7 +208,7 @@ function fsbr_h() {
   display('fs_browser', hub.dev(focused).module(Modules.FILES) ? 'block' : 'none');
   display('fs_upload', hub.dev(focused).module(Modules.UPLOAD) ? 'block' : 'none');
   display('fs_create', hub.dev(focused).module(Modules.CREATE) ? 'block' : 'none');
-  display('fs_format', hub.dev(focused).module(Modules.FORMAT) ? 'inline-block' : 'none');
+  display('fs_format_row', hub.dev(focused).module(Modules.FORMAT) ? 'flex' : 'none');
   show_screen('files');
   EL('menu_fsbr').classList.add('menu_act');
 }
@@ -300,6 +302,8 @@ function menu_show(state) {
 function device_h(id) {
   let dev = hub.dev(id);
   if (!dev || dev.conn == Conn.NONE) return;
+  if (!dev.info.api_v || dev.info.api_v != hub.api_v) alert(lang.api_mis);
+
   if (dev.info.PIN && !dev.granted) {
     pin_id = id;
     show_screen('pin');
@@ -321,7 +325,8 @@ function open_device(id) {
   addDOM('device_js', 'script', dev.info.plugin_js, EL('plugins'));
   let ctrls = EL('controls#' + id);
   if (ctrls) {
-    ctrls.style.visibility = 'visible';
+    ctrls.style.display = 'block';
+    truncIdRecursive(ctrls, '__old');
   }
   show_screen('ui');
   dev.focus();
@@ -332,7 +337,9 @@ function close_device() {
   UiColor.reset();
   UiGauge.reset();
   UiGaugeR.reset();
+  UiGaugeL.reset();
   UiCanvas.reset();
+  UiPlot.reset();
   UiJoy.reset();
   UiDpad.reset();
 
@@ -341,7 +348,10 @@ function close_device() {
   UiCSS.disable();
   EL('plugins').innerHTML = '';
   let ctrls = EL('controls#' + focused);
-  if (ctrls) ctrls.style.visibility = 'hidden';
+  if (ctrls) {
+    ctrls.style.display = 'none';
+    addIdRecursive(ctrls, '__old');
+  }
   EL('ota_label').innerHTML = "";
 
   errorBar(false);

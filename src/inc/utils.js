@@ -44,7 +44,7 @@ const theme_cols = [
 ];
 
 function getError(code) {
-  return lang[cfg.lang].errors[code];
+  return lang.errors[code];
 }
 
 // ====================== VARS ======================
@@ -88,13 +88,28 @@ function isTouch() {
   return navigator.maxTouchPoints || 'ontouchstart' in document.documentElement;
 }
 function hasSerial() {
-  return ("serial" in navigator) || isApp();
+  return ("serial" in navigator) && !isApp();  // TODO
 }
 function hasBT() {
-  return ("bluetooth" in navigator) || isApp();
+  return ("bluetooth" in navigator) && !isApp(); // TODO
 }
 
 // ====================== FUNC ======================
+function addIdRecursive(node, add) {
+  for (let i = 0; i < node.childNodes.length; i++) {
+    let child = node.childNodes[i];
+    addIdRecursive(child, add);
+    if (child.id) child.id += add;
+  }
+}
+function truncIdRecursive(node, trunc) {
+  for (let i = 0; i < node.childNodes.length; i++) {
+    let child = node.childNodes[i];
+    truncIdRecursive(child, trunc);
+    if (child.id && child.id.endsWith(trunc)) child.id = child.id.split(trunc)[0];
+  }
+}
+
 function addDOM(el_id, tag, text, target) {
   if (EL(el_id)) EL(el_id).remove();
   let el = document.createElement(tag);
@@ -292,6 +307,10 @@ function showNotif(name, text) {
 // ===================== RENDER =====================
 function waitFrame() {
   return new Promise(requestAnimationFrame);
+}
+async function wait2Frame() {
+  await waitFrame();
+  await waitFrame();
 }
 async function waitRender(id) {
   while (true) {
