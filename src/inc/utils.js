@@ -88,10 +88,10 @@ function isTouch() {
   return navigator.maxTouchPoints || 'ontouchstart' in document.documentElement;
 }
 function hasSerial() {
-  return ("serial" in navigator) && !isApp();  // TODO
+  return ("serial" in navigator) && !isApp();  // TODO app
 }
 function hasBT() {
-  return ("bluetooth" in navigator) && !isApp(); // TODO
+  return ("bluetooth" in navigator) /*&& !isApp()*/; // TODO app
 }
 
 // ====================== FUNC ======================
@@ -250,9 +250,9 @@ function openFile(src) {
 async function copyClip(text) {
   try {
     await navigator.clipboard.writeText(text);
-    showPopup('Copied to clipboard');
+    showPopup(lang.clip_copy);
   } catch (e) {
-    showPopupError('Error');
+    showPopupError(lang.error);
   }
 }
 function getIcon(icon) {

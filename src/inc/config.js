@@ -65,10 +65,10 @@ async function cfg_import() {
 
     save_cfg();
     save_devices();
-    showPopup('Import done');
+    showPopup(lang.import_ok);
     setTimeout(() => location.reload(), 1500);
   } catch (e) {
-    showPopupError('Wrong data');
+    showPopupError(lang.import_err);
   }
 }
 function update_theme() {

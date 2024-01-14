@@ -140,7 +140,6 @@ function startup() {
   }
   if (isApp()) {
     display('app_block', 'none');
-    display('cfg_export_import', 'none'); // TODO!
   }
 
   serial_check_ports();

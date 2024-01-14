@@ -14,6 +14,9 @@ const langBase = {
         disconnected: "Disconnected",
         not_conn: "Not connected",
         select: "Select",
+        clip_copy: "Copied to clipboard",
+        import_ok: "Import done",
+        import_err: "Wrong data",
 
         config: "Config",
         wifi_ip: "Local IP",
@@ -91,6 +94,9 @@ const langBase = {
         disconnected: "Отключено",
         not_conn: "Не подключено",
         select: "Выбрать",
+        clip_copy: "Скопировано в буфер обмена",
+        import_ok: "Импорт завершён",
+        import_err: "Некорректные данные",
 
         config: "Настройки",
         wifi_ip: "Мой IP",
