@@ -2,6 +2,7 @@
 const app_title = 'GyverHub';
 const non_esp = '__ESP__';
 const non_app = '__APP__';
+const non_host = '__HOST__';
 const app_version = '__VER__';
 const hub = new GyverHub();
 
@@ -72,14 +73,20 @@ let cfg = {
 function isSSL() {
   return window.location.protocol == 'https:';
 }
-function isLocal() {//TODO window ip
-  return window_ip() != '127.0.0.1' && (window.location.href.startsWith('file') || checkIP(window_ip()) || window_ip() == 'localhost');
+function isLocal() {
+  return !isDesktop() && window_ip() != '127.0.0.1' && (window.location.href.startsWith('file') || checkIP(window_ip()) || window_ip() == 'localhost');
+}
+function isHost() {
+  return !non_host;
 }
 function isApp() {
   return !non_app;
 }
 function isPWA() {
   return (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || document.referrer.includes('android-app://');
+}
+function isDesktop() {
+  return 'GyverHubDesktop' in window;
 }
 function isESP() {
   return !non_esp;
@@ -88,7 +95,7 @@ function isTouch() {
   return navigator.maxTouchPoints || 'ontouchstart' in document.documentElement;
 }
 function hasSerial() {
-  return ("serial" in navigator) && !isApp();  // TODO app
+  return ("serial" in navigator)/* && !isApp()*/;  // TODO app
 }
 function hasBT() {
   return ("bluetooth" in navigator) /*&& !isApp()*/; // TODO app

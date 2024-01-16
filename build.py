@@ -4,7 +4,7 @@
 # pip install rcssmin
 # pip install rjsmin
 
-version = '0.53.5b'
+version = '0.53.11b'
 notes = 'Minor fixes'
 
 # ESP
@@ -139,7 +139,6 @@ if os.path.exists('app'): shutil.rmtree('app')
 if os.path.exists('esp'): shutil.rmtree('esp')
 if os.path.exists('esp_h'): shutil.rmtree('esp_h')
 if os.path.exists('host'): shutil.rmtree('host')
-if os.path.exists('local'): shutil.rmtree('local')
 if os.path.exists('lib'): shutil.rmtree('lib')
 
 os.mkdir('app')
@@ -148,7 +147,6 @@ os.mkdir('esp_h')
 os.mkdir('host')
 os.mkdir('host/icons')
 os.mkdir('host/fonts')
-os.mkdir('local')
 os.mkdir('lib')
 
 with open('version.txt', "w") as f:
@@ -230,8 +228,10 @@ js_min = js_min.replace('__VER__', version)
 js_min = js_min.replace('__NOTES__', notes)
 js_min = re.sub(r'(^\s+)', '' , js_min, flags=re.MULTILINE)
 
+host_js = js_min.replace('__HOST__', '')
+
 with open('host/script.js', 'w', encoding="utf8") as f:
-    f.write(js_min)
+    f.write(host_js)
 
 # CSS
 css_min = ''
@@ -245,8 +245,9 @@ with open('host/style.css', 'w') as f:
     f.write(css_min)
 
 #################################################################
-###                           LOCAL                           ###
+###                            APP                            ###
 #################################################################
+# js_min from HOST
 fa_b64 = 'data:font/woff2;charset=utf-8;base64,'
 with open("src/inc/style/fonts/fa-solid-900.woff2", "rb") as f:
     fa_b64 += (base64.b64encode(f.read())).decode('ascii')
@@ -263,15 +264,16 @@ icon_b64 = "<link rel='icon' href='data:image/svg+xml;base64,"
 with open("src/favicon.svg", "rb") as f:
     icon_b64 += (base64.b64encode(f.read())).decode('ascii') + "'>"
 
-shutil.copyfile('src/index.html', 'local/GyverHub.html')
+inc_app = '<style>\n' + css_min_l + '\n</style>\n'
+inc_app += '<script>\n' + js_min + '\n</script>\n'
+inc_app = inc_app.replace('__APP__', '')
 
-inc_local = '<style>\n' + css_min_l + '\n</style>\n'
-inc_local += '<script>\n' + js_min + '\n</script>\n'
+shutil.copyfile('src/index.html', 'app/GyverHub.html')
 
-with open('local/GyverHub.html', "r+", encoding="utf8") as f:
+with open('app/GyverHub.html', "r+", encoding="utf8") as f:
     data = f.read()
     data = re.sub(r'<!--INC-->([\s\S]*?)<!--\/INC-->', '__INC__', data)
-    data = data.replace('__INC__', inc_local)
+    data = data.replace('__INC__', inc_app)
     data = re.sub(r'<!--ICON-->([\s\S]*?)<!--\/ICON-->', icon_b64, data)
     data = re.sub(r'<!--PWA-->([\s\S]*?)<!--\/PWA-->', '', data)
     data = re.sub(r'<!--METRIKA-->', '', data)
@@ -282,31 +284,6 @@ with open('local/GyverHub.html', "r+", encoding="utf8") as f:
     f.seek(0)
     f.write(data)
     f.truncate()
-
-###############################################################
-###                           APP                           ###
-###############################################################
-shutil.copyfile('src/index.html', 'app/index.html')
-inc_app = inc_local.replace('__APP__', '')
-
-with open('app/index.html', "r+", encoding="utf8") as f:
-    data = f.read()
-    data = re.sub(r'<!--INC-->([\s\S]*?)<!--\/INC-->', '__INC__', data)
-    data = data.replace('__INC__', inc_app)
-    data = re.sub(r'<!--ICON-->([\s\S]*?)<!--\/ICON-->', '', data)
-    data = re.sub(r'<!--PWA-->([\s\S]*?)<!--\/PWA-->', '', data)
-    data = re.sub(r'<!--APP-->([\s\S]*?)<!--\/APP-->', '', data)
-    data = re.sub(r'<!--METRIKA-->', '', data)
-    data = re.sub(r'__VER__', version, data)
-    data = re.sub(r'<!--([\s\S]*?)-->', '', data)
-    data = re.sub(r'<!--\/([\s\S]*?)-->', '', data)
-    data = "".join([s for s in data.strip().splitlines(True) if s.strip()])
-    f.seek(0)
-    f.write(data)
-    f.truncate()
-
-# with open('app/index.html', 'rb') as f_in, gzip.open('app/index.html.gz', 'wb') as f_out: f_out.writelines(f_in)
-# if (esp_remove_non_gz): os.remove("app/index.html")
 
 ###############################################################
 ###                           ESP                           ###

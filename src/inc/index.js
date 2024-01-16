@@ -3,7 +3,7 @@ window.onload = () => {
   load_cfg_hub();
   updateLang();
   render_main();
-  EL('hub_stat').innerHTML = 'GyverHub v' + app_version + ' ' + (isPWA() ? 'PWA ' : '') + (isSSL() ? 'SSL ' : '') + (isLocal() ? 'Local ' : '') + (isESP() ? 'ESP ' : '') + (isApp() ? 'App ' : '');
+  EL('hub_stat').innerHTML = 'GyverHub v' + app_version + ' ' + (isPWA() ? 'PWA ' : '') + (isSSL() ? 'SSL ' : '') + (isLocal() ? 'Local ' : '') + (isESP() ? 'ESP ' : '') + (isApp() ? 'App ' : '') + (isDesktop() ? 'Desktop ' : '');
 
   if (isESP()) hub.cfg.use_local = true;  // force local on esp
   update_ip();
@@ -17,7 +17,7 @@ window.onload = () => {
 
   function register_SW() {
     /*NON-ESP*/
-    if ('serviceWorker' in navigator && !isLocal() && !isApp()) {
+    if ('serviceWorker' in navigator && isHost()) {
       navigator.serviceWorker.register('sw.js');
       window.addEventListener('beforeinstallprompt', (e) => deferredPrompt = e);
     }
@@ -135,8 +135,10 @@ function startup() {
     display('http_settings', 'none');
     display('pwa_unsafe', 'none');
   }
-  if (isPWA() || isLocal() || isApp()) {
+  if (!isHost()) {
     display('pwa_block', 'none');
+    display('devlink_btn', 'none');
+    display('qr_btn', 'none');
   }
   if (isApp()) {
     display('app_block', 'none');

@@ -263,6 +263,7 @@ class Device {
     this._fetchNextFile();
   }
   _checkUpdates(updates) {
+    if (typeof(updates) != 'object') return;
     for (let name in updates) {
       if (name.includes(';')) {
         name.split(';').forEach(n => updates[n] = updates[name]);
