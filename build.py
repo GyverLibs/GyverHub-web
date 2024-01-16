@@ -4,7 +4,7 @@
 # pip install rcssmin
 # pip install rjsmin
 
-version = '0.53.11b'
+version = '0.53.16b'
 notes = 'Minor fixes'
 
 # ESP
@@ -268,14 +268,16 @@ inc_app = '<style>\n' + css_min_l + '\n</style>\n'
 inc_app += '<script>\n' + js_min + '\n</script>\n'
 inc_app = inc_app.replace('__APP__', '')
 
-shutil.copyfile('src/index.html', 'app/GyverHub.html')
+shutil.copyfile('src/index.html', 'app/index.html')
 
-with open('app/GyverHub.html', "r+", encoding="utf8") as f:
+with open('app/index.html', "r+", encoding="utf8") as f:
     data = f.read()
     data = re.sub(r'<!--INC-->([\s\S]*?)<!--\/INC-->', '__INC__', data)
     data = data.replace('__INC__', inc_app)
     data = re.sub(r'<!--ICON-->([\s\S]*?)<!--\/ICON-->', icon_b64, data)
+    # data = re.sub(r'<!--ICON-->([\s\S]*?)<!--\/ICON-->', '', data)
     data = re.sub(r'<!--PWA-->([\s\S]*?)<!--\/PWA-->', '', data)
+    data = re.sub(r'<!--APP-->([\s\S]*?)<!--\/APP-->', '', data)
     data = re.sub(r'<!--METRIKA-->', '', data)
     data = re.sub(r'__VER__', version, data)
     data = re.sub(r'<!--([\s\S]*?)-->', '', data)

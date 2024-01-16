@@ -95,10 +95,10 @@ function isTouch() {
   return navigator.maxTouchPoints || 'ontouchstart' in document.documentElement;
 }
 function hasSerial() {
-  return ("serial" in navigator)/* && !isApp()*/;  // TODO app
+  return ("serial" in navigator) || isApp();  // TODO app
 }
 function hasBT() {
-  return ("bluetooth" in navigator) /*&& !isApp()*/; // TODO app
+  return ("bluetooth" in navigator) || isApp(); // TODO app
 }
 
 // ====================== FUNC ======================

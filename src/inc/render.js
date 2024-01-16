@@ -775,7 +775,12 @@ async function serial_toggle(state) {
 }
 async function serial_check_ports() {
   if (!hasSerial()) return;
-  const ports = await hub.serial.getPorts();
+  let ports = [];
+  if (isApp() && !isDesktop()) {
+    // TODO mobile serial
+  } else {
+    ports = await hub.serial.getPorts();
+  }
   display('serial_open', ports.length ? 'inline-block' : 'none');
 }
 
