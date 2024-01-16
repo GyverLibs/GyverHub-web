@@ -747,11 +747,13 @@ function waiter(size = 50, col = 'var(--prim)', block = true) {
 }
 
 // ============= CONNECTION =============
+// mqtt
 function mq_change(opened) {
   display('mq_start', opened ? 'none' : 'inline-block');
   display('mq_stop', opened ? 'inline-block' : 'none');
 }
 
+// bt
 function bt_show_ok(state) {
   display('bt_ok', state ? 'inline-block' : 'none');
 }
@@ -760,6 +762,7 @@ function bt_change(opened) {
   display('bt_close', opened ? 'inline-block' : 'none');
 }
 
+// serial
 function serial_show_ok(state) {
   display('serial_ok', state ? 'inline-block' : 'none');
 }
@@ -776,7 +779,7 @@ async function serial_toggle(state) {
 async function serial_check_ports() {
   if (!hasSerial()) return;
   let ports = [];
-  if (isApp() && !isDesktop()) {
+  if (isMobApp()) {
     // TODO mobile serial
   } else {
     ports = await hub.serial.getPorts();
@@ -784,6 +787,7 @@ async function serial_check_ports() {
   display('serial_open', ports.length ? 'inline-block' : 'none');
 }
 
+// telegram
 function tg_change(opened) {
   display('tg_start', opened ? 'none' : 'inline-block');
   display('tg_stop', opened ? 'inline-block' : 'none');

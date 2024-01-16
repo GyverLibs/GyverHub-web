@@ -4,7 +4,7 @@
 # pip install rcssmin
 # pip install rjsmin
 
-version = '0.53.16b'
+version = '0.53.18b'
 notes = 'Minor fixes'
 
 # ESP

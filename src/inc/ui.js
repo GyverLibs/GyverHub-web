@@ -212,8 +212,8 @@ function fsbr_h() {
   show_screen('files');
   EL('menu_fsbr').classList.add('menu_act');
 }
-function format_h() {
-  if (confirm('Format filesystem?')) post('format');
+async function format_h() {
+  if (await asyncConfirm('Format filesystem?')) post('format');
 }
 function ota_h() {
   Menu.deact();
@@ -359,13 +359,11 @@ function close_device() {
   focused = null;
   show_screen('main');
 }
-function delete_h(id) {
-  if (confirm('Delete ' + id + '?')) {
+async function delete_h(id) {
+  if (await asyncConfirm('Delete ' + id + '?')) {
     hub.delete(id);
     EL(`device#${id}`).remove();
-    return 1;
   }
-  return 0;
 }
 function dev_up_h(id) {
   hub.moveDevice(id, -1);

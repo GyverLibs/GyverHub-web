@@ -19,7 +19,10 @@ class BTconn extends Discover {
       this.log('Disconnected');
       this.onConnChange('close');
     }
-    this.bt.onerror = (e) => this.err(e);
+    this.bt.onerror = (e) => {
+      this.onConnChange('close');
+      this.err(e);
+    }
     this.bt.onmessage = (data) => this.buf.process(data);
   }
   async discover() {

@@ -18,18 +18,18 @@ async function checkUpdates(id) {
     if (proj.version == namever[1]) return;
     if (id != focused) return;
     updates.push(id);
-    if (confirm('Available new version v' + proj.version + ' for device [' + namever[0] + ']. Notes:\n' + proj.notes + '\n\nUpdate firmware?')) {
+    if (await asyncConfirm('Available new version v' + proj.version + ' for device [' + namever[0] + ']. Notes:\n' + proj.notes + '\n\nUpdate firmware?')) {
       if ('ota_url' in proj) otaUrl(proj.ota_url, 'flash');
       else otaUrl(`https://raw.githubusercontent.com/${namever[0]}/master/bin/firmware.bin${hub.dev(id).ota_t == 'bin' ? '' : ('.' + hub.dev(id).ota_t)}`, 'flash');
     }
   }
   async function pwa_install(ssl) {
     if (ssl && !isSSL()) {
-      if (confirm("Redirect to HTTPS?")) window.location.href = window.location.href.replace('http:', 'https:');
+      if (await asyncConfirm("Redirect to HTTPS?")) window.location.href = window.location.href.replace('http:', 'https:');
       else return;
     }
     if (!ssl && isSSL()) {
-      if (confirm("Redirect to HTTP")) window.location.href = window.location.href.replace('https:', 'http:');
+      if (await asyncConfirm("Redirect to HTTP")) window.location.href = window.location.href.replace('https:', 'http:');
       else return;
     }
     if (!('serviceWorker' in navigator)) {

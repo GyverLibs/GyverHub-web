@@ -59,20 +59,22 @@ function uploadOta(file, type) {
 }
 
 // ============ FILE UTILS ============
-function deleteFile(i) {
+async function deleteFile(i) {
   if (hub.dev(focused).fsBusy()) {
     showPopupError('FS busy');
     return;
   }
-  if (confirm('Delete ' + fs_arr[i] + '?')) post('delete', fs_arr[i]);
+  if (await asyncConfirm('Delete ' + fs_arr[i] + '?')) {
+    post('delete', fs_arr[i]);
+  }
 }
-function renameFile(i) {
+async function renameFile(i) {
   if (hub.dev(focused).fsBusy()) {
     showPopupError('Busy');
     return;
   }
   let path = fs_arr[i];
-  let res = prompt('Rename ' + path + ' to', path);
+  let res = await asyncPrompt('Rename ' + path + ' to', path);
   if (res && res != path) post('rename', path, res);
 }
 

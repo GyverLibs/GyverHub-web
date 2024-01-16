@@ -82,11 +82,14 @@ function isHost() {
 function isApp() {
   return !non_app;
 }
-function isPWA() {
-  return (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || document.referrer.includes('android-app://');
-}
 function isDesktop() {
   return 'GyverHubDesktop' in window;
+}
+function isMobApp() {
+  return isApp() && !isDesktop();
+}
+function isPWA() {
+  return (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || document.referrer.includes('android-app://');
 }
 function isESP() {
   return !non_esp;
@@ -95,10 +98,10 @@ function isTouch() {
   return navigator.maxTouchPoints || 'ontouchstart' in document.documentElement;
 }
 function hasSerial() {
-  return ("serial" in navigator) || isApp();  // TODO app
+  return ("serial" in navigator);
 }
 function hasBT() {
-  return ("bluetooth" in navigator) || isApp(); // TODO app
+  return ("bluetooth" in navigator) || isApp();
 }
 
 // ====================== FUNC ======================
@@ -139,10 +142,16 @@ function b64ToText(base64) {
   const binString = atob(base64);
   return new TextDecoder().decode(Uint8Array.from(binString, (m) => m.codePointAt(0)));
 }
-function confirmDialog(msg) {
-  return new Promise(function (resolve, reject) {
-    let confirmed = window.confirm(msg);
-    return confirmed ? resolve(true) : reject(false);
+function asyncConfirm(msg) {
+  return new Promise((resolve, reject) => {
+     const res = confirm(msg); 
+     resolve(res);
+  });
+}
+function asyncPrompt(msg, placeh) {
+  return new Promise((resolve, reject) => {
+     const res = prompt(msg, placeh); 
+     resolve(res);
   });
 }
 String.prototype.hashCode = function () {

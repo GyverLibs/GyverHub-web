@@ -106,7 +106,7 @@ class Device {
   fsBusy() {
     return !!this.fs_mode;
   }
-  upload(file, path) {
+  async upload(file, path) {
     if (!this.module(Modules.UPLOAD)) return;
     if (this.fsBusy()) {
       this._hub.onFsUploadError(this.info.id, HubErrors.FsBusy);
@@ -115,14 +115,15 @@ class Device {
 
     let reader = new FileReader();
     reader.readAsArrayBuffer(file);
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       if (!e.target.result) return;
       let buffer = new Uint8Array(e.target.result);
       if (!path.startsWith('/')) path = '/' + path;
       if (!path.endsWith('/')) path += '/';
       path += file.name;
 
-      if (!confirm('Upload ' + path + ' (' + buffer.length + ' bytes)?')) {
+      const res = await asyncConfirm('Upload ' + path + ' (' + buffer.length + ' bytes)?');
+      if (!res) {
         this._hub.onFsUploadError(this.info.id, HubErrors.Cancelled);
         return;
       }
@@ -149,7 +150,7 @@ class Device {
       }
     }
   }
-  uploadOta(file, type) {
+  async uploadOta(file, type) {
     if (!this.module(Modules.OTA)) return;
     if (this.fsBusy()) {
       this._hub.onOtaError(this.info.id, HubErrors.FsBusy);
@@ -159,7 +160,8 @@ class Device {
       alert('Wrong file! Use .' + this.info.ota_t);
       return;
     }
-    if (!confirm('Upload OTA ' + type + '?')) return;
+    const res = asyncConfirm('Upload OTA ' + type + '?');
+    if (!res) return;
 
     let reader = new FileReader();
     reader.readAsArrayBuffer(file);
