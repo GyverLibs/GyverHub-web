@@ -1,5 +1,9 @@
 This is an automatic translation, may be incorrect in some places. See sources and examples!
 
+### App
+- [Android](https://github.com/GyverLibs/GyverHub-app/releases/latest)
+- [Windows](https://github.com/neko-neko-nyan/gyverhub-desktop/releases/latest)
+
 ### folders
 - ** App ** - version for the application or local work in browser
 - ** ESP ** - Version for ESP (place files in FS along the path `/hub/`)
