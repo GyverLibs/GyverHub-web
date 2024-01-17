@@ -65,7 +65,7 @@ class GyverHub {
     use_serial: false, baudrate: 115200,
     use_mqtt: false, mq_host: 'test.mosquitto.org', mq_port: '8081', mq_login: '', mq_pass: '',
     use_tg: false, tg_token: '', tg_chat: '',
-    api_ver: 2
+    api_ver: 3
   };
 
   api_v = 1;

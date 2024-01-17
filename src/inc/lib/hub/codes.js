@@ -144,4 +144,5 @@ const HubCodes = [
     'row',
     'col',
     'space',
+    'platform',
 ];

@@ -31,12 +31,13 @@ hub.serial.onConnChange = (state) => {
     setTimeout(() => hub.serial.discover(), cfg.serial_offset);
   }
 }
+hub.serial.onPortChange = (selected) => {
+  display('serial_open', selected ? 'inline-block' : 'none');
+  serial_update_name();
+}
 hub.tg.onConnChange = (state) => {
   display('tg_ok', state ? 'inline-block' : 'none');
   tg_change(state);
-}
-hub.serial.onPortChange = (selected) => {
-  display('serial_open', selected ? 'inline-block' : 'none');
 }
 /*/NON-ESP*/
 

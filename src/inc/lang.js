@@ -78,6 +78,11 @@ const langBase = {
         download: "Download",
         open: "Open",
         edit: "Edit",
+
+        p_not_support: "Browser in not supported",
+        p_use_https: "Use https version of website",
+        p_has_upd: "Update available",
+        p_upd: "Update firmware",
     },
     Russian: {
         errors: ["не ошибка", "невозможно открыть файл", "недостаточно места", "ошибка контрольной суммы", "ошибка размера", "ошибка старта", "ошибка записи", "ошибка завершения", "прервано", "тайм-аут", "занят", "ошибка памяти", "не тот клиент", "запрещено", "модуль отключен", "система занята", "отменено"],
@@ -158,6 +163,11 @@ const langBase = {
         download: "Скачать",
         open: "Открыть",
         edit: "Редактировать",
+
+        p_not_support: "Браузер не поддерживается",
+        p_use_https: "Используйте https версию сайта",
+        p_has_upd: "Доступно обновление",
+        p_upd: "Обновить прошивку",
     }
 };
 

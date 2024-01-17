@@ -485,6 +485,7 @@
   overflow-wrap: break-word;
   font-size: 16px;
   max-width: 60%;
+  text-align: right;
 }
 
 .info_label_small {

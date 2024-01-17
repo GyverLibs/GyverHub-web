@@ -294,7 +294,7 @@ function render_main() {
       <div class="ui_col">
         <div class="ui_row ui_head ui_tab" onclick="use_local.click()">
           <label class="ui_label ui_tab" id="local_label"><span class="icon icon_ui"></span>WiFi</label>
-          <input type="checkbox" id="use_local" onchange="update_cfg(this)" style="display:none">
+          <input type="checkbox" id="use_local" onchange="update_cfg(this);save_cfg()" style="display:none">
         </div>
         <div id="local_block" style="display:none">
           <div class="ui_row" id="http_only_http" style="display:none">
@@ -345,7 +345,7 @@ function render_main() {
       <div class="ui_col" id="mq_col">
         <div class="ui_row ui_head ui_tab" onclick="use_mqtt.click()">
           <label class="ui_label ui_tab" id="mqtt_label"><span class="icon icon_ui"></span>MQTT</label>
-          <input type="checkbox" id="use_mqtt" onchange="update_cfg(this);hub.mqtt.stop()" style="display:none">
+          <input type="checkbox" id="use_mqtt" onchange="update_cfg(this);hub.mqtt.stop();save_cfg()" style="display:none">
         </div>
 
         <div id="mq_block" style="display:none">
@@ -384,7 +384,7 @@ function render_main() {
       <div class="ui_col" id="tg_col">
         <div class="ui_row ui_head ui_tab" onclick="use_tg.click()">
           <label class="ui_label ui_tab" id="tg_label"><span class="icon icon_ui"></span>Telegram</label>
-          <input type="checkbox" id="use_tg" onchange="update_cfg(this);hub.tg.stop()" style="display:none">
+          <input type="checkbox" id="use_tg" onchange="update_cfg(this);hub.tg.stop();save_cfg()" style="display:none">
         </div>
 
         <div id="tg_block" style="display:none">
@@ -414,7 +414,7 @@ function render_main() {
       <div class="ui_col" id="serial_col" ${hasSerial() ? '' : 'style="display:none"'}>
         <div class="ui_row ui_head ui_tab" onclick="use_serial.click()">
           <label class="ui_label ui_tab" id="serial_label"><span class="icon icon_ui"></span>Serial</label>
-          <input type="checkbox" id="use_serial" onchange="serial_toggle(this.checked);update_cfg(this)" style="display:none">
+          <input type="checkbox" id="use_serial" onchange="serial_toggle(this.checked);update_cfg(this);save_cfg()" style="display:none">
         </div>
 
         <div id="serial_block" style="display:none">
@@ -429,7 +429,7 @@ function render_main() {
             <div class="ui_inp_row"><input class="ui_inp" type="text" id="serial_offset" onchange="update_cfg(this)"></div>
           </div>
           <div class="ui_row">
-            <label class="ui_label">${lang.sr_port}</label>
+            <div><label class="ui_label">${lang.sr_port} </label><label class="ui_label" id="port_name"></label></div>
             <div class="ui_btn_row">
               <button class="ui_btn ui_btn_mini" onclick="hub.serial.select()">${lang.select}</button>
               <button id="serial_open" class="ui_btn ui_btn_mini" onclick="hub.serial.open()" style="display:none">${lang.connect}</button>
@@ -442,7 +442,7 @@ function render_main() {
       <div class="ui_col" id="bt_col" ${hasBT() ? '' : 'style="display:none"'}>
         <div class="ui_row ui_head ui_tab" onclick="use_bt.click()">
           <label class="ui_label ui_tab" id="bt_label"><span class="icon icon_ui"></span>Bluetooth</label>
-          <input type="checkbox" id="use_bt" onchange="update_cfg(this)" style="display:none">
+          <input type="checkbox" id="use_bt" onchange="update_cfg(this);save_cfg()" style="display:none">
         </div>
 
         <div id="bt_block" style="display:none">
@@ -595,6 +595,7 @@ function render_main() {
           <a href="https://fontawesome.com/v5/search?o=r&m=free&s=solid" target="_blank">Fontawesome</a>
           <a href="https://github.com/loginov-rocks/Web-Bluetooth-Terminal" target="_blank">Bluetooth Terminal</a>
           <a href="https://github.com/davidshimjs/qrcodejs" target="_blank">QRCode.js</a>
+          <a href="https://esphome.github.io/esp-web-tools/" target="_blank">ESP Web Tools</a>
         </div>
       </div>
     </div>
@@ -688,7 +689,7 @@ function add_device(dev) {
       <div id="d_head#${dev.id}" style="display:contents">
         <div class="d_icon ${icon.length ? '' : 'd_icon_empty'}"><span class="icon icon_min ${icon.length ? '' : 'd_icon_none'}" id="icon#${dev.id}">${getIcon(icon)}</span></div>
         <div class="d_title">
-          <span><span class="d_name" id="name#${dev.id}">${dev.name}</span><sup class="conn_dev" id="Serial#${dev.id}">S</sup><sup class="conn_dev" id="BT#${dev.id}">B</sup><sup class="conn_dev" id="HTTP#${dev.id}">L</sup><sup class="conn_dev" id="MQTT#${dev.id}">M</sup><sup class="conn_dev" id="TG#${dev.id}">T</sup></span>
+          <span><span class="d_name" id="name#${dev.id}">${dev.name}</span><sup class="conn_dev" id="Serial#${dev.id}">S</sup><sup class="conn_dev" id="BT#${dev.id}">B</sup><sup class="conn_dev" id="HTTP#${dev.id}">W</sup><sup class="conn_dev" id="MQTT#${dev.id}">M</sup><sup class="conn_dev" id="TG#${dev.id}">T</sup></span>
         </div>
       </div>
       <div id="d_cfg#${dev.id}" class="d_btn_cont">
@@ -778,13 +779,12 @@ async function serial_toggle(state) {
 }
 async function serial_check_ports() {
   if (!hasSerial()) return;
-  let ports = [];
-  if (isMobApp()) {
-    // TODO mobile serial
-  } else {
-    ports = await hub.serial.getPorts();
-  }
-  display('serial_open', ports.length ? 'inline-block' : 'none');
+  const res = await hub.serial.hasPort();
+  display('serial_open', res ? 'inline-block' : 'none');
+  serial_update_name();
+}
+function serial_update_name() {
+  EL('port_name').innerHTML = hub.serial.getName();
 }
 
 // telegram

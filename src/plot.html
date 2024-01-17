@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script src="inc/widgets/plot.js"></script>
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .cont {
+      max-width: 300px;
+      margin: auto;
+    }
+  </style>
+</head>
+
+<body onresize="resize_h()">
+  <div class="cont" id="cont1"></div>
+  <div class="cont" id="cont2"></div>
+  <div class="cont" id="cont3"></div>
+
+  <script>
+    function resize_h() {
+      UiPlot.resize();
+    }
+    function waitFrame() {
+      return new Promise(requestAnimationFrame);
+    }
+    async function wait2Frame() {
+      await waitFrame();
+      await waitFrame();
+    }
+    function EL(id) {
+      return document.getElementById(id);
+    }
+    function ID(id) {
+      return '__' + id;
+    }
+    function CMP(id) {
+      return EL(ID(id));
+    }
+
+    //////////////////////////
+
+    let data1 = {
+      id: "plot1",
+      height: 150,
+      type: 'plot',
+    };
+    let data2 = {
+      id: "plot2",
+      height: 150,
+      type: 'plot',
+    };
+    let data3 = {
+      id: "plot3",
+      height: 150,
+      type: 'plot',
+    };
+
+    new UiPlot(EL('cont1'), data1);
+    new UiPlot(EL('cont2'), data2);
+    new UiPlot(EL('cont3'), data3);
+  </script>
+</body>
+
+</html>

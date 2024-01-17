@@ -98,13 +98,32 @@ function isTouch() {
   return navigator.maxTouchPoints || 'ontouchstart' in document.documentElement;
 }
 function hasSerial() {
-  return ("serial" in navigator);
+  return ("serial" in navigator) || isApp();
 }
 function hasBT() {
   return ("bluetooth" in navigator) || isApp();
 }
 
 // ====================== FUNC ======================
+async function pwa_install(ssl) {
+  if (ssl && !isSSL()) {
+    if (await asyncConfirm("Redirect to HTTPS?")) window.location.href = window.location.href.replace('http:', 'https:');
+    else return;
+  }
+  if (!ssl && isSSL()) {
+    if (await asyncConfirm("Redirect to HTTP")) window.location.href = window.location.href.replace('https:', 'http:');
+    else return;
+  }
+  if (!('serviceWorker' in navigator)) {
+    alert('Error');
+    return;
+  }
+  if (deferredPrompt !== null) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') deferredPrompt = null;
+  }
+}
 function addIdRecursive(node, add) {
   for (let i = 0; i < node.childNodes.length; i++) {
     let child = node.childNodes[i];

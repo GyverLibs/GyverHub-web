@@ -22,6 +22,7 @@ class Device {
     ws_port: 81,
     http_t: 1,
     api_v: 0,
+    platform: '',
   };
 
   connected() {

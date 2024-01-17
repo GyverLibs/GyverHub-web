@@ -4,8 +4,8 @@
 # pip install rcssmin
 # pip install rjsmin
 
-version = '0.53.18b'
-notes = 'Minor fixes'
+version = '0.53.20b'
+notes = 'Add esp web tool'
 
 # ESP
 esp_remove_non_gz = True    # удалить несжатые файлы
@@ -171,7 +171,9 @@ with open('lib/GyverHub.min.js', 'w') as f:
 ###                           HOST                          ###
 ###############################################################
 
-metrika = '''
+host_inc = '''
+  <script type="module" src="https://unpkg.com/esp-web-tools@9/dist/web/install-button.js?module"></script>
+  
   <script type="text/javascript">
     (function (m, e, t, r, i, k, a) {
         m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
@@ -196,7 +198,7 @@ for file in copy_web:
 with open('host/index.html', "r+") as f:
     data = f.read()
     data = re.sub(r'<!--INC-->([\s\S]*?)<!--\/INC-->', inc_min, data)
-    data = re.sub(r'<!--METRIKA-->', metrika, data)
+    data = re.sub(r'<!--HOST_INC-->', host_inc, data)
     data = re.sub(r'__VER__', version, data)
     data = re.sub(r'<!--([\s\S]*?)-->', '', data)
     data = re.sub(r'<!--\/([\s\S]*?)-->', '', data)
@@ -278,7 +280,7 @@ with open('app/index.html', "r+", encoding="utf8") as f:
     # data = re.sub(r'<!--ICON-->([\s\S]*?)<!--\/ICON-->', '', data)
     data = re.sub(r'<!--PWA-->([\s\S]*?)<!--\/PWA-->', '', data)
     data = re.sub(r'<!--APP-->([\s\S]*?)<!--\/APP-->', '', data)
-    data = re.sub(r'<!--METRIKA-->', '', data)
+    data = re.sub(r'<!--HOST_INC-->', '', data)
     data = re.sub(r'__VER__', version, data)
     data = re.sub(r'<!--([\s\S]*?)-->', '', data)
     data = re.sub(r'<!--\/([\s\S]*?)-->', '', data)
@@ -341,7 +343,7 @@ with open('esp/index.html', "r+", encoding="utf8") as f:
     data = re.sub(r'<!--ICON-->([\s\S]*?)<!--\/ICON-->', '', data)
     data = re.sub(r'<!--INC-->([\s\S]*?)<!--\/INC-->', inc_min, data)
     data = re.sub(r'<!--PWA-->([\s\S]*?)<!--\/PWA-->', '', data)
-    data = re.sub(r'<!--METRIKA-->', '', data)
+    data = re.sub(r'<!--HOST_INC-->', '', data)
     data = re.sub(r'__VER__', version, data)
     data = re.sub(r'<!--([\s\S]*?)-->', '', data)
     data = re.sub(r'<!--\/([\s\S]*?)-->', '', data)
