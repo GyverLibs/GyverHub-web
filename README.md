@@ -2,7 +2,8 @@
 Клиент платформы GyverHub
 
 ### Приложение
-- В релизах [вот тут](https://github.com/GyverLibs/GyverHub-app/releases). [Скачать](https://github.com/GyverLibs/GyverHub-app/releases/download/0.1/app-release.apk) актуальную версию
+- [Android](https://github.com/GyverLibs/GyverHub-app/releases/latest)
+- [Windows](https://github.com/neko-neko-nyan/gyverhub-desktop/releases/latest)
 
 ### Папки
 - **app** - версия для приложения или запуска в браузере
