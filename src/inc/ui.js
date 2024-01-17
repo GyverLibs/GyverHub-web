@@ -10,7 +10,7 @@ async function show_screen(nscreen) {
 
   ['conn_icons', 'test_cont', 'projects_cont', 'config', 'devices',
     'controls', 'info', 'icon_menu', 'icon_cfg', 'files', 'ota', 'back', 'icon_refresh',
-    'footer_cont', 'conn'].forEach(e => display(e, 'none'));
+    'footer_cont', 'conn', 'dev_config'].forEach(e => display(e, 'none'));
 
   display('main_cont', 'block');
 
@@ -88,14 +88,24 @@ async function show_screen(nscreen) {
       EL('title').innerHTML = dev.info.name + '/ota';
       break;
 
+    case 'dev_config':
+      display('dev_config', 'block');
+      display('icon_menu', 'inline-block');
+      display('back', 'inline-block');
+      display('conn', 'inline-block');
+      EL('title').innerHTML = dev.info.name + '/cfg';
+      show_cfg();
+      break;
+      
     case 'pin':
       display('back', 'inline-block');
       show_keypad(true);
       break;
   }
 }
-function show_info() {
+function show_cfg() {
   let dev = hub.dev(focused);
+
   EL('ui_mode').value = dev.info.ui_mode;
   EL('main_width').value = dev.info.main_width;
   EL('ui_block_width').value = dev.info.ui_block_width;
@@ -103,6 +113,9 @@ function show_info() {
   EL('info_cli_sw').checked = EL('cli_cont').style.display == 'block';
   EL('plugin_css').value = dev.info.plugin_css;
   EL('plugin_js').value = dev.info.plugin_js;
+}
+function show_info() {
+  let dev = hub.dev(focused);
 
   EL('info_id').innerHTML = focused;
   EL('info_set').innerHTML = dev.info.prefix + '/' + focused + '/ID/set/*';
@@ -162,6 +175,7 @@ async function back_h() {
       release_all();
       close_device();
       break;
+    case 'dev_config':
     case 'info':
     case 'files':
     case 'ota':
@@ -197,6 +211,12 @@ function info_h() {
   if (hub.dev(focused).module(Modules.INFO)) post('info');
   show_screen('info');
   EL('menu_info').classList.add('menu_act');
+}
+function cfg_h() {
+  Menu.deact();
+  menu_show(0);
+  show_screen('dev_config');
+  EL('menu_cfg').classList.add('menu_act');
 }
 function fsbr_h() {
   Menu.deact();

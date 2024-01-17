@@ -2,7 +2,7 @@
 function render_main() {
   // BODY
   document.body.innerHTML = `
-  <noscript>Browser is not supported</noscript>
+  <noscript>${lang.p_not_support}</noscript>
   <div id="notice" class="notice"></div>
   <div class="head" id="head_cont"></div>
   <div class="test" id="test_cont"></div>
@@ -77,7 +77,7 @@ function render_main() {
   footer_cont.innerHTML = `
   <div class="footer_inner">
     <!--<a href="https://alexgyver.ru/support_alex/" target="_blank"><span class="icon icon_inline i_footer"></span>Support</a>-->
-    <a style="cursor:pointer" onclick="projects_h()"><span class="icon icon_inline i_footer"></span>Projects</a>
+    <a style="cursor:pointer" onclick="projects_h()"><span class="icon icon_inline i_footer"></span>${lang.p_proj}</a>
     <!--<a style="cursor:pointer" onclick="test_h()"><span class="icon icon_inline i_footer"></span>Test</a>-->
     <a style="cursor:pointer" onclick="window.open('https://hub.gyver.ru/old/')"><span class="icon icon_inline i_footer"></span>Old</a>
     <a href="https://github.com/GyverLibs/GyverHub/wiki" target="_blank"><span class="icon icon_inline i_footer"></span>Wiki</a>
@@ -100,9 +100,10 @@ function render_main() {
     <div id="app_plugins"></div>
     <div id="devices" class="main_col"></div>
     <div id="controls"></div>
-    
-    <div id="info" class="main_col">
+
+    <div id="dev_config" class="main_col">
       <div class="ui_col">
+
         <div class="ui_row ui_head">
           <label><span class="icon icon_ui"></span>${lang.i_settings}</label>
         </div>
@@ -110,8 +111,9 @@ function render_main() {
         <div class="ui_row">
           <label>${lang.i_console}</label>
           <label class="switch"><input type="checkbox" id="info_cli_sw" onchange="showCLI(this.checked);save_devices()">
-          <span class="slider"></span></label>
+            <span class="slider"></span></label>
         </div>
+
         <div class="ui_row">
           <label>${lang.i_mode}</label>
           <div class="ui_inp_row">
@@ -121,39 +123,49 @@ function render_main() {
               <option value="2">${lang.i_resp}</option>
               <option value="3">${lang.i_grid}</option>
             </select>
-          </div>          
+          </div>
         </div>
+
         <div class="ui_row" id="ui_block_width_cont">
           <label class="ui_label">${lang.i_block}</label>
           <div class="ui_inp_row">
             <input class="ui_inp" type="text" id="ui_block_width" onchange="ui_block_width_h(this)">
           </div>
         </div>
+
         <div class="ui_row">
           <label class="ui_label">${lang.i_main}</label>
           <div class="ui_inp_row">
             <input class="ui_inp" type="text" id="main_width" onchange="ui_width_h(this)">
           </div>
         </div>
+
         <div class="ui_row">
           <label class="ui_label">${lang.i_css}</label>
           <div class="ui_inp_row">
             <textarea class="w_area" id="plugin_css" onchange="ui_plugin_css_h(this)"></textarea>
           </div>
         </div>
+
         <div class="ui_row">
           <label class="ui_label">${lang.i_js}</label>
           <div class="ui_inp_row">
             <textarea class="w_area" id="plugin_js" onchange="ui_plugin_js_h(this)"></textarea>
           </div>
         </div>
-        <div style="height:5px"></div>
+
         <div class="ui_btn_row">
           <button id="reboot_btn" class="ui_btn ui_btn_mini" onclick="reboot_h()"><span class="icon icon_inline"></span>${lang.i_reboot}</button>
           <button id="devlink_btn" class="ui_btn ui_btn_mini" onclick="devlink_h()"><span class="icon icon_inline"></span>${lang.i_link}</button>
-          <!--NON-ESP--><button id="qr_btn" class="ui_btn ui_btn_mini" onclick="qr_h()"><span class="icon icon_inline"></span>QR</button><!--/NON-ESP-->
+          <!--NON-ESP-->
+          <button id="qr_btn" class="ui_btn ui_btn_mini" onclick="qr_h()"><span class="icon icon_inline"></span>QR</button>
+          <!--/NON-ESP-->
         </div>
+
       </div>
+    </div>
+
+    <div id="info" class="main_col">
 
       <div class="ui_col" id="info_topics">
         <div class="ui_row ui_head">
@@ -192,27 +204,37 @@ function render_main() {
 
     <div id="fsbr_edit" class="main_col">
       <div class="ui_col">
+
         <div class="ui_row ui_head">
           <label><span class="icon icon_ui"></span>Editor</label>
         </div>
+
         <div class="ui_row">
           <label id="edit_path"></label>
         </div>
+
         <div class="ui_row">
           <label>Wrap text</label>
-          <label class="switch"><input type="checkbox" id="editor_wrap" onchange="this.checked?editor_area.classList.remove('w_area_wrap'):editor_area.classList.add('w_area_wrap')"><span class="slider"></span></label>
+          <label class="switch">
+            <input type="checkbox" id="editor_wrap" onchange="this.checked?editor_area.classList.remove('w_area_wrap'):editor_area.classList.add('w_area_wrap')">
+            <span class="slider"></span>
+          </label>
         </div>
+
         <div class="ui_row">
           <textarea rows=20 id="editor_area" class="ui_inp w_area w_area_wrap"></textarea>
         </div>
+
         <div class="ui_row">
           <button id="editor_save" onclick="editor_save()" class="ui_btn ui_btn_mini">Save & Upload</button>
           <button onclick="editor_cancel()" class="ui_btn ui_btn_mini">Cancel</button>
         </div>
+
       </div>
     </div>
 
     <div id="files" class="main_col">
+
       <div class="ui_col">
         <div class="ui_row ui_head">
           <label><span class="icon icon_ui"></span>${lang.fs_fsbr}</label>
@@ -226,6 +248,7 @@ function render_main() {
           </div>
         </div>
       </div>
+
       <div class="ui_col">
         <div class="ui_row ui_head">
           <label><span class="icon icon_ui"></span>${lang.fs_upload_to}</label>
@@ -238,6 +261,7 @@ function render_main() {
           </div>
         </div>
       </div>
+
       <div class="ui_col">
         <div class="ui_row ui_head">
           <label><span class="icon icon_ui"></span>${lang.fs_create_f}</label>
@@ -321,9 +345,10 @@ function render_main() {
 
             <div class="ui_row">
               <label>${lang.wifi_port}</label>
-              <div class="ui_inp_row"><input class="ui_inp" type="text" id="http_port" onchange="update_cfg(this)"></div>
+              <div class="ui_inp_row"><input class="ui_inp" type="text" id="http_port" onchange="update_cfg(this)">
+              </div>
             </div>
-            
+
             <div class="ui_row">
               <label class="ui_label">${lang.wifi_add}</label>
               <div class="ui_inp_row">
@@ -335,7 +360,8 @@ function render_main() {
             </div>
 
             <!--APP-->
-            <span class="notice_block">Disable: <u>${browser()}://flags/#block-insecure-private-network-requests</u></span>
+            <span class="notice_block">Disable:
+              <u>${browser()}://flags/#block-insecure-private-network-requests</u></span>
             <!--/APP-->
           </div>
         </div>
@@ -370,6 +396,7 @@ function render_main() {
             <div class="ui_inp_row"><input class="ui_inp" type="password" id="mq_pass" onchange="update_cfg(this);hub.mqtt.stop()">
             </div>
           </div>
+
           <div class="ui_row">
             <div></div>
             <div class="ui_btn_row">
@@ -382,6 +409,7 @@ function render_main() {
       </div>
 
       <div class="ui_col" id="tg_col">
+
         <div class="ui_row ui_head ui_tab" onclick="use_tg.click()">
           <label class="ui_label ui_tab" id="tg_label"><span class="icon icon_ui"></span>Telegram</label>
           <input type="checkbox" id="use_tg" onchange="update_cfg(this);hub.tg.stop();save_cfg()" style="display:none">
@@ -401,6 +429,7 @@ function render_main() {
               <input class="ui_inp" type="text" id="tg_chat" onchange="update_cfg(this)">
             </div>
           </div>
+
           <div class="ui_row">
             <div></div>
             <div class="ui_btn_row">
@@ -410,8 +439,8 @@ function render_main() {
           </div>
         </div>
       </div>
-      
-      <div class="ui_col" id="serial_col" ${hasSerial() ? '' : 'style="display:none"'}>
+
+      <div class="ui_col" id="serial_col" ${hasSerial() ? '' : 'style="display:none"' }>
         <div class="ui_row ui_head ui_tab" onclick="use_serial.click()">
           <label class="ui_label ui_tab" id="serial_label"><span class="icon icon_ui"></span>Serial</label>
           <input type="checkbox" id="use_serial" onchange="serial_toggle(this.checked);update_cfg(this);save_cfg()" style="display:none">
@@ -424,10 +453,13 @@ function render_main() {
               <select class="ui_inp ui_sel" id='baudrate' onchange="update_cfg(this)"></select>
             </div>
           </div>
+
           <div class="ui_row">
             <label class="ui_label">${lang.sr_offset}</label>
-            <div class="ui_inp_row"><input class="ui_inp" type="text" id="serial_offset" onchange="update_cfg(this)"></div>
+            <div class="ui_inp_row"><input class="ui_inp" type="text" id="serial_offset" onchange="update_cfg(this)">
+            </div>
           </div>
+
           <div class="ui_row">
             <div><label class="ui_label">${lang.sr_port} </label><label class="ui_label" id="port_name"></label></div>
             <div class="ui_btn_row">
@@ -436,10 +468,11 @@ function render_main() {
               <button id="serial_close" class="ui_btn ui_btn_mini" onclick="hub.serial.close()" style="display:none">${lang.disconnect}</button>
             </div>
           </div>
+
         </div>
       </div>
 
-      <div class="ui_col" id="bt_col" ${hasBT() ? '' : 'style="display:none"'}>
+      <div class="ui_col" id="bt_col" ${hasBT() ? '' : 'style="display:none"' }>
         <div class="ui_row ui_head ui_tab" onclick="use_bt.click()">
           <label class="ui_label ui_tab" id="bt_label"><span class="icon icon_ui"></span>Bluetooth</label>
           <input type="checkbox" id="use_bt" onchange="update_cfg(this);save_cfg()" style="display:none">
@@ -456,7 +489,7 @@ function render_main() {
         </div>
 
       </div>
-      <!--/NON-ESP-->         
+      <!--/NON-ESP-->
 
       <div class="ui_col">
         <div class="ui_row ui_head">
@@ -543,6 +576,7 @@ function render_main() {
             <button class="ui_btn ui_btn_mini" onclick="cfg_import()">${lang.cfg_import}</button>
           </div>
         </div>
+
       </div>
 
       <div class="ui_col">
@@ -554,30 +588,29 @@ function render_main() {
         <div id="pin_block" style="display:none">
           <div class="ui_row">
             <label class="ui_label">PIN</label>
-            <div class="ui_inp_row"><input class="ui_inp" type="password" pattern="[0-9]*" inputmode="numeric"
-                id="pin" onchange="this.value=this.value.hashCode();update_cfg(this)" oninput="check_type(this)">
+            <div class="ui_inp_row"><input class="ui_inp" type="password" pattern="[0-9]*" inputmode="numeric" id="pin" onchange="this.value=this.value.hashCode();update_cfg(this)" oninput="check_type(this)">
             </div>
           </div>
         </div>
+
       </div>
 
       <!--NON-ESP-->
       <div class="ui_col" id="pwa_block">
         <div class="ui_row ui_head">
-        <label class="ui_label"><span class="icon icon_ui"></span>Web App</label>
+          <label class="ui_label"><span class="icon icon_ui"></span>Web App</label>
           <div class="ui_btn_row">
             <button class="ui_btn ui_btn_mini ${isSSL() ? 'ui_btn_dis' : ''}" onclick="pwa_install(false)">HTTP</button>
             <button class="ui_btn ui_btn_mini ${!isSSL() ? 'ui_btn_dis' : ''}" onclick="pwa_install(true)">HTTPS</button>
           </div>
         </div>
-        <!--<span class="notice_block">HTTP app: <b>WiFi</b> and <b>MQTT</b><br>HTTPS app: only <b>MQTT</b></span>-->
         <span class="notice_block" id="pwa_unsafe">Enable <u>${browser()}://flags/#unsafely-treat-insecure-origin-as-secure</u> and add <u>${window.location.href}</u> to list</span>
       </div>
       <!--/NON-ESP-->
 
       <div class="ui_col" id="app_block">
         <div class="ui_row ui_head">
-        <label class="ui_label"><span class="icon icon_ui"></span>App</label>
+          <label class="ui_label"><span class="icon icon_ui"></span>App</label>
           <div class="ui_btn_row">
             <button class="ui_btn ui_btn_mini" onclick="openURL('https://play.google.com/store/apps/details?id=ru.alexgyver.GyverHub')">Android</button>
             <button class="ui_btn ui_btn_mini" onclick="openURL('https://github.com/GyverLibs/GyverHub-app/releases/download/0.1/app-release.apk')">.apk</button>

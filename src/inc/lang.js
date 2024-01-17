@@ -46,6 +46,11 @@ const langBase = {
         cfg_import: "Import",
         cfg_export: "Export",
 
+        m_config: "Config",
+        m_info: "Info",
+        m_files: "Files",
+        m_ota: "OTA",
+
         i_settings: "Settings",
         i_console: "Console",
         i_mode: "UI mode",
@@ -59,6 +64,7 @@ const langBase = {
         i_js: "Plugin JS",
         i_reboot: "Reboot",
         i_link: "Link",
+
         i_topics: "Topics",
         i_version: "Version",
         i_net: "Network",
@@ -79,10 +85,12 @@ const langBase = {
         open: "Open",
         edit: "Edit",
 
+        p_proj: "Projects",
         p_not_support: "Browser in not supported",
         p_use_https: "Use https version of website",
         p_has_upd: "Update available",
         p_upd: "Update firmware",
+        p_install: "Install",
     },
     Russian: {
         errors: ["не ошибка", "невозможно открыть файл", "недостаточно места", "ошибка контрольной суммы", "ошибка размера", "ошибка старта", "ошибка записи", "ошибка завершения", "прервано", "тайм-аут", "занят", "ошибка памяти", "не тот клиент", "запрещено", "модуль отключен", "система занята", "отменено"],
@@ -131,6 +139,11 @@ const langBase = {
         cfg_import: "Импорт",
         cfg_export: "Экспорт",
 
+        m_config: "Настройки",
+        m_info: "Инфо",
+        m_files: "Файлы",
+        m_ota: "OTA",
+
         i_settings: "Настройки",
         i_console: "Консоль",
         i_mode: "Режим ПУ",
@@ -144,6 +157,7 @@ const langBase = {
         i_js: "Плагин JS",
         i_reboot: "Перезагрузка",
         i_link: "Ссылка",
+
         i_topics: "Топики",
         i_version: "Версия",
         i_net: "Сеть",
@@ -164,10 +178,12 @@ const langBase = {
         open: "Открыть",
         edit: "Редактировать",
 
+        p_proj: "Проекты",
         p_not_support: "Браузер не поддерживается",
         p_use_https: "Используйте https версию сайта",
         p_has_upd: "Доступно обновление",
         p_upd: "Обновить прошивку",
+        p_install: "Установить",
     }
 };
 

@@ -50,7 +50,7 @@ async function loadProj(rep) {
     let name = proj.name;
     let repname = rep.split('/')[1];
     if (name.length > 30) name = name.slice(0, 30) + '..';
-    const btn = isHost() ? `<button title="Flash" class="icon icon_btn_big" style="font-size:15px" onclick="EL('proj_${repname}').click()"></button>` : '';
+    const btn = isHost() ? `<button title="${lang.p_install}" class="icon icon_btn_big" style="font-size:15px" onclick="EL('proj_${repname}').click()"></button>` : '';
 
     EL('projects').innerHTML += `
       <div class="proj">

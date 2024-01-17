@@ -297,7 +297,7 @@ function getIcon(icon) {
 
 // ====================== BROWSER ======================
 function notSupported() {
-  alert('Browser is not supported');
+  alert(lang.p_not_support);
 }
 function browser() {
   if (navigator.userAgent.includes("Opera") || navigator.userAgent.includes('OPR')) return 'opera';

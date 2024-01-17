@@ -207,6 +207,7 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+  margin: 3px 0;
 }
 
 /* ====================================================================== */
@@ -454,8 +455,8 @@
 
 .upl_row {
   display: flex;
-  margin: 10px 0px;
-  padding: 0px 15px;
+  margin: 5px 0px;
+  padding: 0px 10px;
 }
 
 .upl_btn {
