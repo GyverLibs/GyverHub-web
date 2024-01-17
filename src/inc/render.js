@@ -51,7 +51,7 @@ function render_main() {
       <div class="proj">
         <div class="proj_inn">
           <div class="proj_name">
-            <a href="https://github.com/GyverLibs/GyverHub-projects" target="_blank">+ Add Project</a>
+            <a href="https://github.com/GyverLibs/GyverHub-projects" target="_blank">+ ${lang.p_add}</a>
           </div>
         </div>
       </div>

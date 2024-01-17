@@ -40,7 +40,7 @@ async function show_screen(nscreen) {
       display('main_cont', 'none');
       display('projects_cont', 'block');
       display('back', 'inline-block');
-      EL('title').innerHTML = 'Projects';
+      EL('title').innerHTML = lang.p_proj;
       break;
 
     case 'ui':

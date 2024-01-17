@@ -4,7 +4,7 @@
 # pip install rcssmin
 # pip install rjsmin
 
-version = '0.53.21b'
+version = '0.53.22b'
 notes = 'Add esp web tool'
 
 # ESP
