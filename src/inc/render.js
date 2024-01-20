@@ -574,6 +574,7 @@ function render_main() {
           <div class="ui_btn_row">
             <button class="ui_btn ui_btn_mini" onclick="cfg_export()">${lang.cfg_export}</button>
             <button class="ui_btn ui_btn_mini" onclick="cfg_import()">${lang.cfg_import}</button>
+            <button class="ui_btn ui_btn_mini" onclick="cfg_reset()">${lang.cfg_reset}</button>
           </div>
         </div>
 
@@ -588,7 +589,7 @@ function render_main() {
         <div id="pin_block" style="display:none">
           <div class="ui_row">
             <label class="ui_label">PIN</label>
-            <div class="ui_inp_row"><input class="ui_inp" type="password" pattern="[0-9]*" inputmode="numeric" id="pin" onchange="this.value=this.value.hashCode();update_cfg(this)" oninput="check_type(this)">
+            <div class="ui_inp_row"><input class="ui_inp" type="password" pattern="[0-9]*" inputmode="numeric" id="pin" onchange="make_pin(this);update_cfg(this)" oninput="check_type(this)">
             </div>
           </div>
         </div>

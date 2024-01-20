@@ -8,9 +8,10 @@ async function checkUpdates(id) {
   let ver = hub.dev(id).info.version;
   if (!ver.includes('@')) return;
   let namever = ver.split('@');
-  const resp = await fetch(`https://raw.githubusercontent.com/${namever[0]}/main/project.json`, { cache: "no-store" });
-  let proj = await resp.text();
+  let proj;
   try {
+    const resp = await fetch(`https://raw.githubusercontent.com/${namever[0]}/main/project.json`, { cache: "no-store" });
+    proj = await resp.text();
     proj = JSON.parse(proj);
   } catch (e) {
     return;

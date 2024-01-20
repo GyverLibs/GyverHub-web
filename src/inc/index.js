@@ -12,7 +12,7 @@ window.onload = () => {
   key_change();
   handle_back();
   register_SW();
-  if (cfg.use_pin) show_keypad(true);
+  if (cfg.use_pin && cfg.pin.length) show_keypad(true);
   else startup();
 
   function register_SW() {

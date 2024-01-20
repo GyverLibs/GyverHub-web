@@ -3,7 +3,7 @@
 
 ### Приложение
 - [Android](https://github.com/GyverLibs/GyverHub-app/releases/latest)
-- [Windows](https://github.com/neko-neko-nyan/gyverhub-desktop/releases/latest)
+- [Desktop](https://github.com/neko-neko-nyan/gyverhub-desktop/releases/latest)
 
 ### Папки
 - **app** - версия для приложения или запуска в браузере

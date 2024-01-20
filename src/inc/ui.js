@@ -96,7 +96,7 @@ async function show_screen(nscreen) {
       EL('title').innerHTML = dev.info.name + '/cfg';
       show_cfg();
       break;
-      
+
     case 'pin':
       display('back', 'inline-block');
       show_keypad(true);
@@ -425,6 +425,10 @@ function sendCLI() {
 }
 
 // =========== PIN ===========
+function make_pin(arg) {
+  if (arg.value.length >= 4) arg.value = arg.value.hashCode();
+  else arg.value = '';
+}
 function pass_type(v) {
   EL('pass_inp').value += v;
   let hash = EL('pass_inp').value.hashCode();

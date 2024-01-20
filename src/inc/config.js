@@ -7,6 +7,7 @@ function update_cfg(el) {
   update_theme();
 }
 function save_cfg() {
+  if (cfg.pin.length < 4) cfg.use_pin = false;
   localStorage.setItem('app_config', JSON.stringify(cfg));
   localStorage.setItem('hub_config', JSON.stringify(hub.cfg));
 }
@@ -33,6 +34,7 @@ function load_cfg_hub() {
   localStorage.setItem('hub_config', JSON.stringify(hub.cfg));
 }
 function apply_cfg() {
+  if (cfg.pin.length < 4) cfg.use_pin = false;
   for (let key in cfg) {
     let el = EL(key);
     if (el == undefined) continue;
@@ -66,11 +68,20 @@ async function cfg_import() {
     save_cfg();
     save_devices();
     showPopup(lang.import_ok);
-    setTimeout(() => location.reload(), 1500);
+    setTimeout(() => location.reload(), 500);
   } catch (e) {
     showPopupError(lang.import_err);
   }
 }
+async function cfg_reset() {
+  if (await asyncConfirm(lang.cfg_reset_conf)) {
+    localStorage.removeItem("app_config");
+    localStorage.removeItem("hub_config");
+    localStorage.removeItem("devices");
+    setTimeout(() => location.reload(), 500);
+  }
+}
+
 function update_theme() {
   let v = themes[cfg.theme];
   let r = document.querySelector(':root');

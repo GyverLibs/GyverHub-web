@@ -45,6 +45,8 @@ const langBase = {
         cfg_sett: "Settings",
         cfg_import: "Import",
         cfg_export: "Export",
+        cfg_reset: "Reset",
+        cfg_reset_conf: "Reset all settings?",
 
         m_config: "Config",
         m_info: "Info",
@@ -139,6 +141,8 @@ const langBase = {
         cfg_sett: "Настройки",
         cfg_import: "Импорт",
         cfg_export: "Экспорт",
+        cfg_reset: "Сброс",
+        cfg_reset_conf: "Сбросить все настройки?",
 
         m_config: "Настройки",
         m_info: "Инфо",
