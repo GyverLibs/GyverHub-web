@@ -3,9 +3,9 @@ window.onload = () => {
   load_cfg_hub();
   updateLang();
   render_main();
-  EL('hub_stat').innerHTML = 'GyverHub v' + app_version + ' ' + (isPWA() ? 'PWA ' : '') + (isSSL() ? 'SSL ' : '') + (isLocal() ? 'Local ' : '') + (isESP() ? 'ESP ' : '') + (isApp() ? 'App ' : '') + (isDesktop() ? 'Desktop ' : '');
+  EL('hub_stat').innerHTML = 'GyverHub v' + app_version + ' ' + platform();
 
-  if (isESP()) hub.cfg.use_local = true;  // force local on esp
+  if (platform() == 'esp') hub.cfg.use_local = true;  // force local on esp
   update_ip();
   update_theme();
   set_drop();
@@ -17,7 +17,7 @@ window.onload = () => {
 
   function register_SW() {
     /*NON-ESP*/
-    if ('serviceWorker' in navigator && isHost()) {
+    if ('serviceWorker' in navigator && platform() == 'host') {
       navigator.serviceWorker.register('sw.js');
       window.addEventListener('beforeinstallprompt', (e) => deferredPrompt = e);
     }
@@ -80,7 +80,7 @@ window.onload = () => {
     }
   }
   function update_ip() {//TODO
-    if (isESP() || window_ip()) {
+    if (platform() == 'esp' || window_ip()) {
       EL('local_ip').value = window_ip();
       hub.cfg.local_ip = window_ip();
     }
@@ -130,24 +130,24 @@ function startup() {
   discover();
 
   /*NON-ESP*/
-  if (isSSL()) {
+  if (!wifiAllowed()) {
     display('http_only_http', 'block');
     display('http_settings', 'none');
     display('pwa_unsafe', 'none');
   }
-  if (!isHost()) {
+  if (platform() != 'host') {
     display('pwa_block', 'none');
     display('devlink_btn', 'none');
     display('qr_btn', 'none');
   }
-  if (isApp()) {
-    display('app_block', 'none');
+  if (platform() == 'host') {
+    display('app_block', 'block');
   }
 
   serial_check_ports();
   /*/NON-ESP*/
 
-  if (isESP()) {
+  if (platform() == 'esp') {
     for (let dev of hub.devices) {
       if (window.location.href.includes(dev.info.ip)) {
         dev.conn = Conn.HTTP;
@@ -171,7 +171,7 @@ function discover() {
     display(`MQTT#${id}`, 'none');
   }
 
-  if (isESP()) {
+  if (platform() == 'esp') {
     hub.http.discover_ip(window_ip(), window.location.port.length ? window.location.port : 80);
   } else {
     hub.discover();

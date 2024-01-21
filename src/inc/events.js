@@ -127,9 +127,9 @@ hub.onFsFetchEnd = (id, name, index, data) => {
   display('download#' + index, 'inline-block');
   EL('download#' + index).href = ('data:' + getMime(name) + ';base64,' + data);
   EL('download#' + index).download = name;
-  if (!isApp()) display('open#' + index, 'inline-block'); // TODO
   display('edit#' + index, 'inline-block');
   display('process#' + index, 'none');
+  if (platform() != 'mobile') display('open#' + index, 'inline-block');
 }
 hub.onFsFetchError = (id, index, code) => {
   if (id != focused) return;

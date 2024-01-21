@@ -70,38 +70,29 @@ let cfg = {
 };
 
 // ====================== CHECK ======================
+function platform() {
+  //if ((window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || document.referrer.includes('android-app://')) return 'pwa';
+  if (!non_host) return 'host';
+  if (!non_esp) return 'esp';
+  if ('GyverHubDesktop' in window) return 'desktop';
+  if ('flutter_inappwebview' in window) return 'mobile';
+  return 'local';
+}
+
 function isSSL() {
   return window.location.protocol == 'https:';
 }
-function isLocal() {
-  return !isDesktop() && window_ip() != '127.0.0.1' && (window.location.href.startsWith('file') || checkIP(window_ip()) || window_ip() == 'localhost');
-}
-function isHost() {
-  return !non_host;
-}
-function isApp() {
-  return !non_app;
-}
-function isDesktop() {
-  return 'GyverHubDesktop' in window;
-}
-function isMobApp() {
-  return isApp() && !isDesktop();
-}
-function isPWA() {
-  return (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || document.referrer.includes('android-app://');
-}
-function isESP() {
-  return !non_esp;
+function wifiAllowed() {
+  return platform() != 'host' || !isSSL();
 }
 function isTouch() {
   return navigator.maxTouchPoints || 'ontouchstart' in document.documentElement;
 }
 function hasSerial() {
-  return ("serial" in navigator) || isApp();
+  return ("serial" in navigator) || platform() == 'mobile';
 }
 function hasBT() {
-  return ("bluetooth" in navigator) || isApp();
+  return ("bluetooth" in navigator) || platform() == 'mobile';
 }
 
 // ====================== FUNC ======================
@@ -163,14 +154,14 @@ function b64ToText(base64) {
 }
 function asyncConfirm(msg) {
   return new Promise((resolve, reject) => {
-     const res = confirm(msg); 
-     resolve(res);
+    const res = confirm(msg);
+    resolve(res);
   });
 }
 function asyncPrompt(msg, placeh) {
   return new Promise((resolve, reject) => {
-     const res = prompt(msg, placeh); 
-     resolve(res);
+    const res = prompt(msg, placeh);
+    resolve(res);
   });
 }
 String.prototype.hashCode = function () {

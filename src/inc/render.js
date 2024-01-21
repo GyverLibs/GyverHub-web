@@ -569,13 +569,10 @@ function render_main() {
           <label class="switch"><input type="checkbox" id="check_upd" onchange="update_cfg(this)"><span class="slider"></span></label>
         </div>
 
-        <div class="ui_row" id="cfg_export_import">
-          <label class="ui_label">${lang.cfg_sett}</label>
-          <div class="ui_btn_row">
-            <button class="ui_btn ui_btn_mini" onclick="cfg_export()">${lang.cfg_export}</button>
-            <button class="ui_btn ui_btn_mini" onclick="cfg_import()">${lang.cfg_import}</button>
-            <button class="ui_btn ui_btn_mini" onclick="cfg_reset()">${lang.cfg_reset}</button>
-          </div>
+        <div class="ui_btn_row">
+          <button class="ui_btn ui_btn_mini" onclick="cfg_export()">${lang.cfg_export}</button>
+          <button class="ui_btn ui_btn_mini" onclick="cfg_import()">${lang.cfg_import}</button>
+          <button class="ui_btn ui_btn_mini" onclick="cfg_reset()">${lang.cfg_reset}</button>
         </div>
 
       </div>
@@ -609,7 +606,7 @@ function render_main() {
       </div>
       <!--/NON-ESP-->
 
-      <div class="ui_col" id="app_block">
+      <div class="ui_col" id="app_block" style="display:none">
         <div class="ui_row ui_head">
           <label class="ui_label"><span class="icon icon_ui"></span>App</label>
           <div class="ui_btn_row">
@@ -716,7 +713,7 @@ function render_info() {
 }
 function add_device(dev) {
   let icon = dev.icon;
-  if (icon.length && isESP()) icon = '';
+  if (icon.length && platform() == 'esp') icon = '';
   EL('devices').innerHTML += `
   <div class="device ${dev.conn == Conn.NONE ? 'offline' : ''}" id="device#${dev.id}" onclick="device_h('${dev.id}')" title="${dev.id} [${dev.prefix}]">
     <div class="device_inner">

@@ -4,8 +4,8 @@
 # pip install rcssmin
 # pip install rjsmin
 
-version = '0.53.22b'
-notes = 'Add esp web tool'
+version = '0.53.26b'
+notes = 'minor update'
 
 # ESP
 esp_remove_non_gz = True    # удалить несжатые файлы

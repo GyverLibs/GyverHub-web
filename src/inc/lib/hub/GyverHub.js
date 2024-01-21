@@ -104,7 +104,7 @@ class GyverHub {
     if (this.cfg.use_serial && "serial" in navigator) this.serial.discover();
     if (this.cfg.use_bt && "bluetooth" in navigator) this.bt.discover();
     /*/NON-ESP*/
-    if (this.cfg.use_local && !isSSL()) this.http.discover();
+    if (this.cfg.use_local && wifiAllowed()) this.http.discover();
     this._checkDiscoverEnd();
   }
   search() {
@@ -114,7 +114,7 @@ class GyverHub {
     if (this.cfg.use_serial && "serial" in navigator) this.serial.search();
     if (this.cfg.use_bt && "bluetooth" in navigator) this.bt.search();
     /*/NON-ESP*/
-    if (this.cfg.use_local && !isSSL()) this.http.search();
+    if (this.cfg.use_local && wifiAllowed()) this.http.search();
     this._checkDiscoverEnd();
   }
 

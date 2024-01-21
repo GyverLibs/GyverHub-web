@@ -51,7 +51,8 @@ async function loadProj(rep) {
     let name = proj.name;
     let repname = rep.split('/')[1];
     if (name.length > 30) name = name.slice(0, 30) + '..';
-    const btn = isHost() ? `<button title="${lang.p_install}" class="icon icon_btn_big" style="font-size:15px" onclick="EL('proj_${repname}').click()"></button>` : '';
+    let allowInstall = (platform() == 'host' || platform() == 'desktop');
+    const btn = allowInstall ? `<button title="${lang.p_install}" class="icon icon_btn_big" style="font-size:15px" onclick="EL('proj_${repname}').click()"></button>` : '';
 
     EL('projects').innerHTML += `
       <div class="proj">
@@ -64,7 +65,7 @@ async function loadProj(rep) {
         </div>
       </div>`;
 
-    if (isHost()) EL('projects').innerHTML += `
+    if (allowInstall) EL('projects').innerHTML += `
     <esp-web-install-button manifest="${manifest}" style="display:none">
       <button id="proj_${repname}" slot="activate"></button>
       <span slot="unsupported">${lang.p_not_support}</span>

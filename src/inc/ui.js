@@ -263,7 +263,7 @@ function update_ip_h() {
     else EL('local_ip').value = ip;
   });
   /*/NON-ESP*/
-  if (isESP()) EL('local_ip').value = window_ip();
+  if (platform() == 'esp') EL('local_ip').value = window_ip();
 }
 function menu_h() {
   menu_show(!menu_f);
