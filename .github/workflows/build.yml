@@ -1,0 +1,37 @@
+name: publish
+
+on:
+  push:
+    branches: 
+      dev
+
+jobs:
+  build:
+    permissions:
+      contents: write
+        
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+  
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip' # caching pip dependencies
+      
+      - run: pip install -r dev-requirements.txt
+
+      - run: echo "version=$(python ./build.py --next-version --automatic)" >> $GITHUB_OUTPUT
+        id: version
+
+      - run: python ./build.py --build --version="${{ steps.version.outputs.version }}" --automatic
+
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: dist/*
+          body: "Automatic release"
+          draft: true
+          makeLatest: true
+          name: GyverHub web ${{ steps.version.outputs.version }}
+          tag: v${{ steps.version.outputs.version }}
