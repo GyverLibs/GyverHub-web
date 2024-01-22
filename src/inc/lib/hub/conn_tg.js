@@ -60,8 +60,8 @@ class TGconn extends Discover {
     this._reconnect = false;
     this.onConnChange(0);
   }
-  send(text) {
-    if (this._hub.cfg.tg_chat.length) this.bot.send(this._hub.cfg.tg_chat, 'app:' + text);
+  async send(text) {
+    if (this._hub.cfg.tg_chat.length) await this.bot.send(this._hub.cfg.tg_chat, 'app:' + text);
   }
 
   _reconnect = false;

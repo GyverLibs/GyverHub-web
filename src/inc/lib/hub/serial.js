@@ -72,8 +72,11 @@ class SerialJS {
     try {
       const encoder = new TextEncoder();
       const writer = this._port.writable.getWriter();
-      await writer.write(encoder.encode(text));
-      writer.releaseLock();
+      try {
+        await writer.write(encoder.encode(text));
+      } finally {
+        writer.releaseLock();
+      }
     } catch (e) {
       this.onerror(e);
     }

@@ -29,7 +29,7 @@ class MQTTconn extends Discover {
   }
 
   // core
-  send(topic, msg = '') {
+  async send(topic, msg = '') {
     if (this.state()) this._client.publish(topic, msg);  // no '\0'
   }
   state() {

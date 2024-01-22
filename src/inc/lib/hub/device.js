@@ -31,7 +31,7 @@ class Device {
   module(mod) {
     return !(this.info.modules & mod);
   }
-  post(cmd, name = '', value = '') {
+  async post(cmd, name = '', value = '') {
     cmd = cmd.toString();
     name = name.toString();
     value = value.toString();
@@ -54,24 +54,24 @@ class Device {
     switch (this.conn) {
       case Conn.HTTP:
         if (this.ws.state()) this.ws.send(uri);
-        else this._hub.http.send(this.info.ip, this.info.http_port, `hub/${uri}`);
+        else await this._hub.http.send(this.info.ip, this.info.http_port, `hub/${uri}`);
         break;
 
       /*NON-ESP*/
       case Conn.SERIAL:
-        this._hub.serial.send(uri);
+        await this._hub.serial.send(uri);
         break;
 
       case Conn.BT:
-        this._hub.bt.send(uri);
+        await this._hub.bt.send(uri);
         break;
 
       case Conn.TG:
-        this._hub.tg.send(uri);
+        await this._hub.tg.send(uri);
         break;
 
       case Conn.MQTT:
-        this._hub.mqtt.send(uri0 + (name.length ? ('/' + name) : ''), value);
+        await this._hub.mqtt.send(uri0 + (name.length ? ('/' + name) : ''), value);
         break;
       /*/NON-ESP*/
     }
