@@ -1,7 +1,7 @@
-const CACHE_NAME = 'hub-cache-__VER__'
+const CACHE_NAME = 'hub-cache-<!--@![:version]-->';
 
 const CACHED_URLS = [
-  '__CACHE__'
+  /* @![:sw_cache] */
 ]
 
 self.addEventListener('install', event => {
