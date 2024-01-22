@@ -10,7 +10,7 @@ async function checkUpdates(id) {
   let namever = ver.split('@');
   let proj;
   try {
-    const resp = await fetch(`https://raw.githubusercontent.com/${namever[0]}/main/project.json`, { cache: "no-store" });
+    const resp = await fetch("https://raw.githubusercontent.com/"+namever[0]+"/main/project.json", { cache: "no-store" });
     proj = await resp.text();
     proj = JSON.parse(proj);
   } catch (e) {

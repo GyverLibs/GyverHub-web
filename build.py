@@ -5,6 +5,7 @@ import shutil
 import gzip
 import zipfile
 import re
+import base64
 
 import rjsmin
 import rcssmin
@@ -15,99 +16,7 @@ BUILDDIR = os.path.join(HERE, 'build')
 DISTDIR = os.path.join(HERE, 'dist')
 
 RE_TAG_SINGLELINE = re.compile(r'(?:/\*|<!--)\s*@!\[(?P<tag>[^\]]*)\]\s*(?:\*/|-->)')
-RE_TAG_MULTILINE = re.compile(r'(?:/\*|<!--)\s*@!\[(?P<tag>[^\]]*)\]\s*(?:\*/|-->)(?P<data>.*?)(?:/\*|<!--)\s*@!/\[(?P<end_tag>[^\]]*)\]\s*(?:\*/|-->)')
-
-
-js_lib_sources = [
-    "src/inc/lib/hub/mqtt.min.js",
-    "src/inc/lib/hub/codes.js",
-    "src/inc/lib/hub/bt.js",
-    "src/inc/lib/hub/tg.js",
-    "src/inc/lib/hub/serial.js",
-    "src/inc/lib/hub/utils.js",
-    "src/inc/lib/hub/buffer.js",
-    "src/inc/lib/hub/discover.js",
-    "src/inc/lib/hub/conn_bt.js",
-    "src/inc/lib/hub/conn_tg.js",
-    "src/inc/lib/hub/conn_http.js",
-    "src/inc/lib/hub/conn_mqtt.js",
-    "src/inc/lib/hub/conn_serial.js",
-    "src/inc/lib/hub/conn_ws.js",
-    "src/inc/lib/hub/device.js",
-    "src/inc/lib/hub/GyverHub.js",
-]
-
-js_sources = [
-    *js_lib_sources,
-
-    "src/inc/lib/qrcode.min.js",
-    "src/inc/lib/sort-paths.min.js",
-    "src/inc/lib/pickr.min.js",
-    "src/inc/utils.js",
-
-    "src/inc/widgets/render.js",
-    "src/inc/widgets/menu.js",
-    "src/inc/widgets/widget.js",
-    "src/inc/widgets/button.js",
-    "src/inc/widgets/label.js",
-    "src/inc/widgets/title.js",
-    "src/inc/widgets/plugin.js",
-    "src/inc/widgets/switch.js",
-    "src/inc/widgets/swicon.js",
-    "src/inc/widgets/display.js",
-    "src/inc/widgets/image.js",
-    "src/inc/widgets/table.js",
-    "src/inc/widgets/datetime.js",
-    "src/inc/widgets/popup.js",
-    "src/inc/widgets/log.js",
-    "src/inc/widgets/text.js",
-    "src/inc/widgets/input.js",
-    "src/inc/widgets/pass.js",
-    "src/inc/widgets/area.js",
-    "src/inc/widgets/slider.js",
-    "src/inc/widgets/spinner.js",
-    "src/inc/widgets/custom.js",
-    "src/inc/widgets/func.js",
-    "src/inc/widgets/select.js",
-    "src/inc/widgets/color.js",
-    "src/inc/widgets/led.js",
-    "src/inc/widgets/icon.js",
-    "src/inc/widgets/ui_file.js",
-    "src/inc/widgets/hook.js",
-    "src/inc/widgets/gauge.js",
-    "src/inc/widgets/gauge_r.js",
-    "src/inc/widgets/gauge_l.js",
-    "src/inc/widgets/joy.js",
-    "src/inc/widgets/dpad.js",
-    "src/inc/widgets/flags.js",
-    "src/inc/widgets/tabs.js",
-    "src/inc/widgets/canvas.js",
-    "src/inc/widgets/stream.js",
-    "src/inc/widgets/plot.js",
-
-    "src/inc/controls.js",
-    "src/inc/lang.js",
-    "src/inc/render.js",
-    "src/inc/config.js",
-    "src/inc/projects.js",
-    "src/inc/ui.js",
-    "src/inc/fs.js",
-    "src/inc/index.js",
-    "src/inc/updates.js",
-    "src/inc/events.js",
-    "src/inc/test.js",
-]
-
-css_sources = [
-    'src/inc/lib/nano.min.css',
-    'src/inc/style/main.css',
-    'src/inc/style/ui.css',
-    'src/inc/style/widgets.css',
-]
-
-js_sw_sources = [
-    'src/sw.js',
-]
+RE_TAG_MULTILINE = re.compile(r'(?:/\*|<!--)\s*@\[(?P<tag>[^\]]*)\]\s*(?:\*/|-->)(?P<data>(.|\n)*?)(?:/\*|<!--)\s*@/\[(?P<end_tag>[^\]]*)\]\s*(?:\*/|-->)', re.MULTILINE)
 
 sw_cache = '''
   '/',
@@ -133,81 +42,130 @@ inc_min = '''
   <link href="style.css?__VER__=" rel="stylesheet">
 '''
 
+metrika_code = '''
+  <script type="text/javascript">
+    (function (m, e, t, r, i, k, a) {
+        m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
+        m[i].l = 1 * new Date();
+        for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
+        k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
+    })
+        (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+    ym(93507215, "init", {clickmap: true, trackLinks: true, accurateTrackBounce: true});
+  </script>
+  <noscript>
+    <div><img src="https://mc.yandex.ru/watch/93507215" style="position:absolute; left:-9999px;" alt="" /></div>
+  </noscript>
+'''
 
-def read_all(sources):
-    res = []
-    for file in sources:
-        print("R", file)
-        with open(file, 'rt', encoding='utf-8') as f:
-            res.append(f.read())
-    
-    return '\n'.join(res)
+
+class PathResolver:
+    def __init__(self, src_dir: str, build_dir: str, dist_dir: str):
+        self.src_dir = src_dir
+        self.build_dir = build_dir
+        self.dist_dir = dist_dir
+
+    def resolve(self, path: str, target: str, dist: bool = False):
+        if dist:
+            return os.path.join(self.dist_dir, target, path)
+
+        if path.startswith('@'):
+            return os.path.join(self.build_dir, target, path[1:])
+        
+        return os.path.join(self.src_dir, path)
 
 
-def write_text(path, text):
-    print("W", path)
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'wt', encoding='utf-8') as f:
-        f.write(text)
+class Compiler:
+    def __init__(self, target: str, env: dict[str, str], pr: PathResolver):
+        self._env = env.copy()
+        self._env['target'] = target
+        self._target = target
+        self._resolver = pr
 
+    def _resolve_read(self, path):
+        path = self._resolver.resolve(path, self._target)
+        with open(path, 'rt', encoding='utf-8') as f:
+            return f.read()
 
-def compile_replace(target, source):
-    env = {
-        'target': target,
-        'version': '0.53.26b',
-        'sw_cache': sw_cache
-    }
-    def _matched(match: re.Match[str]):
+    def _resolve_write(self, path: str, data: str, options: list):
+        path = self._resolver.resolve(path, self._target, dist='dist' in options)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'wt', encoding='utf-8') as f:
+            f.write(data)
+
+    def _include(self, path: str, options: list):
+        data = self._resolve_read(path)
+
+        if "compile" in options:
+            data = self.compile_str(data)
+
+        if "js" in options:
+            data = rjsmin.jsmin(data)
+
+        if "css" in options:
+            data = rcssmin.cssmin(data)
+
+        if "html" in options:
+            data = minify_html(data)
+
+        return data
+
+    def _re_matched(self, match: re.Match[str]) -> str:
         d = match.groupdict()
         tag = d['tag']
         end_tag = d.get('end_tag')
         if end_tag is not None and end_tag != tag:
             raise RuntimeError(f'End tag does not match {tag!r} != {end_tag!r}')
 
-        tag, _, arg = tag.partition(':')
+        tag, _, args = tag.partition(':')
         tag = tag.strip()
-        arg = arg.strip()
+        args = [i.strip() for i in args.split(',')]
         data = d.get('data', '')
 
         if tag == 'env' or tag == '':
-            return env.get(arg, '')
+            return self._env.get(args[0], '')
         
         if tag == 'if_target':
-            return data if target == arg else ''
+            return data if self._target in args else ''
         
         if tag == 'if_not_target':
-            return data if target != arg else ''
+            return '' if self._target in args else data
 
-        print(tag, data)
+        if tag == 'include':
+            return self._include(args[0], args[1:])
+
+        if tag == 'copy':
+            self.compile_file(args[0], args[1], args[2:])
+            return ''
+        
+        if tag == 'base64_include':
+            path = self._resolver.resolve(args[0])
+            return base64_file(path)
+
+        print(tag, args, data)
         return ''
 
-    source = RE_TAG_MULTILINE.sub(_matched, source)
-    source = RE_TAG_SINGLELINE.sub(_matched, source)
-
-    # source = source.replace('__VER__', version)
-    # source = source.replace('\'__CACHE__\'', sw_cache)
-    # source = source.replace('__NOTES__', notes)
-
-    return source
-
-
-def compile_js(target, out_path, sources):
-    source = read_all(sources)
-    source = compile_replace(target, source)
-    source = rjsmin.jsmin(source)
-    write_text(out_path, source)
-
-def compile_css(target, out_path, sources):
-    source = read_all(sources)
-    source = compile_replace(target, source)
-    source = rcssmin.cssmin(source)
-    write_text(out_path, source)
+    def compile_str(self, source: str):
+        source = RE_TAG_MULTILINE.sub(self._re_matched, source)
+        source = RE_TAG_SINGLELINE.sub(self._re_matched, source)
+        return source
+    
+    def compile_file(self, source: str, target: str, options: list = None):
+        if options is None:
+            options = ['compile']
+        
+        data = self._include(source, options)
+        self._resolve_write(target, data, options)
 
 
-def compile_html(target, out_path, source):
-    source = read_all([source])
-    source = compile_replace(target, source)
-    write_text(out_path, source)
+def base64_file(path: str) -> str:
+    with open(path, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode('ascii')
+
+
+def minify_html(text):
+    return text
 
 
 def pack_gzip(src, dst):
@@ -241,7 +199,9 @@ def file_to_h(src, dst, name, version):
 
     data += '\n};'
 
-    write_text(dst, data)
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    with open(dst, 'wt', encoding='utf-8') as f:
+        f.write(data)
 
 
 def git_get_version():
@@ -286,12 +246,17 @@ def main():
     
     print("Starting build...")
 
-    # Lib
+    resolver = PathResolver(SRCDIR, BUILDDIR, DISTDIR)
+    env = {
 
-    # compile_js('lib', os.path.join(DISTDIR, 'GyverHub.min.js'), js_lib_sources)
+    }
+
+    # Lib
+    # Compiler('lib', env, resolver).compile_file('inc/lib/hub/index.js', 'GyverHub.min.js', ['compile', 'js', 'dist'])
 
     # Host
 
+    Compiler('host', env, resolver).compile_file('index.html', '@index.html', ['compile', 'html'])
     # for file in copy_web:
     #     dst = os.path.join(BUILDDIR, 'host', file)
     #     os.makedirs(os.path.dirname(dst), exist_ok=True)
@@ -304,9 +269,9 @@ def main():
     # compile_js('host', os.path.join(BUILDDIR, 'host', 'sw.js'), js_sw_sources)
     # compile_css('host', os.path.join(BUILDDIR, 'host', 'style.css'), css_sources)
 
+    return
     html_source = os.path.join(SRCDIR, 'index.html')
     compile_html('host', os.path.join(BUILDDIR, 'host', 'index.html'), html_source)
-    return
 
     pack_zip(os.path.join(BUILDDIR, 'host'), os.path.join(DISTDIR, 'host.zip'))
 

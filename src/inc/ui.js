@@ -259,7 +259,7 @@ function update_ip_h() {
   /*NON-ESP*/
   if (!Boolean(window.webkitRTCPeerConnection || window.mozRTCPeerConnection)) notSupported();
   else getLocalIP().then((ip) => {
-    if (ip.indexOf("local") > 0) alert(`Disable WEB RTC anonymizer: ${browser()}://flags/#enable-webrtc-hide-local-ips-with-mdns`);
+    if (ip.indexOf("local") > 0) alert(`Disable WEB RTC anonymizer: ${browser()}:/``/flags/#enable-webrtc-hide-local-ips-with-mdns`);
     else EL('local_ip').value = ip;
   });
   /*/NON-ESP*/
