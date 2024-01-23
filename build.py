@@ -6,6 +6,9 @@ import gzip
 import zipfile
 import re
 import base64
+import json
+import io
+import html.parser
 
 import rjsmin
 import rcssmin
@@ -18,46 +21,6 @@ DISTDIR = os.path.join(HERE, 'dist')
 RE_TAG_SINGLELINE = re.compile(r'(?:/\*|<!--)\s*@!\[(?P<tag>[^\]]*)\]\s*(?:\*/|-->)')
 RE_TAG_MULTILINE = re.compile(r'(?:/\*|<!--)\s*@\[(?P<tag>[^\]]*)\]\s*(?:\*/|-->)(?P<data>(.|\n)*?)(?:/\*|<!--)\s*@/\[(?P<end_tag>[^\]]*)\]\s*(?:\*/|-->)', re.MULTILINE)
 
-sw_cache = '''
-  '/',
-  '/fa-solid-900.woff2',
-  '/Robotocondensed.woff2',
-  '/favicon.svg',
-  '/index.html',
-  '/script.js',
-  '/style.css',
-'''
-
-copy_web = [
-    'favicon.svg',
-    'manifest.json',
-    'icons/icon-192x192.png',
-    'icons/icon-256x256.png',
-    'icons/icon-384x384.png',
-    'icons/icon-512x512.png',
-]
-
-inc_min = '''
-  <script src="script.js?__VER__="></script>
-  <link href="style.css?__VER__=" rel="stylesheet">
-'''
-
-metrika_code = '''
-  <script type="text/javascript">
-    (function (m, e, t, r, i, k, a) {
-        m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
-        m[i].l = 1 * new Date();
-        for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
-        k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
-    })
-        (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-    ym(93507215, "init", {clickmap: true, trackLinks: true, accurateTrackBounce: true});
-  </script>
-  <noscript>
-    <div><img src="https://mc.yandex.ru/watch/93507215" style="position:absolute; left:-9999px;" alt="" /></div>
-  </noscript>
-'''
-
 
 class PathResolver:
     def __init__(self, src_dir: str, build_dir: str, dist_dir: str):
@@ -67,7 +30,7 @@ class PathResolver:
 
     def resolve(self, path: str, target: str, dist: bool = False):
         if dist:
-            return os.path.join(self.dist_dir, target, path)
+            return os.path.join(self.dist_dir, path)
 
         if path.startswith('@'):
             return os.path.join(self.build_dir, target, path[1:])
@@ -82,31 +45,39 @@ class Compiler:
         self._target = target
         self._resolver = pr
 
-    def _resolve_read(self, path):
+    def _resolve_read(self, path: str) -> bytes:
+        print('  [R]', path)
         path = self._resolver.resolve(path, self._target)
-        with open(path, 'rt', encoding='utf-8') as f:
+        with open(path, 'rb') as f:
             return f.read()
 
-    def _resolve_write(self, path: str, data: str, options: list):
-        path = self._resolver.resolve(path, self._target, dist='dist' in options)
+    def _resolve_write(self, path: str, data: bytes):
+        print('  [W]', path)
+        path = self._resolver.resolve(path, self._target)
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, 'wt', encoding='utf-8') as f:
+        with open(path, 'wb') as f:
             f.write(data)
 
-    def _include(self, path: str, options: list):
+    def _include(self, path: str, options: list) -> bytes:
         data = self._resolve_read(path)
 
         if "compile" in options:
-            data = self.compile_str(data)
+            data = self.compile_str(data.decode('utf-8')).encode('utf-8')
 
         if "js" in options:
-            data = rjsmin.jsmin(data)
+            data = rjsmin.jsmin(data.decode('utf-8')).encode('utf-8')
 
         if "css" in options:
-            data = rcssmin.cssmin(data)
+            data = rcssmin.cssmin(data.decode('utf-8')).encode('utf-8')
 
         if "html" in options:
-            data = minify_html(data)
+            data = HtmlMinifier().minify(data.decode('utf-8')).encode('utf-8')
+
+        if "json" in options:
+            data = minify_json(data.decode('utf-8')).encode('utf-8')
+
+        if "base64" in options:
+            data = base64.b64encode(data)
 
         return data
 
@@ -132,17 +103,17 @@ class Compiler:
             return '' if self._target in args else data
 
         if tag == 'include':
-            return self._include(args[0], args[1:])
+            return self._include(args[0], args[1:]).decode('utf-8')
 
-        if tag == 'copy':
-            self.compile_file(args[0], args[1], args[2:])
+        if tag == 'add_file':
+            self.compile_file(args[0], options=args[1:])
             return ''
-        
-        if tag == 'base64_include':
-            path = self._resolver.resolve(args[0])
-            return base64_file(path)
 
-        print(tag, args, data)
+        if tag == 'add_file_to':
+            self.compile_file(args[0], args[1], options=args[2:])
+            return ''
+
+        print('W: unknown tag:', tag)
         return ''
 
     def compile_str(self, source: str):
@@ -150,22 +121,69 @@ class Compiler:
         source = RE_TAG_SINGLELINE.sub(self._re_matched, source)
         return source
     
-    def compile_file(self, source: str, target: str, options: list = None):
+    def compile_file(self, source: str, target: str = None, *, language: str = None, options: list = None):
         if options is None:
             options = ['compile']
+        if target is None:
+            target = '@' + source
+        if language is None:
+            options.append(os.path.splitext(source)[1][1:])
+        else:
+            options.append(language)
         
         data = self._include(source, options)
-        self._resolve_write(target, data, options)
+        self._resolve_write(target, data)
 
 
-def base64_file(path: str) -> str:
-    with open(path, 'rb') as f:
-        data = f.read()
-    return base64.b64encode(data).decode('ascii')
+class HtmlMinifier(html.parser.HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=False)
+        self._out = io.StringIO()
+
+    @staticmethod
+    def _attrv(v):
+        if v is None:
+            return v
+        return f'="{html.escape(v)}"'
+    
+    @classmethod
+    def _attrs(cls, attrs):
+        if not attrs:
+            return ''
+        return ' ' + ' '.join((f'{k}{cls._attrv(v)}' for k, v in attrs))
+
+    def get_value(self):
+        return self._out.getvalue()
+
+    def handle_startendtag(self, tag, attrs):
+        self._out.write(f'<{tag}{self._attrs(attrs)}/>')
+
+    def handle_starttag(self, tag, attrs):
+        self._out.write(f'<{tag}{self._attrs(attrs)}>')
+
+    def handle_endtag(self, tag):
+        self._out.write(f'</{tag}>')
+
+    def handle_charref(self, name):
+        self._out.write(f'&#{name};')
+
+    def handle_entityref(self, name):
+        self._out.write(f'&{name};')
+
+    def handle_data(self, data):
+        self._out.write(data.strip())
+
+    def handle_decl(self, decl):
+        self._out.write(f'<!{decl}>')
+
+    def minify(self, text):
+        self.feed(text)
+        self.close()
+        return self.get_value()
 
 
-def minify_html(text):
-    return text
+def minify_json(text):
+    return json.dumps(json.loads(text), ensure_ascii=False, separators=(',', ':'))
 
 
 def pack_gzip(src, dst):
@@ -202,6 +220,71 @@ def file_to_h(src, dst, name, version):
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     with open(dst, 'wt', encoding='utf-8') as f:
         f.write(data)
+
+
+class Builder:
+    def __init__(self, env, pr: PathResolver):
+        self._env = env
+        self._resolver = pr
+    
+    def _compile(self, target: str, src: str, dst: str = None):
+        Compiler(target, self._env, self._resolver).compile_file(src, dst)
+
+    def _start_build(self, target):
+        print(f'Building for target {target!r}...')
+
+    def _build_zip(self, target, name):
+        src = self._resolver.resolve('@.', target)
+        dst = self._resolver.resolve(name, target, dist=True)
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        with zipfile.ZipFile(dst, 'w') as zf:
+            for dirpath, dirnames, filenames in os.walk(src):
+                for dirname in dirnames:
+                    path = os.path.join(dirpath, dirname)
+                    zf.write(path, os.path.relpath(path, src))
+                for filename in filenames:
+                    path = os.path.join(dirpath, filename)
+                    zf.write(path, os.path.relpath(path, src))
+
+    def build_package(self, target: str, src: str, name: str, dst: str = None):
+        self._start_build(target)
+        self._compile(target, src, dst)
+        self._build_zip(target, name)
+
+    def build_direct(self, target: str, src: str, dst: str = None):
+        self._start_build(target)
+        temp = '@tempfile'
+        self._compile(target, src, temp)
+        
+        src = self._resolver.resolve(temp, target)
+        dst = self._resolver.resolve(dst, target, dist=True)
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        shutil.copy(src, dst)
+
+    def build_esp_gzip(self, target, src_target, name):
+        self._start_build(target)
+        src = self._resolver.resolve('@.', src_target)
+        for dirpath, _, filenames in os.walk(src):
+            for filename in filenames:
+                path = os.path.join(dirpath, filename)
+                dst = self._resolver.resolve('@' + os.path.relpath(path, src), target)
+                pack_gzip(path, dst)
+
+        self._build_zip(target, name)
+
+    def build_esp_headers(self, target, src_target, name):
+        self._start_build(target)
+        version = self._env['version']
+
+        src = self._resolver.resolve('@.', src_target)
+        for dirpath, _, filenames in os.walk(src):
+            for filename in filenames:
+                path = os.path.join(dirpath, filename)
+                dst = self._resolver.resolve('@' + os.path.relpath(path, src), target)
+                basename = os.path.splitext(os.path.basename(path))[0]
+                file_to_h(path, dst, f'hub_{basename}_h', version)
+        
+        self._build_zip(target, name)
 
 
 def git_get_version():
@@ -243,72 +326,20 @@ def main():
         
         print(version)
         return
-    
-    print("Starting build...")
 
-    resolver = PathResolver(SRCDIR, BUILDDIR, DISTDIR)
     env = {
-
+        'version': args.version,
     }
 
-    # Lib
-    # Compiler('lib', env, resolver).compile_file('inc/lib/hub/index.js', 'GyverHub.min.js', ['compile', 'js', 'dist'])
-
-    # Host
-
-    Compiler('host', env, resolver).compile_file('index.html', '@index.html', ['compile', 'html'])
-    # for file in copy_web:
-    #     dst = os.path.join(BUILDDIR, 'host', file)
-    #     os.makedirs(os.path.dirname(dst), exist_ok=True)
-    #     shutil.copyfile(os.path.join(SRCDIR, file), dst)
-
-    # shutil.copyfile('src/inc/style/fonts/fa-solid-900.woff2', 'build/host/fonts/fa-solid-900.woff2')
-    # shutil.copyfile('src/inc/style/fonts/Robotocondensed.woff2', 'build/host/fonts/Robotocondensed.woff2')
-
-    # compile_js('host', os.path.join(BUILDDIR, 'host', 'script.js'), js_sources)
-    # compile_js('host', os.path.join(BUILDDIR, 'host', 'sw.js'), js_sw_sources)
-    # compile_css('host', os.path.join(BUILDDIR, 'host', 'style.css'), css_sources)
-
-    return
-    html_source = os.path.join(SRCDIR, 'index.html')
-    compile_html('host', os.path.join(BUILDDIR, 'host', 'index.html'), html_source)
-
-    pack_zip(os.path.join(BUILDDIR, 'host'), os.path.join(DISTDIR, 'host.zip'))
-
-    # mobile
-
-    compile_js('mobile', os.path.join(BUILDDIR, 'mobile', 'script.js'), js_sources)
-    compile_css('mobile', os.path.join(BUILDDIR, 'mobile', 'style.css'), css_sources)
-    compile_html('mobile', os.path.join(DISTDIR, 'host', 'mobile.html'), html_source)
-
-    # desktop
-
-    compile_js('desktop', os.path.join(BUILDDIR, 'desktop', 'script.js'), js_sources)
-    compile_css('desktop', os.path.join(BUILDDIR, 'desktop', 'style.css'), css_sources)
-    compile_html('desktop', os.path.join(DISTDIR, 'host', 'desktop.html'), html_source)
-
-    # local
-
-    compile_js('local', os.path.join(BUILDDIR, 'local', 'script.js'), js_sources)
-    compile_css('local', os.path.join(BUILDDIR, 'local', 'style.css'), css_sources)
-    compile_html('local', os.path.join(DISTDIR, 'host', 'local.html'), html_source)
-
-    # esp 
-
-    compile_js('esp', os.path.join(BUILDDIR, 'esp', 'script.js'), js_sources)
-    compile_css('esp', os.path.join(BUILDDIR, 'esp', 'style.css'), css_sources)
-    compile_html('esp', os.path.join(BUILDDIR, 'esp', 'index.html'), html_source)
-
-    pack_gzip(os.path.join(BUILDDIR, 'esp', 'script.js'), os.path.join(BUILDDIR, 'esp-gz', 'script.js.gz'))
-    pack_gzip(os.path.join(BUILDDIR, 'esp', 'style.css'), os.path.join(BUILDDIR, 'esp-gz', 'style.css.gz'))
-    pack_gzip(os.path.join(BUILDDIR, 'esp', 'index.html'), os.path.join(BUILDDIR, 'esp-gz', 'index.html.gz'))
-
-    file_to_h(os.path.join(BUILDDIR, 'esp-gz', 'script.js.gz'), os.path.join(BUILDDIR, 'esp-h', 'script.h'), 'hub_script_h', args.version)
-    file_to_h(os.path.join(BUILDDIR, 'esp-gz', 'style.css.gz'), os.path.join(BUILDDIR, 'esp-h', 'style.h'), 'hub_style_h', args.version)
-    file_to_h(os.path.join(BUILDDIR, 'esp-gz', 'index.html.gz'), os.path.join(BUILDDIR, 'esp-h', 'index.h'), 'hub_index_h', args.version)
-
-    pack_zip(os.path.join(BUILDDIR, 'esp-h'), os.path.join(DISTDIR, 'esp-headers.zip'))
-
+    b = Builder(env, PathResolver(SRCDIR, BUILDDIR, DISTDIR))
+    b.build_direct('lib', 'inc/lib/hub/index.js', 'GyverHub.min.js')
+    b.build_package('host', 'index.html', 'host.zip')
+    b.build_direct('mobile', 'index.html', 'mobile.html')
+    b.build_direct('desktop', 'index.html', 'desktop.html')
+    b.build_direct('local', 'index.html', 'GyverHub.html')
+    b.build_package('esp', 'index.html', 'esp.zip')
+    b.build_esp_gzip('esp-gz', 'esp', 'esp-gz.zip')
+    b.build_esp_headers('esp-h', 'esp-gz', 'esp-headers.zip')
 
 
 if __name__ == '__main__':

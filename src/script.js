@@ -1,58 +1,31 @@
+/*@![include:inc/lib/hub/index.js, compile]*/
 
-/*@![include:inc/lib/hub/index.js, compile, js]*/
-/*@![include:inc/lib/qrcode.min.js, compile, js]*/
-/*@![include:inc/lib/sort-paths.min.js, compile, js]*/
-/*@![include:inc/lib/pickr.min.js, compile, js]*/
-/*@![include:inc/utils.js, compile, js]*/
+/*@[if_not_target:esp]*/
+/*@![include:inc/lib/qrcode.min.js, compile]*/
+/*@/[if_not_target:esp]*/
 
-/*@![include:inc/widgets/render.js, compile, js]*/
-/*@![include:inc/widgets/menu.js, compile, js]*/
-/*@![include:inc/widgets/widget.js, compile, js]*/
-/*@![include:inc/widgets/button.js, compile, js]*/
-/*@![include:inc/widgets/label.js, compile, js]*/
-/*@![include:inc/widgets/title.js, compile, js]*/
-/*@![include:inc/widgets/plugin.js, compile, js]*/
-/*@![include:inc/widgets/switch.js, compile, js]*/
-/*@![include:inc/widgets/swicon.js, compile, js]*/
-/*@![include:inc/widgets/display.js, compile, js]*/
-/*@![include:inc/widgets/image.js, compile, js]*/
-/*@![include:inc/widgets/table.js, compile, js]*/
-/*@![include:inc/widgets/datetime.js, compile, js]*/
-/*@![include:inc/widgets/popup.js, compile, js]*/
-/*@![include:inc/widgets/log.js, compile, js]*/
-/*@![include:inc/widgets/text.js, compile, js]*/
-/*@![include:inc/widgets/input.js, compile, js]*/
-/*@![include:inc/widgets/pass.js, compile, js]*/
-/*@![include:inc/widgets/area.js, compile, js]*/
-/*@![include:inc/widgets/slider.js, compile, js]*/
-/*@![include:inc/widgets/spinner.js, compile, js]*/
-/*@![include:inc/widgets/custom.js, compile, js]*/
-/*@![include:inc/widgets/func.js, compile, js]*/
-/*@![include:inc/widgets/select.js, compile, js]*/
-/*@![include:inc/widgets/color.js, compile, js]*/
-/*@![include:inc/widgets/led.js, compile, js]*/
-/*@![include:inc/widgets/icon.js, compile, js]*/
-/*@![include:inc/widgets/ui_file.js, compile, js]*/
-/*@![include:inc/widgets/hook.js, compile, js]*/
-/*@![include:inc/widgets/gauge.js, compile, js]*/
-/*@![include:inc/widgets/gauge_r.js, compile, js]*/
-/*@![include:inc/widgets/gauge_l.js, compile, js]*/
-/*@![include:inc/widgets/joy.js, compile, js]*/
-/*@![include:inc/widgets/dpad.js, compile, js]*/
-/*@![include:inc/widgets/flags.js, compile, js]*/
-/*@![include:inc/widgets/tabs.js, compile, js]*/
-/*@![include:inc/widgets/canvas.js, compile, js]*/
-/*@![include:inc/widgets/stream.js, compile, js]*/
-/*@![include:inc/widgets/plot.js, compile, js]*/
+/*@![include:inc/lib/sort-paths.min.js, compile]*/
+/*@![include:inc/lib/pickr.min.js, compile]*/
+/*@![include:inc/utils.js, compile]*/
 
-/*@![include:inc/controls.js, compile, js]*/
-/*@![include:inc/lang.js, compile, js]*/
-/*@![include:inc/render.js, compile, js]*/
-/*@![include:inc/config.js, compile, js]*/
-/*@![include:inc/projects.js, compile, js]*/
-/*@![include:inc/ui.js, compile, js]*/
-/*@![include:inc/fs.js, compile, js]*/
-/*@![include:inc/index.js, compile, js]*/
-/*@![include:inc/updates.js, compile, js]*/
-/*@![include:inc/events.js, compile, js]*/
-/*@![include:inc/test.js, compile, js]*/
+/*@![include:inc/widgets/index.js, compile]*/
+
+/*@![include:inc/controls.js, compile]*/
+/*@![include:inc/lang.js, compile]*/
+/*@![include:inc/render.js, compile]*/
+/*@![include:inc/config.js, compile]*/
+
+/*@[if_not_target:esp]*/
+/*@![include:inc/projects.js, compile]*/
+/*@![include:inc/test.js, compile]*/
+/*@/[if_not_target:esp]*/
+
+/*@![include:inc/ui.js, compile]*/
+/*@![include:inc/fs.js, compile]*/
+/*@![include:inc/index.js, compile]*/
+/*@![include:inc/updates.js, compile]*/
+/*@![include:inc/events.js, compile]*/
+
+/*@[if_target:host]*/
+/*@![add_file:sw.js, compile]*/
+/*@/[if_target:host]*/

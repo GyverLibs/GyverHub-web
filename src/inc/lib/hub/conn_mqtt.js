@@ -1,4 +1,3 @@
-/*NON-ESP*/
 class MQTTconn extends Discover {
   tout = 1500;
 
@@ -158,4 +157,3 @@ class MQTTconn extends Discover {
     this._hub.err('[MQTT] ' + e);
   }
 };
-/*/NON-ESP*/

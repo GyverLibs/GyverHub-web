@@ -115,7 +115,7 @@ function update_theme() {
 
   updateLang();
 
-  /*NON-ESP*/
+/*@[if_not_target:esp]*/
   display('mq_block', hub.cfg.use_mqtt ? b : n);
   EL('mqtt_label').style.color = hub.cfg.use_mqtt ? f : f3;
 
@@ -129,7 +129,7 @@ function update_theme() {
   let ser = hub.cfg.use_serial && hasSerial();
   display('serial_block', ser ? b : n);
   EL('serial_label').style.color = ser ? f : f3;
-  /*/NON-ESP*/
+  /*@/[if_not_target:esp]*/
 }
 function save_devices() {
   localStorage.setItem('devices', hub.export());

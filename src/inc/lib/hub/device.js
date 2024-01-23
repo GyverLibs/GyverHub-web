@@ -57,7 +57,7 @@ class Device {
         else await this._hub.http.send(this.info.ip, this.info.http_port, `hub/${uri}`);
         break;
 
-      /*NON-ESP*/
+/*@[if_not_target:esp]*/
       case Conn.SERIAL:
         await this._hub.serial.send(uri);
         break;
@@ -73,7 +73,7 @@ class Device {
       case Conn.MQTT:
         await this._hub.mqtt.send(uri0 + (name.length ? ('/' + name) : ''), value);
         break;
-      /*/NON-ESP*/
+/*@/[if_not_target:esp]*/
     }
 
     if (this.focused) {

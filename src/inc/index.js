@@ -16,12 +16,12 @@ window.onload = () => {
   else startup();
 
   function register_SW() {
-    /*NON-ESP*/
-    if ('serviceWorker' in navigator && platform() == 'host') {
+    /*@[if_target:host]*/
+    if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
       window.addEventListener('beforeinstallprompt', (e) => deferredPrompt = e);
     }
-    /*/NON-ESP*/
+    /*@/[if_target:host]*/
   }
   function set_drop() {
     function preventDrop(e) {
@@ -84,7 +84,7 @@ window.onload = () => {
       EL('local_ip').value = window_ip();
       hub.cfg.local_ip = window_ip();
     }
-    /*NON-ESP*/
+    /*@[if_not_target:esp]*/
     else if (!Boolean(window.webkitRTCPeerConnection || window.mozRTCPeerConnection)) return;
     getLocalIP()
       .then((ip) => {
@@ -95,7 +95,7 @@ window.onload = () => {
         return;
       })
       .catch(e => console.log(e));
-    /*/NON-ESP*/
+    /*@/[if_not_target:esp]*/
   }
 }
 function startup() {
@@ -120,7 +120,7 @@ function startup() {
   setTimeout(() => {
     let ver = localStorage.getItem('version');
     if (!ver || ver != app_version) {
-      alert('Версия ' + app_version + '!\n' + '__NOTES__');
+      alert('Версия ' + app_version + '!\n' + '/*@![:release_notes]*/');
       localStorage.setItem('version', app_version);
     }
   }, 1000);
@@ -129,7 +129,7 @@ function startup() {
   hub.begin();
   discover();
 
-  /*NON-ESP*/
+/*@[if_not_target:esp]*/
   if (!wifiAllowed()) {
     display('http_only_http', 'block');
     display('http_settings', 'none');
@@ -145,7 +145,7 @@ function startup() {
   }
 
   serial_check_ports();
-  /*/NON-ESP*/
+/*@/[if_not_target:esp]*/
 
   if (platform() == 'esp') {
     for (let dev of hub.devices) {

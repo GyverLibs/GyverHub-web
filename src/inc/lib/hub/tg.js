@@ -1,4 +1,3 @@
-/*NON-ESP*/
 class Bot {
   onpoll() { }
   onerror(e) { }
@@ -74,4 +73,3 @@ class Bot {
   _token = '';
   _tout = null;
 };
-/*/NON-ESP*/

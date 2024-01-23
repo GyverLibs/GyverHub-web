@@ -82,9 +82,9 @@ class Gauge {
         cx.stroke();
 
         let font = cfg.font;
-        /*NON-ESP*/
+        /*@[if_not_target:esp]*/
         font = 'Condensed';
-        /*/NON-ESP*/
+        /*@/[if_not_target:esp]*/
 
         cx.fillStyle = this.color;
         cx.font = '10px ' + font;

@@ -36,7 +36,7 @@ function render_main() {
   </div>
   `;
 
-  /*NON-ESP*/
+/*@[if_not_target:esp]*/
   // TEST
   test_cont.innerHTML = `
   <div class="test_text">А тут пока ничего нет. Но будет онлайн-тест интерфейса, в котором можно будет поиграться и проверить свой билд без загрузки прошивки</div>
@@ -58,7 +58,7 @@ function render_main() {
     </div>
   </div>
   `;
-  /*/NON-ESP*/
+/*@/[if_not_target:esp]*/
 
   // CLI
   cli_cont.innerHTML = `
@@ -72,7 +72,7 @@ function render_main() {
   </div>
   `;
 
-  /*NON-ESP*/
+/*@[if_not_target:esp]*/
   // FOOTER
   footer_cont.innerHTML = `
   <div class="footer_inner">
@@ -83,7 +83,7 @@ function render_main() {
     <a href="https://github.com/GyverLibs/GyverHub/wiki" target="_blank"><span class="icon icon_inline i_footer"></span>Wiki</a>
   </div>
   `;
-  /*/NON-ESP*/
+/*@/[if_not_target:esp]*/
 
   // MAIN
   main_cont.innerHTML = `
@@ -157,9 +157,9 @@ function render_main() {
         <div class="ui_btn_row">
           <button id="reboot_btn" class="ui_btn ui_btn_mini" onclick="reboot_h()"><span class="icon icon_inline"></span>${lang.i_reboot}</button>
           <button id="devlink_btn" class="ui_btn ui_btn_mini" onclick="devlink_h()"><span class="icon icon_inline"></span>${lang.i_link}</button>
-          <!--NON-ESP-->
+          <!--@[if_not_target:esp]-->
           <button id="qr_btn" class="ui_btn ui_btn_mini" onclick="qr_h()"><span class="icon icon_inline"></span>QR</button>
-          <!--/NON-ESP-->
+          <!--@/[if_not_target:esp]-->
         </div>
 
       </div>
@@ -359,15 +359,15 @@ function render_main() {
               </div>
             </div>
 
-            <!--APP-->
+            <!--@[if_not_target:mobile,desktop]-->
             <span class="notice_block">Disable:
-              <u>${browser()}://flags/#block-insecure-private-network-requests</u></span>
-            <!--/APP-->
+              <u>${browser()}:/`+`/flags/#block-insecure-private-network-requests</u></span>
+            <!--@/[if_not_target:mobile,desktop]-->
           </div>
         </div>
       </div>
 
-      <!--NON-ESP-->
+      <!--@[if_not_target:esp]-->
       <div class="ui_col" id="mq_col">
         <div class="ui_row ui_head ui_tab" onclick="use_mqtt.click()">
           <label class="ui_label ui_tab" id="mqtt_label"><span class="icon icon_ui"></span>MQTT</label>
@@ -489,7 +489,7 @@ function render_main() {
         </div>
 
       </div>
-      <!--/NON-ESP-->
+      <!--@/[if_not_target:esp]-->
 
       <div class="ui_col">
         <div class="ui_row ui_head">
@@ -593,7 +593,7 @@ function render_main() {
 
       </div>
 
-      <!--NON-ESP-->
+      <!--@[if_not_target:esp]-->
       <div class="ui_col" id="pwa_block">
         <div class="ui_row ui_head">
           <label class="ui_label"><span class="icon icon_ui"></span>Web App</label>
@@ -604,7 +604,7 @@ function render_main() {
         </div>
         <span class="notice_block" id="pwa_unsafe">Enable <u>${browser()}://flags/#unsafely-treat-insecure-origin-as-secure</u> and add <u>${window.location.href}</u> to list</span>
       </div>
-      <!--/NON-ESP-->
+      <!--@/[if_not_target:esp]-->
 
       <div class="ui_col" id="app_block" style="display:none">
         <div class="ui_row ui_head">
@@ -663,12 +663,12 @@ function render_main() {
 
 // =========== MISC ===========
 function render_selects() {
-  /*NON-ESP*/
+  /*@[if_not_target:esp]*/
   for (let baud of baudrates) {
     EL('baudrate').innerHTML += `
     <option value="${baud}">${baud}</option>`;
   }
-  /*/NON-ESP*/
+  /*@/[if_not_target:esp]*/
   for (let color in colors) {
     EL('maincolor').innerHTML += `
     <option value="${color}">${color}</option>`;

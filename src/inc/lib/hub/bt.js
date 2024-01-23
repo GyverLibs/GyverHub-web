@@ -1,5 +1,4 @@
 // based on https://github.com/loginov-rocks/Web-Bluetooth-Terminal
-/*NON-ESP*/
 class BluetoothJS {
   async onopen() { }
   async onmessage(data) { }
@@ -119,4 +118,3 @@ class BluetoothJS {
     if (value) this.onmessage(value);
   }
 }
-/*/NON-ESP*/

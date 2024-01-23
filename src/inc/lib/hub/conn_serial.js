@@ -1,4 +1,3 @@
-/*NON-ESP*/
 class SERIALconn extends Discover {
   tout = 500;
 
@@ -62,4 +61,3 @@ class SERIALconn extends Discover {
     this._hub.err('[SERIAL] ' + e);
   }
 }
-/*/NON-ESP*/

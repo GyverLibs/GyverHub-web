@@ -1,4 +1,3 @@
-/*NON-ESP*/
 // ============== PROJECTS =============
 // updates
 let updates_list = [];
@@ -75,4 +74,3 @@ async function loadProj(rep) {
     return;
   }
 }
-/*/NON-ESP*/

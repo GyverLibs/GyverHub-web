@@ -256,13 +256,13 @@ function manual_ip_h(ip) {
   } else showPopupError('Wrong IP');
 }
 function update_ip_h() {
-  /*NON-ESP*/
+  /*@[if_not_target:esp]*/
   if (!Boolean(window.webkitRTCPeerConnection || window.mozRTCPeerConnection)) notSupported();
   else getLocalIP().then((ip) => {
     if (ip.indexOf("local") > 0) alert(`Disable WEB RTC anonymizer: ${browser()}:/``/flags/#enable-webrtc-hide-local-ips-with-mdns`);
     else EL('local_ip').value = ip;
   });
-  /*/NON-ESP*/
+  /*@/[if_not_target:esp]*/
   if (platform() == 'esp') EL('local_ip').value = window_ip();
 }
 function menu_h() {
@@ -272,11 +272,11 @@ function devlink_h() {
   copyClip(devLink());
 }
 function qr_h() {
-  /*NON-ESP*/
+  /*@[if_not_target:esp]*/
   let qr = EL("qrcode");
   new QRCode(qr, devLink());
   setTimeout(() => openFile(qr.children[1].src), 100);
-  /*/NON-ESP*/
+  /*@/[if_not_target:esp]*/
 }
 function devLink() {
   let qs = window.location.origin + window.location.pathname + '?';
@@ -332,9 +332,9 @@ function device_h(id) {
   }
 }
 function open_device(id) {
-  /*NON-ESP*/
+  /*@[if_not_target:esp]*/
   checkUpdates(id);
-  /*/NON-ESP*/
+  /*@/[if_not_target:esp]*/
 
   focused = id;
   let dev = hub.dev(id)

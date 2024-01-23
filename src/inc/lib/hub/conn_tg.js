@@ -1,4 +1,3 @@
-/*NON-ESP*/
 class TGconn extends Discover {
   tout = 1000;
 
@@ -75,4 +74,3 @@ class TGconn extends Discover {
     this._hub.err('[TG] ' + e);
   }
 }
-/*/NON-ESP*/

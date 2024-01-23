@@ -1,9 +1,21 @@
 // ====================== CONST ======================
 const app_title = 'GyverHub';
+/*@[if_target:host]*/
 const non_esp = '__ESP__';
 const non_app = '__APP__';
+const non_host = '';
+/*@/[if_target:host]*/
+/*@[if_target:esp]*/
+const non_esp = '';
+const non_app = '__APP__';
 const non_host = '__HOST__';
-const app_version = '__VER__';
+/*@/[if_target:esp]*/
+/*@[if_not_target:esp,host]*/
+const non_esp = '__ESP__';
+const non_app = '';
+const non_host = '__HOST__';
+/*@/[if_not_target:esp,host]*/
+const app_version = '/*@![:version]*/';
 const hub = new GyverHub();
 
 const langs = {
@@ -360,7 +372,7 @@ function getMaskList() {
   }
   return list;
 }
-/*NON-ESP*/
+/*@[if_not_target:esp]*/
 function getLocalIP() {
   return new Promise(function (resolve, reject) {
     var RTCPeerConnection = window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
@@ -407,4 +419,4 @@ function getLocalIP() {
     }, function (e) { return; });
   });
 }
-/*/NON-ESP*/
+/*@/[if_not_target:esp]*/

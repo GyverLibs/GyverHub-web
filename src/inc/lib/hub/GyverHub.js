@@ -75,20 +75,20 @@ class GyverHub {
 
   constructor() {
     this.http = new HTTPconn(this);
-    /*NON-ESP*/
+    /*@[if_not_target:esp]*/
     this.mqtt = new MQTTconn(this);
     this.tg = new TGconn(this);
     this.serial = new SERIALconn(this);
     this.bt = new BTconn(this);
-    /*/NON-ESP*/
+    /*@/[if_not_target:esp]*/
   }
 
   // network
   begin() {
-    /*NON-ESP*/
+    /*@[if_not_target:esp]*/
     if (this.cfg.use_mqtt) this.mqtt.start();
     if (this.cfg.use_tg) this.tg.start();
-    /*/NON-ESP*/
+    /*@/[if_not_target:esp]*/
   }
   post(id, cmd, name = '', value = '') {
     this.dev(id).post(cmd, name, value);
@@ -98,22 +98,22 @@ class GyverHub {
       dev.conn = Conn.NONE;
       dev.conn_arr = [0, 0, 0, 0];
     }
-    /*NON-ESP*/
+    /*@[if_not_target:esp]*/
     if (this.cfg.use_mqtt) this.mqtt.discover();
     if (this.cfg.use_tg) this.tg.discover();
     if (this.cfg.use_serial && "serial" in navigator) this.serial.discover();
     if (this.cfg.use_bt && "bluetooth" in navigator) this.bt.discover();
-    /*/NON-ESP*/
+    /*@/[if_not_target:esp]*/
     if (this.cfg.use_local && wifiAllowed()) this.http.discover();
     this._checkDiscoverEnd();
   }
   search() {
-    /*NON-ESP*/
+    /*@[if_not_target:esp]*/
     if (this.cfg.use_mqtt) this.mqtt.search();
     if (this.cfg.use_tg) this.tg.search();
     if (this.cfg.use_serial && "serial" in navigator) this.serial.search();
     if (this.cfg.use_bt && "bluetooth" in navigator) this.bt.search();
-    /*/NON-ESP*/
+    /*@/[if_not_target:esp]*/
     if (this.cfg.use_local && wifiAllowed()) this.http.search();
     this._checkDiscoverEnd();
   }
@@ -180,9 +180,9 @@ class GyverHub {
       flag = true;
     }
     if (flag) {
-      /*NON-ESP*/
+      /*@[if_not_target:esp]*/
       this.mqtt._sub_device(device.info.prefix, device.info.id);
-      /*/NON-ESP*/
+      /*@/[if_not_target:esp]*/
       this.onSaveDevices();
     }
   }
@@ -214,9 +214,9 @@ class GyverHub {
     if (!this._discovering()) this.onDiscoverEnd();
   }
   _discovering() {
-    /*NON-ESP*/
+    /*@[if_not_target:esp]*/
     return (this.http.discovering || this.mqtt.discovering || this.tg.discovering || this.serial.discovering || this.bt.discovering);
-    /*/NON-ESP*/
+    /*@/[if_not_target:esp]*/
     return this.http.discovering;
   }
   _preflist() {

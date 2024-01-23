@@ -1,4 +1,3 @@
-/*NON-ESP*/
 class BTconn extends Discover {
   tout = 1000;
 
@@ -57,4 +56,3 @@ class BTconn extends Discover {
     this._hub.err('[BT] ' + e);
   }
 }
-/*/NON-ESP*/

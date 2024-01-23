@@ -1,4 +1,3 @@
-/*NON-ESP*/
 class SerialJS {
   async onportchange(selected) { }
   async onopen() { }
@@ -110,4 +109,3 @@ class SerialJS {
     }
   }
 }
-/*/NON-ESP*/

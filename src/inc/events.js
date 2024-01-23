@@ -1,5 +1,5 @@
 // ============ CONNECTION ============
-/*NON-ESP*/
+/*@[if_not_target:esp]*/
 hub.mqtt.onConnChange = (state) => {
   display('mqtt_ok', state ? 'inline-block' : 'none');
   mq_change(state);
@@ -39,7 +39,7 @@ hub.tg.onConnChange = (state) => {
   display('tg_ok', state ? 'inline-block' : 'none');
   tg_change(state);
 }
-/*/NON-ESP*/
+/*@/[if_not_target:esp]*/
 
 hub.onWsConnChange = (id, state) => {
   if (id == focused) {
