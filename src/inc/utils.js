@@ -1,20 +1,5 @@
 // ====================== CONST ======================
 const app_title = 'GyverHub';
-/*@[if_target:host]*/
-const non_esp = '__ESP__';
-const non_app = '__APP__';
-const non_host = '';
-/*@/[if_target:host]*/
-/*@[if_target:esp]*/
-const non_esp = '';
-const non_app = '__APP__';
-const non_host = '__HOST__';
-/*@/[if_target:esp]*/
-/*@[if_not_target:esp,host]*/
-const non_esp = '__ESP__';
-const non_app = '';
-const non_host = '__HOST__';
-/*@/[if_not_target:esp,host]*/
 const app_version = '/*@![:version]*/';
 const hub = new GyverHub();
 
@@ -83,28 +68,34 @@ let cfg = {
 
 // ====================== CHECK ======================
 function platform() {
-  //if ((window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || document.referrer.includes('android-app://')) return 'pwa';
-  if (!non_host) return 'host';
-  if (!non_esp) return 'esp';
-  if ('GyverHubDesktop' in window) return 'desktop';
-  if ('flutter_inappwebview' in window) return 'mobile';
+/*@[if_target:host]*/
+  return 'host';
+/*@/[if_target:host]*/
+/*@[if_target:esp]*/
+  return 'esp';
+/*@/[if_target:esp]*/
+/*@[if_target:desktop]*/
+  return 'desktop';
+/*@/[if_target:desktop]*/
+/*@[if_target:mobile]*/
+  return 'mobile';
+/*@/[if_target:mobile]*/
+/*@[if_target:local]*/
   return 'local';
+/*@/[if_target:local]*/
 }
 
 function isSSL() {
   return window.location.protocol == 'https:';
 }
-function wifiAllowed() {
-  return platform() != 'host' || !isSSL();
-}
 function isTouch() {
   return navigator.maxTouchPoints || 'ontouchstart' in document.documentElement;
 }
 function hasSerial() {
-  return ("serial" in navigator) || platform() == 'mobile';
+  return "serial" in navigator;
 }
 function hasBT() {
-  return ("bluetooth" in navigator) || platform() == 'mobile';
+  return "bluetooth" in navigator;
 }
 
 // ====================== FUNC ======================
@@ -359,7 +350,7 @@ async function waitRender(id) {
 
 // ====================== NET ======================
 function window_ip() {
-  let ip = window.location.href.split('/')[2].split(':')[0];
+  let ip = window.location.hostname;
   return checkIP(ip) ? ip : null;
 }
 function getMaskList() {

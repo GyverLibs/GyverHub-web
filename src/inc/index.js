@@ -5,7 +5,10 @@ window.onload = () => {
   render_main();
   EL('hub_stat').innerHTML = 'GyverHub v' + app_version + ' ' + platform();
 
-  if (platform() == 'esp') hub.cfg.use_local = true;  // force local on esp
+  /*@[if_target:esp]*/
+    hub.cfg.use_local = true;  // force local on esp
+  /*@/[if_target:esp]*/
+
   update_ip();
   update_theme();
   set_drop();
@@ -80,10 +83,12 @@ window.onload = () => {
     }
   }
   function update_ip() {//TODO
-    if (platform() == 'esp' || window_ip()) {
+    /*@[if_target:esp]*/
+    if (window_ip()) {
       EL('local_ip').value = window_ip();
       hub.cfg.local_ip = window_ip();
     }
+    /*@/[if_target:esp]*/
     /*@[if_not_target:esp]*/
     else if (!Boolean(window.webkitRTCPeerConnection || window.mozRTCPeerConnection)) return;
     getLocalIP()
@@ -129,25 +134,7 @@ function startup() {
   hub.begin();
   discover();
 
-/*@[if_not_target:esp]*/
-  if (!wifiAllowed()) {
-    display('http_only_http', 'block');
-    display('http_settings', 'none');
-    display('pwa_unsafe', 'none');
-  }
-  if (platform() != 'host') {
-    display('pwa_block', 'none');
-    display('devlink_btn', 'none');
-    display('qr_btn', 'none');
-  }
-  if (platform() == 'host') {
-    display('app_block', 'block');
-  }
-
-  serial_check_ports();
-/*@/[if_not_target:esp]*/
-
-  if (platform() == 'esp') {
+  /*@[if_target:esp]*/
     for (let dev of hub.devices) {
       if (window.location.href.includes(dev.info.ip)) {
         dev.conn = Conn.HTTP;
@@ -156,7 +143,26 @@ function startup() {
         return;
       }
     }
-  }
+  /*@/[if_target:esp]*/
+  /*@[if_target:host]*/
+    display('app_block', 'block');
+    if (isSSL()) {
+      display('http_only_http', 'block');
+      display('http_settings', 'none');
+      display('pwa_unsafe', 'none');
+    }
+  /*@/[if_target:host]*/
+  /*@[if_not_target:esp, host]*/
+    display('pwa_block', 'none');
+    display('devlink_btn', 'none');
+    display('qr_btn', 'none');
+  /*@/[if_not_target:esp, host]*/
+  /*@[if_not_target:esp,desktop,mobile]*/
+  /*@/[if_not_target:esp,desktop,mobile]*/
+
+  /*@[if_not_target:esp]*/
+    serial_check_ports();
+  /*@/[if_not_target:esp]*/
 }
 
 // =================== FUNC ===================
@@ -171,11 +177,12 @@ function discover() {
     display(`MQTT#${id}`, 'none');
   }
 
-  if (platform() == 'esp') {
+  /*@[if_target:esp]*/
     hub.http.discover_ip(window_ip(), window.location.port.length ? window.location.port : 80);
-  } else {
+  /*@/[if_target:esp]*/
+  /*@[if_not_target:esp]*/
     hub.discover();
-  }
+  /*@/[if_not_target:esp]*/
 }
 function search() {
   spinArrows(true);

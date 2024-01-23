@@ -50,26 +50,37 @@ async function loadProj(rep) {
     let name = proj.name;
     let repname = rep.split('/')[1];
     if (name.length > 30) name = name.slice(0, 30) + '..';
-    let allowInstall = (platform() == 'host' || platform() == 'desktop');
-    const btn = allowInstall ? `<button title="${lang.p_install}" class="icon icon_btn_big" style="font-size:15px" onclick="EL('proj_${repname}').click()"></button>` : '';
 
+    /*@[if_target:host,desktop]*/
     EL('projects').innerHTML += `
       <div class="proj">
         <div class="proj_inn">
           <div class="proj_name">
             <a href="${'https://github.com/' + rep}" target="_blank" title="${rep} v${proj.version}">${name}</a>
-            ${btn}
+            <button title="${lang.p_install}" class="icon icon_btn_big" style="font-size:15px" onclick="EL('proj_${repname}').click()"></button>
           </div>
           <div class="proj_about">${proj.about}</div>
         </div>
-      </div>`;
-
-    if (allowInstall) EL('projects').innerHTML += `
-    <esp-web-install-button manifest="${manifest}" style="display:none">
-      <button id="proj_${repname}" slot="activate"></button>
-      <span slot="unsupported">${lang.p_not_support}</span>
-      <span slot="not-allowed">${lang.p_use_https}</span>
-    </esp-web-install-button>`;
+      </div>
+      <esp-web-install-button manifest="${manifest}" style="display:none">
+        <button id="proj_${repname}" slot="activate"></button>
+        <span slot="unsupported">${lang.p_not_support}</span>
+        <span slot="not-allowed">${lang.p_use_https}</span>
+      </esp-web-install-button>
+    `;
+    /*@/[if_target:host,desktop]*/
+    /*@[if_not_target:host,desktop]*/
+    EL('projects').innerHTML += `
+      <div class="proj">
+        <div class="proj_inn">
+          <div class="proj_name">
+            <a href="${'https://github.com/' + rep}" target="_blank" title="${rep} v${proj.version}">${name}</a>
+          </div>
+          <div class="proj_about">${proj.about}</div>
+        </div>
+      </div>
+    `;
+    /*@/[if_not_target:host,desktop]*/
   } catch (e) {
     return;
   }

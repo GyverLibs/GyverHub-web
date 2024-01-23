@@ -713,7 +713,9 @@ function render_info() {
 }
 function add_device(dev) {
   let icon = dev.icon;
-  if (icon.length && platform() == 'esp') icon = '';
+  /*@[if_target:esp]*/
+  if (icon.length) icon = '';
+  /*@/[if_target:esp]*/
   EL('devices').innerHTML += `
   <div class="device ${dev.conn == Conn.NONE ? 'offline' : ''}" id="device#${dev.id}" onclick="device_h('${dev.id}')" title="${dev.id} [${dev.prefix}]">
     <div class="device_inner">

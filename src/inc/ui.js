@@ -256,14 +256,16 @@ function manual_ip_h(ip) {
   } else showPopupError('Wrong IP');
 }
 function update_ip_h() {
+  /*@[if_target:esp]*/
+  EL('local_ip').value = window_ip();
+  /*@/[if_target:esp]*/
   /*@[if_not_target:esp]*/
   if (!Boolean(window.webkitRTCPeerConnection || window.mozRTCPeerConnection)) notSupported();
   else getLocalIP().then((ip) => {
-    if (ip.indexOf("local") > 0) alert(`Disable WEB RTC anonymizer: ${browser()}:/``/flags/#enable-webrtc-hide-local-ips-with-mdns`);
+    if (ip.indexOf("local") > 0) alert(`Disable WEB RTC anonymizer: ${browser()}:/`+`/flags/#enable-webrtc-hide-local-ips-with-mdns`);
     else EL('local_ip').value = ip;
   });
   /*@/[if_not_target:esp]*/
-  if (platform() == 'esp') EL('local_ip').value = window_ip();
 }
 function menu_h() {
   menu_show(!menu_f);

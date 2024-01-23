@@ -98,13 +98,21 @@ class GyverHub {
       dev.conn = Conn.NONE;
       dev.conn_arr = [0, 0, 0, 0];
     }
+
     /*@[if_not_target:esp]*/
-    if (this.cfg.use_mqtt) this.mqtt.discover();
-    if (this.cfg.use_tg) this.tg.discover();
-    if (this.cfg.use_serial && "serial" in navigator) this.serial.discover();
-    if (this.cfg.use_bt && "bluetooth" in navigator) this.bt.discover();
+      if (this.cfg.use_mqtt) this.mqtt.discover();
+      if (this.cfg.use_tg) this.tg.discover();
+      if (this.cfg.use_serial && "serial" in navigator) this.serial.discover();
+      if (this.cfg.use_bt && "bluetooth" in navigator) this.bt.discover();
     /*@/[if_not_target:esp]*/
-    if (this.cfg.use_local && wifiAllowed()) this.http.discover();
+
+    /*@[if_target:host]*/
+      if (this.cfg.use_local && !isSSL()) this.http.discover();
+    /*@/[if_target:host]*/
+    /*@[if_not_target:host]*/
+      if (this.cfg.use_local) this.http.discover();
+    /*@/[if_not_target:host]*/
+
     this._checkDiscoverEnd();
   }
   search() {
@@ -114,7 +122,14 @@ class GyverHub {
     if (this.cfg.use_serial && "serial" in navigator) this.serial.search();
     if (this.cfg.use_bt && "bluetooth" in navigator) this.bt.search();
     /*@/[if_not_target:esp]*/
-    if (this.cfg.use_local && wifiAllowed()) this.http.search();
+
+    /*@[if_target:host]*/
+      if (this.cfg.use_local && !isSSL()) this.http.search();
+    /*@/[if_target:host]*/
+    /*@[if_not_target:host]*/
+      if (this.cfg.use_local) this.http.search();
+    /*@/[if_not_target:host]*/
+
     this._checkDiscoverEnd();
   }
 
