@@ -1,3 +1,4 @@
+/*@![include:inc/lib/hub/event_emitter.js, compile, js]*/
 /*@![include:inc/lib/hub/codes.js, compile, js]*/
 /*@![include:inc/lib/hub/utils.js, compile, js]*/
 /*@![include:inc/lib/hub/buffer.js, compile, js]*/
