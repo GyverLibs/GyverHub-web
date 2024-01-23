@@ -103,7 +103,9 @@ class Compiler:
             return '' if self._target in args else data
 
         if tag == 'include':
-            return self._include(args[0], args[1:]).decode('utf-8')
+            options = args[1:]
+            options.append(os.path.splitext(args[0])[1][1:])
+            return self._include(args[0], options).decode('utf-8')
 
         if tag == 'add_file':
             self.compile_file(args[0], options=args[1:])
