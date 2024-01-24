@@ -159,10 +159,6 @@ function startup() {
   /*@/[if_not_target:esp, host]*/
   /*@[if_not_target:esp,desktop,mobile]*/
   /*@/[if_not_target:esp,desktop,mobile]*/
-
-  /*@[if_not_target:esp]*/
-    serial_check_ports();
-  /*@/[if_not_target:esp]*/
 }
 
 // =================== FUNC ===================

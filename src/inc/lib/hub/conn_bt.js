@@ -23,6 +23,9 @@ class BTconn extends Discover {
     await this.send(this._hub.cfg.prefix);
     this._discoverTimer(this.tout);
   }
+  async select() {
+    await this.bt.select();
+  }
   async open() {
     await this.bt.open();
   }

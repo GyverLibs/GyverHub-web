@@ -8,27 +8,18 @@ class SERIALconn extends Discover {
     super(hub);
     this.buf = new PacketBuffer(hub, Conn.SERIAL, true);
     this.ser = new SerialJS();
-    this.ser.onportchange = (selected) => this.onPortChange(selected);
-    this.ser.onopen = () => {
-      this.log('Connected');
-      this.onConnChange(true);
-    }
-    this.ser.onclose = () => {
-      this.log('Disconnected');
-      this.onConnChange(false);
-    }
-    this.ser.onerror = (e) => this.err(e);
-    this.ser.onmessage = (data) => this.buf.process(data);
+    this.ser.addEventListener('message', ev => this.buf.process(ev.message));
+    this.ser.addEventListener('statechange', () => this.onConnChange(this.ser.getState()));
   }
 
   // discover
   async discover() {
-    if (this.discovering || !this.ser.state()) return;
+    if (this.discovering || !this.ser.isConnected()) return;
     for (let pref of this._hub._preflist()) await this.send(pref);
     this._discoverTimer(this.tout);
   }
   async search() {
-    if (this.discovering || !this.ser.state()) return;
+    if (this.discovering || !this.ser.isConnected()) return;
     await this.send(this._hub.cfg.prefix);
     this._discoverTimer(this.tout);
   }
@@ -37,8 +28,8 @@ class SERIALconn extends Discover {
   getName() {
     return this.ser.getName();
   }
-  async hasPort() {
-    return await this.ser.hasPort();
+  async auto_open(baud) {
+    await this.ser.auto_open(baud);
   }
   async select() {
     await this.ser.select();

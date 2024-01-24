@@ -88,6 +88,7 @@ class GyverHub {
     /*@[if_not_target:esp]*/
     if (this.cfg.use_mqtt) this.mqtt.start();
     if (this.cfg.use_tg) this.tg.start();
+    if (this.cfg.use_serial) this.serial.auto_open(this.cfg.baudrate);
     /*@/[if_not_target:esp]*/
   }
   post(id, cmd, name = '', value = '') {

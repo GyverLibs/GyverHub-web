@@ -6,18 +6,18 @@ hub.mqtt.onConnChange = (state) => {
 }
 hub.bt.onConnChange = (state) => {
   switch (state) {
-    case BtConnectionState.CONNECTING:
+    case ConnectionState.CONNECTING:
       EL('bt_device').innerHTML = lang.connecting;
       break;
 
-    case BtConnectionState.CONNECTED:
+    case ConnectionState.CONNECTED:
       bt_change(true);
       EL('bt_device').innerHTML = hub.bt.getName();
       bt_show_ok(true);
       hub.bt.discover();
       break;
 
-    case BtConnectionState.DISCONNECTED:
+    case ConnectionState.DISCONNECTED:
       bt_change(false);
       EL('bt_device').innerHTML = lang.disconnected;
       bt_show_ok(false);
@@ -25,15 +25,26 @@ hub.bt.onConnChange = (state) => {
   }
 }
 hub.serial.onConnChange = (state) => {
-  serial_show_ok(state);
-  serial_change(state);
-  if (state) {
-    setTimeout(() => hub.serial.discover(), cfg.serial_offset);
+  switch (state) {
+    case ConnectionState.CONNECTING:
+      EL('serial_device').innerHTML = lang.connecting;
+      break;
+
+    case ConnectionState.CONNECTED:
+      serial_change(true);
+      EL('serial_device').innerHTML = hub.bt.getName();
+      serial_show_ok(true);
+      if (state) {
+        setTimeout(() => hub.serial.discover(), cfg.serial_offset);
+      }
+      break;
+
+    case ConnectionState.DISCONNECTED:
+      serial_change(false);
+      EL('serial_device').innerHTML = lang.disconnected;
+      serial_show_ok(false);
+      break;
   }
-}
-hub.serial.onPortChange = (selected) => {
-  display('serial_open', selected ? 'inline-block' : 'none');
-  serial_update_name();
 }
 hub.tg.onConnChange = (state) => {
   display('tg_ok', state ? 'inline-block' : 'none');

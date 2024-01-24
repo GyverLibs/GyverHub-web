@@ -1,15 +1,14 @@
-class SerialJS {
-  async onportchange(selected) { }
-  async onopen() { }
-  async onmessage(data) { }
-  async onclose() { }
-  async onerror(e) { }
+class SerialJS extends Transport {
+  #port;
+  #reader;
+  #running;
 
-  state() {
-    return (this._port != null);
+  constructor() {
+    super();
   }
+
   getName() {
-    let id = this._ncport ? this._ncport.getInfo().usbProductId : null;
+    let id = this.#port ? this.#port.getInfo().usbProductId : null;
     switch (id) {
       case 0x7584: return 'CH340S';
       case 0x55d3: return 'CH343';
@@ -21,90 +20,103 @@ class SerialJS {
       default: return 'unknown';
     }
   }
-  async hasPort() {
-    await this.update();
-    return this._ncport != null;
+
+  async auto_open(baud) {
+    try {
+      const ports = await navigator.serial.getPorts();
+      if (ports)
+        this.#port = ports[0];
+
+    } catch (e) {
+      return;
+    }
+    
+    await this.open(baud)
   }
-  async update() {
-    const ports = await navigator.serial.getPorts();
-    this._ncport = ports.length ? ports[0] : null;
-  }
+
   async select() {
     await this.close();
-    const ports = await navigator.serial.getPorts();
-    for (let port of ports) await port.forget();
+    this.#port = undefined;
+    this._setState(ConnectionState.CONNECTING);
+
     try {
-      await navigator.serial.requestPort();
-      await this.update();
-      await this.onportchange(true);
-    } catch (e) {
-      this.onerror(e);
-      await this.update();
-      await this.onportchange(false);
-    }
-  }
-  async open(baud) {
-    try {
-      if (this._port) throw "Already open";
       const ports = await navigator.serial.getPorts();
-      if (!ports.length) throw "No port";
-      this._port = ports[0];
-      try {
-        await this._port.open({ baudRate: baud });
-        this.onopen();
-        await this._readLoop();
-      } finally {
-        await this._port.close();
-        this._port = null;
-        this.onclose();
-      }
-    } catch (e) {
-      this.onerror(e);
+      for (let port of ports) await port.forget();
+      
+      this.#port = await navigator.serial.requestPort();
+    } finally {
+      this._setState(ConnectionState.DISCONNECTED);
     }
   }
-  async close() {
-    this._closing = true;
-    if (this._reader) await this._reader.cancel();
-  }
-  async send(text) {
-    if (!this._port) return this.onerror("Not open");
+
+  async open(baud) {
+    if (!this.#port)
+      return;
+
+    await this.close();
+
+    this._setState(ConnectionState.CONNECTING);
+
     try {
-      const encoder = new TextEncoder();
-      const writer = this._port.writable.getWriter();
-      try {
-        await writer.write(encoder.encode(text));
-      } finally {
-        writer.releaseLock();
-      }
+      await this.#port.open({ baudRate: baud });
     } catch (e) {
-      this.onerror(e);
+      if (!(e instanceof InvaidStateError)) {
+        this._setState(ConnectionState.DISCONNECTED);
+        throw e;
+      }
+    }
+    this._setState(ConnectionState.CONNECTED);
+
+    this.#readLoop();
+  }
+
+  async close() {
+    if (!this.#port)
+      return;
+
+    this.#running = false;
+    if (this.#reader) await this.#reader.cancel();
+
+    try {
+      await this.#port.close();
+    } catch (e) {}
+    this._setState(ConnectionState.DISCONNECTED);
+  }
+
+  async send(data) {
+    data = new TextEncoder().encode(data);
+
+    if (!this.#port || !this.#port.writable)
+      return;
+
+    const writer = this.#port.writable.getWriter();
+    try {
+      await writer.write(data);
+    } finally {
+      writer.releaseLock();
     }
   }
-  async toggle(baud) {
-    if (this.state()) await this.close();
-    else await this.open(baud);
+
+  async _handleDisconnection(event) {
+    this.close();
+    this.#port = undefined;
   }
+  _disconnect_h = this._handleDisconnection.bind(this);
 
-  // private
-  _port = null;
-  _reader = null;
-  _closing = false;
-  _ncport = null;
-
-  async _readLoop() {
-    this._closing = false;
-    while (this._port.readable && !this._closing) {
-      this._reader = this._port.readable.getReader();
+  async #readLoop() {
+    this.#running = true;
+    while (this.#running && this.#port && this.#port.readable) {
+      this.#reader = this.#port.readable.getReader();
       try {
         while (true) {
-          const read = await this._reader.read();
+          const read = await this.#reader.read();
           if (read.done) break;
           const data = new TextDecoder().decode(read.value);
-          this.onmessage(data);
+          this.dispatchEvent(new MessageEvent(data));
         }
       } finally {
-        this._reader.releaseLock();
-        this._reader = null;
+        this.#reader.releaseLock();
+        this.#reader = null;
       }
     }
   }

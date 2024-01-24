@@ -461,7 +461,7 @@ function render_main() {
           </div>
 
           <div class="ui_row">
-            <div><label class="ui_label">${lang.sr_port} </label><label class="ui_label" id="port_name"></label></div>
+            <div><label class="ui_label" id="serial_device">${lang.not_conn}</label> <label class="ui_label" id="port_name"></label></div>
             <div class="ui_btn_row">
               <button class="ui_btn ui_btn_mini" onclick="hub.serial.select()">${lang.select}</button>
               <button id="serial_open" class="ui_btn ui_btn_mini" onclick="hub.serial.open()" style="display:none">${lang.connect}</button>
@@ -482,7 +482,8 @@ function render_main() {
           <div class="ui_row">
             <label class="ui_label" id="bt_device">${lang.not_conn}</label>
             <div class="ui_btn_row">
-              <button id="bt_open" class="ui_btn ui_btn_mini" onclick="hub.bt.open()">${lang.connect}</button>
+              <button class="ui_btn ui_btn_mini" onclick="hub.bt.select()">${lang.select}</button>
+              <button id="bt_open" class="ui_btn ui_btn_mini" onclick="hub.bt.open()" style="display:none">${lang.connect}</button>
               <button id="bt_close" class="ui_btn ui_btn_mini" onclick="hub.bt.close()" style="display:none">${lang.disconnect}</button>
             </div>
           </div>
@@ -808,16 +809,6 @@ async function serial_toggle(state) {
   serial_show_ok(false);
   serial_change(false);
   if (!state) hub.serial.close();
-  serial_check_ports();
-}
-async function serial_check_ports() {
-  if (!hasSerial()) return;
-  const res = await hub.serial.hasPort();
-  display('serial_open', res ? 'inline-block' : 'none');
-  serial_update_name();
-}
-function serial_update_name() {
-  EL('port_name').innerHTML = hub.serial.getName();
 }
 
 // telegram
