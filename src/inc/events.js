@@ -97,7 +97,7 @@ hub.onDiscoverEnd = () => {
 }
 hub.onDiscover = (id, conn) => {
   EL(`device#${id}`).className = "device";
-  display(`${Conn.names[conn]}#${id}`, 'inline-block');
+  display(`${conn.name}#${id}`, 'inline-block');
 }
 
 // ============ UPLOAD ============

@@ -371,37 +371,37 @@ function render_main() {
       <div class="ui_col" id="mq_col">
         <div class="ui_row ui_head ui_tab" onclick="use_mqtt.click()">
           <label class="ui_label ui_tab" id="mqtt_label"><span class="icon icon_ui"></span>MQTT</label>
-          <input type="checkbox" id="use_mqtt" onchange="update_cfg(this);hub.mqtt.stop();save_cfg()" style="display:none">
+          <input type="checkbox" id="use_mqtt" onchange="update_cfg(this);hub.mqtt.disconnect();save_cfg()" style="display:none">
         </div>
 
         <div id="mq_block" style="display:none">
 
           <div class="ui_row">
             <label class="ui_label">${lang.mq_host}</label>
-            <div class="ui_inp_row"><input class="ui_inp" type="text" id="mq_host" onchange="update_cfg(this);hub.mqtt.stop()"></div>
+            <div class="ui_inp_row"><input class="ui_inp" type="text" id="mq_host" onchange="update_cfg(this);hub.mqtt.disconnect()"></div>
           </div>
 
           <div class="ui_row">
             <label class="ui_label">${lang.mq_port}</label>
-            <div class="ui_inp_row"><input class="ui_inp" type="number" id="mq_port" onchange="update_cfg(this);hub.mqtt.stop()"></div>
+            <div class="ui_inp_row"><input class="ui_inp" type="number" id="mq_port" onchange="update_cfg(this);hub.mqtt.disconnect()"></div>
           </div>
 
           <div class="ui_row">
             <label class="ui_label">${lang.mq_login}</label>
-            <div class="ui_inp_row"><input class="ui_inp" type="text" id="mq_login" onchange="update_cfg(this);hub.mqtt.stop()"></div>
+            <div class="ui_inp_row"><input class="ui_inp" type="text" id="mq_login" onchange="update_cfg(this);hub.mqtt.disconnect()"></div>
           </div>
 
           <div class="ui_row">
             <label class="ui_label">${lang.mq_pass}</label>
-            <div class="ui_inp_row"><input class="ui_inp" type="password" id="mq_pass" onchange="update_cfg(this);hub.mqtt.stop()">
+            <div class="ui_inp_row"><input class="ui_inp" type="password" id="mq_pass" onchange="update_cfg(this);hub.mqtt.disconnect()">
             </div>
           </div>
 
           <div class="ui_row">
             <div></div>
             <div class="ui_btn_row">
-              <button class="ui_btn ui_btn_mini" onclick="hub.mqtt.start()" id="mq_start">${lang.connect}</button>
-              <button class="ui_btn ui_btn_mini" onclick="hub.mqtt.stop()" id="mq_stop" style="display:none">${lang.disconnect}</button>
+              <button class="ui_btn ui_btn_mini" onclick="hub.mqtt.connect()" id="mq_start">${lang.connect}</button>
+              <button class="ui_btn ui_btn_mini" onclick="hub.mqtt.disconnect()" id="mq_stop" style="display:none">${lang.disconnect}</button>
             </div>
           </div>
 
@@ -412,14 +412,14 @@ function render_main() {
 
         <div class="ui_row ui_head ui_tab" onclick="use_tg.click()">
           <label class="ui_label ui_tab" id="tg_label"><span class="icon icon_ui"></span>Telegram</label>
-          <input type="checkbox" id="use_tg" onchange="update_cfg(this);hub.tg.stop();save_cfg()" style="display:none">
+          <input type="checkbox" id="use_tg" onchange="update_cfg(this);hub.tg.disconnect();save_cfg()" style="display:none">
         </div>
 
         <div id="tg_block" style="display:none">
           <div class="ui_row">
             <label class="ui_label">${lang.tg_token}</label>
             <div class="ui_inp_row">
-              <input class="ui_inp" type="text" id="tg_token" onchange="update_cfg(this);hub.tg.stop();hub.tg.bot.setToken(this.value)">
+              <input class="ui_inp" type="text" id="tg_token" onchange="update_cfg(this);hub.tg.disconnect();hub.tg.bot.setToken(this.value)">
             </div>
           </div>
 
@@ -433,8 +433,8 @@ function render_main() {
           <div class="ui_row">
             <div></div>
             <div class="ui_btn_row">
-              <button class="ui_btn ui_btn_mini" onclick="hub.tg.start()" id="tg_start">${lang.connect}</button>
-              <button class="ui_btn ui_btn_mini" onclick="hub.tg.stop()" id="tg_stop" style="display:none">${lang.disconnect}</button>
+              <button class="ui_btn ui_btn_mini" onclick="hub.tg.connect()" id="tg_start">${lang.connect}</button>
+              <button class="ui_btn ui_btn_mini" onclick="hub.tg.disconnect()" id="tg_stop" style="display:none">${lang.disconnect}</button>
             </div>
           </div>
         </div>
@@ -464,8 +464,8 @@ function render_main() {
             <div><label class="ui_label" id="serial_device">${lang.not_conn}</label> <label class="ui_label" id="port_name"></label></div>
             <div class="ui_btn_row">
               <button class="ui_btn ui_btn_mini" onclick="hub.serial.select()">${lang.select}</button>
-              <button id="serial_open" class="ui_btn ui_btn_mini" onclick="hub.serial.open()" style="display:none">${lang.connect}</button>
-              <button id="serial_close" class="ui_btn ui_btn_mini" onclick="hub.serial.close()" style="display:none">${lang.disconnect}</button>
+              <button id="serial_open" class="ui_btn ui_btn_mini" onclick="hub.serial.connect()" style="display:none">${lang.connect}</button>
+              <button id="serial_close" class="ui_btn ui_btn_mini" onclick="hub.serial.disconnect()" style="display:none">${lang.disconnect}</button>
             </div>
           </div>
 
@@ -483,8 +483,8 @@ function render_main() {
             <label class="ui_label" id="bt_device">${lang.not_conn}</label>
             <div class="ui_btn_row">
               <button class="ui_btn ui_btn_mini" onclick="hub.bt.select()">${lang.select}</button>
-              <button id="bt_open" class="ui_btn ui_btn_mini" onclick="hub.bt.open()" style="display:none">${lang.connect}</button>
-              <button id="bt_close" class="ui_btn ui_btn_mini" onclick="hub.bt.close()" style="display:none">${lang.disconnect}</button>
+              <button id="bt_open" class="ui_btn ui_btn_mini" onclick="hub.bt.connect()" style="display:none">${lang.connect}</button>
+              <button id="bt_close" class="ui_btn ui_btn_mini" onclick="hub.bt.disconnect()" style="display:none">${lang.disconnect}</button>
             </div>
           </div>
         </div>
@@ -743,8 +743,8 @@ function render_devices() {
   EL('devices').innerHTML = '';
   for (let dev of hub.devices) {
     add_device(dev.info);
-    for (let i in dev.conn_arr) {
-      if (dev.conn_arr[i]) display(`${Conn.names[i]}#${dev.info.id}`, 'inline-block');
+    for (let connection in dev.active_connections) {
+      display(`${connection.name}#${dev.info.id}`, 'inline-block');
     }
   }
 }

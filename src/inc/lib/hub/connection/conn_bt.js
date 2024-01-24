@@ -1,22 +1,26 @@
 // based on https://github.com/loginov-rocks/Web-Bluetooth-Terminal
-class BluetoothJS extends Transport {
+class BTconn extends Connection {
+  priority = 600;
+  name = 'BT';
+  
   #device;
   #characteristic;
   #buffer;
+  #packet_buffer;
 
-  #SERVICE_UUID;
-  #CHARACTERISTIC_UUID;
-
-  #MAX_SIZE;
-  #MAX_RETRIES;
-
-  constructor(service_uuid = 0xFFE0, characteristic_uuid = 0xFFE1, max_size = 20, max_retries = 3) {
-    super();
-    this.#SERVICE_UUID = service_uuid;
-    this.#CHARACTERISTIC_UUID = characteristic_uuid;
-    this.#MAX_SIZE = max_size;
-    this.#MAX_RETRIES = max_retries;
-    this.#buffer = new CyclicBuffer(1024);
+  /*
+    service_uuid = 0xFFE0
+    characteristic_uuid = 0xFFE1
+    max_size = 20
+    max_retries = 3
+    buffer_size = 1024
+  */
+  constructor(hub, options) {
+    super(hub, options);
+    this.#buffer = new CyclicBuffer(this.options.buffer_size);
+    this.#packet_buffer = new PacketBuffer(this.hub, this, true);
+    this.addEventListener('message', ev => this.#packet_buffer.process(ev.message));
+    this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
 
   isConnected() {
@@ -27,8 +31,20 @@ class BluetoothJS extends Transport {
     return this.#device ? this.#device.name : null;
   }
 
+  async discover() {
+    if (this.isDiscovering() || !this.isConnected()) return;
+    for (let pref of this.hub._preflist()) await this.send(pref);
+    this._discoverTimer();
+  }
+  
+  async search() {
+    if (this.isDiscovering() || !this.isConnected()) return;
+    await this.send(this.hub.cfg.prefix);
+    this._discoverTimer();
+  }
+
   async select() {
-    await this.close();
+    await this.disconnect();
     if (this.#device) {
       this.#device.removeEventListener('gattserverdisconnected', this._disconnect_h);
       this.#device = undefined;
@@ -37,7 +53,7 @@ class BluetoothJS extends Transport {
 
     try {
       this.#device = await navigator.bluetooth.requestDevice({
-        filters: [{ services: [this.#SERVICE_UUID] }],
+        filters: [{ services: [this.options.service_uuid] }],
       });
       this.#device.addEventListener('gattserverdisconnected', this._disconnect_h);
     } finally {
@@ -45,15 +61,15 @@ class BluetoothJS extends Transport {
     }
   }
   
-  async open() {
+  async connect() {
     if (!this.#device)
       return;
 
-    await this.close();
+    await this.disconnect();
     await this.#connect();
   }
 
-  async close() {
+  async disconnect() {
     if (this.#characteristic) {
       this.#characteristic.removeEventListener('characteristicvaluechanged', this._change_h);
       try {
@@ -75,7 +91,7 @@ class BluetoothJS extends Transport {
     this.#buffer.push(data);
 
     while (this.isConnected() && !this.#buffer.isEmpty()) {
-      const data = this.#buffer.pop(this.#MAX_SIZE);
+      const data = this.#buffer.pop(this.options.max_size);
       const device = this.#device;
       let retry = 0;
       while (this.isConnected() && device == this.#device) {
@@ -83,7 +99,7 @@ class BluetoothJS extends Transport {
           await this.#characteristic.writeValue(data);
           break;
         } catch (e) {
-          if (retry === this.#MAX_RETRIES)
+          if (retry === this.options.max_retries)
             throw e;
           await sleep(1);
         }
@@ -100,8 +116,8 @@ class BluetoothJS extends Transport {
         server = await server.connect();
       }
 
-      const service = await server.getPrimaryService(this.#SERVICE_UUID);
-      this.#characteristic = await service.getCharacteristic(this.#CHARACTERISTIC_UUID);
+      const service = await server.getPrimaryService(this.options.service_uuid);
+      this.#characteristic = await service.getCharacteristic(this.options.characteristic_uuid);
       await this.#characteristic.startNotifications();
       this.#characteristic.addEventListener('characteristicvaluechanged', this._change_h);
 

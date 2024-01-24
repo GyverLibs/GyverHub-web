@@ -2,9 +2,6 @@ class Device {
 
   constructor(hub) {
     this._hub = hub;
-    this.ws = new WSconn(this);
-    this.mq_buf = new PacketBuffer(hub, Conn.MQTT);
-    this.ws_buf = new PacketBuffer(hub, Conn.HTTP);
   }
 
   info = {
@@ -51,30 +48,7 @@ class Device {
       if (value) uri += '=' + value;
     }
 
-    switch (this.conn) {
-      case Conn.HTTP:
-        if (this.ws.state()) this.ws.send(uri);
-        else await this._hub.http.send(this.info.ip, this.info.http_port, `hub/${uri}`);
-        break;
-
-/*@[if_not_target:esp]*/
-      case Conn.SERIAL:
-        await this._hub.serial.send(uri);
-        break;
-
-      case Conn.BT:
-        await this._hub.bt.send(uri);
-        break;
-
-      case Conn.TG:
-        await this._hub.tg.send(uri);
-        break;
-
-      case Conn.MQTT:
-        await this._hub.mqtt.send(uri0 + (name.length ? ('/' + name) : ''), value);
-        break;
-/*@/[if_not_target:esp]*/
-    }
+    await this._hub.send(this, uri);
 
     if (this.focused) {
       this._reset_ping();
@@ -85,9 +59,9 @@ class Device {
     this.focused = true;
     this.post('ui');
     if (this.conn == Conn.HTTP && this.info.ws_port) {
-      this.ws.start();
+      this.ws.connect();
       setTimeout(() => {
-        if (!this.ws.state()) this.ws.stop();
+        if (!this.ws.state()) this.ws.disconnect();
       }, this._hub.tout_prd);
     }
   }
@@ -96,7 +70,7 @@ class Device {
     this._stop_ping();
     this._stop_tout();
     this.post('unfocus');
-    if (this.conn == Conn.HTTP) this.ws.stop();
+    if (this.conn == Conn.HTTP) this.ws.disconnect();
   }
 
   // fs
@@ -497,7 +471,7 @@ class Device {
   }
 
   conn = Conn.NONE;
-  conn_arr = [0, 0, 0, 0, 0];
+  active_connections = [];
   granted = false;
   focused = false;
   tout = null;

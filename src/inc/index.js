@@ -138,7 +138,7 @@ function startup() {
     for (let dev of hub.devices) {
       if (window.location.href.includes(dev.info.ip)) {
         dev.conn = Conn.HTTP;
-        dev.conn_arr[Conn.HTTP] = 1;
+        dev.conn_arr[Conn.HTTP] = 1;  // TODO
         device_h(dev.info.id);
         return;
       }

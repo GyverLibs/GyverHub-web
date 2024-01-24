@@ -1,10 +1,32 @@
-class SerialJS extends Transport {
+class SERIALconn extends Connection {
+  priority = 900;
+  name = 'Serial';
+
   #port;
   #reader;
   #running;
+  #packet_buffer;
 
-  constructor() {
-    super();
+  /*
+    baudrate = 9600
+  */
+  constructor(hub, options) {
+    super(hub, options);
+    this.#packet_buffer = new PacketBuffer(this.hub, this, true);
+    this.addEventListener('message', ev => this.#packet_buffer.process(ev.message));
+    this.addEventListener('statechange', () => this.onConnChange(this.getState()));
+  }
+
+  async discover() {
+    if (this.isDiscovering() || !this.isConnected()) return;
+    for (let pref of this.hub._preflist()) await this.send(pref);
+    this._discoverTimer();
+  }
+
+  async search() {
+    if (this.isDiscovering() || !this.isConnected()) return;
+    await this.send(this.hub.cfg.prefix);
+    this._discoverTimer();
   }
 
   getName() {
@@ -21,7 +43,7 @@ class SerialJS extends Transport {
     }
   }
 
-  async auto_open(baud) {
+  async begin() {
     try {
       const ports = await navigator.serial.getPorts();
       if (ports)
@@ -31,11 +53,11 @@ class SerialJS extends Transport {
       return;
     }
     
-    await this.open(baud)
+    await this.connect();
   }
 
   async select() {
-    await this.close();
+    await this.disconnect();
     this.#port = undefined;
     this._setState(ConnectionState.CONNECTING);
 
@@ -49,16 +71,16 @@ class SerialJS extends Transport {
     }
   }
 
-  async open(baud) {
+  async connect() {
     if (!this.#port)
       return;
 
-    await this.close();
+    await this.disconnect();
 
     this._setState(ConnectionState.CONNECTING);
 
     try {
-      await this.#port.open({ baudRate: baud });
+      await this.#port.open({ baudRate: this.options.baudrate });
     } catch (e) {
       if (!(e instanceof InvaidStateError)) {
         this._setState(ConnectionState.DISCONNECTED);
@@ -70,7 +92,7 @@ class SerialJS extends Transport {
     this.#readLoop();
   }
 
-  async close() {
+  async disconnect() {
     if (!this.#port)
       return;
 
@@ -84,7 +106,7 @@ class SerialJS extends Transport {
   }
 
   async send(data) {
-    data = new TextEncoder().encode(data);
+    data = new TextEncoder().encode(data + '\0');
 
     if (!this.#port || !this.#port.writable)
       return;
@@ -98,7 +120,7 @@ class SerialJS extends Transport {
   }
 
   async _handleDisconnection(event) {
-    this.close();
+    this.disconnect();
     this.#port = undefined;
   }
   _disconnect_h = this._handleDisconnection.bind(this);

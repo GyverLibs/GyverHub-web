@@ -58,6 +58,7 @@ class GyverHub {
 
   // vars
   devices = [];
+  connections = [];
   cfg = {
     prefix: 'MyDevices', client_id: new Date().getTime().toString(16).slice(-8),
     use_local: false, local_ip: '192.168.1.1', netmask: 24, http_port: 80,
@@ -65,7 +66,11 @@ class GyverHub {
     use_serial: false, baudrate: 115200,
     use_mqtt: false, mq_host: 'test.mosquitto.org', mq_port: '8081', mq_login: '', mq_pass: '',
     use_tg: false, tg_token: '', tg_chat: '',
-    api_ver: 3
+    api_ver: 3,
+
+    
+    port: 80,
+    request_timeout: 500
   };
 
   api_v = 1;
@@ -74,64 +79,104 @@ class GyverHub {
   ping_prd = 3000;  // ping period > timeout
 
   constructor() {
-    this.http = new HTTPconn(this);
+    this.connections.push(new HTTPconn(this, this.cfg));
     /*@[if_not_target:esp]*/
-    this.mqtt = new MQTTconn(this);
-    this.tg = new TGconn(this);
-    this.serial = new SERIALconn(this);
-    this.bt = new BTconn(this);
+    this.connections.push(
+      new MQTTconn(this, {}),
+      new TGconn(this),
+      new SERIALconn(this, this.cfg),
+      new BTconn(this, {
+        service_uuid: 0xFFE0,
+        characteristic_uuid: 0xFFE1,
+        max_size: 20,
+        max_retries: 3,
+        buffer_size: 1024
+      })
+    );
     /*@/[if_not_target:esp]*/
+  }
+
+  get mqtt() {
+    for (const connection of this.connections) {
+      if (connection instanceof MQTTconn)
+        return connection;
+    }
+  }
+
+  get bt() {
+    for (const connection of this.connections) {
+      if (connection instanceof BTconn)
+        return connection;
+    }
+  }
+
+  get serial() {
+    for (const connection of this.connections) {
+      if (connection instanceof SERIALconn)
+        return connection;
+    }
+  }
+
+  get tg() {
+    for (const connection of this.connections) {
+      if (connection instanceof TGconn)
+        return connection;
+    }
   }
 
   // network
   begin() {
-    /*@[if_not_target:esp]*/
-    if (this.cfg.use_mqtt) this.mqtt.start();
-    if (this.cfg.use_tg) this.tg.start();
-    if (this.cfg.use_serial) this.serial.auto_open(this.cfg.baudrate);
-    /*@/[if_not_target:esp]*/
+    for (const connection of this.connections) {
+      connection.begin();
+    }
   }
   post(id, cmd, name = '', value = '') {
     this.dev(id).post(cmd, name, value);
   }
   discover() {
     for (let dev of this.devices) {
-      dev.conn = Conn.NONE;
-      dev.conn_arr = [0, 0, 0, 0];
+      dev.conn = undefined;
+      dev.active_connections = [];
     }
 
-    /*@[if_not_target:esp]*/
-      if (this.cfg.use_mqtt) this.mqtt.discover();
-      if (this.cfg.use_tg) this.tg.discover();
-      if (this.cfg.use_serial && "serial" in navigator) this.serial.discover();
-      if (this.cfg.use_bt && "bluetooth" in navigator) this.bt.discover();
-    /*@/[if_not_target:esp]*/
-
-    /*@[if_target:host]*/
-      if (this.cfg.use_local && !isSSL()) this.http.discover();
-    /*@/[if_target:host]*/
-    /*@[if_not_target:host]*/
-      if (this.cfg.use_local) this.http.discover();
-    /*@/[if_not_target:host]*/
+    for (const connection of this.connections) {
+      connection.discover();
+    }
 
     this._checkDiscoverEnd();
   }
   search() {
-    /*@[if_not_target:esp]*/
-    if (this.cfg.use_mqtt) this.mqtt.search();
-    if (this.cfg.use_tg) this.tg.search();
-    if (this.cfg.use_serial && "serial" in navigator) this.serial.search();
-    if (this.cfg.use_bt && "bluetooth" in navigator) this.bt.search();
-    /*@/[if_not_target:esp]*/
-
-    /*@[if_target:host]*/
-      if (this.cfg.use_local && !isSSL()) this.http.search();
-    /*@/[if_target:host]*/
-    /*@[if_not_target:host]*/
-      if (this.cfg.use_local) this.http.search();
-    /*@/[if_not_target:host]*/
+    for (const connection of this.connections) {
+      connection.search();
+    }
 
     this._checkDiscoverEnd();
+  }
+  async send(device, data) {
+    switch (device.conn) {
+      case Conn.HTTP:
+        if (this.ws.state()) this.ws.send(uri);
+        else await this._hub.http.send(this.info.ip, this.info.http_port, uri);
+        break;
+
+/*@[if_not_target:esp]*/
+      case Conn.SERIAL:
+        await this._hub.serial.send(uri);
+        break;
+
+      case Conn.BT:
+        await this._hub.bt.send(uri);
+        break;
+
+      case Conn.TG:
+        await this._hub.tg.send(uri);
+        break;
+
+      case Conn.MQTT:
+        await this._hub.mqtt.send(uri);
+        break;
+/*@/[if_not_target:esp]*/
+    }
   }
 
   // devices
@@ -169,7 +214,7 @@ class GyverHub {
       }
     }
   }
-  addDevice(data, conn = Conn.NONE) {
+  addDevice(data, conn = undefined) {
     let device = this.dev(data.id);
     let flag = false;
     if (device) {  // exists
@@ -179,8 +224,8 @@ class GyverHub {
           flag = true;
         }
       }
-      device.conn_arr[conn] = 1;
-      if (device.conn > conn) {  // priority
+      device.active_connections.push(conn);
+      if (conn.priority > device.conn.priority) {  // priority
         device.conn = conn;
         flag = true;
       }
@@ -230,10 +275,11 @@ class GyverHub {
     if (!this._discovering()) this.onDiscoverEnd();
   }
   _discovering() {
-    /*@[if_not_target:esp]*/
-    return (this.http.discovering || this.mqtt.discovering || this.tg.discovering || this.serial.discovering || this.bt.discovering);
-    /*@/[if_not_target:esp]*/
-    return this.http.discovering;
+    for (const connection of this.connections) {
+      if (connection.isDiscovering())
+        return true;
+    }
+    return false;
   }
   _preflist() {
     let list = [this.cfg.prefix];
@@ -278,7 +324,7 @@ class GyverHub {
     delete data.type;
 
     if (type == 'discover' && this._discovering()) {
-      if (conn == Conn.HTTP) {
+      if (conn instanceof HTTPconn) {
         data.ip = ip;
         data.http_port = port;
       }
