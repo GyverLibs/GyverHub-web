@@ -323,7 +323,7 @@ function menu_show(state) {
 // ============== DEVICE =============
 function device_h(id) {
   let dev = hub.dev(id);
-  if (!dev || dev.conn == Conn.NONE) return;
+  if (!dev || !dev.conn) return;
   if (!dev.info.api_v || dev.info.api_v != hub.api_v) alert(lang.api_mis);
 
   if (dev.info.PIN && !dev.granted) {
@@ -341,7 +341,7 @@ function open_device(id) {
   focused = id;
   let dev = hub.dev(id)
   EL('menu_user').innerHTML = '';
-  EL('conn').innerHTML = Conn.names[dev.conn];
+  EL('conn').innerHTML = dev.conn.name;
   UiPlugin.enableStyle(id);
   addDOM('device_css', 'style', dev.info.plugin_css, EL('plugins'));
   addDOM('device_js', 'script', dev.info.plugin_js, EL('plugins'));

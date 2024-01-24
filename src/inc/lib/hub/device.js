@@ -22,6 +22,14 @@ class Device {
     platform: '',
   };
 
+  isHttpAccessable() {
+    for (const connection of this.active_connections) {
+      if (connection instanceof HTTPconn)
+        return true;
+    }
+    return false;
+  }
+
   connected() {
     return !this.conn_lost;
   }
@@ -106,7 +114,7 @@ class Device {
       this.fs_mode = 'upload';
       this.crc32 = crc32(buffer);
 
-      if (this.conn == Conn.HTTP && this.info.http_t) {
+      if (this.isHttpAccessable() && this.info.http_t) {
         let formData = new FormData();
         formData.append('upload', file);
         http_post(`http://${this.info.ip}:${this.info.http_port}/hub/upload?path=${path}&crc32=${this.crc32}&client_id=${this._hub.cfg.client_id}&size=${buffer.length}`, formData)
@@ -145,7 +153,7 @@ class Device {
       this._hub.onOtaStart(this.info.id);
       this.fs_mode = 'ota';
 
-      if (this.conn == Conn.HTTP && this.info.http_t) {
+      if (this.isHttpAccessable() && this.info.http_t) {
         let formData = new FormData();
         formData.append(type, file);
         http_post(`http://${this.info.ip}:${this.info.http_port}/hub/ota?type=${type}&client_id=${this._hub.cfg.client_id}`, formData)
@@ -173,7 +181,7 @@ class Device {
     this.fet_name = path.split('/').pop();
     this.fet_index = idx;
 
-    if (this.conn == Conn.HTTP && this.info.http_t) {
+    if (this.isHttpAccessable() && this.info.http_t) {
       http_fetch_blob(`http://${this.info.ip}:${this.info.http_port}/hub/fetch?path=${path}&client_id=${this._hub.cfg.client_id}`,
         perc => this._hub.onFsFetchPerc(id, idx, perc),
         this._hub.http.tout)
@@ -217,7 +225,7 @@ class Device {
     this.fs_mode = 'fetch_file';
     this._hub.onFetchStart(id, file.name);
 
-    if (this.conn == Conn.HTTP && this.info.http_t) {
+    if (this.isHttpAccessable() && this.info.http_t) {
       http_fetch_blob(`http://${this.info.ip}:${this.info.http_port}/hub/fetch?path=${file.path}`,
         perc => this._hub.onFetchPerc(id, file.name, perc),
         this._hub.http.tout)
@@ -470,7 +478,7 @@ class Device {
     this._hub.log(this.info.name + ' ' + e);
   }
 
-  conn = Conn.NONE;
+  conn = undefined;
   active_connections = [];
   granted = false;
   focused = false;

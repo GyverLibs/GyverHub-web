@@ -154,30 +154,12 @@ class GyverHub {
     this._checkDiscoverEnd();
   }
   async send(device, uri) {
-    switch (device.conn) {
-      case Conn.HTTP:
-        if (this.ws.isConnected()) this.ws.send(uri);
-        else await this.http.send(this.info.ip, this.info.http_port, uri);
-        break;
-
-/*@[if_not_target:esp]*/
-      case Conn.SERIAL:
-        await this.serial.send(uri);
-        break;
-
-      case Conn.BT:
-        await this.bt.send(uri);
-        break;
-
-      case Conn.TG:
-        await this.tg.send(uri);
-        break;
-
-      case Conn.MQTT:
-        await this.mqtt.send(uri);
-        break;
-/*@/[if_not_target:esp]*/
-    }
+    await device.conn.send(uri)
+    // switch (device.conn) {
+    //   case Conn.HTTP:
+    //     await this.http.send(this.info.ip, this.info.http_port, uri);
+    //     break;
+    // }
   }
 
   // devices
