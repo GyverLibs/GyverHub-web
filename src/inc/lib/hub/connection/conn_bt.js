@@ -19,7 +19,6 @@ class BTconn extends Connection {
     super(hub, options);
     this.#buffer = new CyclicBuffer(this.options.buffer_size);
     this.#packet_buffer = new PacketBuffer(this.hub, this, true);
-    this.addEventListener('message', ev => this.#packet_buffer.process(ev.message));
     this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
 
@@ -136,7 +135,7 @@ class BTconn extends Connection {
 
   async _btchanged(event) {
     const value = new TextDecoder().decode(event.target.value);
-    if (value) this.dispatchEvent(new MessageEvent(value));
+    if (value) this.#packet_buffer.process(value);
   }
   _change_h = this._btchanged.bind(this);
 }

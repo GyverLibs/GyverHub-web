@@ -1,37 +1,56 @@
-class Bot {
+class TGconn extends Connection {
+  priority = 400;
+  name = 'TG';
 
-  onpoll() { }
-  onerror(e) { }
-  async onmessage(data) { }
+  #running;
+  #offset;
+  #buffers;
 
-  timeout = 10;
-  period = 100;
+  onConnChange(state) { }
 
-  setToken(token) {
-    this._token = token;
+  constructor(hub) {
+    super(hub);
+    this.#buffers = new Map();
   }
 
-  connect() {
-    this._state = true;
-    this._offset = -1;
+  isConnected() {
+    return this.#running;
+  }
+
+  async discover() {
+    if (this.discovering || !this.isConnected()) return;
+    for (let pref of this.hub._preflist()) await this.send(pref);
+    this._discoverTimer();
+  }
+
+  async search() {
+    if (this.discovering || !this.isConnected()) return;
+    await this.send(this.hub.cfg.prefix);
+    this._discoverTimer();
+  }
+
+  async connect() {
+    this.#running = true;
+    this.#offset = -1;
+    this._setState(ConnectionState.CONNECTING);
     this._poll();
   }
 
-  disconnect() {
-    this._state = false;
-    if (this._tout) clearTimeout(this._tout);
-    this._tout = null;
+  async disconnect() {
+    this.#running = false;
+    this._setState(ConnectionState.DISCONNECTED);
   }
 
-  state() {
-    return this._state && this._token.length;
+  async send(text) {
+    if (!this.hub.cfg.tg_chat) return;
+    await this.#sendMessage(this.hub.cfg.tg_chat, 'app:' + text)
   }
-
-  async send(chat, text, params = {}) {
-    params.chat_id = chat;
+  
+  async #sendMessage(chat_id, text, params) {
+    params.chat_id = chat_id;
     params.text = text;
     params.disable_notification = true;
-    let resp = await fetch(`https://api.telegram.org/bot${this._token}/sendMessage`, {
+    let resp = await fetch(`https://api.telegram.org/bot${this.options.token}/sendMessage`, {
       method: 'POST',
       body: JSON.stringify(params),
       headers: {
@@ -41,117 +60,55 @@ class Bot {
     let data = await resp.json();
     return data.ok;
   }
-  
+
   async _poll() {
-    this._tout = null;
-    let data = null;
-    try {
-      let resp = await fetch(`https://api.telegram.org/bot${this._token}/getUpdates?offset=${this._offset}&timeout=${this.timeout}`);
-      data = await resp.json();
-    } catch (e) {
-    }
-
-    if (data) {
-      if (data.ok) {
-        for (let upd of data.result) {
-          this.onmessage(upd);
-          this._offset = upd.update_id + 1;
-        }
-        if (this._state) this.onpoll();
-      } else {
-        if ('description' in data) this.onerror(data.description);
-        else this.onerror('Error');
+    while (this.#running) {
+      let data = null;
+      try {
+        let resp = await fetch(`https://api.telegram.org/bot${this.options.token}/getUpdates?offset=${this.#offset}&timeout=${this.options.pool_time}`);
+        data = await resp.json();
+      } catch (e) {
       }
-    } else {
-      this.onerror('Error');
-    }
 
-    if (this._state) this._tout = setTimeout(() => this._poll(), this.period);
-  }
+      if (!this.#running) break;
 
-  _offset = -1;
-  _state = false;
-  _token = '';
-  _tout = null;
-};
+      if (data && data.ok) {
+        this._setState(ConnectionState.CONNECTED);
 
-
-class TGconn extends Connection {
-  priority = 400;
-  name = 'TG';
-
-  tout = 1000;
-
-  onConnChange(state) { }
-
-  constructor(hub) {
-    super(hub);
-    this.bot = new Bot();
-
-    this.bot.onpoll = () => {
-      this._reconnect = true;
-      this.onConnChange(1);
-    }
-
-    this.bot.onerror = (e) => {
-      this.onConnChange(0);
-      this.err(e);
-      this.bot.disconnect();
-    }
-
-    this.bot.onmessage = (data) => {
-      try {
-        if (data.channel_post.text == '/start') {
-          let msg = 'Channel *' + data.channel_post.chat.title + '* id: `' + data.channel_post.chat.id + '`';
-          this.bot.send(data.channel_post.chat.id, msg, { parse_mode: "MarkdownV2" });
-          return;
+        for (let upd of data.result) {
+          await this.onmessage(upd);
+          this.#offset = upd.update_id + 1;
         }
-      } catch (e) { }
 
-      try {
-        if (data.channel_post.chat.id != this.hub.cfg.tg_chat) return;
-        let [id, ...rest] = data.channel_post.text.split(':');
-        let data = rest.join(':');
-        if (!this._buffers.hasOwnProperty(id)) {
-          this._buffers[id] = new PacketBuffer(this.hub, this, false, 1500);
-        }
-        this._buffers[id].process(text);
-      } catch (e) { }
-    };
+      } else {
+        this._setState(ConnectionState.DISCONNECTED);
+      }
 
-    setInterval(() => { if (this.hub.cfg.use_tg && !this.bot.state() && this._reconnect) this.connect() }, 3000);
-  }
-  async discover() {
-    if (this.discovering || !this.bot.state()) return;
-    for (let pref of this.hub._preflist()) await this.send(pref);
-    this._discoverTimer(this.tout);
-  }
-  async search() {
-    if (this.discovering || !this.bot.state()) return;
-    await this.send(this.hub.cfg.prefix);
-    this._discoverTimer(this.tout);
-  }
-  async connect() {
-    this.bot.setToken(this.hub.cfg.tg_token);
-    this.bot.connect();
-  }
-  async disconnect() {
-    this.bot.disconnect();
-    this._reconnect = false;
-    this.onConnChange(0);
-  }
-  async send(text) {
-    if (this.hub.cfg.tg_chat.length) await this.bot.send(this.hub.cfg.tg_chat, 'app:' + text);
-  }
+      if (!this.#running) break;
 
-  _reconnect = false;
-  _buffers = {};
-
-  // log
-  log(t) {
-    this.hub.log('[TG] ' + t);
+      await sleep(this.options.pool_delay);
+    }
   }
-  err(e) {
-    this.hub.err('[TG] ' + e);
+  
+  async onmessage(data){
+    try {
+      if (data.channel_post.text == '/start') {
+        let msg = 'Channel *' + data.channel_post.chat.title + '* id: `' + data.channel_post.chat.id + '`';
+        await this.#sendMessage(data.channel_post.chat.id, msg, { parse_mode: "MarkdownV2" });
+        return;
+      }
+    } catch (e) { }
+
+    try {
+      if (data.channel_post.chat.id != this.hub.cfg.tg_chat) return;
+      let [id, ...rest] = data.channel_post.text.split(':');
+      let data = rest.join(':');
+      let buffer = this.#buffers.get(id);
+      if (!buffer) {
+        buffer = new PacketBuffer(this.hub, this, false, 1500);
+        this.#buffers.set(id, buffer);
+      }
+      buffer.process(text);
+    } catch (e) { }
   }
 }

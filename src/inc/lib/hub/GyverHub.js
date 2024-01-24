@@ -68,7 +68,7 @@ class GyverHub {
     use_tg: false, tg_token: '', tg_chat: '',
     api_ver: 3,
 
-    
+    discover_timeout: 3000,
     port: 80,
     request_timeout: 500
   };
@@ -82,7 +82,7 @@ class GyverHub {
     this.connections.push(new HTTPconn(this, this.cfg));
     /*@[if_not_target:esp]*/
     this.connections.push(
-      new MQTTconn(this, {}),
+      new MQTTconn(this, {discover_timeout: 3000}),
       new TGconn(this),
       new SERIALconn(this, this.cfg),
       new BTconn(this, {
@@ -90,7 +90,8 @@ class GyverHub {
         characteristic_uuid: 0xFFE1,
         max_size: 20,
         max_retries: 3,
-        buffer_size: 1024
+        buffer_size: 1024,
+        discover_timeout: 3000,
       })
     );
     /*@/[if_not_target:esp]*/
@@ -152,28 +153,28 @@ class GyverHub {
 
     this._checkDiscoverEnd();
   }
-  async send(device, data) {
+  async send(device, uri) {
     switch (device.conn) {
       case Conn.HTTP:
-        if (this.ws.state()) this.ws.send(uri);
-        else await this._hub.http.send(this.info.ip, this.info.http_port, uri);
+        if (this.ws.isConnected()) this.ws.send(uri);
+        else await this.http.send(this.info.ip, this.info.http_port, uri);
         break;
 
 /*@[if_not_target:esp]*/
       case Conn.SERIAL:
-        await this._hub.serial.send(uri);
+        await this.serial.send(uri);
         break;
 
       case Conn.BT:
-        await this._hub.bt.send(uri);
+        await this.bt.send(uri);
         break;
 
       case Conn.TG:
-        await this._hub.tg.send(uri);
+        await this.tg.send(uri);
         break;
 
       case Conn.MQTT:
-        await this._hub.mqtt.send(uri);
+        await this.mqtt.send(uri);
         break;
 /*@/[if_not_target:esp]*/
     }
@@ -231,7 +232,7 @@ class GyverHub {
       }
       if (flag) this.onUpdDevice(device.info);
     } else {    // not exists
-      device = new Device(this); // Device(hub)
+      device = new Device(this);
       for (let key in data) {
         device.info[key] = data[key];
       }
@@ -242,7 +243,7 @@ class GyverHub {
     }
     if (flag) {
       /*@[if_not_target:esp]*/
-      this.mqtt._sub_device(device.info.prefix, device.info.id);
+      this.mqtt.sub_device(device.info.prefix, device.info.id);
       /*@/[if_not_target:esp]*/
       this.onSaveDevices();
     }

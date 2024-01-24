@@ -13,7 +13,6 @@ class SERIALconn extends Connection {
   constructor(hub, options) {
     super(hub, options);
     this.#packet_buffer = new PacketBuffer(this.hub, this, true);
-    this.addEventListener('message', ev => this.#packet_buffer.process(ev.message));
     this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
 
@@ -134,7 +133,7 @@ class SERIALconn extends Connection {
           const read = await this.#reader.read();
           if (read.done) break;
           const data = new TextDecoder().decode(read.value);
-          this.dispatchEvent(new MessageEvent(data));
+          this.#packet_buffer.process(data);
         }
       } finally {
         this.#reader.releaseLock();

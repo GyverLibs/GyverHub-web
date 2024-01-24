@@ -2,49 +2,39 @@ class MQTTconn extends Connection {
   priority = 500;
   name = 'MQTT';
 
-  tout = 1500;
-
-  _connecting = false;
-  _client = null;
-  _discover_f = false;
-  _preflist = [];
-
-  _reconnect = false;
+  #client;
+  #preflist;
 
   onConnChange(state) { }
 
   constructor(hub, options) {
     super(hub, options);
-    setInterval(() => { if (this.hub.cfg.use_mqtt && !this.isConnected() && this._reconnect) this.connect() }, 3000);
+    this.#preflist = [];
+    this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
 
   isConnected() {
-    return this._client && this._client.connected;
+    return this.#client && this.#client.connected;
   }
 
-  // discover
   async discover() {
-    if (this.discovering) return;
-    if (!this.isConnected()) {
-      this._discover_f = true;
-      return;
-    }
+    if (this.discovering || this.isConnected()) return;
     for (let dev of this.hub.devices) {
-      this.send(dev.info.prefix + '/' + dev.info.id + '=' + this.hub.cfg.client_id);
+      await this.send(dev.info.prefix + '/' + dev.info.id + '=' + this.hub.cfg.client_id);
     }
-    this._discoverTimer(this.tout);
+    this._discoverTimer();
   }
 
   async search() {
     if (this.discovering || !this.isConnected()) return;
-    this._upd_prefix(this.hub.cfg.prefix);
-    this.send(this.hub.cfg.prefix + '=' + this.hub.cfg.client_id);
-    this._discoverTimer(this.tout);
+    await this.#upd_prefix(this.hub.cfg.prefix);
+    await this.send(this.hub.cfg.prefix + '=' + this.hub.cfg.client_id);
+    this._discoverTimer();
   }
 
   async connect() {
-    this._reconnect = true;
-    if (this._connecting || this.isConnected() || !this.hub.cfg.mq_host || !this.hub.cfg.mq_port || !this.hub.cfg.use_mqtt) return;
+    await this.disconnect();
+    this._setState(ConnectionState.CONNECTING);
 
     const url = 'wss://' + this.hub.cfg.mq_host + ':' + this.hub.cfg.mq_port + '/mqtt';
     const options = {
@@ -60,97 +50,97 @@ class MQTTconn extends Connection {
     }
 
     try {
-      this._client = mqtt.connect(url, options);
+      this.#client = await mqtt.connectAsync(url, options);
     } catch (e) {
-      this.err('Connection fail');
-      this.onConnChange(false);
+      this._setState(ConnectionState.DISCONNECTED);
       return;
     }
 
-    this._connecting = true;
+    this._setState(ConnectionState.CONNECTED);
 
-    this._client.on('connect', () => {
-      this._connecting = false;
-      this.onConnChange(true);
-      this._preflist = [];
-      this._upd_prefix(this.hub.cfg.prefix);
-      for (let dev of this.hub.devices) this._sub_device(dev.info.prefix, dev.info.id);
+    this.#preflist = [];
+    await this.#upd_prefix(this.hub.cfg.prefix);
+    for (let dev of this.hub.devices)
+      await this.#sub_device(dev.info.prefix, dev.info.id);
 
-      if (this._discover_f) {
-        this._discover_f = false;
-        this.discover();
-      }
+    this.#client.on('connect', () => {
+      this._setState(ConnectionState.CONNECTED);
+    });
+    this.#client.on('reconnect', () => {
+      this._setState(ConnectionState.CONNECTING);
+    });
+    this.#client.on('close', () => {
+      this._setState(ConnectionState.DISCONNECTED);
     });
 
-    this._client.on('error', () => {
-      this._connecting = false;
-      this.onConnChange(false);
-      this._client.end();
+    this.#client.on('error', () => {
+      this.disconnect();
     });
 
-    this._client.on('close', () => {
-      this._connecting = false;
-      this.onConnChange(false);
-      this._client.end();
-    });
-
-    this._client.on('message', (topic, text) => {
+    this.#client.on('message', (topic, text) => {
       topic = topic.toString();
       text = text.toString();
       let parts = topic.split('/');
-      if (parts.length < 2) return;
 
-      for (let pref of this._preflist) {
-        if (parts[0] != pref || parts[1] != 'hub') continue;
+      if (parts.length < 2 || parts[1] != 'hub' || !this.#preflist.includes(parts[0]))
+        return;
+      
+      // prefix/hub
+      if (parts.length == 2) {
+        this.hub._parsePacket(this, text);
 
-        // prefix/hub
-        if (parts.length == 2) {
-          this.hub._parsePacket(this, text);
-          return;
+      // prefix/hub/client_id/id
+      } else if (parts.length == 4 && parts[2] == this.hub.cfg.client_id) {
+        let dev = this.hub.dev(parts[3]);
+        if (dev) dev.mq_buf.process(text);
+        else this.hub._parsePacket(this, text);
 
-          // prefix/hub/client_id/id
-        } else if (parts.length == 4 && parts[2] == this.hub.cfg.client_id) {
-          let dev = this.hub.dev(parts[3]);
-          if (dev) dev.mq_buf.process(text);
-          else this.hub._parsePacket(this, text);
-          return;
-
-          // prefix/hub/id/get/name
-        } else if (parts.length == 5 && parts[3] == 'get') {
-          let dev = this.hub.dev(parts[2]);
-          if (dev) {
-            let upd = {};
-            upd[parts[4]] = {value: text};
-            dev._checkUpdates(upd);
-          }
-          return;
+        // prefix/hub/id/get/name
+      } else if (parts.length == 5 && parts[3] == 'get') {
+        let dev = this.hub.dev(parts[2]);
+        if (dev) {
+          let upd = {};
+          upd[parts[4]] = {value: text};
+          dev._checkUpdates(upd);
         }
       }
     });
   }
   
   async disconnect() {
-    this._reconnect = false;
-    if (this.isConnected()) this._client.end();
+    if (this.#client) {
+      try {
+        await this.#client.endAsync();
+      } catch (e) {}
+    }
+    this.#client = undefined;
+    this._setState(ConnectionState.DISCONNECTED);
   }
 
   async send(topic) {
-    topic = topic.split('=', 1);
-    const msg = topic.length === 1 ? '' : topic[1];
-    topic = topic[0];
-    if (this.isConnected()) this._client.publish(topic, msg);  // no '\0'
-  }
-  
-  _sub_device(prefix, id) {
-    if (!this.isConnected()) return;
-    this._client.subscribe(prefix + '/hub/' + id + '/get/#');
-    this._upd_prefix(prefix);
-  }
-  _upd_prefix(prefix) {
-    if (!this._preflist.includes(prefix)) {
-      this._preflist.push(prefix);
-      this._client.subscribe(prefix + '/hub');
-      this._client.subscribe(prefix + '/hub/' + this.hub.cfg.client_id + '/#');
+    const i = topic.indexOf('=');
+    let msg = '';
+    if (i !== -1) {
+      msg = topic.substring(i + 1);
+      topic = topic.substring(0, i);
     }
+
+    if (this.isConnected()) {
+      await this.#client.publishAsync(topic, msg);
+    }
+  }
+  async sub_device(prefix, id) {
+    await this.#sub_device(prefix, id);
+  }
+  async #sub_device(prefix, id) {
+    if (!this.isConnected()) return;
+    await this.#client.subscribeAsync(prefix + '/hub/' + id + '/get/#');
+    await this.#upd_prefix(prefix);
+  }
+  async #upd_prefix(prefix) {
+    if (!this.isConnected() || this.#preflist.includes(prefix)) return;
+    this.#preflist.push(prefix);
+    await this.#client.subscribeAsync(prefix + '/hub');
+    await this.#client.subscribeAsync(prefix + '/hub/' + this.hub.cfg.client_id + '/#');
   }
 };
