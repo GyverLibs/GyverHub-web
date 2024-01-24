@@ -90,7 +90,7 @@ window.onload = () => {
     }
     /*@/[if_target:esp]*/
     /*@[if_not_target:esp]*/
-    else if (!Boolean(window.webkitRTCPeerConnection || window.mozRTCPeerConnection)) return;
+    if (!Boolean(window.webkitRTCPeerConnection || window.mozRTCPeerConnection)) return;
     getLocalIP()
       .then((ip) => {
         if (ip.indexOf("local") < 0) {
