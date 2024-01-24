@@ -9,7 +9,7 @@ class WSconn extends Connection {
   constructor(hub, options) {
     super(hub, options);
     this.device = device;
-    this.#packet_buffer = new PacketBuffer(this.hub, this);
+    this.#packet_buffer = new PacketBufferScanFirst(this);
   }
 
   isConnected() {
@@ -36,7 +36,7 @@ class WSconn extends Connection {
     };
 
     this.#ws.onmessage = (e) => {
-      this.#packet_buffer.process(e.data);
+      this.#packet_buffer.push(e.data);
     };
   }
 

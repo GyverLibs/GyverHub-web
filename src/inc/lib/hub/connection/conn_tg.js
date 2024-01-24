@@ -105,10 +105,10 @@ class TGconn extends Connection {
       let data = rest.join(':');
       let buffer = this.#buffers.get(id);
       if (!buffer) {
-        buffer = new PacketBuffer(this.hub, this, false, 1500);
+        buffer = new PacketBufferScanFirst(this, 1500);
         this.#buffers.set(id, buffer);
       }
-      buffer.process(text);
+      buffer.push(text);
     } catch (e) { }
   }
 }

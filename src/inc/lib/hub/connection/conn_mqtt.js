@@ -92,7 +92,7 @@ class MQTTconn extends Connection {
       // prefix/hub/client_id/id
       } else if (parts.length == 4 && parts[2] == this.hub.cfg.client_id) {
         let dev = this.hub.dev(parts[3]);
-        if (dev) dev.mq_buf.process(text);
+        if (dev) dev.mq_buf.push(text);
         else this.hub._parsePacket(this, text);
 
         // prefix/hub/id/get/name

@@ -1,4 +1,4 @@
-/*@![include:inc/lib/hub/utils/buffer.js, compile]*/
+/*@![include:inc/lib/hub/utils/packet_buffer.js, compile]*/
 /*@![include:inc/lib/hub/utils/cyclic_buffer.js, compile]*/
 /*@![include:inc/lib/hub/utils/enum.js, compile]*/
 /*@![include:inc/lib/hub/utils/event_emitter.js, compile]*/
