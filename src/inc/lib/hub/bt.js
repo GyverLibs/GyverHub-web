@@ -83,10 +83,25 @@ class CyclicBuffer {
   }
 }
 
-class BluetoothJS {
+const BtConnectionState = new Enum(
+    'BtConnectionState',
+    'DISCONNECTED',
+    'CONNECTING',
+    'CONNECTED',
+);
+
+class BluetoothMessageEvent extends Event {
+  constructor(message) {
+    super('message');
+    this.message = message
+  }
+}
+
+class BluetoothJS extends EventEmitter {
   #device;
   #characteristic;
   #buffer;
+  #state;
 
   #SERVICE_UUID;
   #CHARACTERISTIC_UUID;
@@ -95,6 +110,7 @@ class BluetoothJS {
   #MAX_RETRIES;
 
   constructor(service_uuid = 0xFFE0, characteristic_uuid = 0xFFE1, max_size = 20, max_retries = 3) {
+    super();
     this.#SERVICE_UUID = service_uuid;
     this.#CHARACTERISTIC_UUID = characteristic_uuid;
     this.#MAX_SIZE = max_size;
@@ -106,6 +122,10 @@ class BluetoothJS {
     return this.#device && this.#device.gatt.connected && this.#characteristic;
   }
 
+  getState() {
+    return this.#state;
+  }
+
   getName() {
     return this.#device ? this.#device.name : null;
   }
@@ -113,7 +133,12 @@ class BluetoothJS {
   async open() {
     await this.close();
     if (!this.#device) {
-      this.#device = await BluetoothJS.#requestDevice();
+      this.#setState(BtConnectionState.CONNECTING);
+      try {
+        this.#device = await this.#requestDevice();
+      } finally {
+        this.#setState(BtConnectionState.DISCONNECTED);
+      }
       this.#device.addEventListener('gattserverdisconnected', this._disconnect_h);
     }
     await this.#connect();
@@ -122,18 +147,23 @@ class BluetoothJS {
   async close() {
     if (this.#characteristic) {
       this.#characteristic.removeEventListener('characteristicvaluechanged', this._change_h);
-      await this.#characteristic.stopNotifications();
+      try {
+        await this.#characteristic.stopNotifications();
+      } catch (e) {}
       this.#characteristic = undefined;
     }
 
     if (this.#device) {
       this.#device.removeEventListener('gattserverdisconnected', this._disconnect_h);
       if (this.#device.gatt.connected) {
-        this.#device.gatt.disconnect();
+        try {
+          this.#device.gatt.disconnect();
+        } catch (e) {}
       }
       this.#device = undefined;
     }
     this.#buffer.clear();
+    this.#setState(BtConnectionState.DISCONNECTED);
   }
   async send(data) {
     data = new TextEncoder().encode(data);
@@ -159,41 +189,48 @@ class BluetoothJS {
     }
   }
 
-  static async #requestDevice() {
+  async #requestDevice() {
     return await navigator.bluetooth.requestDevice({
-      filters: [{ services: [this._serviceUuid] }],
+      filters: [{ services: [this.#SERVICE_UUID] }],
     });
   }
 
   async #connect() {
-    let server = this.#device.gatt;
-    if (!server.connected)
-      server = await server.connect();
+    this.#setState(BtConnectionState.CONNECTING);
+    try {
+      
+      let server = this.#device.gatt;
+      if (!server.connected) {
+        server = await server.connect();
+      }
 
-    const service = await server.getPrimaryService(this.#SERVICE_UUID);
-    this.#characteristic = await service.getCharacteristic(this.#CHARACTERISTIC_UUID);
+      const service = await server.getPrimaryService(this.#SERVICE_UUID);
+      this.#characteristic = await service.getCharacteristic(this.#CHARACTERISTIC_UUID);
+      await this.#characteristic.startNotifications();
+      this.#characteristic.addEventListener('characteristicvaluechanged', this._change_h);
 
-    await this.#characteristic.startNotifications();
-    this.#characteristic.addEventListener('characteristicvaluechanged', this._change_h);
+    } finally {
+      this.#setState(BtConnectionState.DISCONNECTED);
+    }
+    this.#setState(BtConnectionState.CONNECTED);
+  }
+
+  #setState(state) {
+    if (this.#state === state)
+      return;
+    this.#state = state;
+    this.dispatchEvent(new Event('statechange'));
   }
 
   async _handleDisconnection(event) {
+    this.#setState(BtConnectionState.DISCONNECTED);
     await this.#connect();
   }
   _disconnect_h = this._handleDisconnection.bind(this);
 
   async _btchanged(event) {
     const value = new TextDecoder().decode(event.target.value);
-    if (value) this.onmessage(value);
+    if (value) this.dispatchEvent(new BluetoothMessageEvent(value));
   }
   _change_h = this._btchanged.bind(this);
-
-  async onopen() { }
-  async onmessage(data) { }
-  async onclose() { }
-  async onerror(e) { }
-
-  state() {
-    return this.isConnected();
-  }
 }

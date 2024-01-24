@@ -6,18 +6,18 @@ hub.mqtt.onConnChange = (state) => {
 }
 hub.bt.onConnChange = (state) => {
   switch (state) {
-    case 'connecting':
+    case BtConnectionState.CONNECTING:
       EL('bt_device').innerHTML = lang.connecting;
       break;
 
-    case 'open':
+    case BtConnectionState.CONNECTED:
       bt_change(true);
       EL('bt_device').innerHTML = hub.bt.getName();
       bt_show_ok(true);
       hub.bt.discover();
       break;
 
-    case 'close':
+    case BtConnectionState.DISCONNECTED:
       bt_change(false);
       EL('bt_device').innerHTML = lang.disconnected;
       bt_show_ok(false);
