@@ -94,4 +94,23 @@ class Connection extends EventEmitter {
    * @param {string} data 
    */
   async send(data) {}
+
+  /**
+   * Send command to device.
+   * @param {Device} device
+   * @param {string} command 
+   * @param {string} name 
+   * @param {string} value 
+   */
+  async post(device, command, name = '', value = '') {
+    let uri = device.info.prefix + '/' + device.info.id + '/' + this.hub.cfg.client_id + '/' + command;
+    if (name) {
+      uri += '/' + name;
+      if (value) {
+        uri += '=' + value;
+      }
+    }
+
+    await this.conn.send(uri);
+  }
 }

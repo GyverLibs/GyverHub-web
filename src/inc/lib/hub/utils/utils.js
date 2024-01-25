@@ -178,3 +178,32 @@ function readFileAsArrayBuffer(file) {
     reader.readAsArrayBuffer(file);
   });
 }
+
+// the only difference between minBy and maxBy is the ordering
+// function, so abstract that out
+Array.prototype.minBy = function(fn) {
+  return this.extremumBy(fn, Math.min);
+};
+Array.prototype.maxBy = function(fn) {
+  return this.extremumBy(fn, Math.max);
+};
+Array.prototype.extremumBy = function(pluck, extremum) {
+  return this.reduce(function(best, next) {
+    var pair = [ pluck(next), next ];
+    if (!best) {
+       return pair;
+    } else if (extremum.apply(null, [ best[0], pair[0] ]) == best[0]) {
+       return best;
+    } else {
+       return pair;
+    }
+  },null)[1];
+}
+Array.prototype.remove = function(element) {
+  var index = this.indexOf(item);
+  if (index !== -1) {
+    this.splice(index, 1);
+    return true;
+  }
+  return false;
+}

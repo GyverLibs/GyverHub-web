@@ -1,6 +1,5 @@
 window.onload = () => {
   load_cfg();
-  load_cfg_hub();
   updateLang();
   render_main();
   EL('hub_stat').innerHTML = 'GyverHub v' + app_version + ' ' + platform();
@@ -110,7 +109,6 @@ function startup() {
   update_theme();
   show_screen('main');
   if ('Notification' in window && Notification.permission == 'default') Notification.requestPermission();
-  load_devices();
 
   // device hook
   let qs = window.location.search;

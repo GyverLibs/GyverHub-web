@@ -9,7 +9,7 @@ function update_cfg(el) {
 function save_cfg() {
   if (cfg.pin.length < 4) cfg.use_pin = false;
   localStorage.setItem('app_config', JSON.stringify(cfg));
-  localStorage.setItem('hub_config', JSON.stringify(hub.cfg));
+  localStorage.setItem('hub_config', JSON.stringify(hub.exportConfig()));
 }
 function load_cfg() {
   if (localStorage.hasOwnProperty('app_config')) {
@@ -20,18 +20,10 @@ function load_cfg() {
     }
   }
   localStorage.setItem('app_config', JSON.stringify(cfg));
-}
-function load_cfg_hub() {
+
   if (localStorage.hasOwnProperty('hub_config')) {
-    let cfg_r = JSON.parse(localStorage.getItem('hub_config'));
-    if (hub.cfg.api_ver === cfg_r.api_ver) {
-      hub.cfg = cfg_r;
-      return;
-    } else {
-      localStorage.setItem('devices', '[]');
-    }
+    hub.importConfig(localStorage.getItem('hub_config'));
   }
-  localStorage.setItem('hub_config', JSON.stringify(hub.cfg));
 }
 function apply_cfg() {
   if (cfg.pin.length < 4) cfg.use_pin = false;
@@ -49,7 +41,7 @@ function apply_cfg() {
   }
 }
 async function cfg_export() {
-  await copyClip(btoa(JSON.stringify(cfg)) + ';' + btoa(JSON.stringify(hub.cfg)) + ';' + btoa(encodeURIComponent(hub.export())));
+  await copyClip(btoa(JSON.stringify(cfg)) + ';' + btoa(encodeURIComponent(hub.exportConfig())));
 }
 async function cfg_import() {
   try {
@@ -59,10 +51,7 @@ async function cfg_import() {
       cfg = JSON.parse(atob(text[0]));
     } catch (e) { }
     try {
-      hub.cfg = JSON.parse(atob(text[1]));
-    } catch (e) { }
-    try {
-      hub.import(decodeURIComponent(atob(text[2])));
+      hub.importConfig(decodeURIComponent(atob(text[1])));
     } catch (e) { }
 
     save_cfg();
@@ -132,10 +121,5 @@ function update_theme() {
   /*@/[if_not_target:esp]*/
 }
 function save_devices() {
-  localStorage.setItem('devices', hub.export());
-}
-function load_devices() {
-  if (localStorage.hasOwnProperty('devices')) {
-    hub.import(localStorage.getItem('devices'));
-  }
+  save_cfg();
 }

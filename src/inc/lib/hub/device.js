@@ -1,6 +1,8 @@
 class Device {
-  conn = undefined;
   active_connections = [];
+
+
+  conn = undefined;
   granted = false;
   focused = false;
   tout = null;
@@ -42,6 +44,12 @@ class Device {
     this._hub = hub;
   }
 
+  //#region Connection
+
+  /**
+   * Check if device is accessable by http.
+   * @returns {boolean}
+   */
   isHttpAccessable() {
     for (const connection of this.active_connections) {
       if (connection instanceof HTTPconn)
@@ -50,19 +58,47 @@ class Device {
     return false;
   }
 
-  connected() {
-    return !this.conn_lost;
+  /**
+   * Get primary connection
+   * @returns {Connection}
+   */
+  getConnection() {
+    return this.active_connections.maxBy(conn => conn.priority);
   }
+
+  /**
+   * Check if device is connected to hub.
+   * @returns {boolean}
+   */
+  isConnected() {
+    return this.active_connections.length !== 0;
+  }
+
+  /**
+   * Add new active connection to device.
+   * @param {Connection} conn 
+   */
+  addConnection(conn) {
+    if (this.active_connections.includes(conn)) return;
+
+    this.active_connections.push(conn);
+
+    conn.addEventListener('statechange', e => {
+      switch (e.state) {
+        case ConnectionState.DISCONNECTED:
+          this.active_connections.remove(conn);
+          break;
+      }
+    })
+  }
+
+  //#endregion
 
   module(mod) {
     return !(this.info.modules & mod);
   }
 
   async post(cmd, name = '', value = '') {
-    cmd = cmd.toString();
-    name = name.toString();
-    value = value.toString();
-
     if (cmd == 'set') {
       if (!this.module(Modules.SET)) return;
       if (name) {
@@ -71,14 +107,7 @@ class Device {
       }
     }
 
-    let uri0 = this.info.prefix + '/' + this.info.id + '/' + this._hub.cfg.client_id + '/' + cmd;
-    let uri = uri0;
-    if (name) {
-      uri += '/' + name;
-      if (value) uri += '=' + value;
-    }
-
-    await this.conn.send(uri);
+    await this.getConnection().post(this, cmd, name, value);
 
     if (this.focused) {
       this._reset_ping();
@@ -136,6 +165,73 @@ class Device {
 
       case 'update':
         this._checkUpdates(data.updates);
+        break;
+
+      case 'refresh':
+        await this.post('ui');
+        break;
+
+      case 'script':
+        eval(data.script);
+        break;
+
+      case 'ui':
+        if (this.module(Modules.UI)) this._hub.onUi(id, data.controls);
+        await this.post('unix', Math.floor(new Date().getTime() / 1000));
+        break;
+
+      case 'data':
+        if (this.module(Modules.DATA)) this._hub.onData(id, data.data);
+        break;
+
+      // ============= HUB EVENTS =============
+      case 'error':
+        this._hub.onError(id, data.code);
+        break;
+
+      case 'ack':
+        this._hub.onAck(id, data.name);
+        break;
+
+      case 'fs_err':
+        this._hub.onFsError(id);
+        break;
+
+      case 'info':
+        this._hub.onInfo(id, data.info);
+        break;
+
+      case 'files':
+        this._hub.onFsbr(id, data.fs, data.total, data.used);
+        break;
+
+      case 'print':
+        this._hub.onPrint(id, data.text, data.color);
+        break;
+
+      case 'discover':
+        this._hub.onDiscover(id, conn);
+        break;
+
+      case 'alert':
+        this._hub.onAlert(id, data.text);
+        break;
+
+      case 'notice':
+        this._hub.onNotice(id, data.text, intToCol(data.color));
+        break;
+
+      case 'push':
+        this._hub.onPush(id, data.text);
+        break;
+
+      // ============= OTA URL =============
+      case 'ota_url_ok':
+        this._hub.onOtaUrlEnd(id);
+        break;
+
+      case 'ota_url_err':
+        this._hub.onOtaUrlError(id, data.code);
         break;
 
       // ============= FETCH =============

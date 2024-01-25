@@ -383,7 +383,7 @@ function close_device() {
 }
 async function delete_h(id) {
   if (await asyncConfirm('Delete ' + id + '?')) {
-    hub.delete(id);
+    hub.deleteDevice(id);
     EL(`device#${id}`).remove();
   }
 }

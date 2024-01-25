@@ -125,19 +125,57 @@ class GyverHub {
     }
   }
 
+  _preflist() {
+    let list = [this.cfg.prefix];
+    for (let dev of this.devices) {
+      if (!list.includes(dev.info.prefix)) list.push(dev.info.prefix);
+    }
+    return list;
+  }
+
   // network
+
+  /**
+   * Check if hub currently allows discover.
+   * @returns {boolean}
+   */
+  #isDiscovering() {
+    for (const connection of this.connections) {
+      if (connection.isDiscovering())
+        return true;
+    }
+    return false;
+  }
+
+  /**
+   * Initialize connections.
+   */
   async begin() {
     for (const connection of this.connections) {
       await connection.begin();
     }
   }
+
+  //#region Device communication
+
+  /**
+   * Send command to device by id
+   * @param {string} id 
+   * @param {string} cmd 
+   * @param {string} name 
+   * @param {string} value 
+   */
   async post(id, cmd, name = '', value = '') {
     await this.dev(id).post(cmd, name, value);
   }
+
+  /**
+   * Discover all known devices by all active connnections.
+   */
   async discover() {
     for (let dev of this.devices) {
       dev.conn = undefined;
-      dev.active_connections = [];
+      dev.active_connections.clear();
     }
 
     for (const connection of this.connections) {
@@ -146,6 +184,10 @@ class GyverHub {
 
     this._checkDiscoverEnd();
   }
+
+  /**
+   * Search for new devices on all active connections.
+   */
   async search() {
     for (const connection of this.connections) {
       await connection.search();
@@ -153,33 +195,45 @@ class GyverHub {
 
     this._checkDiscoverEnd();
   }
-  async __send(device, uri) {
-    // switch (device.conn) {
-    //   case Conn.HTTP:
-    //     await this.http.send(this.info.ip, this.info.http_port, uri);
-    //     break;
-    // }
+
+  // private
+  _checkDiscoverEnd() {
+    if (!this.#isDiscovering()) this.onDiscoverEnd();
   }
 
-  // devices
-  dev(id) {
-    if (!id) return null;
-    for (let d of this.devices) {
-      if (d.info.id == id) return d;
-    }
-    return null;
-  }
-  export() {
+  //#endregion
+
+  //#region Import export
+
+  /**
+   * Export devices list to json-compatiable format
+   * @returns {object[]}
+   */
+  exportDevices() {
     let devs = [];
     for (let d of this.devices) {
       devs.push(d.info);
     }
-    return JSON.stringify(devs);
+    return devs;
   }
-  import(str) {
-    let devsi = JSON.parse(str);
-    this.devices = [];
-    for (let di of devsi) {
+
+  /**
+   * Export config to json-compatiable format
+   * @returns {object}
+   */
+  exportConfig() {
+    const config = Object.assign({}, this.cfg);
+    config.devices = this.exportDevices();
+    return config;
+  }
+
+  /**
+   * Import devices list from json-compatiable format
+   * @param {object[]} devs 
+   */
+  importDevices(devs) {
+    this.devices.clear();
+    for (let di of devs) {
       let dev = new Device(this);
       for (let key in di) {
         dev.info[key] = di[key];
@@ -187,7 +241,96 @@ class GyverHub {
       this.devices.push(dev);
     }
   }
-  delete(id) {
+
+  /**
+   * Import config from json-compatiable format
+   * @param {object} cfg 
+   */
+  importConfig(cfg) {
+    const devs = cfg.devices;
+    delete cfg.devices;
+    this.cfg = cfg;
+    this.importDevices(devs);
+  }
+
+  //#endregion
+
+  //#region Device list management
+
+
+  dev(id) {
+    if (!id) return null;
+    for (let d of this.devices) {
+      if (d.info.id == id) return d;
+    }
+    return null;
+  }
+
+  /**
+   * Add or update device info.
+   * @param {object} data 
+   * @param {Connection | undefined} conn 
+   */
+  addDevice(data, conn = undefined) {
+    let device = this.dev(data.id);
+    let infoChanged = false;
+
+    if (device) {  // exists
+      for (const key in data) {
+        if (device.info[key] !== data[key]) {
+          device.info[key] = data[key];
+          infoChanged = true;
+        }
+      }
+
+      if (conn) device.addConnection(conn);
+      if (infoChanged) this.onUpdDevice(device.info);
+
+    } else {    // not exists
+      device = new Device(this);
+      infoChanged = true;
+
+      for (let key in data) {
+        device.info[key] = data[key];
+      }
+
+      if (conn) device.addConnection(conn);
+      this.devices.push(device);
+      this.onAddDevice(device.info);
+    }
+
+    if (infoChanged) {
+      /*@[if_not_target:esp]*/
+      this.mqtt.sub_device(device.info.prefix, device.info.id);
+      /*@/[if_not_target:esp]*/
+      this.onSaveDevices();
+    }
+  }
+
+  /**
+   * Move device in list
+   * @param {string} id 
+   * @param {number} dir 
+   */
+  moveDevice(id, dir) {
+    if (this.devices.length == 1) return;
+    let idx = 0;
+    for (let d of this.devices) {
+      if (d.info.id == id) break;
+      idx++;
+    }
+    if (dir == 1 ? idx <= this.devices.length - 2 : idx >= 1) {
+      let b = this.devices[idx];
+      this.devices[idx] = this.devices[idx + dir];
+      this.devices[idx + dir] = b;
+    }
+  }
+
+  /**
+   * Remove device from hub
+   * @param {string} id 
+   */
+  deleteDevice(id) {
     for (let i in this.devices) {
       if (this.devices[i].info.id == id) {
         this.devices.splice(i, 1);
@@ -196,80 +339,9 @@ class GyverHub {
       }
     }
   }
-  addDevice(data, conn = undefined) {
-    let device = this.dev(data.id);
-    let flag = false;
-    if (device) {  // exists
-      for (let key in data) {
-        if (device.info[key] != data[key]) {
-          device.info[key] = data[key];
-          flag = true;
-        }
-      }
-      device.active_connections.push(conn);
-      if (conn.priority > device.conn.priority) {  // priority
-        device.conn = conn;
-        flag = true;
-      }
-      if (flag) this.onUpdDevice(device.info);
-    } else {    // not exists
-      device = new Device(this);
-      for (let key in data) {
-        device.info[key] = data[key];
-      }
-      device.conn = conn;
-      this.devices.push(device);
-      this.onAddDevice(device.info);
-      flag = true;
-    }
-    if (flag) {
-      /*@[if_not_target:esp]*/
-      this.mqtt.sub_device(device.info.prefix, device.info.id);
-      /*@/[if_not_target:esp]*/
-      this.onSaveDevices();
-    }
-  }
-  moveDevice(id, dir) {
-    if (this.devices.length == 1) return;
-    let idx = 0;
-    for (let d of this.devices) {
-      if (d.info.id == id) break;
-      idx++;
-    }
-    if ((dir == 1 && idx <= this.devices.length - 2) || (dir == -1 && idx >= 1)) {
-      let b = this.devices[idx];
-      this.devices[idx] = this.devices[idx + dir];
-      this.devices[idx + dir] = b;
-    }
-  }
 
-  // log
-  log(t) {
-    console.log('Log: ' + t);
-  }
-  err(e) {
-    console.log('Error: ' + e.toString());
-    this.onHubError(e.toString());
-  }
+  //#endregion
 
-  // private
-  _checkDiscoverEnd() {
-    if (!this._discovering()) this.onDiscoverEnd();
-  }
-  _discovering() {
-    for (const connection of this.connections) {
-      if (connection.isDiscovering())
-        return true;
-    }
-    return false;
-  }
-  _preflist() {
-    let list = [this.cfg.prefix];
-    for (let dev of this.devices) {
-      if (!list.includes(dev.info.prefix)) list.push(dev.info.prefix);
-    }
-    return list;
-  }
   async _parsePacket(conn, data, ip = null, port = null) {
     if (!data || !data.length) return;
 
@@ -288,7 +360,7 @@ class GyverHub {
 
     const re = new RegExp(`(#[0-9a-f][0-9a-f])([:,\\]\\}])`, "ig");
     if (data.match(re)) {
-      this.err('Device has newer API version. Update App!');
+      this.onHubError('Device has newer API version. Update App!');
       return;
     }
 
@@ -296,16 +368,19 @@ class GyverHub {
       data = JSON.parse(data);
     } catch (e) {
       console.log('Wrong packet (JSON): ' + e + ' in: ' + data);
-      // this.err('Wrong packet (JSON)');
+      // this.onHubError('Wrong packet (JSON)');
       return;
     }
 
-    if (!data.id) return this.err('Wrong packet (ID)');
+    if (!data.id) return this.onHubError('Wrong packet (ID)');
     if (data.client && this.cfg.client_id != data.client) return;
     let type = data.type;
     delete data.type;
 
-    if (type == 'discover' && this._discovering()) {
+    if (type == 'discover') {
+      if (!this.#isDiscovering())
+        return;
+
       if (conn instanceof HTTPconn) {
         data.ip = ip;
         data.http_port = port;
@@ -314,77 +389,8 @@ class GyverHub {
     }
 
     let device = this.dev(data.id);
-
     if (device) {
       await device._parse(type, data);
-
-      let id = data.id;
-      switch (type) {
-        case 'error':
-          this.onError(id, data.code);
-          break;
-
-        case 'refresh':
-          await this.post(id, 'ui');
-          break;
-
-        case 'script':
-          eval(data.script);
-          break;
-
-        case 'ack':
-          this.onAck(id, data.name);
-          break;
-
-        case 'fs_err':
-          this.onFsError(id);
-          break;
-
-        case 'info':
-          this.onInfo(id, data.info);
-          break;
-
-        case 'files':
-          this.onFsbr(id, data.fs, data.total, data.used);
-          break;
-
-        case 'print':
-          this.onPrint(id, data.text, data.color);
-          break;
-
-        case 'discover':
-          if (this._discovering()) this.onDiscover(id, conn);
-          break;
-
-        case 'ui':
-          if (device.module(Modules.UI)) this.onUi(id, data.controls);
-          await this.post(id, 'unix', Math.floor(new Date().getTime() / 1000));
-          break;
-
-        case 'data':
-          if (device.module(Modules.DATA)) this.onData(id, data.data);
-          break;
-
-        case 'alert':
-          this.onAlert(id, data.text);
-          break;
-
-        case 'notice':
-          this.onNotice(id, data.text, intToCol(data.color));
-          break;
-
-        case 'push':
-          this.onPush(id, data.text);
-          break;
-
-        case 'ota_url_ok':
-          this.onOtaUrlEnd(id);
-          break;
-
-        case 'ota_url_err':
-          this.onOtaUrlError(id, data.code);
-          break;
-      }
     }
   }
 };

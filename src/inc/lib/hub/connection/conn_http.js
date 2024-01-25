@@ -48,8 +48,21 @@ class HTTPconn extends Connection {
     this._discoverTimer();
   }
 
+  async post(device, command, name = '', value = '') {
+    let uri = device.info.prefix + '/' + device.info.id + '/' + this.hub.cfg.client_id + '/' + command;
+    if (name) {
+      uri += '/' + name;
+      if (value) {
+        uri += '=' + value;
+      }
+    }
+
+    const res = await http_get(`http://${http_port.info.ip}:${http_port.info.http_port}/hub/${uri}`, this.options.request_timeout);
+    if (res.length) await this.hub._parsePacket(this, res, http_port.info.ip, http_port.info.http_port);
+  }
+
   async send(ip, port, uri) {
     const res = await http_get(`http://${ip}:${port}/hub/${uri}`, this.options.request_timeout);
-    if (res.length) this.hub._parsePacket(this, res, ip, port);
+    if (res.length) await this.hub._parsePacket(this, res, ip, port);
   }
 };
