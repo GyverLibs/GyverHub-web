@@ -126,35 +126,34 @@ class GyverHub {
   }
 
   // network
-  begin() {
+  async begin() {
     for (const connection of this.connections) {
-      connection.begin();
+      await connection.begin();
     }
   }
-  post(id, cmd, name = '', value = '') {
-    this.dev(id).post(cmd, name, value);
+  async post(id, cmd, name = '', value = '') {
+    await this.dev(id).post(cmd, name, value);
   }
-  discover() {
+  async discover() {
     for (let dev of this.devices) {
       dev.conn = undefined;
       dev.active_connections = [];
     }
 
     for (const connection of this.connections) {
-      connection.discover();
+      await connection.discover();
     }
 
     this._checkDiscoverEnd();
   }
-  search() {
+  async search() {
     for (const connection of this.connections) {
-      connection.search();
+      await connection.search();
     }
 
     this._checkDiscoverEnd();
   }
-  async send(device, uri) {
-    await device.conn.send(uri)
+  async __send(device, uri) {
     // switch (device.conn) {
     //   case Conn.HTTP:
     //     await this.http.send(this.info.ip, this.info.http_port, uri);
@@ -271,7 +270,7 @@ class GyverHub {
     }
     return list;
   }
-  _parsePacket(conn, data, ip = null, port = null) {
+  async _parsePacket(conn, data, ip = null, port = null) {
     if (!data || !data.length) return;
 
     data = data.trim()
@@ -317,7 +316,7 @@ class GyverHub {
     let device = this.dev(data.id);
 
     if (device) {
-      device._parse(type, data);
+      await device._parse(type, data);
 
       let id = data.id;
       switch (type) {
@@ -326,7 +325,7 @@ class GyverHub {
           break;
 
         case 'refresh':
-          this.post(id, 'ui');
+          await this.post(id, 'ui');
           break;
 
         case 'script':
@@ -359,7 +358,7 @@ class GyverHub {
 
         case 'ui':
           if (device.module(Modules.UI)) this.onUi(id, data.controls);
-          this.post(id, 'unix', Math.floor(new Date().getTime() / 1000));
+          await this.post(id, 'unix', Math.floor(new Date().getTime() / 1000));
           break;
 
         case 'data':

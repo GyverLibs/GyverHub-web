@@ -159,3 +159,22 @@ function getIPs(ip, netmask) {
   clearTimeout(t_id);
   return response;
 }*/
+
+function sleep(time) {
+  return new Promise((res) => {
+    setTimeout(() => res(), time);
+  });
+}
+
+function readFileAsArrayBuffer(file) {
+  return new Promise((res, rej) => {
+    let reader = new FileReader();
+    reader.addEventListener('load', e => {
+      res(reader.result);
+    });
+    reader.addEventListener('error', e => {
+      rej(reader.error);
+    });
+    reader.readAsArrayBuffer(file);
+  });
+}
