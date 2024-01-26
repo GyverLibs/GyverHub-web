@@ -122,8 +122,8 @@ function show_info() {
   EL('info_read').innerHTML = dev.info.prefix + '/' + focused + '/ID/read/*';
   EL('info_get').innerHTML = dev.info.prefix + '/hub/' + focused + '/get/*';
   EL('info_status').innerHTML = dev.info.prefix + '/hub/' + focused + '/status';
-  display('reboot_btn', dev.module(Modules.REBOOT) ? 'block' : 'none');
-  display('info_topics', dev.module(Modules.MQTT) ? 'block' : 'none');
+  display('reboot_btn', dev.isModuleEnabled(Modules.REBOOT) ? 'block' : 'none');
+  display('info_topics', dev.isModuleEnabled(Modules.MQTT) ? 'block' : 'none');
 
   EL('info_version').innerHTML = '';
   EL('info_net').innerHTML = '';
@@ -208,7 +208,7 @@ function config_h() {
 function info_h() {
   Menu.deact();
   menu_show(0);
-  if (hub.dev(focused).module(Modules.INFO)) post('info');
+  if (hub.dev(focused).isModuleEnabled(Modules.INFO)) post('info');
   show_screen('info');
   EL('menu_info').classList.add('menu_act');
 }
@@ -221,14 +221,14 @@ function cfg_h() {
 function fsbr_h() {
   Menu.deact();
   menu_show(0);
-  if (hub.dev(focused).module(Modules.FILES)) {
+  if (hub.dev(focused).isModuleEnabled(Modules.FILES)) {
     post('files');
     EL('fsbr_inner').innerHTML = waiter();
   }
-  display('fs_browser', hub.dev(focused).module(Modules.FILES) ? 'block' : 'none');
-  display('fs_upload', hub.dev(focused).module(Modules.UPLOAD) ? 'block' : 'none');
-  display('fs_create', hub.dev(focused).module(Modules.CREATE) ? 'block' : 'none');
-  display('fs_format_row', hub.dev(focused).module(Modules.FORMAT) ? 'flex' : 'none');
+  display('fs_browser', hub.dev(focused).isModuleEnabled(Modules.FILES) ? 'block' : 'none');
+  display('fs_upload', hub.dev(focused).isModuleEnabled(Modules.UPLOAD) ? 'block' : 'none');
+  display('fs_create', hub.dev(focused).isModuleEnabled(Modules.CREATE) ? 'block' : 'none');
+  display('fs_format_row', hub.dev(focused).isModuleEnabled(Modules.FORMAT) ? 'flex' : 'none');
   show_screen('files');
   EL('menu_fsbr').classList.add('menu_act');
 }
@@ -246,8 +246,8 @@ function ota_h() {
   EL('ota_upload_fs').accept = ota_t;
   EL('ota_url_f').value = "http://flash" + ota_t;
   EL('ota_url_fs').value = "http://filesystem" + ota_t;
-  display('fs_otaf', hub.dev(focused).module(Modules.OTA) ? 'block' : 'none');
-  display('fs_otaurl', hub.dev(focused).module(Modules.OTA_URL) ? 'block' : 'none');
+  display('fs_otaf', hub.dev(focused).isModuleEnabled(Modules.OTA) ? 'block' : 'none');
+  display('fs_otaurl', hub.dev(focused).isModuleEnabled(Modules.OTA_URL) ? 'block' : 'none');
 }
 function manual_ip_h(ip) {
   if (hub.http.discover_ip(ip, hub.cfg.http_port)) {
@@ -323,7 +323,7 @@ function menu_show(state) {
 // ============== DEVICE =============
 function device_h(id) {
   let dev = hub.dev(id);
-  if (!dev || !dev.conn) return;
+  if (!dev || !dev.isConnected()) return;
   if (!dev.info.api_v || dev.info.api_v != hub.api_v) alert(lang.api_mis);
 
   if (dev.info.PIN && !dev.granted) {
@@ -341,7 +341,7 @@ function open_device(id) {
   focused = id;
   let dev = hub.dev(id)
   EL('menu_user').innerHTML = '';
-  EL('conn').innerHTML = dev.conn.name;
+  EL('conn').innerHTML = dev.getConnection().name;
   UiPlugin.enableStyle(id);
   addDOM('device_css', 'style', dev.info.plugin_css, EL('plugins'));
   addDOM('device_js', 'script', dev.info.plugin_js, EL('plugins'));

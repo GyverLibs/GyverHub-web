@@ -15,11 +15,11 @@ class Menu {
         let count = 2;
         let dev = hub.dev(focused);
 
-        if (dev.module(Modules.FILES)) {
+        if (dev.isModuleEnabled(Modules.FILES)) {
             count++;
             EL('menu_system').innerHTML += `<div id="menu_fsbr" class="menu_item" onclick="fsbr_h()">${lang.m_files}</div>`;
         }
-        if (dev.module(Modules.OTA) || dev.module(Modules.OTA_URL)) {
+        if (dev.isModuleEnabled(Modules.OTA) || dev.isModuleEnabled(Modules.OTA_URL)) {
             count++;
             EL('menu_system').innerHTML += `<div id="menu_ota" class="menu_item" onclick="ota_h()">${lang.m_ota}</div>`;
         }

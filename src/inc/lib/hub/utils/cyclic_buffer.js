@@ -6,8 +6,13 @@ class CyclicBuffer {
   #full;
 
   constructor(size) {
-    this.#max = size;
-    this.#buffer = new Uint8Array(this.#max);
+    if (typeof size === "number") {
+      this.#max = size;
+      this.#buffer = new Uint8Array(this.#max);
+    } else {
+      this.#max = size.length;
+      this.#buffer = size;
+    }
     this.#head = this.#tail = 0;
     this.#full = false;
   }
@@ -49,8 +54,8 @@ class CyclicBuffer {
     if(this.#head + data.length > this.#max) {
         // split & copy
         let copiedElement = this.#max - this.#head;
-        this.#buffer.set(data.subarray(0, copiedElement), this.#head);
-        this.#buffer.set(data.subarray(copiedElement, data.length), 0)
+        this.#buffer.set(new Uint8Array(data, 0, copiedElement), this.#head);
+        this.#buffer.set(new Uint8Array(data, copiedElement, data.length - copiedElement), 0)
     } else {
         // copy
         this.#buffer.set(data, this.#head);
@@ -61,6 +66,11 @@ class CyclicBuffer {
     return true;
   }
 
+  /**
+   * 
+   * @param {number} size 
+   * @returns {Uint8Array}
+   */
   pop(size) {
     if (size > this.size())
       size = this.size();
@@ -68,10 +78,10 @@ class CyclicBuffer {
     let data;
     if(this.#tail + size > this.#max) {
         // split & copy
-        data = Buffer.alloc(size);
+        data = new Uint8Array(size);
         let copiedElement = this.#max - this.#tail;
-        data.copy(this.#buffer.subarray(this.#tail, this.#max), 0);
-        data.copy(this.#buffer.subarray(0, size - copiedElement), copiedElement);
+        data.copy(new Uint8Array(this.#buffer, this.#tail, copiedElement), 0);
+        data.copy(new Uint8Array(this.#buffer, 0, size - copiedElement), copiedElement);
     } else {
         // copy
         data = this.#buffer.subarray(this.#tail, this.#tail + size);

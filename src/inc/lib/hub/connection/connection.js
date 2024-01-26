@@ -111,6 +111,6 @@ class Connection extends EventEmitter {
       }
     }
 
-    await this.conn.send(uri);
+    await this.send(uri);
   }
 }

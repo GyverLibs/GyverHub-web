@@ -1,26 +1,38 @@
 class Device {
   active_connections = [];
 
-
-  conn = undefined;
-  granted = false;
+  // device
   focused = false;
   tout = null;
   ping = null;
   conn_lost = false;
   prev_set = {};
-  fs_mode = null;   // upload, fetch, ota, fetch_file
+  files = [];
+  file_flag = false;
+
+  // fs
+  fs_mode = null;   // upload, fetch, ota, fetch_file  // used in ui.js!
   fs_tout = null;
+
+  // ota
+  ota_bytes = null;
+  ota_size = null;
+
+  // upload
   crc32 = null;
   upl_bytes = null;
   upl_size = null;
+
+  // fetch
   fet_name = '';
   fet_index = 0;
   fet_buf = null;
   fet_len = 0;
-  files = [];
-  file_flag = false;
+
+  // external
+  granted = false;
   cfg_flag = false;
+
 
   info = {
     id: 'undefined',
@@ -94,13 +106,24 @@ class Device {
 
   //#endregion
 
-  module(mod) {
+  /**
+   * Check if module is enabled
+   * @param {Module} mod 
+   * @returns {boolean}
+   */
+  isModuleEnabled(mod) {
     return !(this.info.modules & mod);
   }
 
+  /**
+   * Send command to device
+   * @param {string} cmd 
+   * @param {string} name 
+   * @param {string} value 
+   */
   async post(cmd, name = '', value = '') {
     if (cmd == 'set') {
-      if (!this.module(Modules.SET)) return;
+      if (!this.isModuleEnabled(Modules.SET)) return;
       if (name) {
         if (this.prev_set[name]) clearTimeout(this.prev_set[name]);
         this.prev_set[name] = setTimeout(() => delete this.prev_set[name], this._hub.skip_prd);
@@ -118,12 +141,12 @@ class Device {
   async focus() {
     this.focused = true;
     await this.post('ui');
-    if (this.conn == Conn.HTTP && this.info.ws_port) {
-      this.ws.connect();
-      setTimeout(() => {
-        if (!this.ws.state()) this.ws.disconnect();
-      }, this._hub.tout_prd);
-    }
+    // if (this.conn == Conn.HTTP && this.info.ws_port) {
+    //   this.ws.connect();
+    //   setTimeout(() => {
+    //     if (!this.ws.state()) this.ws.disconnect();
+    //   }, this._hub.tout_prd);
+    // }
   }
 
   async unfocus() {
@@ -131,7 +154,7 @@ class Device {
     this._stop_ping();
     this._stop_tout();
     await this.post('unfocus');
-    if (this.conn == Conn.HTTP) this.ws.disconnect();
+    // if (this.conn == Conn.HTTP) this.ws.disconnect();
   }
 
   // private
@@ -176,12 +199,12 @@ class Device {
         break;
 
       case 'ui':
-        if (this.module(Modules.UI)) this._hub.onUi(id, data.controls);
+        if (this.isModuleEnabled(Modules.UI)) this._hub.onUi(id, data.controls);
         await this.post('unix', Math.floor(new Date().getTime() / 1000));
         break;
 
       case 'data':
-        if (this.module(Modules.DATA)) this._hub.onData(id, data.data);
+        if (this.isModuleEnabled(Modules.DATA)) this._hub.onData(id, data.data);
         break;
 
       // ============= HUB EVENTS =============
@@ -374,7 +397,7 @@ class Device {
 //#region OTA
 
   async uploadOta(file, type) {
-    if (!this.module(Modules.OTA)) return;
+    if (!this.isModuleEnabled(Modules.OTA)) return;
     if (this.fsBusy()) {
       this._hub.onOtaError(this.info.id, HubErrors.FsBusy);
       return;
@@ -404,8 +427,8 @@ class Device {
     } else {
       const data = await readFileAsArrayBuffer(file);
       let buffer = new Uint8Array(data);
-      this.upl_bytes = Array.from(buffer);
-      this.upl_size = this.upl_bytes.length;
+      this.ota_bytes = Array.from(buffer);
+      this.ota_size = this.ota_bytes.length;
       await this.post('ota', type);
       this._fsToutStart();
     }
@@ -415,29 +438,20 @@ class Device {
     let i = 0;
     let data = '';
     while (true) {
-      if (!this.upl_bytes.length) break;
-      data += String.fromCharCode(this.upl_bytes.shift());
+      if (!this.ota_bytes.length) break;
+      data += String.fromCharCode(this.ota_bytes.shift());
       if (++i >= this.info.max_upl * 3 / 4 - 60) break;  // 60 ~ uri
     }
-    this._hub.onOtaPerc(this.info.id, Math.round((this.upl_size - this.upl_bytes.length) / this.upl_size * 100));
-    await this.post('ota_chunk', (this.upl_bytes.length) ? 'next' : 'last', window.btoa(data));
+    this._hub.onOtaPerc(this.info.id, Math.round((this.ota_size - this.ota_bytes.length) / this.ota_size * 100));
+    await this.post('ota_chunk', (this.ota_bytes.length) ? 'next' : 'last', window.btoa(data));
   }
 
 //#endregion
 
 //#region FS
 
-  fsBusy() {
-    return !!this.fs_mode;
-  }
-
-  async fsStop() {
-    if (this.fs_mode) await this.post('fs_abort', this.fs_mode);
-    this._fsEnd();  // clear tout + clear mode
-  }
-
   async upload(file, path) {
-    if (!this.module(Modules.UPLOAD)) return;
+    if (!this.isModuleEnabled(Modules.UPLOAD)) return;
     if (this.fsBusy()) {
       this._hub.onFsUploadError(this.info.id, HubErrors.FsBusy);
       return;
@@ -480,8 +494,25 @@ class Device {
     }
   }
 
+  async _uploadNextChunk() {
+    if (this.crc32 !== null) {
+      await this.post('upload_chunk', 'crc', this.crc32);
+      this.crc32 = null;
+      return;
+    }
+    let i = 0;
+    let data = '';
+    while (true) {
+      if (!this.upl_bytes.length) break;
+      data += String.fromCharCode(this.upl_bytes.shift());
+      if (++i >= this.info.max_upl * 3 / 4 - 60) break; // 60 ~ uri
+    }
+    this._hub.onFsUploadPerc(this.info.id, Math.round((this.upl_size - this.upl_bytes.length) / this.upl_size * 100));
+    await this.post('upload_chunk', (this.upl_bytes.length) ? 'next' : 'last', window.btoa(data));
+  }
+
   async fetch(idx, path) {
-    if (!this.module(Modules.FETCH)) return;
+    if (!this.isModuleEnabled(Modules.FETCH)) return;
     let id = this.info.id;
     if (this.fsBusy()) {
       this._hub.onFsFetchError(id, idx, HubErrors.FsBusy);
@@ -575,23 +606,6 @@ class Device {
     } else {
       post('fetch', file.path);
     }
-  }
-
-  async _uploadNextChunk() {
-    if (this.crc32 !== null) {
-      await this.post('upload_chunk', 'crc', this.crc32);
-      this.crc32 = null;
-      return;
-    }
-    let i = 0;
-    let data = '';
-    while (true) {
-      if (!this.upl_bytes.length) break;
-      data += String.fromCharCode(this.upl_bytes.shift());
-      if (++i >= this.info.max_upl * 3 / 4 - 60) break; // 60 ~ uri
-    }
-    this._hub.onFsUploadPerc(this.info.id, Math.round((this.upl_size - this.upl_bytes.length) / this.upl_size * 100));
-    await this.post('upload_chunk', (this.upl_bytes.length) ? 'next' : 'last', window.btoa(data));
   }
 
   _fsToutStart() {

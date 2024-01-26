@@ -174,7 +174,6 @@ class GyverHub {
    */
   async discover() {
     for (let dev of this.devices) {
-      dev.conn = undefined;
       dev.active_connections.clear();
     }
 

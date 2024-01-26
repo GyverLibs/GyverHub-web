@@ -718,7 +718,7 @@ function add_device(dev) {
   if (icon.length) icon = '';
   /*@/[if_target:esp]*/
   EL('devices').innerHTML += `
-  <div class="device ${dev.conn ? '' : 'offline'}" id="device#${dev.id}" onclick="device_h('${dev.id}')" title="${dev.id} [${dev.prefix}]">
+  <div class="device ${dev.isConnected() ? '' : 'offline'}" id="device#${dev.id}" onclick="device_h('${dev.id}')" title="${dev.id} [${dev.prefix}]">
     <div class="device_inner">
       <div id="d_head#${dev.id}" style="display:contents">
         <div class="d_icon ${icon.length ? '' : 'd_icon_empty'}"><span class="icon icon_min ${icon.length ? '' : 'd_icon_none'}" id="icon#${dev.id}">${getIcon(icon)}</span></div>
