@@ -9,7 +9,9 @@ class WSconn extends Connection {
   constructor(hub, options) {
     super(hub, options);
     this.device = device;
-    this.#packet_buffer = new PacketBufferScanFirst(this);
+    this.#packet_buffer = new PacketBufferScanFirst(data => {
+      this.hub._parsePacket(this, data);
+    });
   }
 
   isConnected() {

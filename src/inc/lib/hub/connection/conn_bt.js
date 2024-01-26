@@ -18,7 +18,9 @@ class BTconn extends Connection {
   constructor(hub, options) {
     super(hub, options);
     this.#buffer = new CyclicBuffer(this.options.buffer_size);
-    this.#packet_buffer = new PacketBufferScanAll(this);
+    this.#packet_buffer = new PacketBufferScanAll(data => {
+      this.hub._parsePacket(this, data);
+    });
     this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
 

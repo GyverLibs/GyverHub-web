@@ -12,7 +12,9 @@ class SERIALconn extends Connection {
   */
   constructor(hub, options) {
     super(hub, options);
-    this.#packet_buffer = new PacketBufferScanAll(this);
+    this.#packet_buffer = new PacketBufferScanAll(data => {
+      this.hub._parsePacket(this, data);
+    });
     this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
 

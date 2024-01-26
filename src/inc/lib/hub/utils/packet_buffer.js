@@ -1,11 +1,11 @@
 class PacketBufferScanFirst {
-  #connection;
+  #callback;
   #timeout;
   #buf;
   #tout;
 
-  constructor(conn, timeout = 600) {
-    this.#connection = conn;
+  constructor(callback, timeout = 600) {
+    this.#callback = callback;
     this.#timeout = timeout;
     this.#buf = [];
   }
@@ -20,7 +20,7 @@ class PacketBufferScanFirst {
     this.#buf.push(data);
 
     if ((data.endsWith('}\n') || data.endsWith('}#')) && this.#buf[0][0] === data[data.length - 1]) {
-      this.#connection.hub._parsePacket(this.#connection, this.#buf.join(''));
+      this.#callback(this.#buf.join(''));
       this.#buf.length = 0;
 
       if (this.#tout) clearTimeout(this._tout);
@@ -30,14 +30,14 @@ class PacketBufferScanFirst {
 };
 
 class PacketBufferScanAll {
-  #connection;
+  #callback;
   #timeout;
   /** @type {Uint8Array} */ #buf;  
 
   #tout = null;
 
-  constructor(conn, timeout = 600) {
-    this.#connection = conn;
+  constructor(callback, timeout = 600) {
+    this.#callback = callback;
     this.#timeout = timeout;
     this.#buf = null;
   }
@@ -84,7 +84,7 @@ class PacketBufferScanAll {
         break;
 
       const text = decoder.decode(new DataView(this.#buf, startIndex, endIndex + 2));
-      this.#connection.hub._parsePacket(this.#connection, text);
+      this.#callback(text);
 
       index = endIndex + 2;
     }
