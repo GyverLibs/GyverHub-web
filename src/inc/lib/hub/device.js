@@ -157,6 +157,36 @@ class Device {
     // if (this.conn == Conn.HTTP) this.ws.disconnect();
   }
 
+  _stop_tout() {
+    if (this.tout) {  // waiting answer
+      this._hub.onWaitAnswer(this.info.id, false);
+      clearTimeout(this.tout);
+      this.tout = null;
+    }
+  }
+  _reset_tout() {
+    if (this.tout) return;
+    this._hub.onWaitAnswer(this.info.id, true);
+    this.tout = setTimeout(() => {
+      if (this.focused /*&& !this.fsBusy()*/) this._hub.onDeviceConnChange(this.info.id, false);//TODO
+      this.conn_lost = true;
+      this._stop_tout();
+    }, this._hub.tout_prd);
+  }
+  _stop_ping() {
+    if (this.ping) {
+      clearInterval(this.ping);
+      this.ping = null;
+    }
+  }
+  _reset_ping() {
+    this._stop_ping();
+    this.ping = setInterval(async () => {
+      if (this.conn_lost/* && !this.fsBusy()*/) this._hub.onPingLost(this.info.id);//TODO
+      else await this.post('ping');
+    }, this._hub.ping_prd);
+  }
+
   // private
 
   _checkUpdates(updates) {
@@ -173,6 +203,13 @@ class Device {
     }
   }
 
+  inq = new InputQueue(1000, 1000);
+
+  async #postAndWait(cmd, types, name = '', value = '') {
+    await this.post(cmd, name, value);
+    return await this.inq.get(types);
+  }
+
   async _parse(type, data) {
     let id = this.info.id;
     this._stop_tout();
@@ -181,6 +218,8 @@ class Device {
       this._hub.onPingLost(id);
       if (this.focused) this._hub.onDeviceConnChange(id, true);
     }
+
+    this.inq.put(type, data);
 
     switch (type) {
       case 'OK':
@@ -256,142 +295,7 @@ class Device {
       case 'ota_url_err':
         this._hub.onOtaUrlError(id, data.code);
         break;
-
-      // ============= FETCH =============
-      case 'fetch_start':
-        if (this.fs_mode != 'fetch' && this.fs_mode != 'fetch_file') break;
-        this.fet_len = data.len;
-        this.fet_buf = '';
-        await this.post('fetch_next');
-        this._fsToutStart();
-        if (this.fs_mode == 'fetch') {
-          this._hub.onFsFetchPerc(id, this.fet_index, 0);
-        } else {
-          this._hub.onFetchPerc(id, this.files[0].name, 0);
-        }
-        break;
-
-      case 'fetch_chunk':
-        if ((this.fs_mode != 'fetch' && this.fs_mode != 'fetch_file') || this.fet_buf == null) break;
-        this.fet_buf += atob(data.data);
-
-        if (data.last == 1) {  // last chunk
-          let crc = crc32(this.fet_buf);
-          if (this.fet_buf.length == this.fet_len && crc == data.crc32) {  // size+crc match
-            let b64 = btoa(this.fet_buf);
-            if (this.fs_mode == 'fetch') {
-              this._hub.onFsFetchEnd(id, this.fet_name, this.fet_index, b64);
-            } else {
-              let file = this.files[0];
-              this._hub.onFetchEnd(id, file.name, file.data, `data:${getMime(file.path)};base64,${b64}`);
-            }
-          } else {
-            let code = (crc != data.crc32) ? HubErrors.CrcMiss : HubErrors.SizeMiss;
-            if (this.fs_mode == 'fetch') {
-              this._hub.onFsFetchError(id, this.fet_index, code);
-            } else {
-              this._hub.onFetchError(id, this.files[0].name, this.files[0].data, code);
-            }
-          }
-          this.fet_buf = null;
-          if (this.fs_mode == 'fetch_file') {
-            this._fsEnd();  // clear fs_mode!!!!
-            await this._nextFile();
-          } else {
-            this._fsEnd();
-          }
-        } else {  // not last chunk
-          let perc = Math.round(this.fet_buf.length / this.fet_len * 100);
-          if (this.fs_mode == 'fetch') {
-            this._hub.onFsFetchPerc(id, this.fet_index, perc);
-          } else {
-            this._hub.onFetchPerc(id, this.files[0].name, perc);
-          }
-          await this.post('fetch_next');
-          this._fsToutStart();
-        }
-        break;
-
-      case 'fetch_err':
-        if (this.fs_mode != 'fetch' && this.fs_mode != 'fetch_file') break;
-        this.fet_buf = null;
-        if (this.fs_mode == 'fetch') {
-          this._hub.onFsFetchError(id, this.fet_index, data.code);
-          this._fsEnd();
-        } else {
-          this._hub.onFetchError(id, this.files[0].name, this.files[0].data, data.code);
-          this._fsEnd();
-          await this._nextFile();
-        }
-        break;
-
-      // ============= UPLOAD =============
-      case 'upload_next':
-        if (this.fs_mode != 'upload') break;
-        await this._uploadNextChunk();
-        this._fsToutStart();
-        break;
-
-      case 'upload_done':
-        if (this.fs_mode != 'upload') break;
-        this._hub.onFsUploadEnd(id);
-        this._fsEnd();
-        await this.post('files');
-        break;
-
-      case 'upload_err':
-        if (this.fs_mode != 'upload') break;
-        this._hub.onFsUploadError(id, data.code);
-        this._fsEnd();
-        break;
-
-      // ============= OTA =============
-      case 'ota_next':
-        if (this.fs_mode != 'ota') break;
-        await this._otaNextChunk();
-        this._fsToutStart();
-        break;
-
-      case 'ota_done':
-        if (this.fs_mode != 'ota') break;
-        this._hub.onOtaEnd(id);
-        this._fsEnd();
-        break;
-
-      case 'ota_err':
-        if (this.fs_mode != 'ota') break;
-        this._hub.onOtaError(id, data.code);
-        this._fsEnd();
-        break;
     }
-  }
-
-  _stop_tout() {
-    if (this.tout) {  // waiting answer
-      this._hub.onWaitAnswer(this.info.id, false);
-      clearTimeout(this.tout);
-      this.tout = null;
-    }
-  }
-  _reset_tout() {
-    if (this.tout) return;
-    this._hub.onWaitAnswer(this.info.id, true);
-    this.tout = setTimeout(() => {
-      if (this.focused /*&& !this.fsBusy()*/) this._hub.onDeviceConnChange(this.info.id, false);//TODO
-      this.conn_lost = true;
-      this._stop_tout();
-    }, this._hub.tout_prd);
-  }
-  _stop_ping() {
-    if (this.ping) clearInterval(this.ping);
-    this.ping = null;
-  }
-  _reset_ping() {
-    this._stop_ping();
-    this.ping = setInterval(async () => {
-      if (this.conn_lost/* && !this.fsBusy()*/) this._hub.onPingLost(this.info.id);//TODO
-      else await this.post('ping');
-    }, this._hub.ping_prd);
   }
 
 //#region OTA
@@ -410,40 +314,34 @@ class Device {
     if (!res) return;
 
     this._hub.onOtaStart(this.info.id);
-    this.fs_mode = 'ota';
-    if (this.isHttpAccessable() && this.info.http_t) {
-      let formData = new FormData();
-      formData.append(type, file);
-      try {
+    try {
+      if (this.isHttpAccessable() && this.info.http_t) {
+        let formData = new FormData();
+        formData.append(type, file);
         await http_post(`http://${this.info.ip}:${this.info.http_port}/hub/ota?type=${type}&client_id=${this._hub.cfg.client_id}`, formData)
-      } catch (e) {
-        this._hub.onOtaError(this.info.id, e);
-        this._fsEnd();
-        throw e;
+      } else {
+        const fdata = await readFileAsArrayBuffer(file);
+        const buffer = new Uint8Array(fdata);
+        const ota_bytes = Array.from(buffer);
+        const ota_size = ota_bytes.length;
+        const max_enc_len = this.info.max_upl * 3 / 4 - 60;
+  
+        let [cmd, data] = await this.#postAndWait('ota', ['ota_next', 'ota_done', 'ota_err'], type);
+  
+        while (cmd === 'ota_next') {
+          const data2 = String.fromCharCode.apply(null, ota_bytes.splice(0, max_enc_len));
+          this._hub.onOtaPerc(this.info.id, Math.round((ota_size - ota_bytes.length) / ota_size * 100));
+          [cmd, data] = await this.#postAndWait('ota_chunk', ['ota_next', 'ota_done', 'ota_err'], (ota_bytes.length) ? 'next' : 'last', window.btoa(data2));
+        }
+  
+        if (cmd === 'ota_err')
+          throw new Error(data.code);
       }
-      this._hub.onOtaEnd(this.info.id);
-      this._fsEnd();
-
-    } else {
-      const data = await readFileAsArrayBuffer(file);
-      let buffer = new Uint8Array(data);
-      this.ota_bytes = Array.from(buffer);
-      this.ota_size = this.ota_bytes.length;
-      await this.post('ota', type);
-      this._fsToutStart();
+    } catch (e) {
+      this._hub.onOtaError(this.info.id, e);
+      return;
     }
-  }
-
-  async _otaNextChunk() {
-    let i = 0;
-    let data = '';
-    while (true) {
-      if (!this.ota_bytes.length) break;
-      data += String.fromCharCode(this.ota_bytes.shift());
-      if (++i >= this.info.max_upl * 3 / 4 - 60) break;  // 60 ~ uri
-    }
-    this._hub.onOtaPerc(this.info.id, Math.round((this.ota_size - this.ota_bytes.length) / this.ota_size * 100));
-    await this.post('ota_chunk', (this.ota_bytes.length) ? 'next' : 'last', window.btoa(data));
+    this._hub.onOtaEnd(this.info.id);
   }
 
 //#endregion
@@ -457,91 +355,174 @@ class Device {
       return;
     }
 
-    if (!path.startsWith('/')) path = '/' + path;
-    if (!path.endsWith('/')) path += '/';
-    path += file.name;
-
     const data = await readFileAsArrayBuffer(file);
-    let buffer = new Uint8Array(data);
+    const buffer = new Uint8Array(data);
 
     const res = await asyncConfirm('Upload ' + path + ' (' + buffer.length + ' bytes)?');
     if (!res) {
       this._hub.onFsUploadError(this.info.id, HubErrors.Cancelled);
       return;
     }
+
+    const crc32v = crc32(buffer);
+
     this._hub.onFsUploadStart(this.info.id);
-    this.fs_mode = 'upload';
-    this.crc32 = crc32(buffer);
+    try {
+      if (this.isHttpAccessable() && this.info.http_t) {
+        let formData = new FormData();
+        formData.append('upload', file);
+        await http_post(`http://${this.info.ip}:${this.info.http_port}/hub/upload?path=${path}&crc32=${crc32v}&client_id=${this._hub.cfg.client_id}&size=${buffer.length}`, formData)
+      } else {
+        const upl_bytes = Array.from(buffer);
+        const upl_size = upl_bytes.length;
+        const max_enc_len = this.info.max_upl * 3 / 4 - 60;
 
-    if (this.isHttpAccessable() && this.info.http_t) {
-      let formData = new FormData();
-      formData.append('upload', file);
-      try {
-        await http_post(`http://${this.info.ip}:${this.info.http_port}/hub/upload?path=${path}&crc32=${this.crc32}&client_id=${this._hub.cfg.client_id}&size=${buffer.length}`, formData)
-      } catch (e) {
-        this._hub.onFsUploadError(this.info.id, e);
-        this._fsEnd();
-        throw e;
+        let [cmd, data] = await this.#postAndWait('upload', ['upload_next', 'upload_done', 'upload_err'], path, upl_size);
+
+        if (cmd === 'upload_next')
+          [cmd, data] = await this.#postAndWait('ota_chunk', ['upload_next', 'upload_done', 'upload_err'], crc, crc32v);
+
+        while (cmd === 'upload_next') {
+          const data2 = String.fromCharCode.apply(null, upl_bytes.splice(0, max_enc_len));
+          this._hub.onFsUploadPerc(this.info.id, Math.round((upl_size - upl_bytes.length) / upl_size * 100));
+          [cmd, data] = await this.#postAndWait('upload_chunk', ['upload_next', 'upload_done', 'upload_err'], (upl_bytes.length) ? 'next' : 'last', window.btoa(data2));
+        }
+
+        if (cmd === 'upload_err')
+          throw new Error(data.code);
       }
-      this._hub.onFsUploadEnd(this.info.id);
-      this._fsEnd();
-      await this.post('files');
-    } else {
-      this.upl_bytes = Array.from(buffer);
-      this.upl_size = this.upl_bytes.length;
-      await this.post('upload', path, this.upl_size);
-      this._fsToutStart();
-    }
-  }
-
-  async _uploadNextChunk() {
-    if (this.crc32 !== null) {
-      await this.post('upload_chunk', 'crc', this.crc32);
-      this.crc32 = null;
+    } catch (e) {
+      this._hub.onFsUploadError(this.info.id, e);
       return;
     }
-    let i = 0;
-    let data = '';
-    while (true) {
-      if (!this.upl_bytes.length) break;
-      data += String.fromCharCode(this.upl_bytes.shift());
-      if (++i >= this.info.max_upl * 3 / 4 - 60) break; // 60 ~ uri
-    }
-    this._hub.onFsUploadPerc(this.info.id, Math.round((this.upl_size - this.upl_bytes.length) / this.upl_size * 100));
-    await this.post('upload_chunk', (this.upl_bytes.length) ? 'next' : 'last', window.btoa(data));
+    this._hub.onFsUploadEnd(this.info.id);
+
+    await this.post('files');
   }
 
   async fetch(idx, path) {
     if (!this.isModuleEnabled(Modules.FETCH)) return;
-    let id = this.info.id;
+  
+    const id = this.info.id;
+  
     if (this.fsBusy()) {
       this._hub.onFsFetchError(id, idx, HubErrors.FsBusy);
       return;
     }
 
-    this.fs_mode = 'fetch';
-    this.fet_name = path.split('/').pop();
-    this.fet_index = idx;
+    const fet_name = path.split('/').pop();
 
-    if (this.isHttpAccessable() && this.info.http_t) {
-      let res;
-      try {
-        res = await http_fetch_blob(`http://${this.info.ip}:${this.info.http_port}/hub/fetch?path=${path}&client_id=${this._hub.cfg.client_id}`,
-          perc => this._hub.onFsFetchPerc(id, idx, perc),
-          this._hub.http.tout);
-      } catch (e) {
-        this._hub.onFsFetchError(id, idx, e);
-        this._fsEnd();
-        throw e;
-      }
-
-      this._hub.onFsFetchEnd(id, this.fet_name, idx, res);
-      this._fsEnd();
-    } else {
-      await this.post('fetch', path);
-      this._fsToutStart();
-    }
     this._hub.onFsFetchStart(id, idx);
+    try {
+      if (this.isHttpAccessable() && this.info.http_t) {
+        const res = await http_fetch_blob(`http://${this.info.ip}:${this.info.http_port}/hub/fetch?path=${path}&client_id=${this._hub.cfg.client_id}`,
+            perc => this._hub.onFsFetchPerc(id, idx, perc),
+            this._hub.http.tout);
+        this._hub.onFsFetchEnd(id, fet_name, idx, res);
+
+      } else {
+        let [cmd, data] = await this.#postAndWait('fetch', ['fetch_start', 'fetch_err'], path);
+        let fet_len, fet_buf;
+        if (cmd === 'fetch_start') {
+          fet_len = data.len;
+          fet_buf = '';
+          [cmd, data] = await this.#postAndWait('fetch_next', ['fetch_chunk', 'fetch_err']);
+          this._hub.onFsFetchPerc(id, idx, 0);
+        }
+
+        while (cmd === 'fetch_chunk') {
+          fet_buf += atob(data.data);
+
+          if (data.last) { 
+            if (fet_buf.length != fet_len)
+              throw new Error(HubErrors.SizeMiss);
+    
+            const crc = crc32(fet_buf);
+            if (crc != data.crc32)
+              throw new Error(HubErrors.CrcMiss);
+
+            const b64 = btoa(fet_buf);
+            this._hub.onFsFetchEnd(id, fet_name, idx, b64);
+            break;
+          }
+
+          // not last chunk
+          const perc = Math.round(fet_buf.length / fet_len * 100);
+          this._hub.onFsFetchPerc(id, idx, perc);
+          [cmd, data] = await this.#postAndWait('fetch_next', ['fetch_chunk', 'fetch_err']);
+        }
+
+        if (cmd === 'fetch_err') {
+          throw new Error(data.code);
+        }
+      }
+    } catch (e) {
+      this._hub.onFsFetchError(id, idx, e);
+    }
+  }
+
+  async _fetchNextFile() {
+    if (!this.files.length) return;
+    let file = this.files.shift();
+
+    let id = this.info.id;
+
+    if (this.fsBusy()) {
+      this._hub.onFetchError(id, file.name, file.data, HubErrors.FsBusy);
+      return;
+    }
+
+    this._hub.onFetchStart(id, file.name);
+    try {
+      if (this.isHttpAccessable() && this.info.http_t) {
+        const res = await http_fetch_blob(`http://${this.info.ip}:${this.info.http_port}/hub/fetch?path=${file.path}`,
+            perc => this._hub.onFetchPerc(id, file.name, perc),
+            this._hub.http.tout);
+        this._hub.onFetchEnd(id, file.name, file.data, `data:${getMime(file.path)};base64,${res}`);
+      } else {
+        let [cmd, data] = await this.#postAndWait('fetch', ['fetch_start', 'fetch_err'], file.path);
+        let fet_len, fet_buf;
+        if (cmd === 'fetch_start') {
+          fet_len = data.len;
+          fet_buf = '';
+          [cmd, data] = await this.#postAndWait('fetch_next', ['fetch_chunk', 'fetch_err']);
+          this._hub.onFetchPerc(id, file.name, 0);
+        }
+
+        while (cmd === 'fetch_chunk') {
+          fet_buf += atob(data.data);
+
+          if (data.last) { 
+            if (fet_buf.length != fet_len)
+              throw new Error(HubErrors.SizeMiss);
+    
+            const crc = crc32(fet_buf);
+            if (crc != data.crc32)
+              throw new Error(HubErrors.CrcMiss);
+
+            const b64 = btoa(fet_buf);
+            this._hub.onFetchEnd(id, file.name, file.data, `data:${getMime(file.path)};base64,${b64}`);
+            break;
+          }
+
+          // not last chunk
+          const perc = Math.round(fet_buf.length / fet_len * 100);
+          this._hub.onFetchPerc(id, file.name, perc);
+          [cmd, data] = await this.#postAndWait('fetch_next', ['fetch_chunk', 'fetch_err']);
+        }
+
+        if (cmd === 'fetch_err') {
+          throw new Error(data.code);
+        }
+      }
+    } catch (e) {
+      this._hub.onFetchError(id, file.name, file.data, Number(e));
+    }
+  }
+
+  async _fetchFiles() {
+    while (this.files)
+      await this._fetchNextFile();
   }
 
   // file
@@ -554,91 +535,12 @@ class Device {
   async addFile(name, path, data) {
     let has = this.files.some(f => f.name == name);
     if (!has) this.files.push({ name: name, path: path, data: data });
-    if (this.file_flag && this.files.length == 1) await this._fetchNextFile();
+    if (this.file_flag && this.files.length == 1) await this._fetchFiles();
   }
 
   async checkFiles() {
     this.file_flag = true;
-    await this._fetchNextFile();
+    await this._fetchFiles();
   }
-
-  // private
-
-  async _nextFile() {
-    this.files.shift();
-    await this._fetchNextFile();
-  }
-
-  _fsEnd() {
-    this.fs_mode = null;
-    this._fsToutEnd();
-  }
-
-  async _fetchNextFile() {
-    if (!this.files.length) return;
-
-    let id = this.info.id;
-    let file = this.files[0];
-
-    if (this.fsBusy()) {
-      this._hub.onFetchError(id, file.name, file.data, HubErrors.FsBusy);
-      return;
-    }
-
-    this.fs_mode = 'fetch_file';
-    this._hub.onFetchStart(id, file.name);
-
-    if (this.isHttpAccessable() && this.info.http_t) {
-      let res;
-      try {
-        res = await http_fetch_blob(`http://${this.info.ip}:${this.info.http_port}/hub/fetch?path=${file.path}`,
-          perc => this._hub.onFetchPerc(id, file.name, perc),
-          this._hub.http.tout);
-      } catch (e) {
-        this._hub.onFetchError(id, file.name, file.data, Number(e));
-        this._fsEnd();
-        await this._nextFile();
-        throw e;
-      }
-      this._hub.onFetchEnd(id, file.name, file.data, `data:${getMime(file.path)};base64,${res}`);
-      this._fsEnd();
-      await this._nextFile();
-    } else {
-      post('fetch', file.path);
-    }
-  }
-
-  _fsToutStart() {
-    this._fsToutEnd();
-    this.fs_tout = setTimeout(async () => {
-      switch (this.fs_mode) {
-
-        case 'upload':
-          this._hub.onFsUploadError(this.info.id, HubErrors.Timeout);
-          break;
-
-        case 'fetch':
-          this._hub.onFsFetchError(this.info.id, this.fet_index, HubErrors.Timeout);
-          this.fet_buf = null;
-          break;
-
-        case 'fetch_file':
-          if (!this.files[0]) return;
-          this._hub.onFetchError(this.info.id, this.files[0].name, this.files[0].data, HubErrors.Timeout);
-          this.fet_buf = null;
-          await this._nextFile();
-          break;
-
-        case 'ota':
-          this._hub.onOtaError(this.info.id, HubErrors.Timeout);
-          break;
-      }
-      await this.fsStop();
-    }, this._hub.tout_prd);
-  }
-  _fsToutEnd() {
-    if (this.fs_tout) clearTimeout(this.fs_tout);
-  }
-
 //#endregion
 };
