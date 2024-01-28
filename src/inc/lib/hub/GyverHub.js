@@ -8,11 +8,9 @@ class GyverHub extends EventEmitter {
 
   onError(id, code) { }
   onUpdate(id, name, data) { }
-  onInfo(id, info) { }
   onFsbr(id, fs, total, used) { }
   onPrint(id, text, color) { }
   onUi(id, controls) { }
-  onData(id, data) { }
   onAlert(id, text) { }
   onNotice(id, text, color) { }
   onPush(id, text) { }

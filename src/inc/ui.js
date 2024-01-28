@@ -205,12 +205,15 @@ function config_h() {
     show_screen('config');
   }
 }
-function info_h() {
+async function info_h() {
   Menu.deact();
   menu_show(0);
-  if (hub.dev(focused).isModuleEnabled(Modules.INFO)) post('info');
   show_screen('info');
   EL('menu_info').classList.add('menu_act');
+  if (hub.dev(focused).isModuleEnabled(Modules.INFO)) {
+    const info = awaithub.get(focused).getInfo();
+    if (info) showInfo(info);
+  };
 }
 function cfg_h() {
   Menu.deact();

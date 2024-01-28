@@ -187,6 +187,12 @@ class Device {
     return await this.inq.get(types);
   }
 
+  async getInfo() {
+    const [type, data] = await this.#postAndWait('info', ['info', 'ok']);
+    if (type === 'info') return data;
+    return undefined;
+  }
+
   async _parse(type, data) {
     let id = this.info.id;
     this._stop_tout();
@@ -198,20 +204,26 @@ class Device {
 
     this.inq.put(type, data);
 
+    /**
+     * ping -> ok
+     * reboot -> ok
+     * cli -> ok
+     * unfocus -> <none>
+     * 
+     * set -> ok | ui | update
+     * ui -> ui
+     * 
+     * fs_abort -> <none>
+     * 
+     * delete -> files
+     * rename -> files
+     * create -> files
+     * files -> files
+     * format -> files
+     */
+
     switch (type) {
       case 'OK':
-        break;
-
-      case 'update':
-        this._checkUpdates(data.updates);
-        break;
-
-      case 'refresh':
-        await this.post('ui');
-        break;
-
-      case 'script':
-        eval(data.script);
         break;
 
       case 'ui':
@@ -219,11 +231,6 @@ class Device {
         await this.post('unix', Math.floor(new Date().getTime() / 1000));
         break;
 
-      case 'data':
-        if (this.isModuleEnabled(Modules.DATA)) this._hub.onData(id, data.data);
-        break;
-
-      // ============= HUB EVENTS =============
       case 'error':
         this._hub.onError(id, data.code);
         break;
@@ -236,31 +243,41 @@ class Device {
         this._hub.onFsError(id);
         break;
 
-      case 'info':
-        this._hub.onInfo(id, data.info);
-        break;
-
       case 'files':
         this._hub.onFsbr(id, data.fs, data.total, data.used);
         break;
 
-      case 'print':
-        this._hub.onPrint(id, data.text, data.color);
-        break;
+        // ============= HUB EVENTS =============
 
       case 'discover':
         this._hub.onDiscover(id, conn);
         break;
 
-      case 'alert':
+      case 'update': // ok
+        this._checkUpdates(data.updates);
+        break;
+
+      case 'refresh': // ok
+        await this.post('ui');
+        break;
+
+      case 'script': // ok
+        eval(data.script);
+        break;
+
+      case 'print': // ok
+        this._hub.onPrint(id, data.text, data.color);
+        break;
+
+      case 'alert': // ok
         this._hub.onAlert(id, data.text);
         break;
 
-      case 'notice':
+      case 'notice': // ok
         this._hub.onNotice(id, data.text, intToCol(data.color));
         break;
 
-      case 'push':
+      case 'push': // ok
         this._hub.onPush(id, data.text);
         break;
     }

@@ -169,9 +169,6 @@ hub.onUpdate = (id, name, data) => {
   if (screen != 'ui') return;
   applyUpdate(name, data);
 }
-hub.onInfo = (id, info) => {
-  if (id == focused) showInfo(info);
-}
 hub.onFsbr = (id, fs, total, used) => {
   if (id == focused) showFsbr(fs, total, used);
 }
@@ -180,9 +177,6 @@ hub.onPrint = (id, text, color) => {
 }
 hub.onUi = (id, controls) => {
   if (id == focused) showControls(id, controls);
-}
-hub.onData = (id, data) => {
-  console.log('Data from ' + id + ': ' + data);
 }
 hub.onAlert = (id, text) => {
   release_all();
