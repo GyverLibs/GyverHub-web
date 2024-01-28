@@ -77,24 +77,26 @@ hub.onPingLost = (id) => {
 }
 
 // ============ DEVICES ============
-hub.onSaveDevices = () => {
+hub.addEventListener('devicesconfigchanged', () => {
   save_devices();
-}
-hub.onAddDevice = (dev) => {
+});
+hub.addEventListener('deviceadded', (ev) => {
+  const dev = ev.device.info;
   dev.ui_mode = 0;
   dev.main_width = 450;
   dev.ui_block_width = 250;
   dev.plugin_css = '';
   dev.plugin_js = '';
   add_device(dev);
-}
-hub.onUpdDevice = (dev) => {
+});
+hub.addEventListener('deviceinfochanged', (ev) => {
+  const dev = ev.device.info;
   EL(`name#${dev.id}`).innerHTML = dev.name ? dev.name : 'Unknown';
   EL(`device#${dev.id}`).title = `${dev.id} [${dev.prefix}]`;
-}
-hub.onDiscoverEnd = () => {
+});
+hub.addEventListener('discoverfinished', () => {
   if (screen == 'main') spinArrows(false);
-}
+});
 hub.onDiscover = (id, conn) => {
   EL(`device#${id}`).className = "device";
   display(`${conn.name}#${id}`, 'inline-block');

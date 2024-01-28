@@ -1,11 +1,6 @@
-class GyverHub {
+class GyverHub extends EventEmitter {
   onHubError(text) { }
 
-  // devices
-  onSaveDevices() { }
-  onAddDevice(dev) { }
-  onUpdDevice(dev) { }
-  onDiscoverEnd() { }
   onDiscover(id, conn) { }
 
   // data
@@ -197,7 +192,7 @@ class GyverHub {
 
   // private
   _checkDiscoverEnd() {
-    if (!this.#isDiscovering()) this.onDiscoverEnd();
+    if (!this.#isDiscovering()) this.dispatchEvent(new Event('discoverfinished'));
   }
 
   //#endregion
@@ -283,7 +278,7 @@ class GyverHub {
       }
 
       if (conn) device.addConnection(conn);
-      if (infoChanged) this.onUpdDevice(device.info);
+      if (infoChanged) this.dispatchEvent(new DeviceEvent('deviceinfochanged', device));
 
     } else {    // not exists
       device = new Device(this);
@@ -295,14 +290,14 @@ class GyverHub {
 
       if (conn) device.addConnection(conn);
       this.devices.push(device);
-      this.onAddDevice(device.info);
+      this.dispatchEvent(new DeviceEvent('deviceadded', device));
     }
 
     if (infoChanged) {
       /*@[if_not_target:esp]*/
       this.mqtt.sub_device(device.info.prefix, device.info.id);
       /*@/[if_not_target:esp]*/
-      this.onSaveDevices();
+      this.dispatchEvent(new Event('devicesconfigchanged'));
     }
   }
 
@@ -333,7 +328,7 @@ class GyverHub {
     for (let i in this.devices) {
       if (this.devices[i].info.id == id) {
         this.devices.splice(i, 1);
-        this.onSaveDevices();
+        this.dispatchEvent(new Event('devicesconfigchanged'));
         return;
       }
     }
