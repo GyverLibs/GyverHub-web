@@ -45,17 +45,79 @@ function create_h() {
 
 
 // ============ TRANSFER ============
-function uploadFile(file, path) {
-  hub.dev(focused).upload(file, path);
+async function uploadFile(file, path) {
+  const res = await asyncConfirm('Upload ' + path + '?');
+  if (!res) return;
+  
+  EL('file_upload_btn').innerHTML = waiter(22, 'var(--font_inv)', false);
   EL('file_upload').value = '';
+
+  try {
+    await hub.dev(focused).upload(file, path, perc => {
+      showPopup(lang.upload + '... ' + perc + '%');
+    });
+  } catch (e) {
+    EL('file_upload_btn').innerHTML = lang.upload;
+    showPopupError(`[${lang.upload}] ` + getError(e));
+    return;
+  }
+
+  EL('file_upload_btn').innerHTML = lang.upload;
+  showPopup(`[${lang.upload}] ` + lang.done);
 }
-function fetchFile(index, path) {
-  hub.dev(focused).fetch(index, path);
+async function fetchFile(index, path) {
+  display('download#' + index, 'none');
+  display('edit#' + index, 'none');
+  display('open#' + index, 'none');
+  display('process#' + index, 'unset');
+  EL('process#' + index).innerHTML = '';
+
+  let data;
+  try {
+    data = await hub.dev(focused).fetch(path, perc => {
+      EL('process#' + index).innerHTML = perc + '%';
+    });
+  } catch (e) {
+    showPopupError(`[${lang.fetch}] ` + getError(e));
+    EL('process#' + index).innerHTML = lang.error;
+    return;
+  }
+
+  display('download#' + index, 'inline-block');
+  const name = path.split('/').pop();
+  EL('download#' + index).href = ('data:' + getMime(name) + ';base64,' + data);
+  EL('download#' + index).download = name;
+  display('edit#' + index, 'inline-block');
+  display('process#' + index, 'none');
+  /*@[if_not_target:mobile]*/
+  display('open#' + index, 'inline-block');
+  /*@/[if_not_target:mobile]*/
 }
-function uploadOta(file, type) {
-  hub.dev(focused).uploadOta(file, type);
+async function uploadOta(file, type) {
+  if (!file.name.endsWith(this.info.ota_t)) {
+    alert('Wrong file! Use .' + this.info.ota_t);
+    return;
+  }
+
+  const res = await asyncConfirm('Upload OTA ' + type + '?');
+  if (!res) return;
+
+  EL('ota_label').innerHTML = waiter(25, 'var(--font)', false);
   EL('ota_upload').value = '';
   EL('ota_upload_fs').value = '';
+
+  try {
+    await hub.dev(focused).uploadOta(file, type, perc => {
+      EL('ota_label').innerHTML = perc + '%';
+    });
+  } catch (e) {
+    showPopupError('[OTA] ' + getError(e));
+    EL('ota_label').innerHTML = lang.error;
+    return;
+  }
+
+  showPopup('[OTA] ' + lang.done);
+  EL('ota_label').innerHTML = lang.done;
 }
 
 // ============ FILE UTILS ============
@@ -103,7 +165,13 @@ function editor_save() {
 }
 
 // ============ OTA ============
-function otaUrl(url, type) {
-  post('ota_url', type, url);
+async function otaUrl(url, type) {
   showPopup('OTA start');
+  try {
+    await hub.dev(focused).otaUrl(type, url);
+  } catch (e) {
+    showPopupError('[OTA url] ' + getError(e));
+    return;
+  }
+  showPopup('[OTA] ' + lang.done);
 }

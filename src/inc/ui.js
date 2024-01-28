@@ -157,7 +157,7 @@ async function back_h() {
   if (focused) {
     let dev = hub.dev(focused);
     if (dev.fsBusy()) {
-      showPopupError(dev.fs_mode + ' ' + getError(HubErrors.Abort));
+      showPopupError(dev.fs_mode + ' ' + getError(HubErrors.Abort));  // TODO fs_mode
       dev.fsStop();
     }
   }

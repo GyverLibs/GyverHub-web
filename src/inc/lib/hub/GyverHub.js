@@ -1,9 +1,12 @@
 class GyverHub extends EventEmitter {
   onHubError(text) { }
-
   onDiscover(id, conn) { }
+  onDeviceConnChange(id, state) { }
+  onWsConnChange(id, state) { }
+  onWaitAnswer(id, state) { }
+  onPingLost(id) { }
 
-  // data
+  onError(id, code) { }
   onUpdate(id, name, data) { }
   onInfo(id, info) { }
   onFsbr(id, fs, total, used) { }
@@ -14,42 +17,7 @@ class GyverHub extends EventEmitter {
   onNotice(id, text, color) { }
   onPush(id, text) { }
   onAck(id, name) { }
-
-  // connection
-  onDeviceConnChange(id, state) { }
-  onWsConnChange(id, state) { }
-  onWaitAnswer(id, state) { }
-  onPingLost(id) { }
-  onError(id, code) { }
-
-  // fs
   onFsError(id) { }
-
-  // upload
-  onFsUploadStart(id) { }
-  onFsUploadEnd(id) { }
-  onFsUploadError(id, code) { }
-  onFsUploadPerc(id, perc) { }
-
-  // ota
-  onOtaStart(id) { }
-  onOtaEnd(id) { }
-  onOtaError(id, code) { }
-  onOtaPerc(id, perc) { }
-  onOtaUrlEnd(id) { }
-  onOtaUrlError(id, code) { }
-
-  // fetch fs
-  onFsFetchStart(id, index) { }
-  onFsFetchEnd(id, name, index, data) { }
-  onFsFetchError(id, index, code) { }
-  onFsFetchPerc(id, index, perc) { }
-
-  // fetch
-  onFetchStart(id, name) { }
-  onFetchEnd(id, name, data, file) { }
-  onFetchError(id, name, data, code) { }
-  onFetchPerc(id, name, perc) { }
 
   // vars
   devices = [];

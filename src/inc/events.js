@@ -102,66 +102,8 @@ hub.onDiscover = (id, conn) => {
   display(`${conn.name}#${id}`, 'inline-block');
 }
 
-// ============ UPLOAD ============
-hub.onFsUploadStart = (id) => {
-  if (id != focused) return;
-  EL('file_upload_btn').innerHTML = waiter(22, 'var(--font_inv)', false);
-}
-hub.onFsUploadPerc = (id, perc) => {
-  if (id != focused) return;
-  // EL('file_upload_btn').innerHTML = perc + '%';
-  showPopup(lang.upload + '... ' + perc + '%');
-}
-hub.onFsUploadEnd = (id) => {
-  if (id != focused) return;
-  EL('file_upload_btn').innerHTML = lang.upload;
-  showPopup(`[${lang.upload}] ` + lang.done);
-}
-hub.onFsUploadError = (id, code) => {
-  if (id != focused) return;
-  EL('file_upload_btn').innerHTML = lang.upload;
-  showPopupError(`[${lang.upload}] ` + getError(code));
-}
-// =========== FETCH FS ===========
-hub.onFsFetchStart = (id, index) => {
-  if (id != focused) return;
-  display('download#' + index, 'none');
-  display('edit#' + index, 'none');
-  display('open#' + index, 'none');
-  display('process#' + index, 'unset');
-  EL('process#' + index).innerHTML = '';
-}
-hub.onFsFetchPerc = (id, index, perc) => {
-  if (id != focused) return;
-  EL('process#' + index).innerHTML = perc + '%';
-}
-hub.onFsFetchEnd = (id, name, index, data) => {
-  if (id != focused) return;
-  display('download#' + index, 'inline-block');
-  EL('download#' + index).href = ('data:' + getMime(name) + ';base64,' + data);
-  EL('download#' + index).download = name;
-  display('edit#' + index, 'inline-block');
-  display('process#' + index, 'none');
-  /*@[if_not_target:mobile]*/
-  display('open#' + index, 'inline-block');
-  /*@/[if_not_target:mobile]*/
-}
-hub.onFsFetchError = (id, index, code) => {
-  if (id != focused) return;
-  showPopupError(`[${lang.fetch}] ` + getError(code));
-  EL('process#' + index).innerHTML = lang.error;
-}
-
 // ============ FETCH ============
-hub.onFetchStart = (id, name) => {
-  if (id == focused) Widget.setPlabel(name, '[FETCH...]');
-}
-hub.onFetchPerc = (id, name, perc) => {
-  if (id == focused) Widget.setPlabel(name, `[${perc}%]`);
-  // console.log('Fetch ' + name + ': ' + perc + '%');
-}
 hub.onFetchEnd = (id, name, data, file) => {
-  if (id != focused) return;
   switch (data.type) {
     case 'img':
       UiImage.apply(name, file);
@@ -205,54 +147,12 @@ hub.onFetchEnd = (id, name, data, file) => {
       Widget.setPlabel(name);
       break;
 
-    case 'icon':
-      UiButton.apply(name, dataTotext(file));
-      Widget.setPlabel(name);
-      break;
-
     case 'ui_json':
       UiFile.apply(dataTotext(file), data);
       break;
   }
 }
-hub.onFetchError = (id, name, data, code) => {
-  if (id != focused) return;
-  Widget.setPlabel(name, '[ERROR]');
-  switch (data.type) {
-    case 'csv':
-    case 'img':
-      // CMP(name).innerHTML = 'Error';
-      break;
-  }
-}
 
-// ============ OTA ============
-hub.onOtaStart = (id) => {
-  if (id != focused) return;
-  EL('ota_label').innerHTML = waiter(25, 'var(--font)', false);
-}
-hub.onOtaEnd = (id) => {
-  if (id != focused) return;
-  showPopup('[OTA] ' + lang.done);
-  EL('ota_label').innerHTML = lang.done;
-}
-hub.onOtaError = (id, code) => {
-  if (id != focused) return;
-  showPopupError('[OTA] ' + getError(code));
-  EL('ota_label').innerHTML = lang.error;
-}
-hub.onOtaPerc = (id, perc) => {
-  if (id != focused) return;
-  EL('ota_label').innerHTML = perc + '%';
-}
-hub.onOtaUrlEnd = (id) => {
-  if (id != focused) return;
-  showPopup('[OTA] ' + lang.done);
-}
-hub.onOtaUrlError = (id, code) => {
-  if (id != focused) return;
-  showPopupError('[OTA url] ' + getError(code));
-}
 // ============ SYSTEM ============
 hub.onFsError = (id) => {
   if (id == focused) EL('fsbr_inner').innerHTML = `<div class="fs_err">FS ${lang.error}</div>`;
