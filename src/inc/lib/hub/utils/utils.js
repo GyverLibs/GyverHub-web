@@ -179,6 +179,62 @@ function readFileAsArrayBuffer(file) {
   });
 }
 
+const ENCODINGS = new TextEncoder().encode('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/');
+const EQ = '='.charCodeAt(0);
+
+function b64EncodeAB(arrayBuffer) {
+  const bytes         = new Uint8Array(arrayBuffer);
+  const byteLength    = bytes.byteLength;
+  const byteRemainder = byteLength % 3;
+  const mainLength    = byteLength - byteRemainder;
+  const base64        = new Uint8Array((mainLength + !!byteRemainder) * 4);
+
+  let a, b, c, d, ii = 0;
+  let chunk;
+
+  for (let i = 0; i < mainLength; i += 3) {
+    chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2]
+
+    a = (chunk & 16515072) >> 18 // 16515072 = (2^6 - 1) << 18
+    b = (chunk & 258048)   >> 12 // 258048   = (2^6 - 1) << 12
+    c = (chunk & 4032)     >>  6 // 4032     = (2^6 - 1) << 6
+    d = chunk & 63               // 63       = 2^6 - 1
+
+    base64[ii] = ENCODINGS[a];
+    base64[ii+1] = ENCODINGS[b];
+    base64[ii+2] = ENCODINGS[c];
+    base64[ii+3] = ENCODINGS[d];
+    ii += 4;
+  }
+
+  if (byteRemainder == 1) {
+    chunk = bytes[mainLength]
+
+    a = (chunk & 252) >> 2 // 252 = (2^6 - 1) << 2
+
+    b = (chunk & 3)   << 4 // 3   = 2^2 - 1
+
+    base64[ii] = ENCODINGS[a];
+    base64[ii+1] = ENCODINGS[b];
+    base64[ii+2] = EQ;
+    base64[ii+3] = EQ;
+  } else if (byteRemainder == 2) {
+    chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1]
+
+    a = (chunk & 64512) >> 10 // 64512 = (2^6 - 1) << 10
+    b = (chunk & 1008)  >>  4 // 1008  = (2^6 - 1) << 4
+
+    c = (chunk & 15)    <<  2 // 15    = 2^4 - 1
+
+    base64[ii] = ENCODINGS[a];
+    base64[ii+1] = ENCODINGS[b];
+    base64[ii+2] = ENCODINGS[c];
+    base64[ii+3] = EQ;
+  }
+  
+  return base64;
+}
+
 // the only difference between minBy and maxBy is the ordering
 // function, so abstract that out
 Object.defineProperties(Array.prototype, {
