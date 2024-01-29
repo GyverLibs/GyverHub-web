@@ -85,7 +85,7 @@ window.onload = () => {
     /*@[if_target:esp]*/
     if (window_ip()) {
       EL('local_ip').value = window_ip();
-      hub.cfg.local_ip = window_ip();
+      hub.config.set('connections', 'HTTP', 'local_ip', window_ip());
     }
     /*@/[if_target:esp]*/
     /*@[if_not_target:esp]*/
@@ -94,7 +94,7 @@ window.onload = () => {
       .then((ip) => {
         if (ip.indexOf("local") < 0) {
           EL('local_ip').value = ip;
-          hub.cfg.local_ip = ip;
+          hub.config.set('connections', 'HTTP', 'local_ip', ip);
         }
         return;
       })

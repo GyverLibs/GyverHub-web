@@ -18,11 +18,11 @@ class GyverHub extends EventEmitter {
   onFsError(id) { }
 
   // vars
-  config = new Config();
+  config;
   devices = [];
   connections = [];
 
-  cfg = {
+  _cfg = {
     prefix: 'MyDevices', client_id: new Date().getTime().toString(16).slice(-8),
     use_local: false, local_ip: '192.168.1.1', netmask: 24, http_port: 80,
     use_bt: false,
@@ -43,6 +43,8 @@ class GyverHub extends EventEmitter {
 
   constructor() {
     super();
+    this.config = new Config();
+    this.cfg = this.config.global;
     this.connections.push(new HTTPconn(this));
     /*@[if_not_target:esp]*/
     this.connections.push(
