@@ -202,7 +202,7 @@ class Device {
     return await this.inq.get(types);
   }
 
-  async _parse(type, data) {
+  async _parse(type, data, conn) {
     let id = this.info.id;
     this._stop_tout();
     if (this.conn_lost) {

@@ -4,12 +4,21 @@ class MQTTconn extends Connection {
 
   #client;
   #preflist;
+  #buffers;
 
   onConnChange(state) { }
 
   constructor(hub) {
     super(hub);
+    this.options.enabled = false;
+    this.options.host = 'test.mosquitto.org';
+    this.options.port = '8081';
+    this.options.login = '';
+    this.options.password = '';
+    this.options.discover_timeout = 10000;
+
     this.#preflist = [];
+    this.#buffers = new Map();
     this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
 
@@ -18,7 +27,7 @@ class MQTTconn extends Connection {
   }
 
   async discover() {
-    if (this.discovering || this.isConnected()) return;
+    if (this.isDiscovering() || !this.isConnected()) return;
     for (let dev of this.hub.devices) {
       await this.send(dev.info.prefix + '/' + dev.info.id + '=' + this.hub.cfg.client_id);
     }
@@ -26,10 +35,10 @@ class MQTTconn extends Connection {
   }
 
   async search() {
-    if (this.discovering || !this.isConnected()) return;
+    if (this.isDiscovering() || !this.isConnected()) return;
     await this.#upd_prefix(this.hub.cfg.prefix);
-    await this.send(this.hub.cfg.prefix + '=' + this.hub.cfg.client_id);
     this._discoverTimer();
+    await this.send(this.hub.cfg.prefix + '=' + this.hub.cfg.client_id);
   }
 
   async connect() {
@@ -91,9 +100,14 @@ class MQTTconn extends Connection {
 
       // prefix/hub/client_id/id
       } else if (parts.length == 4 && parts[2] == this.hub.cfg.client_id) {
-        let dev = this.hub.dev(parts[3]);
-        if (dev) dev.mq_buf.push(text);
-        else this.hub._parsePacket(this, text);
+        let buffer = this.#buffers.get(parts[3]);
+        if (!buffer) {
+          buffer = new PacketBufferScanFirst(data => {
+            this.hub._parsePacket(this, data);
+          }, 1500);
+          this.#buffers.set(parts[3], buffer);
+        }
+        buffer.push(text);
 
         // prefix/hub/id/get/name
       } else if (parts.length == 5 && parts[3] == 'get') {

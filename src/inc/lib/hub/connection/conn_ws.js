@@ -8,10 +8,15 @@ class WSconn extends Connection {
 
   constructor(hub) {
     super(hub);
-    this.device = device;
+    this.options.enabled = false;
+    this.options.ip = false;
+    this.options.port = false;
+    this.options.discover_timeout = 10000;
+
     this.#packet_buffer = new PacketBufferScanFirst(data => {
       this.hub._parsePacket(this, data);
     });
+    this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
 
   isConnected() {

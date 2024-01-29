@@ -1,17 +1,18 @@
 class SERIALconn extends Connection {
   static priority = 900;
-  static name = 'Serial';
+  static name = 'SERIAL';
 
   #port;
   #reader;
   #running;
   #packet_buffer;
 
-  /*
-    baudrate = 9600
-  */
   constructor(hub) {
     super(hub);
+    this.options.enabled = false;
+    this.options.baudrate = 9600;
+    this.options.discover_timeout = 10000;
+
     this.#packet_buffer = new PacketBufferScanAll(data => {
       this.hub._parsePacket(this, data);
     });
@@ -54,7 +55,8 @@ class SERIALconn extends Connection {
       return;
     }
     
-    await this.connect();
+    if (this.options.enabled)
+      await this.connect();
   }
 
   async select() {

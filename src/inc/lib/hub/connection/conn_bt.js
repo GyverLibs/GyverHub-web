@@ -8,27 +8,31 @@ class BTconn extends Connection {
   #buffer;
   #packet_buffer;
 
-  /*
-    service_uuid = 0xFFE0
-    characteristic_uuid = 0xFFE1
-    max_size = 20
-    max_retries = 3
-    buffer_size = 1024
-  */
   constructor(hub) {
     super(hub);
-  }
+    this.options.enabled = false;
+    this.options.buffer_size = 1024;
+    this.options.service_uuid = 0xFFE0;
+    this.options.characteristic_uuid = 0xFFE1;
+    this.options.max_size = 20;
+    this.options.max_retries = 3;
+    this.options.discover_timeout = 10000;
 
-  async begin() {
-    this.#buffer = new CyclicBuffer(this.options.buffer_size);
     this.#packet_buffer = new PacketBufferScanAll(data => {
       this.hub._parsePacket(this, data);
     });
     this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
 
+  async begin() {
+    this.#buffer = new CyclicBuffer(this.options.buffer_size);
+
+    if (this.options.enabled)
+      await this.connect();
+  }
+
   isConnected() {
-    return this.#device && this.#device.gatt.connected && this.#characteristic;
+    return this.options.enabled && this.#device && this.#device.gatt.connected && this.#characteristic;
   }
 
   getName() {

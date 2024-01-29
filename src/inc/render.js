@@ -712,13 +712,13 @@ function render_info() {
     </div>`;
   }
 }
-function add_device(dev) {
+function add_device(device, dev) {
   let icon = dev.icon;
   /*@[if_target:esp]*/
   if (icon.length) icon = '';
   /*@/[if_target:esp]*/
   EL('devices').innerHTML += `
-  <div class="device ${dev.isConnected() ? '' : 'offline'}" id="device#${dev.id}" onclick="device_h('${dev.id}')" title="${dev.id} [${dev.prefix}]">
+  <div class="device ${device.isConnected() ? '' : 'offline'}" id="device#${dev.id}" onclick="device_h('${dev.id}')" title="${dev.id} [${dev.prefix}]">
     <div class="device_inner">
       <div id="d_head#${dev.id}" style="display:contents">
         <div class="d_icon ${icon.length ? '' : 'd_icon_empty'}"><span class="icon icon_min ${icon.length ? '' : 'd_icon_none'}" id="icon#${dev.id}">${getIcon(icon)}</span></div>
@@ -735,14 +735,15 @@ function add_device(dev) {
     </div>
   </div>`;
 
-  let device = hub.dev(dev.id);
   EL('d_head#' + dev.id).style.display = device.cfg_flag ? 'none' : 'contents';
   EL('d_cfg#' + dev.id).style.display = device.cfg_flag ? 'flex' : 'none';
 }
 function render_devices() {
   EL('devices').innerHTML = '';
-  for (let dev of hub.devices) {
-    add_device(dev.info);
+  const devices = hub.config.get('devices');
+  for (let id in devices) if (devices.hasOwnProperty(id)) {
+    const dev = hub.dev(id);
+    add_device(dev, dev.info);
     for (let connection in dev.active_connections) {
       display(`${connection.name}#${dev.info.id}`, 'inline-block');
     }

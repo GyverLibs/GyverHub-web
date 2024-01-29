@@ -56,7 +56,7 @@ class Connection extends EventEmitter {
    * @returns {boolean}
    */
   isConnected() {
-    return this.#state === ConnectionState.CONNECTED;
+    return this.options.enabled && this.#state === ConnectionState.CONNECTED;
   }
 
   /**
@@ -80,7 +80,10 @@ class Connection extends EventEmitter {
   /**
    * Initialize device connection (ex. autoconnect)
    */
-  async begin() {}
+  async begin() {
+    if (this.options.enabled)
+      await this.connect();
+  }
 
   /**
    * Connnect to device.

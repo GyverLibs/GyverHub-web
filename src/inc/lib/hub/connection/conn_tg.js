@@ -10,7 +10,13 @@ class TGconn extends Connection {
 
   constructor(hub) {
     super(hub);
+    this.options.enabled = false;
+    this.options.token = '';
+    this.options.chat = 0;
+    this.options.discover_timeout = 10000;
+
     this.#buffers = new Map();
+    this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
 
   isConnected() {
@@ -30,6 +36,9 @@ class TGconn extends Connection {
   }
 
   async connect() {
+    if (!this.options.token || !this.options.chat)
+      return;
+
     this.#running = true;
     this.#offset = -1;
     this._setState(ConnectionState.CONNECTING);

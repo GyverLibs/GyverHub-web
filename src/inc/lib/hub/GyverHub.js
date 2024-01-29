@@ -122,7 +122,7 @@ class GyverHub extends EventEmitter {
    */
   async discover() {
     for (let dev of this.devices) {
-      dev.active_connections.clear();
+      dev.active_connections.length = 0;
     }
 
     for (const connection of this.connections) {
@@ -208,6 +208,7 @@ class GyverHub extends EventEmitter {
       if (infoChanged) this.dispatchEvent(new DeviceEvent('deviceinfochanged', device));
 
     } else {    // not exists
+      if (!data.prefix) data.prefix = this.cfg.prefix;
       device = new Device(this, data.id);
       infoChanged = true;
 
@@ -311,7 +312,7 @@ class GyverHub extends EventEmitter {
 
     let device = this.dev(data.id);
     if (device) {
-      await device._parse(type, data);
+      await device._parse(type, data, conn);
     }
   }
 };

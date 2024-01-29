@@ -87,7 +87,7 @@ hub.addEventListener('deviceadded', (ev) => {
   dev.ui_block_width = 250;
   dev.plugin_css = '';
   dev.plugin_js = '';
-  add_device(dev);
+  add_device(ev.device, dev);
 });
 hub.addEventListener('deviceinfochanged', (ev) => {
   const dev = ev.device.info;
