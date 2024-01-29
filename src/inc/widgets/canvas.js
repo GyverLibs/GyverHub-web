@@ -128,7 +128,10 @@ class Canvas {
                         if (vals[0].startsWith('http://') || vals[0].startsWith('https://')) {
                             img.src = vals[0];
                         } else {
-                            hub.dev(focused).addFile(this.id, vals[0], { type: "cv_img", img: img });
+                            hub.dev(focused).addFile(this.id, vals[0], (file) => {
+                                Widget.setPlabel(this.id);
+                                img.src = file;
+                            });
                         }
 
                         img.onload = function () {

@@ -3,7 +3,10 @@ class UiHTML {
     constructor(cont, data) {
         if (!data.value) return;
         if (data.value.endsWith('.html')) {
-            hub.dev(focused).addFile(data.id, data.value, { type: "html" });
+            hub.dev(focused).addFile(data.id, data.value, (file) => {
+                UiHTML.apply(data.id, dataTotext(file));
+                Widget.setPlabel(data.id);
+            });
         } else {
             UiHTML.apply(data.id, data.value);
             cont.setAttribute('data-custom', 'html');
@@ -17,7 +20,10 @@ class UiHTML {
     static update(id, data) {
         if (!data.value) return;
         if (data.value.endsWith('.html')) {
-            hub.dev(focused).addFile(id, data.value, { type: "html" });
+            hub.dev(focused).addFile(id, data.value, (file) => {
+                UiHTML.apply(id, dataTotext(file));
+                Widget.setPlabel(id);
+            });
         } else {
             UiHTML.apply(id, data.value);
         }
@@ -29,15 +35,13 @@ class UiJS {
     constructor(cont, data) {
         if (!data.value) return;
         if (data.value.endsWith('.js')) {
-            hub.dev(focused).addFile(data.id, data.value, { type: "js", cont: cont });
+            hub.dev(focused).addFile(data.id, data.value, (file) => {
+                let el = addDOM('custom_script_' + data.id, 'script', dataTotext(file), cont);
+                el.setAttribute("data-custom-script", true);
+            });
         } else {
             UiJS.apply(data.id, data.value, cont);
         }
-    }
-
-    static apply(id, text, cont) {
-        let el = addDOM('custom_script_' + id, 'script', text, cont);
-        el.setAttribute("data-custom-script", true);
     }
 
     static disable() {
@@ -50,15 +54,13 @@ class UiCSS {
     constructor(cont, data) {
         if (!data.value) return;
         if (data.value.endsWith('.css')) {
-            hub.dev(focused).addFile(data.id, data.value, { type: "css", cont: cont });
+            hub.dev(focused).addFile(data.id, data.value, (file) => {
+                let el = addDOM('custom_style_' + data.id, 'style', dataTotext(file), cont);
+                el.setAttribute("data-custom-style", true);
+            });
         } else {
             UiCSS.apply(data.id, data.value, cont);
         }
-    }
-
-    static apply(id, text, cont) {
-        let el = addDOM('custom_style_' + id, 'style', text, cont);
-        el.setAttribute("data-custom-style", true);
     }
 
     static disable() {

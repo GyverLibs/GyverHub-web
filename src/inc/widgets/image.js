@@ -1,17 +1,24 @@
 class UiImage {
     constructor(cont, data) {
         cont.innerHTML = `<div data-type="${data.type}" data-path="${data.value ?? ''}" id="${ID(data.id)}">${waiter()}</div>`;
-        if (data.value) hub.dev(focused).addFile(data.id, data.value, { type: "img" });// TODO notify on fetch
+        if (data.value) hub.dev(focused).addFile(data.id, data.value, UiImage._cb(id));// TODO notify on fetch
+    }
+
+    static _cb(name){
+        return (file) => {
+            UiImage.apply(name, file);
+            Widget.setPlabel(name);
+        };
     }
 
     static update(id, data) {
         let el = CMP(id);
         if ('value' in data) {
-            hub.dev(focused).addFile(id, data.value, { type: "img" });
+            hub.dev(focused).addFile(id, data.value, UiImage._cb(id));
             el.setAttribute("data-path", data.value);
         }
         if ('action' in data) {
-            hub.dev(focused).addFile(id, el.getAttribute("data-path"), { type: "img" });
+            hub.dev(focused).addFile(id, el.getAttribute("data-path"), UiImage._cb(id));
         }
     }
 

@@ -102,57 +102,6 @@ hub.onDiscover = (id, conn) => {
   display(`${conn.name}#${id}`, 'inline-block');
 }
 
-// ============ FETCH ============
-hub.onFetchEnd = (id, name, data, file) => {
-  switch (data.type) {
-    case 'img':
-      UiImage.apply(name, file);
-      Widget.setPlabel(name);
-      break;
-
-    case 'csv':
-      UiTable.apply(name, dataTotext(file).replaceAll(/\\n/ig, "\n"));
-      Widget.setPlabel(name);
-      break;
-
-    case 'cv_img':
-      data.img.src = file;
-      Widget.setPlabel(name);
-      break;
-
-    case 'text':
-      UiText_f.apply(name, dataTotext(file));
-      Widget.setPlabel(name);
-      break;
-
-    case 'plugin_js':
-      UiPlugin.applyScript(id, dataTotext(file));
-      UiFunc.render(data.cont);
-      break;
-
-    case 'plugin_css':
-      UiPlugin.applyStyle(id, dataTotext(file));
-      break;
-
-    case 'js':
-      UiJS.apply(name, dataTotext(file), data.cont);
-      break;
-
-    case 'css':
-      UiCSS.apply(name, dataTotext(file), data.cont);
-      break;
-
-    case 'html':
-      UiHTML.apply(name, dataTotext(file));
-      Widget.setPlabel(name);
-      break;
-
-    case 'ui_json':
-      UiFile.apply(dataTotext(file), data);
-      break;
-  }
-}
-
 // ============ SYSTEM ============
 hub.onFsError = (id) => {
   if (id == focused) EL('fsbr_inner').innerHTML = `<div class="fs_err">FS ${lang.error}</div>`;

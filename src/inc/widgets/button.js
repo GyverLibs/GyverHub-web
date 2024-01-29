@@ -42,14 +42,11 @@ class UiButton {
         el.style.width = 'unset';
         if (text) {
             if (text.includes(".svg")) {
-                hub.dev(focused).addFile(id, text, {
-                    type: "icon",
-                    callback(data) {
-                        Widget.setPlabel(id);
-                        el.innerHTML = dataTotext(data);
-                        el.style.width = el.getAttribute("data-size");
-                        el.style.fill = el.getAttribute("data-color");
-                    }
+                hub.dev(focused).addFile(id, text, (data) => {
+                    Widget.setPlabel(id);
+                    el.innerHTML = dataTotext(data);
+                    el.style.width = el.getAttribute("data-size");
+                    el.style.fill = el.getAttribute("data-color");
                 });
                 el.removeAttribute("data-inline");
                 return;

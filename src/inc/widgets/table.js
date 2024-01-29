@@ -6,22 +6,29 @@ class UiTable {
         cont.innerHTML = `<div data-type="${data.type}" data-align="${data.align ?? ''}" data-width="${data.width ?? ''}" id="${ID(data.id)}" style="display:contents" data-path="${isFile ? data.value : ''}" data-csv="${isFile ? '' : data.value}"></div>`;
 
         if (isFile) {
-            hub.dev(focused).addFile(data.id, data.value, { type: "csv" });
+            hub.dev(focused).addFile(data.id, data.value, UiTable._cb(data.id));
             CMP(data.id).innerHTML = waiter();
         } else {
             UiTable.render(data.id);
         }
     }
 
+    static _cb(name){
+        return (file) => {
+            UiTable.apply(name, dataTotext(file).replaceAll(/\\n/ig, "\n"));
+            Widget.setPlabel(name);
+        };
+    }
+
     static update(id, data) {
         let el = CMP(id);
         if ('action' in data) {
-            hub.dev(focused).addFile(id, el.getAttribute("data-path"), { type: "csv" });
+            hub.dev(focused).addFile(id, el.getAttribute("data-path"), UiTable._cb(id));
         }
         if ('value' in data) {
             let val = data.value;
             if (!val.includes(';') && val.endsWith(".csv")) {   // file
-                hub.dev(focused).addFile(id, val, { type: "csv" });
+                hub.dev(focused).addFile(id, val, UiTable._cb(id));
                 el.setAttribute("data-path", val);
             } else {
                 el.setAttribute("data-csv", val);

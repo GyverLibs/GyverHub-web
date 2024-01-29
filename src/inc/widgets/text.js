@@ -13,16 +13,23 @@ class UiText {
 class UiText_f {
     constructor(cont, data) {
         cont.innerHTML = `<textarea data-type="${data.type}" id="${ID(data.id)}" data-path="${data.value ?? ''}" class="w_area w_area_passive" rows="${data.rows ?? 5}" readonly></textarea>`;
-        if (data.value) hub.dev(focused).addFile(data.id, data.value, { type: "text" });
+        if (data.value) hub.dev(focused).addFile(data.id, data.value, UiText_f._cb(data.id));
+    }
+
+    static _cb(name){
+        return (file) => {
+            UiText_f.apply(name, dataTotext(file));
+            Widget.setPlabel(name);
+        };
     }
 
     static update(id, data) {
         let el = CMP(id);
         if ('action' in data) {
-            hub.dev(focused).addFile(id, el.getAttribute("data-path"), { type: "text" });
+            hub.dev(focused).addFile(id, el.getAttribute("data-path"), UiText_f._cb(id));
         }
         if ('value' in data) {
-            hub.dev(focused).addFile(id, data.value, { type: "text" });
+            hub.dev(focused).addFile(id, data.value, UiText_f._cb(id));
             el.setAttribute("data-path", data.value);
         }
         if ('rows' in data) {
