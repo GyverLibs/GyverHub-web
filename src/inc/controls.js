@@ -24,15 +24,12 @@ class Ack {
 const set_prd = 15;
 let set_prd_buf = {};
 
-function post(cmd, name = '', value = '') {
-  if (focused) hub.post(focused, cmd, name, value);
-}
 function post_click(name, dir) {
   UiButton.pressID = (dir == 1) ? name : null;
-  post('set', name, dir);
+  ub.dev(focused).post('set', name, dir);
 }
 function post_set(name, value = '') {
-  post('set', name, value);
+  ub.dev(focused).post('set', name, value);
   // Widget.setPlabel(name, '•');
   Ack.set(name);
 }
@@ -51,11 +48,11 @@ function post_set_prd(name, value) {
     set_prd_buf[name].value = value;
   }
 }
-function reboot_h() {
-  post('reboot');
+async function reboot_h() {
+  await hub.dev(focused).reboot();
 }
 function release_all() {
-  if (UiButton.pressID) post('set', UiButton.pressID, 0);
+  if (UiButton.pressID) ub.dev(focused).post('set', UiButton.pressID, 0);
   UiButton.pressID = null;
 }
 

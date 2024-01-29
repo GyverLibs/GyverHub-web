@@ -39,8 +39,8 @@ function openFSctrl(i) {
   if (!current) display(`fs#${i}`, 'flex');
 }
 
-function create_h() {
-  post('mkfile', EL('file_create_path').value);
+async function create_h() {
+  await hub.dev(focused).createFile(EL('file_create_path').value);
 }
 
 
@@ -127,7 +127,7 @@ async function deleteFile(i) {
     return;
   }
   if (await asyncConfirm('Delete ' + fs_arr[i] + '?')) {
-    post('delete', fs_arr[i]);
+    await hub.dev(focused).deleteFile(fs_arr[i]);
   }
 }
 async function renameFile(i) {
@@ -137,7 +137,9 @@ async function renameFile(i) {
   }
   let path = fs_arr[i];
   let res = await asyncPrompt('Rename ' + path + ' to', path);
-  if (res && res != path) post('rename', path, res);
+  if (res && res != path) {
+    await hub.dev(focused).renameFile(path, res);
+  }
 }
 
 // ============ EDITOR ============

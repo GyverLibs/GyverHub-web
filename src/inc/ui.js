@@ -150,7 +150,7 @@ function projects_h() {
   loadProjects();
 }
 function refresh_h() {
-  if (focused) post(screen);
+  if (focused) ub.dev(focused).post(screen);
   else discover();
 }
 async function back_h() {
@@ -181,7 +181,7 @@ async function back_h() {
     case 'ota':
       Menu.deact();
       show_screen('ui');
-      post('ui');
+      ub.dev(focused).post('ui');
       break;
     case 'config':
       config_h();
@@ -221,22 +221,24 @@ function cfg_h() {
   show_screen('dev_config');
   EL('menu_cfg').classList.add('menu_act');
 }
-function fsbr_h() {
+async function fsbr_h() {
   Menu.deact();
   menu_show(0);
-  if (hub.dev(focused).isModuleEnabled(Modules.FILES)) {
-    post('files');
-    EL('fsbr_inner').innerHTML = waiter();
-  }
   display('fs_browser', hub.dev(focused).isModuleEnabled(Modules.FILES) ? 'block' : 'none');
   display('fs_upload', hub.dev(focused).isModuleEnabled(Modules.UPLOAD) ? 'block' : 'none');
   display('fs_create', hub.dev(focused).isModuleEnabled(Modules.CREATE) ? 'block' : 'none');
   display('fs_format_row', hub.dev(focused).isModuleEnabled(Modules.FORMAT) ? 'flex' : 'none');
   show_screen('files');
   EL('menu_fsbr').classList.add('menu_act');
+  if (hub.dev(focused).isModuleEnabled(Modules.FILES)) {
+    EL('fsbr_inner').innerHTML = waiter();
+    await hub.dev(focused).updateFileList();
+  }
 }
 async function format_h() {
-  if (await asyncConfirm('Format filesystem?')) post('format');
+  if (await asyncConfirm('Format filesystem?')) {
+    await hub.dev(focused).formatFS();
+  }
 }
 function ota_h() {
   Menu.deact();
@@ -422,8 +424,8 @@ function toggleCLI() {
 function checkCLI(event) {
   if (event.key == 'Enter') sendCLI();
 }
-function sendCLI() {
-  post('cli', 'cli', EL('cli_input').value);
+async function sendCLI() {
+  await hub.dev(focused).sendCli(EL('cli_input').value);
   EL('cli').innerHTML += "\n>" + EL('cli_input').value;
   EL('cli').scrollTop = EL('cli').scrollHeight;
   EL('cli_input').value = "";

@@ -120,17 +120,6 @@ class GyverHub extends EventEmitter {
   //#region Device communication
 
   /**
-   * Send command to device by id
-   * @param {string} id 
-   * @param {string} cmd 
-   * @param {string} name 
-   * @param {string} value 
-   */
-  async post(id, cmd, name = '', value = '') {
-    await this.dev(id).post(cmd, name, value);
-  }
-
-  /**
    * Discover all known devices by all active connnections.
    */
   async discover() {

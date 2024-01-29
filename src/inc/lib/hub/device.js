@@ -117,7 +117,7 @@ class Device {
 
   async focus() {
     this.focused = true;
-    await this.post('ui');
+    await this.#postAndWait('ui', ['ok']);
     // if (this.conn == Conn.HTTP && this.info.ws_port) {
     //   this.ws.connect();
     //   setTimeout(() => {
@@ -132,6 +132,20 @@ class Device {
     this._stop_tout();
     await this.post('unfocus');
     // if (this.conn == Conn.HTTP) this.ws.disconnect();
+  }
+
+  async getInfo() {
+    const [type, data] = await this.#postAndWait('info', ['info', 'ok']);
+    if (type === 'info') return data;
+    return undefined;
+  }
+
+  async reboot() {
+    await this.#postAndWait('reboot', ['ok']);
+  }
+
+  async sendCli(command) {
+    await this.#postAndWait('cli', ['ok'], 'cli', command);
   }
 
   _stop_tout() {
@@ -187,12 +201,6 @@ class Device {
     return await this.inq.get(types);
   }
 
-  async getInfo() {
-    const [type, data] = await this.#postAndWait('info', ['info', 'ok']);
-    if (type === 'info') return data;
-    return undefined;
-  }
-
   async _parse(type, data) {
     let id = this.info.id;
     this._stop_tout();
@@ -206,26 +214,14 @@ class Device {
 
     /**
      * ping -> ok
-     * reboot -> ok
-     * cli -> ok
      * unfocus -> <none>
+     * fs_abort -> <none>
      * 
      * set -> ok | ui | update
      * ui -> ui
-     * 
-     * fs_abort -> <none>
-     * 
-     * delete -> files
-     * rename -> files
-     * create -> files
-     * files -> files
-     * format -> files
      */
 
     switch (type) {
-      case 'OK':
-        break;
-
       case 'ui':
         if (this.isModuleEnabled(Modules.UI)) this._hub.onUi(id, data.controls);
         await this.post('unix', Math.floor(new Date().getTime() / 1000));
@@ -323,6 +319,7 @@ class Device {
     if (t === 'ota_url_err')
       throw new Error(data.code);
   }
+
 //#endregion
 
 //#region FS
@@ -367,7 +364,7 @@ class Device {
         throw new Error(data.code);
     }
 
-    await this.post('files');
+    await this.updateFileList();
   }
 
   async fetch(path, progress = undefined) {
@@ -416,13 +413,37 @@ class Device {
     }
   }
 
+  async deleteFile(path) {
+    res = await this.#postAndWait('delete', ['files'], path);
+  }
+
+  async createFile(path) {
+    res = await this.#postAndWait('mkfile', ['files'], path);
+  }
+
+  async renameFile(path, new_name) {
+    res = await this.#postAndWait('rename', ['files'], path, new_name);
+  }
+
+  async formatFS() {
+    res = await this.#postAndWait('format', ['files']);
+  }
+
+  async updateFileList() {
+    res = await this.#postAndWait('files', ['files']);
+  }
+
+  async #onFiles(data) {
+    this._hub.onFsbr(id, data.fs, data.total, data.used);
+  }
+
+//#endregion
 
   files = [];
 
   async _fetchFiles() {
     while (this.files) {
       let file = this.files.shift();
-      let id = this.info.id;
   
       Widget.setPlabel(file.name, '[FETCH...]');
       let res;
@@ -431,7 +452,7 @@ class Device {
           Widget.setPlabel(file.name, `[${perc}%]`);
         });
       } catch (e) {
-        if (id == focused) Widget.setPlabel(file.name, '[ERROR]');
+        Widget.setPlabel(file.name, '[ERROR]');
         return;
       }
       file.callback(`data:${getMime(file.path)};base64,${res}`);
@@ -446,11 +467,10 @@ class Device {
     this.file_flag = false;
   }
 
-  async addFile(name, path, data) {
+  async addFile(name, path, callback) {
     let has = this.files.some(f => f.name == name);
     if (!has) this.files.push({
-      name, path, data,
-
+      name, path, callback,
     });
     if (this.file_flag && this.files.length == 1) await this._fetchFiles();
   }
@@ -459,5 +479,4 @@ class Device {
     this.file_flag = true;
     await this._fetchFiles();
   }
-//#endregion
 };
