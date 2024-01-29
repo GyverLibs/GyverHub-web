@@ -5,7 +5,7 @@ window.onload = () => {
   EL('hub_stat').innerHTML = 'GyverHub v' + app_version + ' ' + platform();
 
   /*@[if_target:esp]*/
-    hub.cfg.use_local = true;  // force local on esp
+    hub.config.set('connections', 'HTTP', 'enabled', true);  // force local on esp
   /*@/[if_target:esp]*/
 
   update_ip();

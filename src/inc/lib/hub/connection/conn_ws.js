@@ -1,13 +1,13 @@
 class WSconn extends Connection {
-  priority = 800;
-  name = 'WS';
+  static priority = 800;
+  static name = 'WS';
 
   #ws;
   #packet_buffer;
   #reconnect;
 
-  constructor(hub, options) {
-    super(hub, options);
+  constructor(hub) {
+    super(hub);
     this.device = device;
     this.#packet_buffer = new PacketBufferScanFirst(data => {
       this.hub._parsePacket(this, data);

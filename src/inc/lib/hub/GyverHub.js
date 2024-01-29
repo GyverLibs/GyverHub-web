@@ -18,8 +18,10 @@ class GyverHub extends EventEmitter {
   onFsError(id) { }
 
   // vars
+  config = new Config();
   devices = [];
   connections = [];
+
   cfg = {
     prefix: 'MyDevices', client_id: new Date().getTime().toString(16).slice(-8),
     use_local: false, local_ip: '192.168.1.1', netmask: 24, http_port: 80,
@@ -40,20 +42,14 @@ class GyverHub extends EventEmitter {
   ping_prd = 3000;  // ping period > timeout
 
   constructor() {
-    this.connections.push(new HTTPconn(this, this.cfg));
+    super();
+    this.connections.push(new HTTPconn(this));
     /*@[if_not_target:esp]*/
     this.connections.push(
-      new MQTTconn(this, {discover_timeout: 3000}),
+      new MQTTconn(this),
       new TGconn(this),
-      new SERIALconn(this, this.cfg),
-      new BTconn(this, {
-        service_uuid: 0xFFE0,
-        characteristic_uuid: 0xFFE1,
-        max_size: 20,
-        max_retries: 3,
-        buffer_size: 1024,
-        discover_timeout: 3000,
-      })
+      new SERIALconn(this),
+      new BTconn(this)
     );
     /*@/[if_not_target:esp]*/
   }
@@ -155,40 +151,11 @@ class GyverHub extends EventEmitter {
   //#region Import export
 
   /**
-   * Export devices list to json-compatiable format
-   * @returns {object[]}
-   */
-  exportDevices() {
-    let devs = [];
-    for (let d of this.devices) {
-      devs.push(d.info);
-    }
-    return devs;
-  }
-
-  /**
    * Export config to json-compatiable format
    * @returns {object}
    */
   exportConfig() {
-    const config = Object.assign({}, this.cfg);
-    config.devices = this.exportDevices();
-    return config;
-  }
-
-  /**
-   * Import devices list from json-compatiable format
-   * @param {object[]} devs 
-   */
-  importDevices(devs) {
-    this.devices.clear();
-    for (let di of devs) {
-      let dev = new Device(this);
-      for (let key in di) {
-        dev.info[key] = di[key];
-      }
-      this.devices.push(dev);
-    }
+    return this.config.toJson();
   }
 
   /**
@@ -196,10 +163,8 @@ class GyverHub extends EventEmitter {
    * @param {object} cfg 
    */
   importConfig(cfg) {
-    const devs = cfg.devices;
-    delete cfg.devices;
-    this.cfg = cfg;
-    this.importDevices(devs);
+    this.devices.length = 0;
+    this.config.fromJson(cfg);
   }
 
   //#endregion
@@ -211,6 +176,11 @@ class GyverHub extends EventEmitter {
     if (!id) return null;
     for (let d of this.devices) {
       if (d.info.id == id) return d;
+    }
+    if (this.config.get('devices', id, 'id') === id) {
+      const dev = new Device(this, id);
+      this.devices.push(dev);
+      return dev;
     }
     return null;
   }
@@ -236,7 +206,7 @@ class GyverHub extends EventEmitter {
       if (infoChanged) this.dispatchEvent(new DeviceEvent('deviceinfochanged', device));
 
     } else {    // not exists
-      device = new Device(this);
+      device = new Device(this, data.id);
       infoChanged = true;
 
       for (let key in data) {

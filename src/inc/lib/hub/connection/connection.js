@@ -12,12 +12,20 @@ class Connection extends EventEmitter {
   hub;
   options;
 
-  constructor(hub, options) {
+  constructor(hub) {
     super();
     this.#state = ConnectionState.DISCONNECTED;
     this.#discovering = false;
     this.hub = hub;
-    this.options = options;
+    this.options = this.hub.config.getConnection(this.name);
+  }
+
+  get name() {
+    return this.constructor.name;
+  }
+
+  get priority() {
+    return this.constructor.priority;
   }
 
   _setState(state) {

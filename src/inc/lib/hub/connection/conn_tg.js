@@ -1,6 +1,6 @@
 class TGconn extends Connection {
-  priority = 400;
-  name = 'TG';
+  static priority = 400;
+  static name = 'TG';
 
   #running;
   #offset;
@@ -42,8 +42,8 @@ class TGconn extends Connection {
   }
 
   async send(text) {
-    if (!this.hub.cfg.tg_chat) return;
-    await this.#sendMessage(this.hub.cfg.tg_chat, 'app:' + text)
+    if (!this.options.chat) return;
+    await this.#sendMessage(this.options.chat, 'app:' + text)
   }
   
   async #sendMessage(chat_id, text, params) {
@@ -100,7 +100,7 @@ class TGconn extends Connection {
     } catch (e) { }
 
     try {
-      if (data.channel_post.chat.id != this.hub.cfg.tg_chat) return;
+      if (data.channel_post.chat.id != this.options.chat) return;
       let [id, ...rest] = data.channel_post.text.split(':');
       let data = rest.join(':');
       let buffer = this.#buffers.get(id);

@@ -1,6 +1,6 @@
 class SERIALconn extends Connection {
-  priority = 900;
-  name = 'Serial';
+  static priority = 900;
+  static name = 'Serial';
 
   #port;
   #reader;
@@ -10,8 +10,8 @@ class SERIALconn extends Connection {
   /*
     baudrate = 9600
   */
-  constructor(hub, options) {
-    super(hub, options);
+  constructor(hub) {
+    super(hub);
     this.#packet_buffer = new PacketBufferScanAll(data => {
       this.hub._parsePacket(this, data);
     });

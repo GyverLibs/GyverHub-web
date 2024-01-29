@@ -318,7 +318,7 @@ function render_main() {
       <div class="ui_col">
         <div class="ui_row ui_head ui_tab" onclick="use_local.click()">
           <label class="ui_label ui_tab" id="local_label"><span class="icon icon_ui"></span>WiFi</label>
-          <input type="checkbox" id="use_local" onchange="update_cfg(this);save_cfg()" style="display:none">
+          <input type="checkbox" id="use_local" data-hub-config="connections.HTTP.enabled" onchange="update_cfg(this);save_cfg()" style="display:none">
         </div>
         <div id="local_block" style="display:none">
           <div class="ui_row" id="http_only_http" style="display:none">
@@ -329,7 +329,7 @@ function render_main() {
             <div class="ui_row">
               <label class="ui_label">${lang.wifi_ip}</label>
               <div class="ui_inp_row">
-                <input class="ui_inp" type="text" id="local_ip" onchange="update_cfg(this)">
+                <input class="ui_inp" type="text" id="local_ip" data-hub-config="connections.HTTP.local_ip" onchange="update_cfg(this)">
                 <div class="btn_inp_block">
                   <button class="icon icon_btn" onclick="update_ip_h();update_cfg(EL('local_ip'))"></button>
                 </div>
@@ -339,13 +339,13 @@ function render_main() {
             <div class="ui_row">
               <label>${lang.wifi_mask}</label>
               <div class="ui_inp_row">
-                <select class="ui_inp ui_sel" id="netmask" onchange="update_cfg(this)"></select>
+                <select class="ui_inp ui_sel" id="netmask" data-hub-config="connections.HTTP.netmask" onchange="update_cfg(this)"></select>
               </div>
             </div>
 
             <div class="ui_row">
               <label>${lang.wifi_port}</label>
-              <div class="ui_inp_row"><input class="ui_inp" type="text" id="http_port" onchange="update_cfg(this)">
+              <div class="ui_inp_row"><input class="ui_inp" type="text" id="http_port" data-hub-config="connections.HTTP.port" onchange="update_cfg(this)">
               </div>
             </div>
 
@@ -371,29 +371,29 @@ function render_main() {
       <div class="ui_col" id="mq_col">
         <div class="ui_row ui_head ui_tab" onclick="use_mqtt.click()">
           <label class="ui_label ui_tab" id="mqtt_label"><span class="icon icon_ui"></span>MQTT</label>
-          <input type="checkbox" id="use_mqtt" onchange="update_cfg(this);hub.mqtt.disconnect();save_cfg()" style="display:none">
+          <input type="checkbox" id="use_mqtt" data-hub-config="connections.MQTT.enabled" onchange="update_cfg(this);hub.mqtt.disconnect();save_cfg()" style="display:none">
         </div>
 
         <div id="mq_block" style="display:none">
 
           <div class="ui_row">
             <label class="ui_label">${lang.mq_host}</label>
-            <div class="ui_inp_row"><input class="ui_inp" type="text" id="mq_host" onchange="update_cfg(this);hub.mqtt.disconnect()"></div>
+            <div class="ui_inp_row"><input class="ui_inp" type="text" id="mq_host" data-hub-config="connections.MQTT.host" onchange="update_cfg(this);hub.mqtt.disconnect()"></div>
           </div>
 
           <div class="ui_row">
             <label class="ui_label">${lang.mq_port}</label>
-            <div class="ui_inp_row"><input class="ui_inp" type="number" id="mq_port" onchange="update_cfg(this);hub.mqtt.disconnect()"></div>
+            <div class="ui_inp_row"><input class="ui_inp" type="number" id="mq_port" data-hub-config="connections.MQTT.port" onchange="update_cfg(this);hub.mqtt.disconnect()"></div>
           </div>
 
           <div class="ui_row">
             <label class="ui_label">${lang.mq_login}</label>
-            <div class="ui_inp_row"><input class="ui_inp" type="text" id="mq_login" onchange="update_cfg(this);hub.mqtt.disconnect()"></div>
+            <div class="ui_inp_row"><input class="ui_inp" type="text" id="mq_login" data-hub-config="connections.MQTT.login" onchange="update_cfg(this);hub.mqtt.disconnect()"></div>
           </div>
 
           <div class="ui_row">
             <label class="ui_label">${lang.mq_pass}</label>
-            <div class="ui_inp_row"><input class="ui_inp" type="password" id="mq_pass" onchange="update_cfg(this);hub.mqtt.disconnect()">
+            <div class="ui_inp_row"><input class="ui_inp" type="password" id="mq_pass" data-hub-config="connections.MQTT.password" onchange="update_cfg(this);hub.mqtt.disconnect()">
             </div>
           </div>
 
@@ -412,21 +412,21 @@ function render_main() {
 
         <div class="ui_row ui_head ui_tab" onclick="use_tg.click()">
           <label class="ui_label ui_tab" id="tg_label"><span class="icon icon_ui"></span>Telegram</label>
-          <input type="checkbox" id="use_tg" onchange="update_cfg(this);hub.tg.disconnect();save_cfg()" style="display:none">
+          <input type="checkbox" id="use_tg" data-hub-config="connections.TG.enabled" onchange="update_cfg(this);hub.tg.disconnect();save_cfg()" style="display:none">
         </div>
 
         <div id="tg_block" style="display:none">
           <div class="ui_row">
             <label class="ui_label">${lang.tg_token}</label>
             <div class="ui_inp_row">
-              <input class="ui_inp" type="text" id="tg_token" onchange="update_cfg(this);hub.tg.disconnect();hub.tg.bot.setToken(this.value)">
+              <input class="ui_inp" type="text" id="tg_token" data-hub-config="connections.TG.token" onchange="update_cfg(this);hub.tg.disconnect();hub.tg.bot.setToken(this.value)">
             </div>
           </div>
 
           <div class="ui_row">
             <label class="ui_label">${lang.tg_chat}</label>
             <div class="ui_inp_row">
-              <input class="ui_inp" type="text" id="tg_chat" onchange="update_cfg(this)">
+              <input class="ui_inp" type="text" id="tg_chat" data-hub-config="connections.TG.chat" onchange="update_cfg(this)">
             </div>
           </div>
 
@@ -443,20 +443,20 @@ function render_main() {
       <div class="ui_col" id="serial_col" ${hasSerial() ? '' : 'style="display:none"' }>
         <div class="ui_row ui_head ui_tab" onclick="use_serial.click()">
           <label class="ui_label ui_tab" id="serial_label"><span class="icon icon_ui"></span>Serial</label>
-          <input type="checkbox" id="use_serial" onchange="serial_toggle(this.checked);update_cfg(this);save_cfg()" style="display:none">
+          <input type="checkbox" id="use_serial" data-hub-config="connections.SERIAL.enabled" onchange="serial_toggle(this.checked);update_cfg(this);save_cfg()" style="display:none">
         </div>
 
         <div id="serial_block" style="display:none">
           <div class="ui_row">
             <label class="ui_label">${lang.sr_baud}</label>
             <div class="ui_inp_row">
-              <select class="ui_inp ui_sel" id='baudrate' onchange="update_cfg(this)"></select>
+              <select class="ui_inp ui_sel" id='baudrate' data-hub-config="connections.SERIAL.baudrate" onchange="update_cfg(this)"></select>
             </div>
           </div>
 
           <div class="ui_row">
             <label class="ui_label">${lang.sr_offset}</label>
-            <div class="ui_inp_row"><input class="ui_inp" type="text" id="serial_offset" onchange="update_cfg(this)">
+            <div class="ui_inp_row"><input class="ui_inp" type="text" id="serial_offset" data-hub-config="connections.SERIAL.offset" onchange="update_cfg(this)">
             </div>
           </div>
 
@@ -475,7 +475,7 @@ function render_main() {
       <div class="ui_col" id="bt_col" ${hasBT() ? '' : 'style="display:none"' }>
         <div class="ui_row ui_head ui_tab" onclick="use_bt.click()">
           <label class="ui_label ui_tab" id="bt_label"><span class="icon icon_ui"></span>Bluetooth</label>
-          <input type="checkbox" id="use_bt" onchange="update_cfg(this);save_cfg()" style="display:none">
+          <input type="checkbox" id="use_bt" data-hub-config="connections.BT.enabled" onchange="update_cfg(this);save_cfg()" style="display:none">
         </div>
 
         <div id="bt_block" style="display:none">
@@ -505,14 +505,14 @@ function render_main() {
         <div class="ui_row">
           <label class="ui_label">${lang.cfg_prefix}</label>
           <div class="ui_inp_row">
-            <input class="ui_inp" type="text" id="prefix" onchange="update_cfg(this)">
+            <input class="ui_inp" type="text" id="prefix" data-hub-config="hub.prefix" onchange="update_cfg(this)">
           </div>
         </div>
 
         <div class="ui_row">
           <label class="ui_label">${lang.cfg_id}</label>
           <div class="ui_inp_row">
-            <input class="ui_inp" type="text" id="client_id" onchange="update_cfg(this)" oninput="if(this.value.length>8)this.value=this.value.slice(0,-1)">
+            <input class="ui_inp" type="text" id="client_id" data-hub-config="hub.client_id" onchange="update_cfg(this)" oninput="if(this.value.length>8)this.value=this.value.slice(0,-1)">
           </div>
         </div>
 

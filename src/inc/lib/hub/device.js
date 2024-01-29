@@ -29,8 +29,9 @@ class Device {
   granted = false;
   cfg_flag = false;
 
-  constructor(hub) {
+  constructor(hub, id) {
     this._hub = hub;
+    this.info = hub.config.getDevice(id);
   }
 
   //#region Connection

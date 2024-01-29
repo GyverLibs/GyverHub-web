@@ -255,7 +255,7 @@ function ota_h() {
   display('fs_otaurl', hub.dev(focused).isModuleEnabled(Modules.OTA_URL) ? 'block' : 'none');
 }
 function manual_ip_h(ip) {
-  if (hub.http.discover_ip(ip, hub.cfg.http_port)) {
+  if (hub.http.discover_ip(ip, hub.config.get('connections', 'HTTP', 'port'))) {
     save_cfg();
     show_screen('main');
   } else showPopupError('Wrong IP');

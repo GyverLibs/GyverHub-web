@@ -75,22 +75,3 @@ class InputQueue {
     }
   }
 }
-
-class InputQueue {
-    #queue;
-
-    constructor() {
-        this.#queue = [];
-
-    }
-
-    async get(types, timeout) {
-
-    }
-
-    put(type, data) {
-        this.#queue.push({
-            type, data, 
-        });
-    }
-}

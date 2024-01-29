@@ -1,14 +1,14 @@
 class MQTTconn extends Connection {
-  priority = 500;
-  name = 'MQTT';
+  static priority = 500;
+  static name = 'MQTT';
 
   #client;
   #preflist;
 
   onConnChange(state) { }
 
-  constructor(hub, options) {
-    super(hub, options);
+  constructor(hub) {
+    super(hub);
     this.#preflist = [];
     this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
@@ -36,12 +36,12 @@ class MQTTconn extends Connection {
     await this.disconnect();
     this._setState(ConnectionState.CONNECTING);
 
-    const url = 'wss://' + this.hub.cfg.mq_host + ':' + this.hub.cfg.mq_port + '/mqtt';
+    const url = 'wss://' + this.options.host + ':' + this.options.port + '/mqtt';
     const options = {
       keepalive: 60,
       clientId: 'HUB-' + Math.round(Math.random() * 0xffffffff).toString(16),
-      username: this.hub.cfg.mq_login,
-      password: this.hub.cfg.mq_pass,
+      username: this.options.login,
+      password: this.options.password,
       protocolId: 'MQTT',
       protocolVersion: 4,
       clean: true,

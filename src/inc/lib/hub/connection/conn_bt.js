@@ -1,7 +1,7 @@
 // based on https://github.com/loginov-rocks/Web-Bluetooth-Terminal
 class BTconn extends Connection {
-  priority = 600;
-  name = 'BT';
+  static priority = 600;
+  static name = 'BT';
   
   #device;
   #characteristic;
@@ -15,8 +15,11 @@ class BTconn extends Connection {
     max_retries = 3
     buffer_size = 1024
   */
-  constructor(hub, options) {
-    super(hub, options);
+  constructor(hub) {
+    super(hub);
+  }
+
+  async begin() {
     this.#buffer = new CyclicBuffer(this.options.buffer_size);
     this.#packet_buffer = new PacketBufferScanAll(data => {
       this.hub._parsePacket(this, data);

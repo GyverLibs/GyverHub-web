@@ -2,21 +2,20 @@ function update_cfg(el) {
   if (el.type == 'text') el.value = el.value.trim();
   let val = (el.type == 'checkbox') ? el.checked : el.value;
   if (el.id in cfg) cfg[el.id] = val;
-  else if (el.id in hub.cfg) hub.cfg[el.id] = val;
+  else if (el.dataset.hubConfig) hub.config.set(...el.dataset.hubConfig.split('.'), val);
   cfg_changed = true;
   update_theme();
 }
 function save_cfg() {
   if (cfg.pin.length < 4) cfg.use_pin = false;
   localStorage.setItem('app_config', JSON.stringify(cfg));
-  localStorage.setItem('hub_config', JSON.stringify(hub.exportConfig()));
+  localStorage.setItem('hub_config', hub.exportConfig());
 }
 function load_cfg() {
   if (localStorage.hasOwnProperty('app_config')) {
     let cfg_r = JSON.parse(localStorage.getItem('app_config'));
     if (cfg.api_ver === cfg_r.api_ver) {
       cfg = cfg_r;
-      return;
     }
   }
   localStorage.setItem('app_config', JSON.stringify(cfg));
@@ -33,11 +32,10 @@ function apply_cfg() {
     if (el.type == 'checkbox') el.checked = cfg[key];
     else el.value = cfg[key];
   }
-  for (let key in hub.cfg) {
-    let el = EL(key);
-    if (el == undefined) continue;
-    if (el.type == 'checkbox') el.checked = hub.cfg[key];
-    else el.value = hub.cfg[key];
+  for (const el of document.querySelectorAll('[data-hub-config]')) {
+    const value = hub.config.get(...el.dataset.hubConfig.split('.'));
+    if (el.type == 'checkbox') el.checked = value;
+    else el.value = value;
   }
 }
 async function cfg_export() {
@@ -97,25 +95,25 @@ function update_theme() {
   let f = 'var(--font)';
   let f3 = 'var(--font3)';
 
-  display('local_block', hub.cfg.use_local ? b : n);
-  EL('local_label').style.color = hub.cfg.use_local ? f : f3;
+  display('local_block', hub.config.get('connections', 'HTTP', 'enabled') ? b : n);
+  EL('local_label').style.color = hub.config.get('connections', 'HTTP', 'enabled') ? f : f3;
   display('pin_block', cfg.use_pin ? b : n);
   EL('pin_label').style.color = cfg.use_pin ? f : f3;
 
   updateLang();
 
 /*@[if_not_target:esp]*/
-  display('mq_block', hub.cfg.use_mqtt ? b : n);
-  EL('mqtt_label').style.color = hub.cfg.use_mqtt ? f : f3;
+  display('mq_block', hub.config.get('connections', 'MQTT', 'enabled') ? b : n);
+  EL('mqtt_label').style.color = hub.config.get('connections', 'MQTT', 'enabled') ? f : f3;
 
-  display('tg_block', hub.cfg.use_tg ? b : n);
-  EL('tg_label').style.color = hub.cfg.use_tg ? f : f3;
+  display('tg_block', hub.config.get('connections', 'TG', 'enabled') ? b : n);
+  EL('tg_label').style.color = hub.config.get('connections', 'TG', 'enabled') ? f : f3;
 
-  let bt = hub.cfg.use_bt && hasBT();
+  let bt = hub.config.get('connections', 'BT', 'enabled') && hasBT();
   display('bt_block', bt ? b : n);
   EL('bt_label').style.color = bt ? f : f3;
 
-  let ser = hub.cfg.use_serial && hasSerial();
+  let ser = hub.config.get('connections', 'SERIAL', 'enabled') && hasSerial();
   display('serial_block', ser ? b : n);
   EL('serial_label').style.color = ser ? f : f3;
   /*@/[if_not_target:esp]*/

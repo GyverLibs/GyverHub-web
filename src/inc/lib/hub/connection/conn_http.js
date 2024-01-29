@@ -1,6 +1,6 @@
 class HTTPconn extends Connection {
-  priority = 700;
-  name = 'HTTP';
+  static priority = 700;
+  static name = 'HTTP';
 
   /*
     local_ip
@@ -8,8 +8,8 @@ class HTTPconn extends Connection {
     port
     request_timeout
   */
-  constructor(hub, options) {
-    super(hub, options);
+  constructor(hub) {
+    super(hub);
   }
 
   // discover

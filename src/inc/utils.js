@@ -2,6 +2,7 @@
 const app_title = 'GyverHub';
 const app_version = '/*@![:version]*/';
 const hub = new GyverHub();
+window.HUB = hub;
 
 const langs = {
   English: 0,
