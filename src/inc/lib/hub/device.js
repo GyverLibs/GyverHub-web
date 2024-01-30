@@ -20,15 +20,10 @@ class Device {
   #input_queue;
 
   // device
-  focused = false;
-  tout = null;
-  ping = null;
-  conn_lost = false;
   prev_set = {};
 
   skip_prd = 1000;  // skip updates
   tout_prd = 2500;  // connection timeout
-  ping_prd = 3000;  // ping period > timeout
 
   // external
   granted = false;
@@ -67,46 +62,11 @@ class Device {
     }
 
     await this.getConnection().post(this, cmd, name, value);
-
-    if (this.focused) {
-      this._reset_ping();
-      this._reset_tout();
-    }
   }
 
   async #postAndWait(cmd, types, name = '', value = '') {
     await this.post(cmd, name, value);
     return await this.#input_queue.get(types);
-  }
-
-  _stop_tout() {
-    if (this.tout) {  // waiting answer
-      this._hub.onWaitAnswer(this.info.id, false);
-      clearTimeout(this.tout);
-      this.tout = null;
-    }
-  }
-  _reset_tout() {
-    if (this.tout) return;
-    this._hub.onWaitAnswer(this.info.id, true);
-    this.tout = setTimeout(() => {
-      if (this.focused /*&& !this.fsBusy()*/) this._hub.onDeviceConnChange(this.info.id, false);//TODO
-      this.conn_lost = true;
-      this._stop_tout();
-    }, this.tout_prd);
-  }
-  _stop_ping() {
-    if (this.ping) {
-      clearInterval(this.ping);
-      this.ping = null;
-    }
-  }
-  _reset_ping() {
-    this._stop_ping();
-    this.ping = setInterval(async () => {
-      if (this.conn_lost/* && !this.fsBusy()*/) this._hub.onPingLost(this.info.id);//TODO
-      else await this.post('ping');
-    }, this.ping_prd);
   }
 
   _checkUpdates(updates) {
@@ -124,14 +84,6 @@ class Device {
   }
 
   async _parse(type, data, conn) {
-    let id = this.info.id;
-    this._stop_tout();
-    if (this.conn_lost) {
-      this.conn_lost = false;
-      this._hub.onPingLost(id);
-      if (this.focused) this._hub.onDeviceConnChange(id, true);
-    }
-
     this.#input_queue.put(type, data);
 
     /**
@@ -142,7 +94,7 @@ class Device {
      * set -> ok | ui | update
      * ui -> ui
      */
-
+    let id = this.info.id;
     switch (type) {
       case 'ui':
         if (this.isModuleEnabled(Modules.UI)) this._hub.onUi(id, data.controls);
@@ -298,22 +250,25 @@ class Device {
   //#region Interraction > Common
 
   async focus() {
-    this.focused = true;
+    if (this.info.ws_port && this.active_connections.some(conn => conn instanceof HTTPconn)) {
+      this._hub.config.set('connections', 'WS', 'ip', this.info.ip);
+      this._hub.config.set('connections', 'WS', 'port', this.info.ws_port);
+      this._hub.config.set('connections', 'WS', 'enabled', true);
+      await this._hub.ws.disconnect();
+      await this._hub.ws.connect();
+      setTimeout(() => {
+        if (!this._hub.ws.isConnected()) {
+          this.ws._hub.disconnect();
+        }
+      }, this.tout_prd);
+    }
+
     await this.#postAndWait('ui', ['ok']);
-    // if (this.conn == Conn.HTTP && this.info.ws_port) {
-    //   this.ws.connect();
-    //   setTimeout(() => {
-    //     if (!this.ws.state()) this.ws.disconnect();
-    //   }, this.tout_prd);
-    // }
   }
 
   async unfocus() {
-    this.focused = false;
-    this._stop_ping();
-    this._stop_tout();
     await this.post('unfocus');
-    // if (this.conn == Conn.HTTP) this.ws.disconnect();
+    await this._hub.ws.disconnect();
   }
 
   async getInfo() {
@@ -335,27 +290,23 @@ class Device {
   //#region Interraction > FS
 
   async deleteFile(path) {
-    res = await this.#postAndWait('delete', ['files'], path);
+    await this.#postAndWait('delete', ['files'], path);
   }
 
   async createFile(path) {
-    res = await this.#postAndWait('mkfile', ['files'], path);
+    await this.#postAndWait('mkfile', ['files'], path);
   }
 
   async renameFile(path, new_name) {
-    res = await this.#postAndWait('rename', ['files'], path, new_name);
+    await this.#postAndWait('rename', ['files'], path, new_name);
   }
 
   async formatFS() {
-    res = await this.#postAndWait('format', ['files']);
+    await this.#postAndWait('format', ['files']);
   }
 
   async updateFileList() {
-    res = await this.#postAndWait('files', ['files']);
-  }
-
-  async #onFiles(data) {
-    this._hub.onFsbr(id, data.fs, data.total, data.used);
+    await this.#postAndWait('files', ['files']);
   }
 
   async upload(file, path, progress = undefined) {

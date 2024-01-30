@@ -27,6 +27,12 @@ class PacketBufferScanFirst {
       this.#tout = null;
     }
   }
+
+  clear() {
+    if (this.#tout) clearTimeout(this.#tout);
+    this.#tout = undefined;
+    this.#buf.length = 0;
+  }
 };
 
 class PacketBufferScanAll {

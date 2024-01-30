@@ -23,6 +23,7 @@ class WSconn extends Connection {
     return this.#ws && this.#ws.readyState == 1;
   }
 
+  async begin(){}
   async discover(){}
   async search(){}
 
@@ -35,6 +36,7 @@ class WSconn extends Connection {
 
     this._ws.onopen = () => {
       this._setState(ConnectionState.CONNECTED);
+      this.#packet_buffer.clear();
     };
 
     this._ws.onclose = async () => {

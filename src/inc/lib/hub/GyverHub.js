@@ -32,7 +32,8 @@ class GyverHub extends EventEmitter {
       new MQTTconn(this),
       new TGconn(this),
       new SERIALconn(this),
-      new BTconn(this)
+      new BTconn(this),
+      new WSconn(this),
     );
     /*@/[if_not_target:esp]*/
   }
@@ -61,6 +62,13 @@ class GyverHub extends EventEmitter {
   get tg() {
     for (const connection of this.#connections) {
       if (connection instanceof TGconn)
+        return connection;
+    }
+  }
+
+  get ws() {
+    for (const connection of this.#connections) {
+      if (connection instanceof WSconn)
         return connection;
     }
   }
