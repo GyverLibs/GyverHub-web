@@ -26,10 +26,10 @@ let set_prd_buf = {};
 
 function post_click(name, dir) {
   UiButton.pressID = (dir == 1) ? name : null;
-  ub.dev(focused).post('set', name, dir);
+  ub.dev(focused).set(name, dir);
 }
 function post_set(name, value = '') {
-  ub.dev(focused).post('set', name, value);
+  ub.dev(focused).set(name, value);
   // Widget.setPlabel(name, '•');
   Ack.set(name);
 }
@@ -52,7 +52,7 @@ async function reboot_h() {
   await hub.dev(focused).reboot();
 }
 function release_all() {
-  if (UiButton.pressID) ub.dev(focused).post('set', UiButton.pressID, 0);
+  if (UiButton.pressID) ub.dev(focused).set(UiButton.pressID, 0);
   UiButton.pressID = null;
 }
 

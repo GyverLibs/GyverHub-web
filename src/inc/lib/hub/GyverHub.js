@@ -1,22 +1,4 @@
 class GyverHub extends EventEmitter {
-  onHubError(text) { }
-  onDiscover(id, conn) { }
-  onDeviceConnChange(id, state) { }
-  onWsConnChange(id, state) { }
-  onWaitAnswer(id, state) { }
-  onPingLost(id) { }
-
-  onError(id, code) { }
-  onUpdate(id, name, data) { }
-  onFsbr(id, fs, total, used) { }
-  onPrint(id, text, color) { }
-  onUi(id, controls) { }
-  onAlert(id, text) { }
-  onNotice(id, text, color) { }
-  onPush(id, text) { }
-  onAck(id, name) { }
-  onFsError(id) { }
-
   config;
   #connections = [];
   #devices = [];
@@ -173,9 +155,9 @@ class GyverHub extends EventEmitter {
    */
   addDevice(data, conn = undefined) {
     let device = this.dev(data.id);
-    let infoChanged = false;
 
     if (device) {  // exists
+      let infoChanged = false;
       for (const key in data) {
         if (device.info[key] !== data[key]) {
           device.info[key] = data[key];
@@ -189,9 +171,8 @@ class GyverHub extends EventEmitter {
     } else {    // not exists
       if (!data.prefix) data.prefix = this.prefix;
       device = new Device(this, data.id);
-      infoChanged = true;
 
-      for (let key in data) {
+      for (const key in data) {
         device.info[key] = data[key];
       }
 
@@ -200,12 +181,6 @@ class GyverHub extends EventEmitter {
       this.dispatchEvent(new DeviceEvent('devicecreated', device));
       this.dispatchEvent(new DeviceEvent('deviceadded', device));
     }
-
-    // if (infoChanged) {
-    //   /*@[if_not_target:esp]*/
-    //   this.mqtt.sub_device(device.info.prefix, device.info.id);
-    //   /*@/[if_not_target:esp]*/
-    // }
   }
 
   /**
@@ -291,7 +266,8 @@ class GyverHub extends EventEmitter {
 
     let device = this.dev(data.id);
     if (device) {
-      await device._parse(type, data, conn);
+      device.addConnection(conn);
+      await device._parse(type, data);
     }
   }
 };

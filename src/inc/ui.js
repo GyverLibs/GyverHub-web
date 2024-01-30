@@ -149,9 +149,24 @@ function projects_h() {
   show_screen('projects');
   loadProjects();
 }
-function refresh_h() {
-  if (focused) ub.dev(focused).post(screen);
-  else discover();
+async function refresh_h() {
+  if (!focused) {
+    discover();
+    return
+  }
+  const dev = hub.dev(focused);
+  switch (screen) {
+    case "ui":
+      await dev.updateUi();
+      break;
+    case "files":
+      await dev.updateFileList();
+      break;
+    case "info":
+      const info = await dev.getInfo();
+      if (info) showInfo(info);
+      break;
+  }
 }
 async function back_h() {
   if (focused) {
@@ -181,7 +196,7 @@ async function back_h() {
     case 'ota':
       Menu.deact();
       show_screen('ui');
-      ub.dev(focused).post('ui');
+      ub.dev(focused).updateUi();
       break;
     case 'config':
       config_h();
@@ -211,7 +226,7 @@ async function info_h() {
   show_screen('info');
   EL('menu_info').classList.add('menu_act');
   if (hub.dev(focused).isModuleEnabled(Modules.INFO)) {
-    const info = awaithub.get(focused).getInfo();
+    const info = await hub.get(focused).getInfo();
     if (info) showInfo(info);
   };
 }

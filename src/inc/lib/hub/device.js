@@ -1,22 +1,24 @@
-class Device {
+class DeviceCommandEvent extends Event {
+  constructor(name, device, type, data) {
+    super(name);
+    this.device = device;
+    this.type = type;
+    this.data = data;
+  }
+}
+
+class DeviceUpdateEvent extends Event {
+  constructor(device, name, data) {
+    super("update");
+    this.device = device;
+    this.name = name;
+    this.data = data;
+  }
+}
+
+class Device extends EventEmitter {
   active_connections = [];
-  info = {
-    id: 'undefined',
-    prefix: 'undefined',
-    name: 'undefined',
-    icon: '',
-    PIN: 0,
-    version: '',
-    max_upl: 200,
-    modules: 0,
-    ota_t: '.bin',
-    ip: null,
-    http_port: null,
-    ws_port: 81,
-    http_t: 1,
-    api_v: 0,
-    platform: '',
-  };
+  info;
   #input_queue;
 
   // device
@@ -53,12 +55,9 @@ class Device {
    * @param {string} value 
    */
   async post(cmd, name = '', value = '') {
-    if (cmd == 'set') {
-      if (!this.isModuleEnabled(Modules.SET)) return;
-      if (name) {
-        if (this.prev_set[name]) clearTimeout(this.prev_set[name]);
-        this.prev_set[name] = setTimeout(() => delete this.prev_set[name], this.skip_prd);
-      }
+    if (cmd == 'set' && name && this.isModuleEnabled(Modules.SET)) {
+      if (this.prev_set[name]) clearTimeout(this.prev_set[name]);
+      this.prev_set[name] = setTimeout(() => delete this.prev_set[name], this.skip_prd);
     }
 
     await this.getConnection().post(this, cmd, name, value);
@@ -69,87 +68,23 @@ class Device {
     return await this.#input_queue.get(types);
   }
 
-  _checkUpdates(updates) {
-    if (typeof(updates) != 'object') return;
-    for (let name in updates) {
-      if (name.includes(';')) {
-        name.split(';').forEach(n => updates[n] = updates[name]);
-        delete updates[name];
-      }
-    }
-    for (let name in updates) {
-      if ('value' in updates[name] && this.prev_set[name]) delete updates[name].value;
-      if (Object.keys(updates[name]).length) this._hub.onUpdate(this.info.id, name, updates[name]);
-    }
-  }
-
-  async _parse(type, data, conn) {
+  async _parse(type, data) {
     this.#input_queue.put(type, data);
+    this.dispatchEvent(new DeviceCommandEvent("command", this, type, data));
+    this.dispatchEvent(new DeviceCommandEvent("command." + type, this, type, data));
 
-    /**
-     * ping -> ok
-     * unfocus -> <none>
-     * fs_abort -> <none>
-     * 
-     * set -> ok | ui | update
-     * ui -> ui
-     */
-    let id = this.info.id;
     switch (type) {
-      case 'ui':
-        if (this.isModuleEnabled(Modules.UI)) this._hub.onUi(id, data.controls);
-        await this.post('unix', Math.floor(new Date().getTime() / 1000));
-        break;
+    case 'ui':
+      await this.post('unix', Math.floor(new Date().getTime() / 1000));
+      break;
 
-      case 'error':
-        this._hub.onError(id, data.code);
-        break;
+    case 'refresh':
+      await this.updateUi();
+      break;
 
-      case 'ack':
-        this._hub.onAck(id, data.name);
-        break;
-
-      case 'fs_err':
-        this._hub.onFsError(id);
-        break;
-
-      case 'files':
-        this._hub.onFsbr(id, data.fs, data.total, data.used);
-        break;
-
-        // ============= HUB EVENTS =============
-
-      case 'discover':
-        this._hub.onDiscover(id, conn);
-        break;
-
-      case 'update': // ok
-        this._checkUpdates(data.updates);
-        break;
-
-      case 'refresh': // ok
-        await this.post('ui');
-        break;
-
-      case 'script': // ok
-        eval(data.script);
-        break;
-
-      case 'print': // ok
-        this._hub.onPrint(id, data.text, data.color);
-        break;
-
-      case 'alert': // ok
-        this._hub.onAlert(id, data.text);
-        break;
-
-      case 'notice': // ok
-        this._hub.onNotice(id, data.text, intToCol(data.color));
-        break;
-
-      case 'push': // ok
-        this._hub.onPush(id, data.text);
-        break;
+    case 'update':
+      this._checkUpdates(data.updates);
+      break;
     }
   }
 
@@ -249,6 +184,50 @@ class Device {
 
   //#region Interraction > Common
 
+  async getInfo() {
+    const [type, data] = await this.#postAndWait('info', ['info', 'ok']);
+    if (type === 'info') return data;
+    return undefined;
+  }
+
+  async reboot() {
+    await this.#postAndWait('reboot', ['ok']);
+  }
+
+  async sendCli(command) {
+    await this.#postAndWait('cli', ['ok'], 'cli', command);
+  }
+
+  //#endregion
+
+  //#region Interraction > UI
+
+  async updateUi(){
+    await this.#postAndWait('ui', ['ok']);
+  }
+
+  async set(name, value){
+    await this.#postAndWait('set', ['ok', 'update', 'ui'], name, value);
+  }
+
+  _checkUpdates(updates) {
+    if (typeof updates !== 'object')
+      return;
+
+    for (const [keys, data] of Object.entries(updates)) {
+      if (typeof data !== 'object')
+        continue;
+      if ('value' in data && this.prev_set[keys])
+        delete data.value;
+      if (!Object.keys(data).length)
+        continue;
+
+      const names = keys.includes(';') ? keys.split(';') : [keys];
+      for (const name of names)
+        this.dispatchEvent(new DeviceUpdateEvent(this, name, data));
+    }
+  }
+
   async focus() {
     if (this.info.ws_port && this.active_connections.some(conn => conn instanceof HTTPconn)) {
       this._hub.config.set('connections', 'WS', 'ip', this.info.ip);
@@ -263,26 +242,12 @@ class Device {
       }, this.tout_prd);
     }
 
-    await this.#postAndWait('ui', ['ok']);
+    await this.updateUi();
   }
 
   async unfocus() {
     await this.post('unfocus');
     await this._hub.ws.disconnect();
-  }
-
-  async getInfo() {
-    const [type, data] = await this.#postAndWait('info', ['info', 'ok']);
-    if (type === 'info') return data;
-    return undefined;
-  }
-
-  async reboot() {
-    await this.#postAndWait('reboot', ['ok']);
-  }
-
-  async sendCli(command) {
-    await this.#postAndWait('cli', ['ok'], 'cli', command);
   }
 
   //#endregion

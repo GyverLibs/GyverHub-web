@@ -52,35 +52,11 @@ hub.tg.onConnChange = (state) => {
 }
 /*@/[if_not_target:esp]*/
 
-hub.onWsConnChange = (id, state) => {
-  if (id == focused) {
-    EL('conn').innerHTML = state ? 'HTTP/WS' : 'HTTP';
-  }
-}
-hub.onDeviceConnChange = (id, state) => {
-  if (id == focused) errorBar(!state);
-}
-hub.onWaitAnswer = (id, state) => {
-  if (id == focused) spinArrows(state);
-}
-hub.onPingLost = (id) => {
-  if (id == focused) {
-    let cmd = '';
-    switch (screen) {
-      case 'ui': cmd = 'ui'; break;
-      case 'info': cmd = 'info'; break;
-      case 'files': cmd = 'files'; break;
-      default: cmd = 'ping'; break;
-    }
-    hub.dev(id).post(cmd);
-  }
-}
-
 // ============ DEVICES ============
 hub.config.addEventListener('changed.devices', () => {
   save_devices();
 });
-hub.addEventListener('deviceadded', (ev) => {
+hub.addEventListener('deviceadded', (ev) => {  // found new device (search)
   const dev = ev.device.info;
   dev.ui_mode = 0;
   dev.main_width = 450;
@@ -89,43 +65,71 @@ hub.addEventListener('deviceadded', (ev) => {
   dev.plugin_js = '';
   add_device(ev.device, dev);
 });
-hub.addEventListener('devicecreated', ev => {
-  ev.device.addEventListener('asynccommand.alert', ev => {
-
-  });
-  ev.device.addEventListener('asynccommand.notice', ev => {
-
-  });
-  ev.device.addEventListener('asynccommand.push', ev => {
-
-  });
-  ev.device.addEventListener('asynccommand.cli', ev => {
-
+hub.addEventListener('devicecreated', ev => {  // found new device OR requested saved device
+  ev.device.addEventListener('command.alert', e => {
+    release_all();
+    alert(e.device.info.name + ': ' + e.data.text);
   });
 
-  ev.device.addEventListener('asynccommand.ui', ev => {
-
+  ev.device.addEventListener('command.notice', e => {
+    showPopup(e.device.info.name + ': ' + e.data.text, intToCol(e.data.color));
   });
-  ev.device.addEventListener('asynccommand.files', ev => {
 
+  let push_timer = 0;
+  ev.device.addEventListener('command.push', e => {
+    let date = (new Date).getTime();
+    if (date - push_timer > 3000) {
+      push_timer = date;
+      showNotif(e.device.info.name + ': ', e.data.text);
+    }
   });
-  ev.device.addEventListener('asynccommand.update', ev => {
 
+  ev.device.addEventListener('command.print', e => {
+    if (e.device.info.id == focused)
+      printCLI(e.data.text, e.data.color);
   });
-  ev.device.addEventListener('asynccommand.ack', ev => {
 
+
+  ev.device.addEventListener('command.files', e => {
+    if (e.device.info.id == focused)
+      showFsbr(e.data.fs, e.data.total, e.data.used);
   });
-  ev.device.addEventListener('error', ev => {
 
+
+  ev.device.addEventListener('command.ui', e => {
+    if (e.device.info.id == focused && e.data.controls)
+      showControls(focused, e.data.controls);
   });
-  ev.device.addEventListener('infochanged', ev => {
 
+  ev.device.addEventListener('command.ack', e => {
+    if (e.device.info.id == focused)
+      Ack.clear(e.data.name);
   });
-  ev.device.addEventListener('connectionchanged', ev => {
 
+  ev.device.addEventListener('command.script', e => {
+    eval(e.data.script);
+  });
+
+  ev.device.addEventListener('command.error', e => {
+    if (e.device.info.id == focused)
+      showPopupError(getError(e.data.code));
+  });
+  ev.device.addEventListener('command.fs_err', () => {
+    if (e.device.info.id == focused)
+      EL('fsbr_inner').innerHTML = `<div class="fs_err">FS ${lang.error}</div>`;
+  });
+
+  ev.device.addEventListener('update', e => {
+    if (e.device.info.id == focused && screen == 'ui')
+      applyUpdate(e.name, e.data);
+  });
+
+  ev.device.addEventListener('connectionchanged', e => {
+    EL(`device#${id}`).className = "device";
+    display(`${conn.name}#${id}`, 'inline-block');
   });
 });
-hub.addEventListener('deviceinfochanged', (ev) => {
+hub.addEventListener('deviceinfochanged', ev => {
   const dev = ev.device.info;
   EL(`name#${dev.id}`).innerHTML = dev.name ? dev.name : 'Unknown';
   EL(`device#${dev.id}`).title = `${dev.id} [${dev.prefix}]`;
@@ -133,53 +137,6 @@ hub.addEventListener('deviceinfochanged', (ev) => {
 hub.addEventListener('discoverfinished', () => {
   if (screen == 'main') spinArrows(false);
 });
-hub.onDiscover = (id, conn) => {
-  EL(`device#${id}`).className = "device";
-  display(`${conn.name}#${id}`, 'inline-block');
-}
-
-// ============ SYSTEM ============
-hub.onFsError = (id) => {
-  if (id == focused) EL('fsbr_inner').innerHTML = `<div class="fs_err">FS ${lang.error}</div>`;
-}
-hub.onError = (id, code) => {
-  if (id == focused) showPopupError(getError(code));
-}
-hub.onAck = (id, name) => {
-  // if (id == focused) Widget.setPlabel(name);
-  if (id == focused) Ack.clear(name);
-}
-hub.onUpdate = (id, name, data) => {
-  if (id != focused) return;
-  if (screen != 'ui') return;
-  applyUpdate(name, data);
-}
-hub.onFsbr = (id, fs, total, used) => {
-  if (id == focused) showFsbr(fs, total, used);
-}
-hub.onPrint = (id, text, color) => {
-  if (id == focused) printCLI(text, color);
-}
-hub.onUi = (id, controls) => {
-  if (id == focused) showControls(id, controls);
-}
-hub.onAlert = (id, text) => {
-  release_all();
-  alert(hub.dev(id).info.name + ': ' + text);
-}
-hub.onNotice = (id, text, color) => {
-  showPopup(hub.dev(id).info.name + ': ' + text, color);
-}
-
-let push_timer = 0;
-hub.onPush = (id, text) => {
-  let date = (new Date).getTime();
-  if (date - push_timer > 3000) {
-    push_timer = date;
-    showNotif(hub.dev(id).info.name + ': ', text);
-  }
-}
-
-hub.onHubError = (text) => {
-  showPopupError(text);
-}
+hub.addEventListener('protocolerror', ev => {
+  showPopupError(ev.text);
+});
