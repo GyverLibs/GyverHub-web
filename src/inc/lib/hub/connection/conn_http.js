@@ -22,8 +22,8 @@ class HTTPconn extends Connection {
   // discover
   async discover() {
     if (this.isDiscovering() || !this.isConnected()) return;
-    for (let i in this.hub.devices) {
-      let dev = this.hub.devices[i].info;
+    for (const id in this.hub.getDeviceIds()) {
+      const dev = this.hub.dev(id);
       if (dev.ip) {
         try {
           await this.send(dev.ip, dev.http_port, `${dev.prefix}/${dev.id}`);
@@ -36,27 +36,27 @@ class HTTPconn extends Connection {
 
   async discover_ip(ip, port = undefined) {
     if (!checkIP(ip) || this.isDiscovering() || !this.isConnected()) return false;
-    await this.send(ip, port, this.hub.cfg.prefix);
     this._discoverTimer();
+    await this.send(ip, port, this.hub.prefix);
     return true;
   }
 
   async search() {
     if (this.isDiscovering() || !this.isConnected()) return;
-    let ips = getIPs(this.options.local_ip, this.options.netmask);
+    const ips = getIPs(this.options.local_ip, this.options.netmask);
     if (!ips) return;
 
-    for (let i in ips) {
+    this._discoverTimer();
+    for (const i in ips) {
       try {
-        await this.send(ips[i], this.options.port, this.hub.cfg.prefix);
+        await this.send(ips[i], this.options.port, this.hub.prefix);
       } catch (e) {}
       await sleep(this.options.delay);
     }
-    this._discoverTimer();
   }
 
   async post(device, command, name = '', value = '') {
-    let uri = device.info.prefix + '/' + device.info.id + '/' + this.hub.cfg.client_id + '/' + command;
+    let uri = device.info.prefix + '/' + device.info.id + '/' + this.hub.clientId + '/' + command;
     if (name) {
       uri += '/' + name;
       if (value) {

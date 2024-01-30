@@ -19,18 +19,6 @@ class SERIALconn extends Connection {
     this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
 
-  async discover() {
-    if (this.isDiscovering() || !this.isConnected()) return;
-    for (let pref of this.hub._preflist()) await this.send(pref);
-    this._discoverTimer();
-  }
-
-  async search() {
-    if (this.isDiscovering() || !this.isConnected()) return;
-    await this.send(this.hub.cfg.prefix);
-    this._discoverTimer();
-  }
-
   getName() {
     let id = this.#port ? this.#port.getInfo().usbProductId : null;
     switch (id) {
@@ -69,6 +57,7 @@ class SERIALconn extends Connection {
       for (let port of ports) await port.forget();
       
       this.#port = await navigator.serial.requestPort();
+      this.#port.addEventListener('disconnect', this._disconnect_h);
     } finally {
       this._setState(ConnectionState.DISCONNECTED);
     }

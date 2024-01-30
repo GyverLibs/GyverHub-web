@@ -20,6 +20,7 @@ class MQTTconn extends Connection {
     this.#preflist = [];
     this.#buffers = new Map();
     this.addEventListener('statechange', () => this.onConnChange(this.getState()));
+    this.hub.addEventListener('deviceadded', ev => this.#sub_device(ev.device.info.prefix, ev.device.info.id));
   }
 
   isConnected() {
@@ -28,17 +29,18 @@ class MQTTconn extends Connection {
 
   async discover() {
     if (this.isDiscovering() || !this.isConnected()) return;
-    for (let dev of this.hub.devices) {
-      await this.send(dev.info.prefix + '/' + dev.info.id + '=' + this.hub.cfg.client_id);
-    }
     this._discoverTimer();
+    for (const id of this.hub.getDeviceIds()) {
+      const dev = this.hub.dev(id);
+      await this.send(dev.info.prefix + '/' + dev.info.id + '=' + this.hub.clientId);
+    }
   }
 
   async search() {
     if (this.isDiscovering() || !this.isConnected()) return;
-    await this.#upd_prefix(this.hub.cfg.prefix);
+    await this.#upd_prefix(this.hub.prefix);
     this._discoverTimer();
-    await this.send(this.hub.cfg.prefix + '=' + this.hub.cfg.client_id);
+    await this.send(this.hub.prefix + '=' + this.hub.clientId);
   }
 
   async connect() {
@@ -68,9 +70,11 @@ class MQTTconn extends Connection {
     this._setState(ConnectionState.CONNECTED);
 
     this.#preflist = [];
-    await this.#upd_prefix(this.hub.cfg.prefix);
-    for (let dev of this.hub.devices)
+    await this.#upd_prefix(this.hub.prefix);
+    for (const id of this.hub.getDeviceIds()) {
+      const dev = this.hub.dev(id);
       await this.#sub_device(dev.info.prefix, dev.info.id);
+    }
 
     this.#client.on('connect', () => {
       this._setState(ConnectionState.CONNECTED);
@@ -99,7 +103,7 @@ class MQTTconn extends Connection {
         this.hub._parsePacket(this, text);
 
       // prefix/hub/client_id/id
-      } else if (parts.length == 4 && parts[2] == this.hub.cfg.client_id) {
+      } else if (parts.length == 4 && parts[2] == this.hub.clientId) {
         let buffer = this.#buffers.get(parts[3]);
         if (!buffer) {
           buffer = new PacketBufferScanFirst(data => {
@@ -155,6 +159,6 @@ class MQTTconn extends Connection {
     if (!this.isConnected() || this.#preflist.includes(prefix)) return;
     this.#preflist.push(prefix);
     await this.#client.subscribeAsync(prefix + '/hub');
-    await this.#client.subscribeAsync(prefix + '/hub/' + this.hub.cfg.client_id + '/#');
+    await this.#client.subscribeAsync(prefix + '/hub/' + this.hub.clientId + '/#');
   }
 };

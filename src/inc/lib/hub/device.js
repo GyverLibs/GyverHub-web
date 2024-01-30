@@ -25,9 +25,15 @@ class Device {
   conn_lost = false;
   prev_set = {};
 
+  skip_prd = 1000;  // skip updates
+  tout_prd = 2500;  // connection timeout
+  ping_prd = 3000;  // ping period > timeout
+
   // external
   granted = false;
   cfg_flag = false;
+
+  inq = new InputQueue(1000, 1000);
 
   constructor(hub, id) {
     this._hub = hub;
@@ -104,7 +110,7 @@ class Device {
       if (!this.isModuleEnabled(Modules.SET)) return;
       if (name) {
         if (this.prev_set[name]) clearTimeout(this.prev_set[name]);
-        this.prev_set[name] = setTimeout(() => delete this.prev_set[name], this._hub.skip_prd);
+        this.prev_set[name] = setTimeout(() => delete this.prev_set[name], this.skip_prd);
       }
     }
 
@@ -123,7 +129,7 @@ class Device {
     //   this.ws.connect();
     //   setTimeout(() => {
     //     if (!this.ws.state()) this.ws.disconnect();
-    //   }, this._hub.tout_prd);
+    //   }, this.tout_prd);
     // }
   }
 
@@ -163,7 +169,7 @@ class Device {
       if (this.focused /*&& !this.fsBusy()*/) this._hub.onDeviceConnChange(this.info.id, false);//TODO
       this.conn_lost = true;
       this._stop_tout();
-    }, this._hub.tout_prd);
+    }, this.tout_prd);
   }
   _stop_ping() {
     if (this.ping) {
@@ -176,7 +182,7 @@ class Device {
     this.ping = setInterval(async () => {
       if (this.conn_lost/* && !this.fsBusy()*/) this._hub.onPingLost(this.info.id);//TODO
       else await this.post('ping');
-    }, this._hub.ping_prd);
+    }, this.ping_prd);
   }
 
   // private
@@ -194,8 +200,6 @@ class Device {
       if (Object.keys(updates[name]).length) this._hub.onUpdate(this.info.id, name, updates[name]);
     }
   }
-
-  inq = new InputQueue(1000, 1000);
 
   async #postAndWait(cmd, types, name = '', value = '') {
     await this.post(cmd, name, value);
@@ -292,7 +296,7 @@ class Device {
     if (this.isHttpAccessable() && this.info.http_t) {
       let formData = new FormData();
       formData.append(type, file);
-      await http_post(`http://${this.info.ip}:${this.info.http_port}/hub/ota?type=${type}&client_id=${this._hub.cfg.client_id}`, formData)
+      await http_post(`http://${this.info.ip}:${this.info.http_port}/hub/ota?type=${type}&client_id=${this._hub.clientId}`, formData)
     } else {
       if (!progress) progress = () => {};
 
@@ -339,7 +343,7 @@ class Device {
     if (this.isHttpAccessable() && this.info.http_t) {
       let formData = new FormData();
       formData.append('upload', file);
-      await http_post(`http://${this.info.ip}:${this.info.http_port}/hub/upload?path=${path}&crc32=${crc}&client_id=${this._hub.cfg.client_id}&size=${buffer.length}`, formData)
+      await http_post(`http://${this.info.ip}:${this.info.http_port}/hub/upload?path=${path}&crc32=${crc}&client_id=${this._hub.clientId}&size=${buffer.length}`, formData)
     } else {
       if (!progress) progress = () => {};
 
@@ -377,7 +381,7 @@ class Device {
     if (!progress) progress = () => {};
 
     if (this.isHttpAccessable() && this.info.http_t) {
-      return await http_fetch_blob(`http://${this.info.ip}:${this.info.http_port}/hub/fetch?path=${path}&client_id=${this._hub.cfg.client_id}`, 
+      return await http_fetch_blob(`http://${this.info.ip}:${this.info.http_port}/hub/fetch?path=${path}&client_id=${this._hub.clientId}`, 
           progress, this._hub.http.tout);
 
     } else {

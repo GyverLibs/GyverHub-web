@@ -740,8 +740,7 @@ function add_device(device, dev) {
 }
 function render_devices() {
   EL('devices').innerHTML = '';
-  const devices = hub.config.get('devices');
-  for (let id in devices) if (devices.hasOwnProperty(id)) {
+  for (const id of hub.getDeviceIds()) {
     const dev = hub.dev(id);
     add_device(dev, dev.info);
     for (let connection in dev.active_connections) {

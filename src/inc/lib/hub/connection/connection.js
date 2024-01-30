@@ -70,12 +70,21 @@ class Connection extends EventEmitter {
   /**
    * Send discover request to known device(s).
    */
-  async discover() {}
+  async discover() {
+    if (this.discovering || !this.isConnected()) return;
+    this._discoverTimer();
+    for (let pref of this.hub.getAllPrefixes()) await this.send(pref);
+  }
+
 
   /**
    * Send discover request to all devices.
    */
-  async search() {}
+  async search() {
+    if (this.discovering || !this.isConnected()) return;
+    this._discoverTimer();
+    await this.send(this.hub.prefix);
+  }
 
   /**
    * Initialize device connection (ex. autoconnect)
@@ -114,7 +123,7 @@ class Connection extends EventEmitter {
    * @param {string} value 
    */
   async post(device, command, name = '', value = '') {
-    let uri = device.info.prefix + '/' + device.info.id + '/' + this.hub.cfg.client_id + '/' + command;
+    let uri = device.info.prefix + '/' + device.info.id + '/' + this.hub.clientId + '/' + command;
     if (name) {
       uri += '/' + name;
       if (value) {

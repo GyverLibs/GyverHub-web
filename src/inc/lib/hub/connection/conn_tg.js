@@ -23,18 +23,6 @@ class TGconn extends Connection {
     return this.#running;
   }
 
-  async discover() {
-    if (this.discovering || !this.isConnected()) return;
-    for (let pref of this.hub._preflist()) await this.send(pref);
-    this._discoverTimer();
-  }
-
-  async search() {
-    if (this.discovering || !this.isConnected()) return;
-    await this.send(this.hub.cfg.prefix);
-    this._discoverTimer();
-  }
-
   async connect() {
     if (!this.options.token || !this.options.chat)
       return;
@@ -42,7 +30,7 @@ class TGconn extends Connection {
     this.#running = true;
     this.#offset = -1;
     this._setState(ConnectionState.CONNECTING);
-    this._poll();
+    this.#poll();
   }
 
   async disconnect() {
@@ -70,7 +58,7 @@ class TGconn extends Connection {
     return data.ok;
   }
 
-  async _poll() {
+  async #poll() {
     while (this.#running) {
       let data = null;
       try {
@@ -85,7 +73,7 @@ class TGconn extends Connection {
         this._setState(ConnectionState.CONNECTED);
 
         for (let upd of data.result) {
-          await this.onmessage(upd);
+          await this.#onmessage(upd);
           this.#offset = upd.update_id + 1;
         }
 
@@ -99,7 +87,7 @@ class TGconn extends Connection {
     }
   }
   
-  async onmessage(data){
+  async #onmessage(data){
     try {
       if (data.channel_post.text == '/start') {
         let msg = 'Channel *' + data.channel_post.chat.title + '* id: `' + data.channel_post.chat.id + '`';

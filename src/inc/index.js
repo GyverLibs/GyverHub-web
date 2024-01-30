@@ -133,7 +133,8 @@ function startup() {
   discover();
 
   /*@[if_target:esp]*/
-    for (let dev of hub.devices) {
+    for (const id of hub.getDeviceIds()) {
+      const dev = hub.dev(id);
       if (window.location.href.includes(dev.info.ip)) {
         // dev.conn = Conn.HTTP;
         // dev.conn_arr[Conn.HTTP] = 1;  // TODO
@@ -162,8 +163,7 @@ function startup() {
 // =================== FUNC ===================
 function discover() {
   spinArrows(true);   // before discover!
-  for (let dev of hub.devices) {
-    let id = dev.info.id;
+  for (const id of hub.getDeviceIds()) {
     EL(`device#${id}`).className = "device offline";
     display(`Serial#${id}`, 'none');
     display(`BT#${id}`, 'none');

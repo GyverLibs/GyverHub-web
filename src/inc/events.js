@@ -77,7 +77,7 @@ hub.onPingLost = (id) => {
 }
 
 // ============ DEVICES ============
-hub.addEventListener('devicesconfigchanged', () => {
+hub.config.addEventListener('changed.devices', () => {
   save_devices();
 });
 hub.addEventListener('deviceadded', (ev) => {
@@ -88,6 +88,42 @@ hub.addEventListener('deviceadded', (ev) => {
   dev.plugin_css = '';
   dev.plugin_js = '';
   add_device(ev.device, dev);
+});
+hub.addEventListener('devicecreated', ev => {
+  ev.device.addEventListener('asynccommand.alert', ev => {
+
+  });
+  ev.device.addEventListener('asynccommand.notice', ev => {
+
+  });
+  ev.device.addEventListener('asynccommand.push', ev => {
+
+  });
+  ev.device.addEventListener('asynccommand.cli', ev => {
+
+  });
+
+  ev.device.addEventListener('asynccommand.ui', ev => {
+
+  });
+  ev.device.addEventListener('asynccommand.files', ev => {
+
+  });
+  ev.device.addEventListener('asynccommand.update', ev => {
+
+  });
+  ev.device.addEventListener('asynccommand.ack', ev => {
+
+  });
+  ev.device.addEventListener('error', ev => {
+
+  });
+  ev.device.addEventListener('infochanged', ev => {
+
+  });
+  ev.device.addEventListener('connectionchanged', ev => {
+
+  });
 });
 hub.addEventListener('deviceinfochanged', (ev) => {
   const dev = ev.device.info;

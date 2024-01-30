@@ -23,6 +23,9 @@ class WSconn extends Connection {
     return this.#ws && this.#ws.readyState == 1;
   }
 
+  async discover(){}
+  async search(){}
+
   async connect() {
     if (this.#ws) return;
 

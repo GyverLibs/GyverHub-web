@@ -24,13 +24,6 @@ class BTconn extends Connection {
     this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
 
-  async begin() {
-    this.#buffer = new CyclicBuffer(this.options.buffer_size);
-
-    if (this.options.enabled)
-      await this.connect();
-  }
-
   isConnected() {
     return this.options.enabled && this.#device && this.#device.gatt.connected && this.#characteristic;
   }
@@ -39,16 +32,11 @@ class BTconn extends Connection {
     return this.#device ? this.#device.name : null;
   }
 
-  async discover() {
-    if (this.isDiscovering() || !this.isConnected()) return;
-    for (let pref of this.hub._preflist()) await this.send(pref);
-    this._discoverTimer();
-  }
-  
-  async search() {
-    if (this.isDiscovering() || !this.isConnected()) return;
-    await this.send(this.hub.cfg.prefix);
-    this._discoverTimer();
+  async begin() {
+    this.#buffer = new CyclicBuffer(this.options.buffer_size);
+
+    if (this.options.enabled)
+      await this.connect();
   }
 
   async select() {
@@ -94,6 +82,7 @@ class BTconn extends Connection {
     this.#buffer.clear();
     this._setState(ConnectionState.DISCONNECTED);
   }
+
   async send(data) {
     data = new TextEncoder().encode(data);
     this.#buffer.push(data);
