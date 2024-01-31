@@ -1,5 +1,5 @@
 class UiText {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML = `<textarea data-type="${data.type}" id="${ID(data.id)}" class="w_area w_area_passive" rows="${data.rows ?? 5}" readonly>${data.value ?? ''}</textarea>`;
     }
 
@@ -11,7 +11,7 @@ class UiText {
 };
 
 class UiText_f {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML = `<textarea data-type="${data.type}" id="${ID(data.id)}" data-path="${data.value ?? ''}" class="w_area w_area_passive" rows="${data.rows ?? 5}" readonly></textarea>`;
         if (data.value) hub.dev(focused).addFile(data.id, data.value, { type: "text" });
     }

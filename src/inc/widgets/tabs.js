@@ -1,5 +1,5 @@
 class UiTabs {
-    constructor(cont, data) {
+    static render(cont, data) {
         let tabs = '';
         if (data.text) {
             let labels = data.text.split(';');

@@ -1,5 +1,5 @@
 class UiPlot {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML = `<div class="w_canvas"><canvas data-type="${data.type}" id="${ID(data.id)}"></canvas></div>`;
 
         wait2Frame().then(() => {
@@ -20,7 +20,7 @@ class UiPlot {
         }
     }
 
-    static reset() {
+    static clear() {
         for (let plot in UiPlot.plots) UiPlot.plots[plot].stop();
         UiPlot.plots = {};
     }

@@ -2,6 +2,7 @@
 // ============== PROJECTS =============
 // updates
 let updates_list = [];
+
 async function checkUpdates(id) {
   if (!cfg.check_upd) return;
   if (updates_list.includes(id)) return;
@@ -23,8 +24,8 @@ async function checkUpdates(id) {
   const platform = hub.dev(id).info.platform;
   for (build of proj.builds) {
     if (build.chipFamily == platform) {
-      const text = `${lang.p_has_upd}!\n${namever[0]} v${proj.version}:\n${proj.notes}\n\n${lang.p_upd}?`;
-      if (await asyncConfirm(text)) otaUrl(build.parts[0].path, 'flash');
+      const text = `${namever[0]} v${proj.version}:\n${proj.notes}\n\n${lang.p_upd}?`;
+      if (await asyncConfirm(text, lang.p_has_upd + '!')) otaUrl(build.parts[0].path, 'flash');
       break;
     }
   }

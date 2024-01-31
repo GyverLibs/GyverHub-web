@@ -1,5 +1,5 @@
 class UiGaugeL {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML = `<canvas data-type="${data.type}" id="${ID(data.id)}"></canvas>`;
 
         wait2Frame()
@@ -21,7 +21,7 @@ class UiGaugeL {
         }
     }
 
-    static reset() {
+    static clear() {
         UiGaugeL.gauges = {};
     }
 

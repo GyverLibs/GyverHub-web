@@ -60,8 +60,49 @@ function release_all() {
 }
 
 // ================== SHOW ==================
-let ui_render = new UiRender();
 let render_busy = false;
+
+let ui_render = new UiRender();
+ui_render.add('hook', UiHook);
+ui_render.add('input', UiInput);
+ui_render.add('pass', UiPass);
+ui_render.add('area', UiArea);
+ui_render.add('button', UiButton);
+ui_render.add('switch_t', UiSwitch);
+ui_render.add('switch_i', UiSwicon);
+ui_render.add('label', UiLabel);
+ui_render.add('title', UiTitle);
+ui_render.add('display', UiDisplay);
+ui_render.add('text', UiText);
+ui_render.add('text_f', UiText_f);
+ui_render.add('image', UiImage);
+ui_render.add('table', UiTable);
+ui_render.add('log', UiLog);
+ui_render.add('date', UiDate);
+ui_render.add('time', UiTime);
+ui_render.add('datetime', UiDateTime);
+ui_render.add('slider', UiSlider);
+ui_render.add('spinner', UiSpinner);
+ui_render.add('select', UiSelect);
+ui_render.add('color', UiColor);
+ui_render.add('led', UiLED);
+ui_render.add('icon', UiIcon);
+ui_render.add('html', UiHTML);
+ui_render.add('gauge', UiGauge);
+ui_render.add('gauge_r', UiGaugeR);
+ui_render.add('gauge_l', UiGaugeL);
+ui_render.add('joy', UiJoy);
+ui_render.add('dpad', UiDpad);
+ui_render.add('flags', UiFlags);
+ui_render.add('tabs', UiTabs);
+ui_render.add('canvas', UiCanvas);
+ui_render.add('plot', UiPlot);
+ui_render.add('stream', UiStream);
+ui_render.add('confirm', UiConfirm);
+ui_render.add('prompt', UiPrompt);
+ui_render.add('js', UiJS);
+ui_render.add('css', UiCSS);
+ui_render.add('plugin', UiPlugin);
 
 function showControls(id, controls) {
   Ack.clearAll();
@@ -90,23 +131,15 @@ function showControls(id, controls) {
   EL('controls').appendChild(cont);
 
   set_prd_buf = {};
-  UiHook.reset();
-  UiColor.reset();
-  UiGauge.reset();
-  UiGaugeR.reset();
-  UiGaugeL.reset();
-  UiJoy.reset();
-  UiDpad.reset();
-  UiCanvas.reset();
-  UiPlot.reset();
+  ui_render.clearWidgets();
   ui_render.reset();
   Menu.clear();
   dev.resetFiles();
 
   ui_render.render(cont, 'col', controls, (dev.info.ui_mode == 1 || dev.info.ui_mode == 3));
 
-  UiFunc.render(cont);
-  if (ui_render.dup_names.length) showPopupError('Duplicated names: ' + ui_render.dup_names);
+  UiFunc.show(cont);
+  if (ui_render.dup_names.length) showPopupError(lang.dup_names + ': ' + ui_render.dup_names);
   hub.dev(focused).checkFiles();
   UiHook.update();
 

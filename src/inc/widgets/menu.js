@@ -1,5 +1,5 @@
 class Menu {
-    static add(ctrl) {
+    static render(ctrl) {
         let inner = '';
         let labels = [];
         if (ctrl != null && ctrl.text) {
@@ -27,7 +27,7 @@ class Menu {
     }
 
     static clear() {
-        Menu.add(null);
+        Menu.render(null);
     }
 
     static click(num) {

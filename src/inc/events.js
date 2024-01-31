@@ -170,7 +170,7 @@ hub.onFetchEnd = (id, name, data, file) => {
 
     case 'plugin_js':
       UiPlugin.applyScript(id, dataTotext(file));
-      UiFunc.render(data.cont);
+      UiFunc.show(data.cont);
       break;
 
     case 'plugin_css':
@@ -271,7 +271,7 @@ hub.onData = (id, data) => {
 }
 hub.onAlert = (id, text) => {
   release_all();
-  alert(hub.dev(id).info.name + ': ' + text);
+  asyncAlert(hub.dev(id).info.name + ': ' + text);
 }
 hub.onNotice = (id, text, color) => {
   showPopup(hub.dev(id).info.name + ': ' + text, color);

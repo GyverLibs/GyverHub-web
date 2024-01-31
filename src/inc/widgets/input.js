@@ -1,5 +1,5 @@
 class UiInput {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML = `
           <div class="w_inp_cont">
             <input data-type="${data.type}" class="w_inp" type="text" value="${data.value ?? ''}" id="${ID(data.id)}" name="${data.id}" onkeydown="UiInput.checkDown(this,event)" oninput="UiInput.check(this)" data-regex="${data.regex ?? ''}" maxlength="${data.maxlen ?? ''}" onfocusout="UiInput.send(this)">
@@ -27,7 +27,7 @@ class UiInput {
         if (pattern.length) {
             const r = new RegExp(pattern);
             if (!r.test(arg.value)) {
-                showPopupError("Wrong text!");
+                showPopupError(lang.wrong_text);
                 return;
             }
         }

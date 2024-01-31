@@ -120,7 +120,7 @@ function startup() {
   setTimeout(() => {
     let ver = localStorage.getItem('version');
     if (!ver || ver != app_version) {
-      alert('Версия ' + app_version + '!\n' + '__NOTES__');
+      asyncAlert(lang.i_version + ' ' + app_version + '!\n' + '__NOTES__');
       localStorage.setItem('version', app_version);
     }
   }, 1000);

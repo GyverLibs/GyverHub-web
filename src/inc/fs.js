@@ -61,20 +61,20 @@ function uploadOta(file, type) {
 // ============ FILE UTILS ============
 async function deleteFile(i) {
   if (hub.dev(focused).fsBusy()) {
-    showPopupError('FS busy');
+    showPopupError(getError(HubErrors.FsBusy));
     return;
   }
-  if (await asyncConfirm('Delete ' + fs_arr[i] + '?')) {
+  if (await asyncConfirm(lang.delete + ' ' + fs_arr[i] + '?')) {
     post('delete', fs_arr[i]);
   }
 }
 async function renameFile(i) {
   if (hub.dev(focused).fsBusy()) {
-    showPopupError('Busy');
+    showPopupError(getError(HubErrors.FsBusy));
     return;
   }
   let path = fs_arr[i];
-  let res = await asyncPrompt('Rename ' + path + ' to', path);
+  let res = await asyncPrompt(lang.rename + ' ' + path + ':', path);
   if (res && res != path) post('rename', path, res);
 }
 
@@ -103,7 +103,9 @@ function editor_save() {
 }
 
 // ============ OTA ============
-function otaUrl(url, type) {
-  post('ota_url', type, url);
-  showPopup('OTA start');
+async function otaUrl(url, type) {
+  if (await asyncConfirm(lang.fs_upload + ' OTA?')) {
+    post('ota_url', type, url);
+    showPopup('OTA start');
+  }
 }

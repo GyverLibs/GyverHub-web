@@ -1,5 +1,6 @@
 class UiPlugin {
-    constructor(cont, data, dev_id) {
+    static render(cont, data) {
+        let dev_id = focused;
         if (data.js && data.js.length && !EL(dev_id + '_script')) {
             if (data.js.endsWith('.js')) {
                 hub.dev(dev_id).addFile('_script', data.js, { type: "plugin_js", cont: cont });

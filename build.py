@@ -4,8 +4,8 @@
 # pip install rcssmin
 # pip install rjsmin
 
-version = '0.53.26b'
-notes = 'minor update'
+version = '0.54b'
+notes = 'оптимизация, нативные всплывающие окна, перевод'
 
 # ESP
 esp_remove_non_gz = True    # удалить несжатые файлы
@@ -77,6 +77,7 @@ js_files = [
     "src/inc/widgets/stream.js",
     "src/inc/widgets/plot.js",
 
+    "src/inc/popup.js",
     "src/inc/controls.js",
     "src/inc/lang.js",
     "src/inc/render.js",

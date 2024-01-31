@@ -123,7 +123,7 @@ class Device {
       if (!path.endsWith('/')) path += '/';
       path += file.name;
 
-      const res = await asyncConfirm('Upload ' + path + ' (' + buffer.length + ' bytes)?');
+      const res = await asyncConfirm(lang.fs_upload + ' ' + path + ' (' + buffer.length + ' bytes)?');
       if (!res) {
         this._hub.onFsUploadError(this.info.id, HubErrors.Cancelled);
         return;
@@ -158,10 +158,10 @@ class Device {
       return;
     }
     if (!file.name.endsWith(this.info.ota_t)) {
-      alert('Wrong file! Use .' + this.info.ota_t);
+      asyncAlert(lang.wrong_ota + ' .' + this.info.ota_t);
       return;
     }
-    const res = asyncConfirm('Upload OTA ' + type + '?');
+    const res = await asyncConfirm(lang.fs_upload + ' OTA ' + type + '?');
     if (!res) return;
 
     let reader = new FileReader();

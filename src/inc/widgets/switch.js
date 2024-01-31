@@ -1,5 +1,5 @@
 class UiSwitch {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML = `
         <style id="style#${data.id}"></style>
         <div class="switch_cont"><label id="swlabel_${data.id}" class="switch"><input type="checkbox" data-type="${data.type}" id='${ID(data.id)}' onclick="post_set('${data.id}',(this.checked ? 1 : 0))" ${data.value == '1' ? 'checked' : ''}><span class="slider"></span></label></div>`;

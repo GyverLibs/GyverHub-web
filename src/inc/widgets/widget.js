@@ -4,7 +4,7 @@ class Widget {
         <div id="widget_main#${data.id}" class="widget_main ${data.square ? 'wsquare' : ''}" style="width:${width}%">
             <div id="widget_inner#${data.id}" class="widget_inner ${(data.notab && data.notab == 1) ? 'widget_notab' : ''}">
             <div id="wlabel_cont#${data.id}" class="widget_label ${data.nolabel ? 'wnolabel' : ''}">
-                <span id="whint#${data.id}" class="whint" onclick="alert(this.title)">?</span>
+                <span id="whint#${data.id}" class="whint" onclick="asyncAlert(this.title)">?</span>
                 <span id="wlabel#${data.id}">${(data.label && data.label.length) ? data.label : data.type.toUpperCase()}</span>
                 <span id="plabel#${data.id}" class="plabel"></span>
                 <span id="wsuffix#${data.id}" class="wsuffix">${data.suffix ?? ''}</span>
@@ -18,7 +18,7 @@ class Widget {
         return EL('widget#' + data.id);
     }
 
-    static update(id, type, data) {
+    static update(type, id, data) {
         if ('label' in data) {
             EL('wlabel#' + id).innerHTML = data.label.length ? data.label : type.toUpperCase();
         }

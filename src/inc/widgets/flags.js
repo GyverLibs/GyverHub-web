@@ -1,13 +1,13 @@
 class UiFlags {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML = `
         <style id="style#${data.id}"></style>
         <div data-type="${data.type}" id="${ID(data.id)}" class="w_flags_cont w_flags_cont_tab" data-text="${data.text ?? ''}" data-value="${data.value ?? 0}"></div>`;
 
-        UiFlags.render(data.id);
+        UiFlags.show(data.id);
         UiFlags.color(data.id, intToCol(data.color) ?? getDefColor());
         Widget.disable(data.id, data.disable);
-        waitFrame().then(() => UiFlags.resize(data.id));
+        waitFrame().then(() => UiFlags.refresh(data.id));
     }
 
     static update(id, data) {
@@ -15,10 +15,10 @@ class UiFlags {
         if ('value' in data) el.setAttribute("data-value", data.value);
         if ('text' in data) el.setAttribute("data-text", data.text);
         if ('color' in data) UiFlags.color(id, data.color);
-        UiFlags.render(id);
+        UiFlags.show(id);
     }
 
-    static render(id) {
+    static show(id) {
         let el = CMP(id);
         let val = Number(el.getAttribute("data-value"));
         let text = el.getAttribute("data-text");
@@ -52,7 +52,7 @@ class UiFlags {
         post_set(id, encoded);
     }
 
-    static resize(id) {
+    static refresh(id) {
         let txt = CMP(id).querySelectorAll(".w_flags_txt");
         let span = CMP(id).querySelectorAll(".w_flags_span");
         txt.forEach((ch, i) => {

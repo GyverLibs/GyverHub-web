@@ -1,12 +1,12 @@
 // HTML
 class UiHTML {
-    constructor(cont, data) {
+    static render(cont, data) {
         if (!data.value) return;
         if (data.value.endsWith('.html')) {
             hub.dev(focused).addFile(data.id, data.value, { type: "html" });
         } else {
             UiHTML.apply(data.id, data.value);
-            cont.setAttribute('data-custom', 'html');
+            cont.setAttribute('data-custom-type', 'html');
         }
     }
 
@@ -26,7 +26,7 @@ class UiHTML {
 
 // JS
 class UiJS {
-    constructor(cont, data) {
+    static render(cont, data) {
         if (!data.value) return;
         if (data.value.endsWith('.js')) {
             hub.dev(focused).addFile(data.id, data.value, { type: "js", cont: cont });
@@ -47,7 +47,7 @@ class UiJS {
 
 // CSS
 class UiCSS {
-    constructor(cont, data) {
+    static render(cont, data) {
         if (!data.value) return;
         if (data.value.endsWith('.css')) {
             hub.dev(focused).addFile(data.id, data.value, { type: "css", cont: cont });

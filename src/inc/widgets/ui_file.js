@@ -1,5 +1,5 @@
 class UiFile {
-    constructor(cont, data, contType, single) {
+    static render(cont, data, contType, single) {
         let params = {
             type: "ui_json",
             cont: cont,

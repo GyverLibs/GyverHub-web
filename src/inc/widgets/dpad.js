@@ -1,5 +1,5 @@
 class UiDpad {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML = `<canvas data-type="${data.type}" id="${ID(data.id)}"></canvas>`;
         
         waitFrame().then(() => {
@@ -23,7 +23,7 @@ class UiDpad {
         }
     }
 
-    static reset() {
+    static clear() {
         for (let pad in UiDpad.pads) UiDpad.pads[pad].stop();
         UiDpad.pads = {};
     }

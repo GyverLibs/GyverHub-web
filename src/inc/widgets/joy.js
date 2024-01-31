@@ -1,5 +1,5 @@
 class UiJoy {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML = `<canvas data-type="${data.type}" id="${ID(data.id)}"></canvas>`;
 
         wait2Frame().then(() => {
@@ -20,7 +20,7 @@ class UiJoy {
     static update(id, data) {
     }
 
-    static reset() {
+    static clear() {
         for (let joy in UiJoy.joys) UiJoy.joys[joy].stop();
         UiJoy.joys = {};
     }

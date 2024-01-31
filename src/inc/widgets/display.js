@@ -1,5 +1,5 @@
 class UiDisplay {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML = `<textarea data-type="${data.type}" id="${ID(data.id)}" onwheel="UiDisplay.wheel(event,this)" class="w_disp" style="font-size:${data.fsize ?? 20}px;background:${intToCol(data.color) ?? 'var(--prim)'}" rows="${data.rows ?? 2}" readonly>${data.value ?? ''}</textarea>`;
     }
 

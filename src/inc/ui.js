@@ -133,13 +133,7 @@ function show_info() {
 
 // =========== HANDLERS ===========
 function resize_h() {
-  UiGauge.resize();
-  UiGaugeR.resize();
-  UiGaugeL.resize();
-  UiJoy.resize();
-  UiDpad.resize();
-  UiCanvas.resize();
-  UiPlot.resize();
+  ui_render.resizeWidgets();
 }
 function test_h() {
   show_screen('test');
@@ -233,7 +227,7 @@ function fsbr_h() {
   EL('menu_fsbr').classList.add('menu_act');
 }
 async function format_h() {
-  if (await asyncConfirm('Format filesystem?')) post('format');
+  if (await asyncConfirm(lang.fs_format + '?')) post('format');
 }
 function ota_h() {
   Menu.deact();
@@ -253,13 +247,13 @@ function manual_ip_h(ip) {
   if (hub.http.discover_ip(ip, hub.cfg.http_port)) {
     save_cfg();
     show_screen('main');
-  } else showPopupError('Wrong IP');
+  } else showPopupError(lang.wrong_ip);
 }
 function update_ip_h() {
   /*NON-ESP*/
   if (!Boolean(window.webkitRTCPeerConnection || window.mozRTCPeerConnection)) notSupported();
   else getLocalIP().then((ip) => {
-    if (ip.indexOf("local") > 0) alert(`Disable WEB RTC anonymizer: ${browser()}://flags/#enable-webrtc-hide-local-ips-with-mdns`);
+    if (ip.indexOf("local") > 0) asyncAlert(`Disable WEB RTC anonymizer: ${browser()}://flags/#enable-webrtc-hide-local-ips-with-mdns`);
     else EL('local_ip').value = ip;
   });
   /*/NON-ESP*/
@@ -322,7 +316,7 @@ function menu_show(state) {
 function device_h(id) {
   let dev = hub.dev(id);
   if (!dev || dev.conn == Conn.NONE) return;
-  if (!dev.info.api_v || dev.info.api_v != hub.api_v) alert(lang.api_mis);
+  if (!dev.info.api_v || dev.info.api_v != hub.api_v) asyncAlert(lang.api_mis);
 
   if (dev.info.PIN && !dev.granted) {
     pin_id = id;
@@ -353,16 +347,8 @@ function open_device(id) {
 }
 function close_device() {
   Ack.clearAll();
-  UiHook.reset();
-  UiColor.reset();
-  UiGauge.reset();
-  UiGaugeR.reset();
-  UiGaugeL.reset();
-  UiCanvas.reset();
-  UiPlot.reset();
-  UiJoy.reset();
-  UiDpad.reset();
 
+  ui_render.clearWidgets();
   UiPlugin.disableStyle(focused);
   UiJS.disable();
   UiCSS.disable();
@@ -380,7 +366,7 @@ function close_device() {
   show_screen('main');
 }
 async function delete_h(id) {
-  if (await asyncConfirm('Delete ' + id + '?')) {
+  if (await asyncConfirm(lang.delete + ' ' + id + '?')) {
     hub.delete(id);
     EL(`device#${id}`).remove();
   }

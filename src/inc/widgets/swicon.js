@@ -1,5 +1,5 @@
 class UiSwicon {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML = `
         <style id="style#${data.id}"></style>
         <div data-type="${data.type}" id="${ID(data.id)}" style="font-size:${data.fsize ?? 45}px;width:${data.fsize ? data.fsize * 1.7 : 75}px" class="icon icon_btn_big w_swicon ${data.value == '1' ? 'w_swicon_on' : ''}" onclick="UiSwicon.click('${data.id}')">${data.icon ? getIcon(data.icon) : ''}</div>`;

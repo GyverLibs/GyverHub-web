@@ -1,10 +1,10 @@
 class UiFunc {
-    constructor(dev_id, wid, data) {
+    static render(wid, data) {
         wid.setAttribute("data-defaults", JSON.stringify(data));
-        wid.setAttribute("data-func", dev_id + '_' + data.func);
+        wid.setAttribute("data-func", focused + '_' + data.func);
     }
 
-    static render(cont) {
+    static show(cont) {
         cont.querySelectorAll('[data-func]').forEach(wid => {
             let func = wid.getAttribute("data-func");
             if (typeof window[func] !== "function") return;

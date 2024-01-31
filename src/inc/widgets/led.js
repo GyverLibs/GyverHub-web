@@ -1,5 +1,5 @@
 class UiLED {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML = `
         <style id="style#${data.id}"></style>
         <div data-type="${data.type}" id="${ID(data.id)}" class="w_led ${Number(data.value == 1) ? 'w_led_on' : ''}"></div>`;

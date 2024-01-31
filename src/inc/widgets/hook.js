@@ -1,10 +1,10 @@
 class UiHook {
 
-    static reset() {
+    static clear() {
         UiHook.hooks = {};
     }
 
-    static add(id, value) {
+    static bind(id, value) {
         UiHook.hooks[id] = { value: value };
     }
 

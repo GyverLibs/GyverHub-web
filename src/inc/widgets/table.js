@@ -1,5 +1,5 @@
 class UiTable {
-    constructor(cont, data) {
+    static render(cont, data) {
         if (!data.value) data.value = '';
         let isFile = (!data.value.includes(';') && data.value.endsWith(".csv"));
 
@@ -9,7 +9,7 @@ class UiTable {
             hub.dev(focused).addFile(data.id, data.value, { type: "csv" });
             CMP(data.id).innerHTML = waiter();
         } else {
-            UiTable.render(data.id);
+            UiTable.show(data.id);
         }
     }
 
@@ -25,25 +25,25 @@ class UiTable {
                 el.setAttribute("data-path", val);
             } else {
                 el.setAttribute("data-csv", val);
-                UiTable.render(id);
+                UiTable.show(id);
             }
         }
         if ('align' in data) {
             el.setAttribute("data-align", data.align);
-            UiTable.render(id);
+            UiTable.show(id);
         }
         if ('width' in data) {
             el.setAttribute("data-width", data.width);
-            UiTable.render(id);
+            UiTable.show(id);
         }
     }
 
     static apply(id, csv) {
         CMP(id).setAttribute("data-csv", csv);
-        UiTable.render(id);
+        UiTable.show(id);
     }
 
-    static async render(id) {
+    static async show(id) {
         let el = CMP(id);
         let aligns = el.getAttribute("data-align").split(';');
         let widths = el.getAttribute("data-width").split(';');

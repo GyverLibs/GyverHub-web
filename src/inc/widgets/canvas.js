@@ -1,5 +1,5 @@
 class UiCanvas {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML = `<div class="w_canvas"><canvas data-type="${data.type}" id="${ID(data.id)}" onclick="UiCanvas.click('${data.id}',event)"></canvas></div>`;
 
         wait2Frame().then(() => {
@@ -21,7 +21,7 @@ class UiCanvas {
         }
     }
 
-    static reset() {
+    static clear() {
         UiCanvas.canvases = {};
     }
 

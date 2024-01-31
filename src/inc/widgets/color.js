@@ -1,5 +1,5 @@
 class UiColor {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML = `
           <div data-type="${data.type}" id="${ID(data.id)}" style="visibility:hidden">
             <div id="picker#${data.id}"></div>
@@ -56,7 +56,7 @@ class UiColor {
         el.getElementsByTagName('button')[0].click()
     }
 
-    static reset() {
+    static clear() {
         UiColor.pickers = {};
     }
 

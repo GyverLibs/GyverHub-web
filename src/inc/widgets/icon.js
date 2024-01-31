@@ -1,5 +1,5 @@
 class UiIcon {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML = `
         <style id="style#${data.id}"></style>
         <span data-type="${data.type}" id="${ID(data.id)}" style="font-size:${data.fsize ?? 35}px" class="w_icon w_icon_led ${Number(data.value ?? 0) ? 'w_icon_on' : ''}">${data.icon ? getIcon(data.icon) : ""}</span>`;

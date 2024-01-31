@@ -1,5 +1,5 @@
 class UiConfirm {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML += `<div id="widget#${data.id}" style="display:none"><div data-type="${data.type}" id="${ID(data.id)}" data-text="${data.text ?? 'No text'}"></div></div>`;
     }
 
@@ -17,7 +17,7 @@ class UiConfirm {
 };
 
 class UiPrompt {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML += `<div id="widget#${data.id}" style="display:none"><div data-type="${data.type}" id="${ID(data.id)}" data-text="${data.text ?? 'No text'}" data-value="${data.value ?? ''}"></div></div>`;
     }
 

@@ -1,5 +1,5 @@
 class UiSpinner {
-    constructor(cont, data) {
+    static render(cont, data) {
         cont.innerHTML = `
         <div class="w_spinner_row">
           <button class="icon icon_btn btn_no_pad" onclick="UiSpinner.spin('${data.id}',-1)"></button>
