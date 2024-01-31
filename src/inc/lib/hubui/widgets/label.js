@@ -5,19 +5,23 @@ class Label extends BaseWidget {
 
     constructor(data, renderer) {
         super(data, renderer);
-        const $cont = document.createElement('div');
-        $cont.classList.add('w_label');
-        this.$lbl_cont = $cont;
-        this.$container.append(this.$lbl_cont);
 
-        const $icon = document.createElement('span');
-        $icon.classList.add('w_icon');
-        this.$lbl_icon = $icon;
-        $cont.append($icon);
-
-        const $lbl = document.createElement('label');
-        this.$lbl = $lbl;
-        $cont.append($lbl);
+        this.$container.append(createElement(this, {
+            type: 'div',
+            class: 'w_label',
+            name: 'lbl_cont',
+            children: [
+                {
+                    type: 'span',
+                    class: 'w_icon',
+                    name: 'lbl_icon',
+                },
+                {
+                    type: 'label',
+                    name: 'lbl',
+                }
+            ]
+        }));
         
         this.update(data);
     }

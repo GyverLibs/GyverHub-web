@@ -6,16 +6,17 @@ class Led extends BaseWidget {
         super(data, renderer);
         this.#color = getDefColor();
 
-        const $led = document.createElement('div');
-        $led.classList.add('w_led');
-        this.$led = $led;
-        this.$containder.append($led);
+        this.$containder.append(createElement(this, {
+            type: 'div',
+            class: 'w_led',
+            name: 'led'
+        }));
 
         this.update(data);
     }
 
     update(data) {
-        if ('color' in data) this.color(intToCol(data.color));
+        if ('color' in data) this.#color = intToCol(data.color);
         if ('disable' in data) this.disable(this.$led, data.disable);
         if ('value' in data) {
             if (data.value) {
@@ -28,9 +29,5 @@ class Led extends BaseWidget {
                 this.$led.style.boxShadow = '';
             }
         }
-    }
-
-    color(color) {
-        this.#color = color;
     }
 };

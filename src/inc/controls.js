@@ -24,10 +24,6 @@ class Ack {
 const set_prd = 15;
 let set_prd_buf = {};
 
-function post_click(name, dir) {
-  UiButton.pressID = (dir == 1) ? name : null;
-  ub.dev(focused).set(name, dir);
-}
 function post_set(name, value = '') {
   ub.dev(focused).set(name, value);
   // Widget.setPlabel(name, '•');

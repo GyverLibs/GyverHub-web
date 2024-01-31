@@ -70,10 +70,14 @@ class Renderer {
     }
 
     build(){
-        const $root = document.createElement("div");
-        $root.classList.add('main_col');
-        $root.style.visibility = 'hidden';
-        $root.style.maxWidth = this.device.info.main_width + 'px';
+        const $root = createElement(null, {
+            type: "div",
+            class: "main_col",
+            style: {
+                visibility: 'hidden',
+                maxWidth: this.device.info.main_width + 'px',
+            }
+        });
 
         if (this.device.info.ui_mode >= 2) {
             $root.style.display = 'grid';

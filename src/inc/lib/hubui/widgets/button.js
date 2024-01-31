@@ -6,32 +6,35 @@ class Button extends BaseWidget {
     constructor(data, renderer) {
         super(data, renderer);
 
-        const $btn = document.createElement('button');
-        $btn.id = ID(data.id);
-        $btn.className = 'icon w_btn';
-        $btn.addEventListener('click', () => {
-            post_set(data.id, 2);
-        });
-        $btn.addEventListener('mousedown', () => {
-            if(!this.touch) post_set(data.id, 1);
-        });
-        $btn.addEventListener('mouseup', () => {
-            if(!this.touch&&this.pressID) post_set(data.id, 0);
-        });
-        $btn.addEventListener('mouseleave', () => {
-            if(!this.touch&&this.pressID) post_set(data.id, 0);
-        });
-
-        $btn.addEventListener('touchstart', () => {
-            this.touch=1;
-            post_click(data.id, 1);
-        });
-        $btn.addEventListener('touchend', () => {
-            post_click(data.id,0)
-        });
-
-        this.$container.append($btn);
-        this.$btn = $btn;
+        this.$container.append(createElement(this, {
+            type: 'button',
+            class: 'icon w_btn',
+            name: 'btn',
+            also($btn) {
+                $btn.addEventListener('click', () => {
+                    this.set(2);
+                });
+                $btn.addEventListener('mousedown', () => {
+                    if(!this.touch) this.set(1);
+                });
+                $btn.addEventListener('mouseup', () => {
+                    if(!this.touch&&this.pressID) this.set(0);
+                });
+                $btn.addEventListener('mouseleave', () => {
+                    if(!this.touch&&this.pressID) this.set(0);
+                });
+        
+                $btn.addEventListener('touchstart', () => {
+                    this.touch=1;
+                    this.pressID = data.id;
+                    this.set(1, false);
+                });
+                $btn.addEventListener('touchend', () => {
+                    this.pressID = null;
+                    this.set(0, false);
+                });
+            }
+        }));
         this.update(data);
     }
 

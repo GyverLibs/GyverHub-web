@@ -1,8 +1,10 @@
 class Widget {
     id;
+    renderer;
 
     constructor(data, renderer) {
         this.id = data.id;
+        this.renderer = renderer;
     }
 
     build() {
@@ -11,6 +13,11 @@ class Widget {
 
     update(data) {
 
+    }
+
+    set(value, ack = true) {
+        if (ack) Ack.set(this.id);
+        return this.renderer.device.set(this.id, value);
     }
 }
 
@@ -26,75 +33,65 @@ class BaseWidget extends Widget {
     _origData;
 
     constructor(data, renderer) {
-        super(data, renderer)
+        super(data, renderer);
         this._origData = data;
-    
-        const htext = 'name: ' + id + '\n' + (data.hint ?? '');
 
-        const $root = document.createElement('div');
-        $root.id = 'widget_main#' + data.id;
-        $root.classList.add('widget_main');
-        if (data.square) 
-            $root.classList.add('wsquare');
-        $root.style.width = data.wwidth_t + '%';
-        this.$root = $root;
-
-        const $inner = document.createElement('div');
-        $inner.id = 'widget_inner#' + data.id;
-        $inner.classList.add('widget_inner');
-        if (data.notab && data.notab == 1) 
-            $inner.classList.add('widget_notab');
-        $root.append($inner);
-        this.$inner = $inner;
-
-        const $cont = document.createElement('div');
-        $cont.id = 'wlabel_cont#' + data.id;
-        $cont.classList.add('widget_label');
-        if (data.nolabel) 
-            $cont.classList.add('wnolabel');
-        $root.append($cont);
-        this.$cont = $cont;
-
-        const $hint = document.createElement('span');
-        $hint.id = 'whint#' + data.id;
-        $hint.classList.add('whint');
-        $hint.innerText = '?';
-        $hint.title = htext;
-        $hint.style.display = (data.hint && data.hint.length) ? 'inline-block' : 'none';
-        $hint.addEventListener('click', function() {
-            alert(this.title);
+        createElement(this, {
+            type: 'div',
+            name: 'root',
+            class: 'widget_main',
+            style: {
+                width: data.wwidth_t + '%',
+            },
+            children: [
+                {
+                    type: 'div',
+                    name: 'inner',
+                    class: 'widget_inner',
+                },
+                {
+                    type: 'div',
+                    name: 'cont',
+                    class: 'widget_label',
+                    children: [
+                        {
+                            type: 'span',
+                            class: 'whint',
+                            name: 'hint',
+                            text: '?',
+                            style: {
+                                display: 'none',
+                            },
+                            also($hint) {
+                                $hint.addEventListener('click', () => alert($hint.title));
+                            }
+                        },
+                        {
+                            type: 'span',
+                            name: 'label',
+                            text: data.type.toUpperCase(),
+                        },
+                        {
+                            type: 'span',
+                            name: 'plabel',
+                        },
+                        {
+                            type: 'span',
+                            name: 'suffix',
+                            class: 'wsuffix',
+                        },
+                    ]
+                },
+                {
+                    type: 'div',
+                    name: 'container',
+                    class: 'widget_body',
+                    style: {
+                        minHeight: data.wheight && data.wheight > 25 ? data.wheight + 'px' : '',
+                    }
+                }
+            ]
         });
-        $cont.append($hint);
-        this.$hint = $hint;
-
-        const $label = document.createElement('span');
-        $label.id = 'wlabel#' + data.id;
-        $label.title = htext;
-        $label.innerText = (data.label && data.label.length) ? data.label : data.type.toUpperCase();
-        $cont.append($label);
-        this.$label = $label;
-
-        const $plabel = document.createElement('span');
-        $plabel.id = 'plabel#' + data.id;
-        $cont.append($plabel);
-        this.$plabel = $plabel;
-
-        const $suffix = document.createElement('span');
-        $suffix.id = 'wsuffix#' + data.id;
-        $hint.classList.add('wsuffix');
-        $suffix.innerText = data.suffix ?? '';
-        $cont.append($suffix);
-        this.$suffix = $suffix;
-        
-        const $container = document.createElement('div');
-        $container.id = 'widget#' + data.id;
-        $hint.classList.add('widget_body');
-        if (data.disable) 
-            $cont.classList.add('widget_dsbl');
-        if (data.wheight && data.wheight > 25) 
-            $cont.style.minHeight = data.wheight + 'px';
-        $root.append($container);
-        this.$container = $container;
     }
 
     build() {
