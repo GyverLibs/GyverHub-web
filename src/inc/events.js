@@ -121,7 +121,7 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
 
   ev.device.addEventListener('update', e => {
     if (e.device.info.id == focused && screen == 'ui')
-      applyUpdate(e.name, e.data);
+      renderer.applyUpdate(e.name, e.data);
   });
 
   ev.device.addEventListener('connectionchanged', e => {

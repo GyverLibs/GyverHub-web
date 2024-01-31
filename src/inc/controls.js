@@ -57,62 +57,27 @@ function release_all() {
 }
 
 // ================== SHOW ==================
-let ui_render = new UiRender();
-let render_busy = false;
+let renderer;
 
 function showControls(id, controls) {
   Ack.clearAll();
-  if (!controls) return;
-  if (render_busy) return;
-
-  render_busy = true;
-  let dev = hub.dev(id);
-  let cont = document.createElement("div");
-  ui_render.root = cont;
-  cont.classList.add('main_col');
-  cont.style.visibility = 'hidden';
-  cont.id = 'controls#' + id;
-  cont.style.maxWidth = dev.info.main_width + 'px';
-  if (dev.info.ui_mode >= 2) {
-    cont.style.display = 'grid';
-    cont.style.gridTemplateColumns = `repeat(auto-fit, minmax(${dev.info.ui_block_width}px, 1fr))`;
-  } else {
-    cont.style.display = 'block';
-  }
-  let excont = EL('controls#' + id);
-  if (excont) {
-    cont.id += '_new';
-    addIdRecursive(excont, '__old');
-  }
-  EL('controls').appendChild(cont);
 
   set_prd_buf = {};
-  UiHook.reset();
-  UiColor.reset();
-  UiGauge.reset();
-  UiGaugeR.reset();
-  UiGaugeL.reset();
-  UiJoy.reset();
-  UiDpad.reset();
-  UiCanvas.reset();
-  UiPlot.reset();
-  ui_render.reset();
-  Menu.clear();
-  dev.resetFiles();
 
-  ui_render.render(cont, 'col', controls, (dev.info.ui_mode == 1 || dev.info.ui_mode == 3));
+  renderer = new Renderer(id, controls);
+  const $root = renderer.build();
 
-  UiFunc.render(cont);
-  if (ui_render.dup_names.length) showPopupError('Duplicated names: ' + ui_render.dup_names);
-  hub.dev(focused).checkFiles();
-  UiHook.update();
+  const excont = EL('controls#' + id);
+  if (excont) {
+    $root.id += '_new';
+  }
+  EL('controls').appendChild($root);
 
   wait2Frame().then(() => {
     if (excont) {
       excont.remove();
-      cont.id = 'controls#' + id;
+      $root.id = 'controls#' + id;
     }
-    cont.style.visibility = 'visible';
     render_busy = false;
   });
 }
