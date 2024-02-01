@@ -4,6 +4,10 @@ const app_version = '/*@![:version]*/';
 const hub = new GyverHub();
 window.HUB = hub;
 
+const langs = {
+  English: 0,
+  Russian: 1,
+};
 const colors = {
   ORANGE: 0xd55f30,
   YELLOW: 0xd69d27,
@@ -14,10 +18,24 @@ const colors = {
   VIOLET: 0x825ae7,
   PINK: 0xc8589a,
 };
+const fonts = [
+  'monospace',
+  'system-ui',
+  'cursive',
+  'Arial',
+  'Verdana',
+  'Tahoma',
+  'Trebuchet MS',
+  'Georgia',
+  'Garamond',
+];
 const themes = {
   DARK: 0,
   LIGHT: 1
 };
+const baudrates = [
+  4800, 9600, 19200, 38400, 57600, 74880, 115200, 230400, 250000, 500000, 1000000, 2000000
+];
 const theme_cols = [
   // back/tab/font/font2/dark/thumb/black/scheme/font4/shad/font3
   ['#1b1c20', '#26272c', '#eee', '#ccc', '#141516', '#444', '#0e0e0e', 'dark', '#222', '#000'],
@@ -335,6 +353,16 @@ async function waitRender(id) {
 function window_ip() {
   let ip = window.location.hostname;
   return checkIP(ip) ? ip : null;
+}
+function getMaskList() {
+  let list = [];
+  for (let i = 0; i < 33; i++) {
+    let imask;
+    if (i == 32) imask = 0xffffffff;
+    else imask = ~(0xffffffff >>> i);
+    list.push(`${(imask >>> 24) & 0xff}.${(imask >>> 16) & 0xff}.${(imask >>> 8) & 0xff}.${imask & 0xff}`);
+  }
+  return list;
 }
 /*@[if_not_target:esp]*/
 function getLocalIP() {

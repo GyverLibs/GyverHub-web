@@ -1,12 +1,7 @@
 window.onload = () => {
   load_cfg();
   updateLang();
-
-  /*@[if_not_target:esp]*/
-  if (!hasSerial()) serial_col.style.display = 'none';
-  if (!hasBT()) bt_col.style.display = 'none';
-  /*@[if_not_target:esp]*/
-
+  render_main();
   EL('hub_stat').innerHTML = 'GyverHub v' + app_version + ' ' + platform();
 
   /*@[if_target:esp]*/
@@ -108,6 +103,8 @@ window.onload = () => {
   }
 }
 function startup() {
+  render_selects();
+  render_info();
   apply_cfg();
   update_theme();
   show_screen('main');
