@@ -344,7 +344,7 @@ function menu_show(state) {
 function device_h(id) {
   let dev = hub.dev(id);
   if (!dev || !dev.isConnected()) return;
-  if (!dev.info.api_v || dev.info.api_v != hub.api_v) asyncAlert(lang.api_mis);
+  if (!dev.info.api_v || dev.info.api_v != GyverHub.api_v) asyncAlert(lang.api_mis);
 
   if (dev.info.PIN && !dev.granted) {
     pin_id = id;

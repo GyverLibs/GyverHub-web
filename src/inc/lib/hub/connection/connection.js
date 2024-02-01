@@ -31,6 +31,8 @@ class Connection extends EventEmitter {
     this.#discovering = false;
     this.hub = hub;
     this.options = this.hub.config.getConnection(this.name);
+
+    this.options.discover_timeout = 3000;
   }
 
   /**

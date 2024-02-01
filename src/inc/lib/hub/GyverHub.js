@@ -80,7 +80,7 @@ class GyverHub extends EventEmitter {
    */
   getAllPrefixes() {
     const list = [this.clientId];
-    for (const dev_info of Object.values(this.config.get('devices'))) 
+    for (const dev_info of Object.values(this.config.get('devices') ?? {})) 
       if (dev_info.prefix && !list.includes(dev_info.prefix))
         list.push(dev_info.prefix);
 
@@ -129,11 +129,7 @@ class GyverHub extends EventEmitter {
    * @returns {boolean}
    */
   #isDiscovering() {
-    for (const connection of this.#connections) {
-      if (connection.isDiscovering())
-        return true;
-    }
-    return false;
+    return this.#connections.some(conn => conn.isDiscovering());
   }
 
   _checkDiscoverEnd() {
@@ -168,7 +164,7 @@ class GyverHub extends EventEmitter {
    * @returns {string[]}
    */
   getDeviceIds() {
-    return Object.keys(this.config.get('devices'));
+    return Object.keys(this.config.get('devices') ?? {});
   }
 
   /**
@@ -277,8 +273,10 @@ class GyverHub extends EventEmitter {
     delete data.type;
 
     if (type == 'discover') {
-      if (!this.#isDiscovering())
+      if (!this.#isDiscovering()) {
+        console.log('Device not added (not discovering):', data);
         return;
+      }
 
       if (conn instanceof HTTPconn) {
         data.ip = ip;
