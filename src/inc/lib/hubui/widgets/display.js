@@ -30,3 +30,4 @@ class Display extends BaseWidget {
         if ('rows' in data) this.$el.rows = data.rows;
     }
 }
+Renderer.register('display', Display);

@@ -75,7 +75,10 @@ class Renderer {
                 this.makeWidgets(cont, 'col', ctrl.data);
             } else {
                 const cls = Renderer.#WIDGETS.get(ctrl.type);
-                if (cls === undefined) continue;
+                if (cls === undefined) {
+                    console.log('W: Missing widget:', ctrl);
+                    continue;
+                }
 
                 const obj = new cls(ctrl, this);
                 this.#idMap.set(obj.id, obj)

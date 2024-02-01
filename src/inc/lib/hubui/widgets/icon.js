@@ -1,12 +1,12 @@
 class Icon extends BaseWidget {
-    #color;
     $icon;
+    #color;
 
     constructor(data, renderer) {
         this(data, renderer);
         this.#color = getDefColor();
 
-        this.$container.append(createElement(this, {
+        this.makeLayout({
             type: 'span',
             class: 'w_icon w_icon_led',
             text: "",
@@ -14,7 +14,7 @@ class Icon extends BaseWidget {
             style: {
                 fontSize: '35px',
             },
-        }));
+        });
 
         this.update(data);
     }
@@ -35,4 +35,5 @@ class Icon extends BaseWidget {
             }
         }
     }
-};
+}
+Renderer.register('icon', Icon);
