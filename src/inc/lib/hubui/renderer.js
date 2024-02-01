@@ -92,6 +92,7 @@ class Renderer {
      * @returns {HTMLElement}
      */
     build(){
+        Menu.clear();
         const $root = createElement(null, {
             type: "div",
             class: "main_col",
