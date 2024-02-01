@@ -60,7 +60,8 @@ function showControls(id, controls) {
 
   set_prd_buf = {};
 
-  renderer = new Renderer(id, controls);
+  const device = hub.dev(id);
+  renderer = new Renderer(device, controls);
   const $root = renderer.build();
 
   const excont = EL('controls#' + id);

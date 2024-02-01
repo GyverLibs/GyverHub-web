@@ -1,4 +1,11 @@
 
+/**
+ * @type {{
+ *   DISCONNECTED: Symbol,
+ *   CONNECTING: Symbol,
+ *   CONNECTED: Symbol,
+ * }}
+ */
 const ConnectionState = new Enum(
   'ConnectionState',
   'DISCONNECTED',
@@ -9,9 +16,15 @@ const ConnectionState = new Enum(
 class Connection extends EventEmitter {
   #state;
   #discovering;
+
+  /** @type {GyverHub} */
   hub;
+  /** @type {object} */
   options;
 
+  /**
+   * @param {GyverHub} hub 
+   */
   constructor(hub) {
     super();
     this.#state = ConnectionState.DISCONNECTED;
@@ -20,10 +33,18 @@ class Connection extends EventEmitter {
     this.options = this.hub.config.getConnection(this.name);
   }
 
+  /**
+   * Имя соединения.
+   * @type {string}
+   */
   get name() {
     return this.constructor.name;
   }
 
+  /**
+   * Приоритет соединения.
+   * @type {number}
+   */
   get priority() {
     return this.constructor.priority;
   }
@@ -35,10 +56,6 @@ class Connection extends EventEmitter {
     this.dispatchEvent(new Event('statechange'));
   }
 
-  isDiscovering() {
-    return this.#discovering;
-  }
-
   _discoverTimer() {
     this.#discovering = true;
     setTimeout(() => {
@@ -47,6 +64,18 @@ class Connection extends EventEmitter {
     }, this.options.discover_timeout);
   }
 
+  /**
+   * Check if connection is currently discovering for new devices
+   * @returns {boolean}
+   */
+  isDiscovering() {
+    return this.#discovering;
+  }
+
+  /**
+   * Get connection state.
+   * @returns {ConnectionState}
+   */
   getState() {
     return this.#state;
   }

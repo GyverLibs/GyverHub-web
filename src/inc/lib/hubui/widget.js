@@ -1,26 +1,56 @@
+/**
+ * Abstract widget.
+ */
 class Widget {
+    /** @type {string} */
     id;
+    /** @type {Renderer} */
     renderer;
 
+    /**
+     * @param {object} data 
+     * @param {Renderer} renderer 
+     */
     constructor(data, renderer) {
         this.id = data.id;
         this.renderer = renderer;
     }
 
+    /**
+     * Build HTML tree from widget.
+     * @returns {HTMLElement}
+     */
     build() {
         return null;
     }
 
+    /**
+     * Handle update.
+     * 
+     * Should be overriden.
+     * @param {object} data 
+     */
     update(data) {
 
     }
 
+    /**
+     * Set widget value.
+     * 
+     * Should be called from subclass.
+     * @param {any} value 
+     * @param {boolean} ack 
+     * @returns {Promise<undefined>}
+     */
     set(value, ack = true) {
         if (ack) Ack.set(this.id);
         return this.renderer.device.set(this.id, value);
     }
 }
 
+/**
+ * Widget with container.
+ */
 class BaseWidget extends Widget {
     $root;
     $label;
@@ -32,6 +62,10 @@ class BaseWidget extends Widget {
     $container;
     _origData;
 
+    /**
+     * @param {object} data 
+     * @param {Renderer} renderer 
+     */
     constructor(data, renderer) {
         super(data, renderer);
         this._origData = data;
@@ -98,6 +132,12 @@ class BaseWidget extends Widget {
         return this.$root;
     }
 
+    /**
+     * Handle update.
+     * 
+     * Subclass should override this method and call super.update(data) from it.
+     * @param {object} data 
+     */
     update(data) {
         if ('label' in data) {
             this.$label.innerHTML = data.label.length ? data.label : this._origData.type.toUpperCase();

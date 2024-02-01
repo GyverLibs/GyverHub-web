@@ -1,6 +1,9 @@
 class GyverHub extends EventEmitter {
+  /** @type {Config} */
   config;
+  /** @type {Connection[]} */
   #connections = [];
+  /** @type {Device[]} */
   #devices = [];
 
   static api_v = 1;
@@ -55,14 +58,26 @@ class GyverHub extends EventEmitter {
     }
   }
 
+  /**
+   * ID клиента (хаба).
+   * @type {string}
+   */
   get clientId() {
     return this.config.get('hub', 'client_id');
   }
 
+  /**
+   * Текущий префикс устройств.
+   * @type {string}
+   */
   get prefix() {
     return this.config.get('hub', 'prefix');
   }
 
+  /**
+   * Получить список всех известных префиксов (текущий и префиксы устройств), без дубликатов.
+   * @returns {string[]}
+   */
   getAllPrefixes() {
     const list = [this.clientId];
     for (const dev_info of Object.values(this.config.get('devices'))) 
@@ -129,7 +144,11 @@ class GyverHub extends EventEmitter {
 
   //#region Device list management
 
-
+  /**
+   * Получить объект устройства по ID.
+   * @param {string} id 
+   * @returns {Device | null}
+   */
   dev(id) {
     if (!id) return null;
     for (let d of this.#devices) {
@@ -144,6 +163,10 @@ class GyverHub extends EventEmitter {
     return null;
   }
 
+  /**
+   * Получить список ID устройств.
+   * @returns {string[]}
+   */
   getDeviceIds() {
     return Object.keys(this.config.get('devices'));
   }

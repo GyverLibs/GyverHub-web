@@ -17,8 +17,11 @@ class DeviceUpdateEvent extends Event {
 }
 
 class Device extends EventEmitter {
+  /** @type {Connection[]} */
   active_connections = [];
+  /** @type {object} */
   info;
+
   #input_queue;
 
   // device
@@ -31,6 +34,10 @@ class Device extends EventEmitter {
   granted = false;
   cfg_flag = false;
 
+  /**
+   * @param {GyverHub} hub 
+   * @param {string} id 
+   */
   constructor(hub, id) {
     super();
     this._hub = hub;
@@ -55,7 +62,7 @@ class Device extends EventEmitter {
    * @param {string} name 
    * @param {string} value 
    */
-  async post(cmd, name = '', value = '') {
+  async #post(cmd, name = '', value = '') {
     if (cmd == 'set' && name && this.isModuleEnabled(Modules.SET)) {
       if (this.prev_set[name]) clearTimeout(this.prev_set[name]);
       this.prev_set[name] = setTimeout(() => delete this.prev_set[name], this.skip_prd);
@@ -64,8 +71,16 @@ class Device extends EventEmitter {
     await this.getConnection().post(this, cmd, name, value);
   }
 
+  /**
+   * Send command to device and wait for response
+   * @param {string} cmd Command
+   * @param {string[]} types List of possible responses
+   * @param {string} name 
+   * @param {string} value 
+   * @returns {Promise<[string, object]>}
+   */
   async #postAndWait(cmd, types, name = '', value = '') {
-    await this.post(cmd, name, value);
+    await this.#post(cmd, name, value);
     return await this.#input_queue.get(types);
   }
 
@@ -76,7 +91,7 @@ class Device extends EventEmitter {
 
     switch (type) {
     case 'ui':
-      await this.post('unix', Math.floor(new Date().getTime() / 1000));
+      await this.#post('unix', Math.floor(new Date().getTime() / 1000));
       break;
 
     case 'refresh':
@@ -143,42 +158,45 @@ class Device extends EventEmitter {
 
   //#region UI files
 
-  files = [];
+  #files = [];
+  #file_flag = false;
+
   async _fetchFiles() {
-    while (this.files.length) {
-      let file = this.files.shift();
+    while (this.#files.length) {
+      const file = this.#files.shift();
   
-      Widget.setPlabel(file.name, '[FETCH...]');
       let res;
       try {
-        res = await this.fetch(file.path, perc => {
-          Widget.setPlabel(file.name, `[${perc}%]`);
-        });
+        res = await this.fetch(file.path);
       } catch (e) {
-        Widget.setPlabel(file.name, '[ERROR]');
         return;
       }
       file.callback(`data:${getMime(file.path)};base64,${res}`);
     }
   }
 
-  file_flag = false;
-  resetFiles() {
-    this.files = [];
-    this.file_flag = false;
-  }
-
-  async addFile(name, path, callback) {
-    let has = this.files.some(f => f.name == name);
-    if (!has) this.files.push({
-      name, path, callback,
-    });
-    if (this.file_flag && this.files.length == 1) await this._fetchFiles();
-  }
-
-  async checkFiles() {
-    this.file_flag = true;
+  async loadUIFiles() {
+    this.#file_flag = true;
     await this._fetchFiles();
+  }
+
+  resetUIFiles() {
+    this.#files.length = 0;
+    this.#file_flag = false;
+  }
+
+  /**
+   * Register an UI file to load.
+   * @param {string} id
+   * @param {string} path
+   * @param {(string) => undefined} callback 
+   */
+  async addFile(id, path, callback) {
+    let has = this.#files.some(f => f.id == id);
+    if (!has) this.#files.push({
+      id, path, callback,
+    });
+    if (this.#file_flag && this.#files.length == 1) await this._fetchFiles();
   }
 
   //#endregion
@@ -247,7 +265,7 @@ class Device extends EventEmitter {
   }
 
   async unfocus() {
-    await this.post('unfocus');
+    await this.#post('unfocus');
     await this._hub.ws.disconnect();
   }
 
@@ -276,7 +294,7 @@ class Device extends EventEmitter {
   }
 
   async fsStop() {
-    await this.post('fs_stop');
+    await this.#post('fs_stop');
   }
 
   fsBusy() {

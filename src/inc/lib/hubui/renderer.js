@@ -2,25 +2,32 @@ class Renderer {
     static #WIDGETS = new Map();
     static #VIRTUAL_WIDGETS = new Set();
 
+    /**
+     * Register widget class
+     * @param {string} name 
+     * @param {typeof Widget} cls 
+     * @param {boolean} virtual 
+     */
     static register(name, cls, virtual = false) {
         Renderer.#WIDGETS.set(name, cls);
         if (virtual) Renderer.#VIRTUAL_WIDGETS.add(name);
     }
 
+    /** @type {Device} */
     device;
     #widgets;
     #idMap;
-    prevWidth;
+    #prevWidth;
 
-    constructor(id, controls) {
-        this.device = hub.dev(id);
+    constructor(device, controls) {
+        this.device = device;
         this.#widgets = [];
         this.#idMap = new Map();
-        this.prevWidth = 1;
+        this.#prevWidth = 1;
 
-        this.device.resetFiles();
+        this.device.resetUIFiles();
         this.makeWidgets(this.#widgets, 'col', controls);
-        this.device.checkFiles();
+        this.device.loadUIFiles();
     }
 
     get #single(){
@@ -33,8 +40,8 @@ class Renderer {
                 let sumw = 0;
                 for (const ctrl of data) {
                     if (!ctrl.type || Renderer.#VIRTUAL_WIDGETS.has(ctrl.type)) continue;
-                    if (!ctrl.wwidth) ctrl.wwidth = this.prevWidth;
-                    else this.prevWidth = ctrl.wwidth;
+                    if (!ctrl.wwidth) ctrl.wwidth = this.#prevWidth;
+                    else this.#prevWidth = ctrl.wwidth;
                     sumw += ctrl.wwidth;
                 }
                 for (const ctrl of data) {
@@ -52,6 +59,12 @@ class Renderer {
         }
     }
 
+    /**
+     * Generate widgets from layout.
+     * @param {Widget[]} cont 
+     * @param {'row' | 'col'} type 
+     * @param {object[]} data 
+     */
     makeWidgets(cont, type, data) {
         this.#updateWWidth(type, data);
         
@@ -71,6 +84,10 @@ class Renderer {
         }
     }
 
+    /**
+     * Build HTML tree from widgets.
+     * @returns {HTMLElement}
+     */
     build(){
         const $root = createElement(null, {
             type: "div",
@@ -96,8 +113,13 @@ class Renderer {
         return $root;
     }
 
+    /**
+     * Apply update to widget.
+     * @param {string} id Widget id
+     * @param {object} data 
+     */
     applyUpdate(id, data) {
-        let w = this.#idMap.get(id);
+        const w = this.#idMap.get(id);
         if (w) w.update(data);
     }
 }
