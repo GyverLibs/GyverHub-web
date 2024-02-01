@@ -1,40 +1,50 @@
 class Button extends BaseWidget {
     $btn;
-    pressID = null;
-    touch = 0;
+    #color = 'var(--prim)';
+    #fontSize = '45px';
+    #inline = true;
+    #pressed = false;
+    #touch = false;
 
     constructor(data, renderer) {
         super(data, renderer);
 
-        this.$container.append(createElement(this, {
+        this.makeLayout({
             type: 'button',
             class: 'icon w_btn',
             name: 'btn',
+            text: "",
+            style: {
+                color: this.#color,
+                fill: this.#color,
+                fontSize: this.#fontSize,
+                width: 'unset',
+            },
             also($btn) {
                 $btn.addEventListener('click', () => {
                     this.set(2);
                 });
                 $btn.addEventListener('mousedown', () => {
-                    if(!this.touch) this.set(1);
+                    if(!this.#touch) this.set(1);
                 });
                 $btn.addEventListener('mouseup', () => {
-                    if(!this.touch&&this.pressID) this.set(0);
+                    if(!this.#touch&&this.#pressed) this.set(0);
                 });
                 $btn.addEventListener('mouseleave', () => {
-                    if(!this.touch&&this.pressID) this.set(0);
+                    if(!this.#touch&&this.#pressed) this.set(0);
                 });
         
                 $btn.addEventListener('touchstart', () => {
-                    this.touch=1;
-                    this.pressID = data.id;
+                    this.#touch=true;
+                    this.#pressed = true;
                     this.set(1, false);
                 });
                 $btn.addEventListener('touchend', () => {
-                    this.pressID = null;
+                    this.#pressed = false;
                     this.set(0, false);
                 });
             }
-        }));
+        });
         this.update(data);
     }
 
@@ -45,17 +55,17 @@ class Button extends BaseWidget {
             this.#setIcon(data.icon);
         }
         if ('color' in data) {
-            let col = intToCol(data.color);
-            this.$btn.style.color = col;
-            this.$btn.style.fill = col;
-            this.$btn.setAttribute("data-color", col);
+            this.#color = intToCol(data.color);
+
+            this.$btn.style.color = this.#color;
+            this.$btn.style.fill = this.#color;
         }
         if ('fsize' in data) {
-            let size = data.fsize + 'px';
+            this.#fontSize = data.fsize + 'px';
+
+            const size = this.#fontSize;
             this.$btn.style.fontSize = size;
-            if (!this.$btn.getAttribute("data-inline")) el.style.width = size;
-            else this.$btn.style.width = 'unset';
-            this.$btn.setAttribute("data-size", size);
+            this.$btn.style.width = this.#inline ? 'unset' : size;
         }
         if ('disable' in data) {
             this.disable(this.$btn, data.disable);
@@ -68,19 +78,18 @@ class Button extends BaseWidget {
         if (text) {
             if (text.includes(".svg")) {
                 hub.dev(focused).addFile(this.id, text, (data) => {
-                    this.setPlabel();
                     this.$btn.innerHTML = dataTotext(data);
-                    this.$btn.style.width = this.$btn.getAttribute("data-size");
-                    this.$btn.style.fill = this.$btn.getAttribute("data-color");
+                    this.$btn.style.width = this.#fontSize;
+                    this.$btn.style.fill = this.#color;
                 });
-                this.$btn.removeAttribute("data-inline");
+                this.#inline = false;
                 return;
             } else {
                 icon = getIcon(text);
             }
         }
         this.$btn.innerHTML = icon;
-        this.$btn.setAttribute("data-inline", true);
+        this.#inline = true;
     }
 }
 Renderer.register('button', Button);
