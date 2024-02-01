@@ -251,7 +251,7 @@ async function fsbr_h() {
   }
 }
 async function format_h() {
-  if (await asyncConfirm('Format filesystem?')) {
+  if (await asyncConfirm(lang.fs_format + '?')) {
     await hub.dev(focused).formatFS();
   }
 }
@@ -273,7 +273,7 @@ function manual_ip_h(ip) {
   if (hub.http.discover_ip(ip)) {
     save_cfg();
     show_screen('main');
-  } else showPopupError('Wrong IP');
+  } else showPopupError(lang.wrong_ip);
 }
 function update_ip_h() {
   /*@[if_target:esp]*/
@@ -402,7 +402,7 @@ function close_device() {
   show_screen('main');
 }
 async function delete_h(id) {
-  if (await asyncConfirm('Delete ' + id + '?')) {
+  if (await asyncConfirm(lang.delete + ' ' + id + '?')) {
     hub.deleteDevice(id);
     EL(`device#${id}`).remove();
   }

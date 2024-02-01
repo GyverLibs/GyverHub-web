@@ -8,6 +8,7 @@
 /*@![include:inc/lib/sort-paths.min.js, compile]*/
 /*@![include:inc/lib/pickr.min.js, compile]*/
 /*@![include:inc/utils.js, compile]*/
+/*@![include:inc/popup.js, compile]*/
 
 /*@![include:inc/controls.js, compile]*/
 /*@![include:inc/lang.js, compile]*/

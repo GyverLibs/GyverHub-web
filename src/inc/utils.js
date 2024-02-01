@@ -4,10 +4,6 @@ const app_version = '/*@![:version]*/';
 const hub = new GyverHub();
 window.HUB = hub;
 
-const langs = {
-  English: 0,
-  Russian: 1,
-};
 const colors = {
   ORANGE: 0xd55f30,
   YELLOW: 0xd69d27,
@@ -18,24 +14,10 @@ const colors = {
   VIOLET: 0x825ae7,
   PINK: 0xc8589a,
 };
-const fonts = [
-  'monospace',
-  'system-ui',
-  'cursive',
-  'Arial',
-  'Verdana',
-  'Tahoma',
-  'Trebuchet MS',
-  'Georgia',
-  'Garamond',
-];
 const themes = {
   DARK: 0,
   LIGHT: 1
 };
-const baudrates = [
-  4800, 9600, 19200, 38400, 57600, 74880, 115200, 230400, 250000, 500000, 1000000, 2000000
-];
 const theme_cols = [
   // back/tab/font/font2/dark/thumb/black/scheme/font4/shad/font3
   ['#1b1c20', '#26272c', '#eee', '#ccc', '#141516', '#444', '#0e0e0e', 'dark', '#222', '#000'],
@@ -56,12 +38,12 @@ let cfg = {
   serial_offset: 2000,
   use_pin: false,
   pin: '',
-  theme: 'DARK',
+  theme: isDark() ? 'DARK' : 'LIGHT',
   maincolor: 'GREEN',
   font: 'monospace',
   check_upd: true,
   ui_width: 450,
-  lang: 'English',
+  lang: userLang(),
   app_plugin_css: '',
   app_plugin_js: '',
   api_ver: 1,
@@ -86,6 +68,9 @@ function platform() {
 /*@/[if_target:local]*/
 }
 
+function isDark() {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
 function isSSL() {
   return window.location.protocol == 'https:';
 }
@@ -98,19 +83,25 @@ function hasSerial() {
 function hasBT() {
   return "bluetooth" in navigator;
 }
+function userLang() {
+  switch (navigator.language || navigator.userLanguage) {
+    case 'ru-RU': return 'Russian';
+  }
+  return 'English';
+}
 
 // ====================== FUNC ======================
 async function pwa_install(ssl) {
   if (ssl && !isSSL()) {
-    if (await asyncConfirm("Redirect to HTTPS?")) window.location.href = window.location.href.replace('http:', 'https:');
+    if (await asyncConfirm(lang.redirect + " HTTPS?")) window.location.href = window.location.href.replace('http:', 'https:');
     else return;
   }
   if (!ssl && isSSL()) {
-    if (await asyncConfirm("Redirect to HTTP")) window.location.href = window.location.href.replace('https:', 'http:');
+    if (await asyncConfirm(lang.redirect + " HTTP?")) window.location.href = window.location.href.replace('https:', 'http:');
     else return;
   }
   if (!('serviceWorker' in navigator)) {
-    asyncAlert('Error');
+    asyncAlert(lang.error);
     return;
   }
   if (deferredPrompt !== null) {
@@ -155,24 +146,6 @@ function dataTotext(data) {
 function b64ToText(base64) {
   const binString = atob(base64);
   return new TextDecoder().decode(Uint8Array.from(binString, (m) => m.codePointAt(0)));
-}
-function asyncAlert(msg) {
-  return new Promise((resolve, reject) => {
-    const res = alert(msg);
-    resolve(res);
-  });
-}
-function asyncConfirm(msg) {
-  return new Promise((resolve, reject) => {
-    const res = confirm(msg);
-    resolve(res);
-  });
-}
-function asyncPrompt(msg, placeh) {
-  return new Promise((resolve, reject) => {
-    const res = prompt(msg, placeh);
-    resolve(res);
-  });
 }
 String.prototype.hashCode = function () {
   if (!this.length) return 0;

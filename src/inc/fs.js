@@ -46,7 +46,7 @@ async function create_h() {
 
 // ============ TRANSFER ============
 async function uploadFile(file, path) {
-  const res = await asyncConfirm('Upload ' + path + '?');
+  const res = await asyncConfirm(lang.fs_upload + ' ' + path + '?');
   if (!res) return;
   
   EL('file_upload_btn').innerHTML = waiter(22, 'var(--font_inv)', false);
@@ -95,11 +95,11 @@ async function fetchFile(index, path) {
 }
 async function uploadOta(file, type) {
   if (!file.name.endsWith(this.info.ota_t)) {
-    asyncAlert('Wrong file! Use .' + this.info.ota_t);
+    asyncAlert(lang.wrong_ota + ' .' + this.info.ota_t);
     return;
   }
 
-  const res = await asyncConfirm('Upload OTA ' + type + '?');
+  const res = await asyncConfirm(lang.fs_upload + ' OTA ' + type + '?');
   if (!res) return;
 
   EL('ota_label').innerHTML = waiter(25, 'var(--font)', false);
@@ -123,20 +123,20 @@ async function uploadOta(file, type) {
 // ============ FILE UTILS ============
 async function deleteFile(i) {
   if (hub.dev(focused).fsBusy()) {
-    showPopupError('FS busy');
+    showPopupError(getError(HubErrors.FsBusy));
     return;
   }
-  if (await asyncConfirm('Delete ' + fs_arr[i] + '?')) {
+  if (await asyncConfirm(lang.delete + ' ' + fs_arr[i] + '?')) {
     await hub.dev(focused).deleteFile(fs_arr[i]);
   }
 }
 async function renameFile(i) {
   if (hub.dev(focused).fsBusy()) {
-    showPopupError('Busy');
+    showPopupError(getError(HubErrors.FsBusy));
     return;
   }
   let path = fs_arr[i];
-  let res = await asyncPrompt('Rename ' + path + ' to', path);
+  let res = await asyncPrompt(lang.rename + ' ' + path + ':', path);
   if (res && res != path) {
     await hub.dev(focused).renameFile(path, res);
   }
@@ -168,12 +168,15 @@ function editor_save() {
 
 // ============ OTA ============
 async function otaUrl(url, type) {
-  showPopup('OTA start');
-  try {
-    await hub.dev(focused).otaUrl(type, url);
-  } catch (e) {
-    showPopupError('[OTA url] ' + getError(e));
-    return;
+  if (await asyncConfirm(lang.fs_upload + ' OTA?')) {
+    showPopup('OTA start');
+    try {
+      await hub.dev(focused).otaUrl(type, url);
+    } catch (e) {
+      showPopupError('[OTA url] ' + getError(e));
+      return;
+    }
   }
+  
   showPopup('[OTA] ' + lang.done);
 }

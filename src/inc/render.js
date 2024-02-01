@@ -440,7 +440,7 @@ function render_main() {
         </div>
       </div>
 
-      <div class="ui_col" id="serial_col" ${hasSerial() ? '' : 'style="display:none"' }>
+      <div class="ui_col" id="serial_col" ${hasSerial() ? '' : 'style="display:none"'}>
         <div class="ui_row ui_head ui_tab" onclick="use_serial.click()">
           <label class="ui_label ui_tab" id="serial_label"><span class="icon icon_ui"></span>Serial</label>
           <input type="checkbox" id="use_serial" data-hub-config="connections.SERIAL.enabled" onchange="serial_toggle(this.checked);update_cfg(this);save_cfg()" style="display:none">
@@ -472,7 +472,7 @@ function render_main() {
         </div>
       </div>
 
-      <div class="ui_col" id="bt_col" ${hasBT() ? '' : 'style="display:none"' }>
+      <div class="ui_col" id="bt_col" ${hasBT() ? '' : 'style="display:none"'}>
         <div class="ui_row ui_head ui_tab" onclick="use_bt.click()">
           <label class="ui_label ui_tab" id="bt_label"><span class="icon icon_ui"></span>Bluetooth</label>
           <input type="checkbox" id="use_bt" data-hub-config="connections.BT.enabled" onchange="update_cfg(this);save_cfg()" style="display:none">
@@ -665,21 +665,41 @@ function render_main() {
 // =========== MISC ===========
 function render_selects() {
   /*@[if_not_target:esp]*/
+  const baudrates = [
+    4800, 9600, 19200, 38400, 57600, 74880, 115200, 230400, 250000, 500000, 1000000, 2000000
+  ];
   for (let baud of baudrates) {
     EL('baudrate').innerHTML += `
     <option value="${baud}">${baud}</option>`;
   }
   /*@/[if_not_target:esp]*/
+
+  let i = 0;
   for (let color in colors) {
     EL('maincolor').innerHTML += `
-    <option value="${color}">${color}</option>`;
+    <option value="${color}">${lang.colors[i++]}</option>`;
   }
 
+  const langs = {
+    English: 0,
+    Russian: 1,
+  };
   for (let lang in langs) {
     EL('lang').innerHTML += `
     <option value="${lang}">${lang}</option>`;
   }
 
+  const fonts = [
+    'monospace',
+    'system-ui',
+    'cursive',
+    'Arial',
+    'Verdana',
+    'Tahoma',
+    'Trebuchet MS',
+    'Georgia',
+    'Garamond',
+  ];
   for (let font of fonts) {
     EL('font').innerHTML += `
     <option value="${font}">${font}</option>`;
@@ -687,7 +707,7 @@ function render_selects() {
 
   for (let theme in themes) {
     EL('theme').innerHTML += `
-    <option value="${theme}">${theme}</option>`;
+    <option value="${theme}">${lang.themes[themes[theme]]}</option>`;
   }
 
   let masks = getMaskList();
@@ -695,6 +715,7 @@ function render_selects() {
     EL('netmask').innerHTML += `<option value="${mask}">${masks[mask]}</option>`;
   }
 }
+
 function render_info() {
   const info_labels_topics = {
     info_id: 'ID',
