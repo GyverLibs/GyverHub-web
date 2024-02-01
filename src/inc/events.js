@@ -68,7 +68,7 @@ hub.addEventListener('deviceadded', (ev) => {  // found new device (search)
 hub.addEventListener('devicecreated', ev => {  // found new device OR requested saved device
   ev.device.addEventListener('command.alert', e => {
     release_all();
-    alert(e.device.info.name + ': ' + e.data.text);
+    asyncAlert(e.device.info.name + ': ' + e.data.text);
   });
 
   ev.device.addEventListener('command.notice', e => {

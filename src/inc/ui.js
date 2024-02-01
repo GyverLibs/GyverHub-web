@@ -282,7 +282,7 @@ function update_ip_h() {
   /*@[if_not_target:esp]*/
   if (!Boolean(window.webkitRTCPeerConnection || window.mozRTCPeerConnection)) notSupported();
   else getLocalIP().then((ip) => {
-    if (ip.indexOf("local") > 0) alert(`Disable WEB RTC anonymizer: ${browser()}:/`+`/flags/#enable-webrtc-hide-local-ips-with-mdns`);
+    if (ip.indexOf("local") > 0) asyncAlert(`Disable WEB RTC anonymizer: ${browser()}:/`+`/flags/#enable-webrtc-hide-local-ips-with-mdns`);
     else EL('local_ip').value = ip;
   });
   /*@/[if_not_target:esp]*/
@@ -344,7 +344,7 @@ function menu_show(state) {
 function device_h(id) {
   let dev = hub.dev(id);
   if (!dev || !dev.isConnected()) return;
-  if (!dev.info.api_v || dev.info.api_v != hub.api_v) alert(lang.api_mis);
+  if (!dev.info.api_v || dev.info.api_v != hub.api_v) asyncAlert(lang.api_mis);
 
   if (dev.info.PIN && !dev.granted) {
     pin_id = id;

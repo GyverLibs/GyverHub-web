@@ -110,7 +110,7 @@ async function pwa_install(ssl) {
     else return;
   }
   if (!('serviceWorker' in navigator)) {
-    alert('Error');
+    asyncAlert('Error');
     return;
   }
   if (deferredPrompt !== null) {
@@ -155,6 +155,12 @@ function dataTotext(data) {
 function b64ToText(base64) {
   const binString = atob(base64);
   return new TextDecoder().decode(Uint8Array.from(binString, (m) => m.codePointAt(0)));
+}
+function asyncAlert(msg) {
+  return new Promise((resolve, reject) => {
+    const res = alert(msg);
+    resolve(res);
+  });
 }
 function asyncConfirm(msg) {
   return new Promise((resolve, reject) => {
@@ -292,7 +298,7 @@ function getIcon(icon) {
 
 // ====================== BROWSER ======================
 function notSupported() {
-  alert(lang.p_not_support);
+  asyncAlert(lang.p_not_support);
 }
 function browser() {
   if (navigator.userAgent.includes("Opera") || navigator.userAgent.includes('OPR')) return 'opera';

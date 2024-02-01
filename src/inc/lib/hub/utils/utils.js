@@ -120,7 +120,7 @@ function checkIP(ip) {
 }
 function getIPs(ip, netmask) {
   if (!checkIP(ip)) {
-    alert('Wrong local IP!');
+    asyncAlert('Wrong local IP!');
     return null;
   }
   let ip_a = ip.split('.');

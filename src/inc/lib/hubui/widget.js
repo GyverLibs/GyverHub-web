@@ -63,7 +63,7 @@ class BaseWidget extends Widget {
                                 display: 'none',
                             },
                             also($hint) {
-                                $hint.addEventListener('click', () => alert($hint.title));
+                                $hint.addEventListener('click', () => asyncAlert($hint.title));
                             }
                         },
                         {

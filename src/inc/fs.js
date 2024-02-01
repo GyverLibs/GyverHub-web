@@ -95,7 +95,7 @@ async function fetchFile(index, path) {
 }
 async function uploadOta(file, type) {
   if (!file.name.endsWith(this.info.ota_t)) {
-    alert('Wrong file! Use .' + this.info.ota_t);
+    asyncAlert('Wrong file! Use .' + this.info.ota_t);
     return;
   }
 
