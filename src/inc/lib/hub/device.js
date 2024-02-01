@@ -1,8 +1,8 @@
 class DeviceCommandEvent extends Event {
-  constructor(name, device, type, data) {
+  constructor(name, device, cmd, data) {
     super(name);
     this.device = device;
-    this.type = type;
+    this.cmd = cmd;
     this.data = data;
   }
 }
@@ -32,6 +32,7 @@ class Device extends EventEmitter {
   cfg_flag = false;
 
   constructor(hub, id) {
+    super();
     this._hub = hub;
     this.info = hub.config.getDevice(id);
     this.#input_queue = new InputQueue(1000, 1000);  // TODO config
@@ -272,6 +273,10 @@ class Device extends EventEmitter {
 
   async updateFileList() {
     await this.#postAndWait('files', ['files']);
+  }
+
+  async fsStop() {
+    await this.post('fs_stop');
   }
 
   async upload(file, path, progress = undefined) {
