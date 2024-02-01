@@ -10,6 +10,9 @@ class Label extends BaseWidget {
             type: 'div',
             class: 'w_label',
             name: 'lbl_cont',
+            style: {
+                fontSize: '33px'
+            },
             children: [
                 {
                     type: 'span',
@@ -22,7 +25,7 @@ class Label extends BaseWidget {
                 }
             ]
         });
-        
+
         this.update(data);
     }
 

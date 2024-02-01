@@ -7,3 +7,4 @@
 /*@![include:inc/lib/hubui/widgets/led.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/icon.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/display.js, compile]*/
+/*@![include:inc/lib/hubui/widgets/title.js, compile]*/
