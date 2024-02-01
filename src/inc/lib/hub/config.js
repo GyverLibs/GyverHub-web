@@ -49,6 +49,28 @@ class Config extends EventEmitter {
         }
     }
 
+    delete(...name) {
+        const lastName = name.pop();
+
+        let obj = this.#data;
+        for (const i of name) {
+            if (!(i in obj) || obj[i] === null)
+                obj[i] = {}
+            obj = obj[i];
+
+            if (typeof obj !== 'object')
+                return;
+        }
+
+        delete obj[lastName];
+        let path = 'changed';
+        this.dispatchEvent(new ConfigChangeEvent(path, name, undefined));
+        for (const i of name) {
+            path += '.' + i;
+            this.dispatchEvent(new ConfigChangeEvent(path, name, undefined));
+        }
+    }
+
     toJson() {
         return JSON.stringify(this.#data);
     }
