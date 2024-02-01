@@ -62,9 +62,11 @@ class Renderer {
                 this.makeWidgets(cont, 'col', ctrl.data);
             } else {
                 const cls = Renderer.#WIDGETS.get(ctrl.type);
+                if (cls === undefined) continue;
+
                 const obj = new cls(ctrl, this);
                 this.#idMap.set(obj.id, obj)
-                cont.append(obj);
+                cont.push(obj);
             }
         }
     }
@@ -102,18 +104,20 @@ class Renderer {
 
 class RowColWidget extends Widget {
     #children;
+    #data;
 
     constructor(data, renderer) {
         super(data, renderer);
         this.#children = [];
+        this.#data = data;
 
         renderer.makeWidgets(this.#children, data.type, data.data);
     }
 
     build() {
         const $root = document.createElement('div');
-        $root.classList.add('widget_' + data.type);
-        $root.style.width = data.wwidth_t + '%';
+        $root.classList.add('widget_' + this.#data.type);
+        $root.style.width = this.#data.wwidth_t + '%';
 
         for (const w of this.#children) {
             $root.append(w.build());

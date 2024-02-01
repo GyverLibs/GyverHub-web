@@ -145,7 +145,7 @@ class Device extends EventEmitter {
 
   files = [];
   async _fetchFiles() {
-    while (this.files) {
+    while (this.files.length) {
       let file = this.files.shift();
   
       Widget.setPlabel(file.name, '[FETCH...]');
@@ -204,7 +204,7 @@ class Device extends EventEmitter {
   //#region Interraction > UI
 
   async updateUi(){
-    await this.#postAndWait('ui', ['ok']);
+    await this.#postAndWait('ui', ['ui']);
   }
 
   async set(name, value){
@@ -277,6 +277,10 @@ class Device extends EventEmitter {
 
   async fsStop() {
     await this.post('fs_stop');
+  }
+
+  fsBusy() {
+    return false;
   }
 
   async upload(file, path, progress = undefined) {

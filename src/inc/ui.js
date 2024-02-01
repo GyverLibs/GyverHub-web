@@ -362,7 +362,6 @@ function open_device(id) {
   let dev = hub.dev(id)
   EL('menu_user').innerHTML = '';
   EL('conn').innerHTML = dev.getConnection().name;
-  UiPlugin.enableStyle(id);
   addDOM('device_css', 'style', dev.info.plugin_css, EL('plugins'));
   addDOM('device_js', 'script', dev.info.plugin_js, EL('plugins'));
   let ctrls = EL('controls#' + id);
@@ -375,19 +374,7 @@ function open_device(id) {
 }
 function close_device() {
   Ack.clearAll();
-  UiHook.reset();
-  UiColor.reset();
-  UiGauge.reset();
-  UiGaugeR.reset();
-  UiGaugeL.reset();
-  UiCanvas.reset();
-  UiPlot.reset();
-  UiJoy.reset();
-  UiDpad.reset();
 
-  UiPlugin.disableStyle(focused);
-  UiJS.disable();
-  UiCSS.disable();
   EL('plugins').innerHTML = '';
   let ctrls = EL('controls#' + focused);
   if (ctrls) {

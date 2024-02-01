@@ -48,8 +48,8 @@ async function reboot_h() {
   await hub.dev(focused).reboot();
 }
 function release_all() {
-  if (UiButton.pressID) ub.dev(focused).set(UiButton.pressID, 0);
-  UiButton.pressID = null;
+  // if (UiButton.pressID) ub.dev(focused).set(UiButton.pressID, 0);
+  // UiButton.pressID = null;
 }
 
 // ================== SHOW ==================
