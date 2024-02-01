@@ -358,12 +358,12 @@
 }
 
 .menu_show {
-  max-height: var(--menu_h);
+  max-height: 100%;
   transition: max-height .1s ease-in;
 }
 
 .menu_inn {
-  padding: 10px 0;
+  padding: 8px 0;
 }
 
 .menu_item {

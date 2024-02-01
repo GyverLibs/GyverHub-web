@@ -352,7 +352,8 @@ function open_device(id) {
   /*@/[if_not_target:esp]*/
 
   focused = id;
-  let dev = hub.dev(id)
+  let dev = hub.dev(id);
+  updateSystemMenu();
   EL('menu_user').innerHTML = '';
   EL('conn').innerHTML = dev.getConnection().name;
   addDOM('device_css', 'style', dev.info.plugin_css, EL('plugins'));
