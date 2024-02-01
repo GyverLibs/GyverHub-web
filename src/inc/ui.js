@@ -133,13 +133,6 @@ function show_info() {
 
 // =========== HANDLERS ===========
 function resize_h() {
-  UiGauge.resize();
-  UiGaugeR.resize();
-  UiGaugeL.resize();
-  UiJoy.resize();
-  UiDpad.resize();
-  UiCanvas.resize();
-  UiPlot.resize();
 }
 function test_h() {
   show_screen('test');
@@ -196,7 +189,7 @@ async function back_h() {
     case 'ota':
       Menu.deact();
       show_screen('ui');
-      ub.dev(focused).updateUi();
+      hub.dev(focused).updateUi();
       break;
     case 'config':
       config_h();
@@ -226,7 +219,7 @@ async function info_h() {
   show_screen('info');
   EL('menu_info').classList.add('menu_act');
   if (hub.dev(focused).isModuleEnabled(Modules.INFO)) {
-    const info = await hub.get(focused).getInfo();
+    const info = await hub.dev(focused).getInfo();
     if (info) showInfo(info);
   };
 }

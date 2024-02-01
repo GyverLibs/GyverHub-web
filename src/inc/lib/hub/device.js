@@ -205,7 +205,7 @@ class Device extends EventEmitter {
 
   async getInfo() {
     const [type, data] = await this.#postAndWait('info', ['info', 'ok']);
-    if (type === 'info') return data;
+    if (type === 'info') return data.info;
     return undefined;
   }
 
@@ -294,7 +294,7 @@ class Device extends EventEmitter {
   }
 
   async fsStop() {
-    await this.#post('fs_stop');
+     await this.#post('fs_abort');
   }
 
   fsBusy() {

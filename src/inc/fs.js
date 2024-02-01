@@ -20,7 +20,7 @@ function showFsbr(fs, total, used) {
           <label id="process#${i}"></label>
           <a id="download#${i}" title="${lang.download}" class="icon icon_btn_big" href="" download="" style="display:none"></a>
           <button id="open#${i}" title="${lang.open}" class="icon icon_btn_big" onclick="openFile(EL('download#${i}').href)" style="display:none"></button>
-          <button ${hub.dev(focused).isModuleEnabled(Modules.UPLOAD) ? '' : none} id="edit#${i}" title="${lang.edit}" class="icon icon_btn_big" onclick="editFile(EL('download#${i}').href,'${i}')" style="display:none"></button>
+          <button ${hub.dev(focused).isModuleEnabled(Modules.UPLOAD) ? '' : none} id="edit#${i}" title="${lang.edit}" class="icon icon_btn_big" onclick="editFile(EL('download#${i}').href,${i})" style="display:none"></button>
         </div>`;
     }
   }
@@ -46,6 +46,9 @@ async function create_h() {
 
 // ============ TRANSFER ============
 async function uploadFile(file, path) {
+  if (!path.startsWith('/')) path = '/' + path;
+  if (!path.endsWith('/') && path !== '/') path += '/';
+  path += file.name;
   const res = await asyncConfirm(lang.fs_upload + ' ' + path + '?');
   if (!res) return;
   
