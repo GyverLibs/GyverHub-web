@@ -3,7 +3,7 @@ class Icon extends BaseWidget {
     #color;
 
     constructor(data, renderer) {
-        this(data, renderer);
+        super(data, renderer);
         this.#color = getDefColor();
 
         this.makeLayout({
