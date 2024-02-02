@@ -1,7 +1,7 @@
 class UiColor {
     constructor(cont, data) {
         cont.innerHTML = `
-          <div data-type="${data.type}" id="${ID(data.id)}" style="visibility:hidden">
+          <div style="visibility:hidden">
             <div id="picker#${data.id}"></div>
           </div>
           <button id="picker_btn#${data.id}" style="margin-left:-25px;color:${intToCol(data.value) ?? '#000'}" class="icon icon_btn_big" onclick="UiColor.open('${data.id}')"></button>

@@ -4,7 +4,7 @@ class UiSpinner {
         <div class="w_spinner_row">
           <button class="icon icon_btn btn_no_pad" onclick="UiSpinner.spin('${data.id}',-1)"></button>
           <div class="w_spinner_block">
-            <input data-type="${data.type}" id="${ID(data.id)}" class="w_spinner" type="number" oninput="UiSpinner.input('${data.id}')" onkeydown="UiSpinner.checkDown(event,'${data.id}')" value="${data.value ?? 0}" min="${data.min ?? 0}" max="${data.max ?? 100}" step="${data.step ?? 1}" data-dec="${data.dec ?? 0}" data-unit="${data.unit ?? ''}" onwheel="UiSpinner.wheel(event,'${data.id}')">
+            <input class="w_spinner" type="number" oninput="UiSpinner.input('${data.id}')" onkeydown="UiSpinner.checkDown(event,'${data.id}')" value="${data.value ?? 0}" min="${data.min ?? 0}" max="${data.max ?? 100}" step="${data.step ?? 1}" data-dec="${data.dec ?? 0}" data-unit="${data.unit ?? ''}" onwheel="UiSpinner.wheel(event,'${data.id}')">
             <label class="w_spinner_unit" id="unit#${data.id}" onwheel="UiSpinner.wheel(event,'${data.id}')"></label>
           </div>
           <button class="icon icon_btn btn_no_pad" onclick="UiSpinner.spin('${data.id}',1)"></button>

@@ -1,6 +1,6 @@
 class UiImage {
     constructor(cont, data) {
-        cont.innerHTML = `<div data-type="${data.type}" data-path="${data.value ?? ''}" id="${ID(data.id)}">${waiter()}</div>`;
+        cont.innerHTML = `<div>${waiter()}</div>`;
         if (data.value) hub.dev(focused).addFile(data.id, data.value, UiImage._cb(id));// TODO notify on fetch
     }
 

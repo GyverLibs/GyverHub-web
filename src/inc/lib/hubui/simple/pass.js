@@ -2,7 +2,7 @@ class UiPass {
   constructor(cont, data) {
     cont.innerHTML = `
       <div class="w_inp_cont">
-        <input data-type="${data.type}" class="w_inp" type="password" value="${data.value ?? ''}" id="${ID(data.id)}" name="${data.id}" onkeydown="UiInput.checkDown(this,event)" oninput="UiInput.check(this)" data-regex="${data.regex ?? ''}" maxlength="${data.maxlen ?? ''}" onfocusout="UiInput.send(this)">
+        <input class="w_inp" type="password" onkeydown="UiInput.checkDown(this,event)" oninput="UiInput.check(this)" onfocusout="UiInput.send(this)">
         <div class="btn_inp_block">
           <button class="icon w_eye" onclick="UiPass.toggle('${data.id}')"></button>
         </div>

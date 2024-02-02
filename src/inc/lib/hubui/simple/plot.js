@@ -1,6 +1,6 @@
 class UiPlot {
     constructor(cont, data) {
-        cont.innerHTML = `<div class="w_canvas"><canvas data-type="${data.type}" id="${ID(data.id)}"></canvas></div>`;
+        cont.innerHTML = `<div class="w_canvas"><canvas></canvas></div>`;
 
         wait2Frame().then(() => {
             // TODO !themes[cfg.theme] DARK: 0, LIGHT: 1

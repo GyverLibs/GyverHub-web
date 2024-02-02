@@ -1,6 +1,6 @@
 class UiCanvas {
     constructor(cont, data) {
-        cont.innerHTML = `<div class="w_canvas"><canvas data-type="${data.type}" id="${ID(data.id)}" onclick="UiCanvas.click('${data.id}',event)"></canvas></div>`;
+        cont.innerHTML = `<div class="w_canvas"><canvas onclick="UiCanvas.click('${data.id}',event)"></canvas></div>`;
 
         wait2Frame().then(() => {
             let cv = new Canvas(data.id, CMP(data.id), data.width, data.height, data.active);

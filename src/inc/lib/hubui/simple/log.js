@@ -1,6 +1,6 @@
 class UiLog {
     constructor(cont, data) {
-        cont.innerHTML = `<textarea data-type="${data.type}" id="${ID(data.id)}" style="color:var(--prim)" class="w_area w_area_passive" rows="${data.rows ?? 5}" readonly>${data.value ? data.value.trim() : ''}</textarea>`;
+        cont.innerHTML = `<textarea style="color:var(--prim)" class="w_area w_area_passive" readonly></textarea>`;
         
         waitFrame().then(() => CMP(data.id).scrollTop = CMP(data.id).scrollHeight);
     }

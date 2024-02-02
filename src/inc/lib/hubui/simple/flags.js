@@ -2,7 +2,7 @@ class UiFlags {
     constructor(cont, data) {
         cont.innerHTML = `
         <style id="style#${data.id}"></style>
-        <div data-type="${data.type}" id="${ID(data.id)}" class="w_flags_cont w_flags_cont_tab" data-text="${data.text ?? ''}" data-value="${data.value ?? 0}"></div>`;
+        <div class="w_flags_cont w_flags_cont_tab"></div>`;
 
         UiFlags.render(data.id);
         UiFlags.color(data.id, intToCol(data.color) ?? getDefColor());

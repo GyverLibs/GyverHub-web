@@ -1,7 +1,7 @@
 class UiSlider {
     constructor(cont, data) {
-        cont.innerHTML = `<input data-type="${data.type}" name="${data.id}" id="${ID(data.id)}" oninput="UiSlider.move(this)" type="range" class="w_slider" value="${data.value ?? 0}" min="${data.min ?? 0}" max="${data.max ?? 100}" step="${data.step ?? 1}" data-dec="${data.dec ?? 0}" data-unit="${data.unit ?? ''}" onwheel="UiSlider.wheel(event,this)">
-        <div class="w_slider_out"><output id="out#${data.id}"></output></div>`;
+        cont.innerHTML = `<input oninput="UiSlider.move(this)" type="range" class="w_slider" min="0" max="100" step="1" data-dec="${data.dec ?? 0}"
+        data-unit="" onwheel="UiSlider.wheel(event,this)"><div class="w_slider_out"><output id="out#${data.id}"></output></div>`;
 
         waitFrame().then(() => UiSlider.move(CMP(data.id), false));
         UiSlider.color(data.id, data.color);

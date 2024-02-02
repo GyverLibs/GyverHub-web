@@ -1,6 +1,6 @@
 class UiGauge {
     constructor(cont, data) {
-        cont.innerHTML = `<canvas data-type="${data.type}" id="${ID(data.id)}"></canvas>`;
+        cont.innerHTML = `<canvas></canvas>`;
 
         wait2Frame()
             .then(() => {
