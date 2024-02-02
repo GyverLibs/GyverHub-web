@@ -1,16 +1,21 @@
-class DeviceCommandEvent extends Event {
-  constructor(name, device, cmd, data) {
+class DeviceEvent extends Event {
+  constructor(name, device) {
     super(name);
     this.device = device;
+  }
+}
+
+class DeviceCommandEvent extends DeviceEvent {
+  constructor(name, device, cmd, data) {
+    super(name, device);
     this.cmd = cmd;
     this.data = data;
   }
 }
 
-class DeviceUpdateEvent extends Event {
+class DeviceUpdateEvent extends DeviceEvent {
   constructor(device, name, data) {
-    super("update");
-    this.device = device;
+    super("update", device);
     this.name = name;
     this.data = data;
   }
@@ -80,8 +85,19 @@ class Device extends EventEmitter {
    * @returns {Promise<[string, object]>}
    */
   async #postAndWait(cmd, types, name = '', value = '') {
-    await this.#post(cmd, name, value);
-    return await this.#input_queue.get(types);
+    this.dispatchEvent(new DeviceEvent("transferstart", this));
+    let res;
+    try {
+      await this.#post(cmd, name, value);
+      res = await this.#input_queue.get(types);
+    } catch (e) {
+      this.dispatchEvent(new DeviceEvent("transfererror", this));
+      this.dispatchEvent(new DeviceEvent("transferend", this));
+      throw e;
+    }
+    this.dispatchEvent(new DeviceEvent("transfersuccess", this));
+    this.dispatchEvent(new DeviceEvent("transferend", this));
+    return res;
   }
 
   async _parse(type, data) {
@@ -144,11 +160,13 @@ class Device extends EventEmitter {
     if (this.active_connections.includes(conn)) return;
 
     this.active_connections.push(conn);
+    this.dispatchEvent(new DeviceEvent('connectionchanged', this));
 
     conn.addEventListener('statechange', e => {
       switch (e.state) {
         case ConnectionState.DISCONNECTED:
           this.active_connections.remove(conn);
+          this.dispatchEvent(new DeviceEvent('connectionchanged', this));
           break;
       }
     })

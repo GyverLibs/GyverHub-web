@@ -46,15 +46,6 @@ class EventEmitter {
   }
 }
 
-class DeviceEvent extends Event {
-  device;
-
-  constructor(type, device, eventInitDict = undefined) {
-    super(type, eventInitDict);
-    this.device = device;
-  }
-}
-
 class MessageEvent extends Event {
   constructor(message) {
     super('message');

@@ -1,9 +1,24 @@
 // ============ CONNECTION ============
 /*@[if_not_target:esp]*/
 hub.mqtt.onConnChange = (state) => {
-  display('mqtt_ok', state ? 'inline-block' : 'none');
-  mq_change(state);
+  switch (state) {
+    case ConnectionState.CONNECTING:
+      mq_change(false);
+      display('mqtt_ok', 'none');
+      break;
+
+    case ConnectionState.CONNECTED:
+      mq_change(true);
+      display('mqtt_ok', 'inline-block');
+      break;
+
+    case ConnectionState.DISCONNECTED:
+      mq_change(false);
+      display('mqtt_ok', 'none');
+      break;
+  }
 }
+
 hub.bt.onConnChange = (state) => {
   switch (state) {
     case ConnectionState.CONNECTING:
@@ -66,6 +81,22 @@ hub.addEventListener('deviceadded', (ev) => {  // found new device (search)
   add_device(ev.device, dev);
 });
 hub.addEventListener('devicecreated', ev => {  // found new device OR requested saved device
+  ev.device.addEventListener('transferstart', e => {
+    if (screen !== 'main' && e.device.info.id === focused)
+      spinArrows(true);
+  });
+
+  ev.device.addEventListener('transferend', e => {
+    if (screen !== 'main' && e.device.info.id === focused)
+      spinArrows(false);
+  });
+
+  ev.device.addEventListener('connectionchanged', e => {
+    EL(`device#${e.device.info.id}`).className = "device";
+    display(`${e.device.getConnection().name}#${e.device.info.id}`, 'inline-block');
+  });
+
+
   ev.device.addEventListener('command.alert', e => {
     release_all();
     asyncAlert(e.device.info.name + ': ' + e.data.text);
@@ -122,11 +153,6 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
   ev.device.addEventListener('update', e => {
     if (e.device.info.id == focused && screen == 'ui' && renderer)
       renderer.applyUpdate(e.name, e.data);
-  });
-
-  ev.device.addEventListener('connectionchanged', e => {
-    EL(`device#${id}`).className = "device";
-    display(`${conn.name}#${id}`, 'inline-block');
   });
 });
 hub.addEventListener('deviceinfochanged', ev => {

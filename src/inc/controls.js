@@ -58,23 +58,9 @@ let renderer;
 function showControls(id, controls) {
   Ack.clearAll();
 
-  set_prd_buf = {};
-
   const device = hub.dev(id);
   renderer = new Renderer(device, controls);
   const $root = renderer.build();
 
-  const excont = EL('controls#' + id);
-  if (excont) {
-    $root.id += '_new';
-  }
-  EL('controls').appendChild($root);
-
-  wait2Frame().then(() => {
-    if (excont) {
-      excont.remove();
-      $root.id = 'controls#' + id;
-    }
-    render_busy = false;
-  });
+  EL('controls').replaceChildren($root);
 }
