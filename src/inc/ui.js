@@ -358,23 +358,12 @@ function open_device(id) {
   EL('conn').innerHTML = dev.getConnection().name;
   addDOM('device_css', 'style', dev.info.plugin_css, EL('plugins'));
   addDOM('device_js', 'script', dev.info.plugin_js, EL('plugins'));
-  let ctrls = EL('controls#' + id);
-  if (ctrls) {
-    ctrls.style.display = 'block';
-    truncIdRecursive(ctrls, '__old');
-  }
   show_screen('ui');
   dev.focus();
 }
 function close_device() {
-  Ack.clearAll();
-
+  if (renderer) renderer.close();
   EL('plugins').innerHTML = '';
-  let ctrls = EL('controls#' + focused);
-  if (ctrls) {
-    ctrls.style.display = 'none';
-    addIdRecursive(ctrls, '__old');
-  }
   EL('ota_label').innerHTML = "";
 
   errorBar(false);

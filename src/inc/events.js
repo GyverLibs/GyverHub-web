@@ -133,8 +133,8 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
   });
 
   ev.device.addEventListener('command.ack', e => {
-    if (e.device.info.id == focused)
-      Ack.clear(e.data.name);
+    if (e.device.info.id == focused && renderer)
+      renderer.handleAck(e.data.name);
   });
 
   ev.device.addEventListener('command.script', e => {

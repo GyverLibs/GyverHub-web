@@ -18,12 +18,14 @@ class Renderer {
     #widgets;
     #idMap;
     #prevWidth;
+    #ackTimers;
 
     constructor(device, controls) {
         this.device = device;
         this.#widgets = [];
         this.#idMap = new Map();
         this.#prevWidth = 1;
+        this.#ackTimers = new Map();
 
         this.device.resetUIFiles();
         this.makeWidgets(this.#widgets, 'col', controls);
@@ -57,6 +59,33 @@ class Renderer {
                 }
                 break;
         }
+    }
+
+    set(widget, value, ack = true) {
+        if (ack) {
+            const t = setTimeout(() => {
+                this.#ackTimers.delete(widget.id);
+                widget.handleSetTimeout();
+            });
+            this.#ackTimers.set(widget.id, t);
+        }
+        this.renderer.device.set(widget.id, value);
+    }
+
+    handleAck(name) {
+        const t = this.#ackTimers.get(name);
+        if (t) {
+            clearTimeout(t);
+            this.#ackTimers.delete(name);
+            const w = this.#idMap.get(name);
+            if (w) w.handleAck();
+        }
+    }
+
+    close() {
+        for (const t of this.#ackTimers.values())
+            clearTimeout(t);
+        this.#ackTimers.clear();
     }
 
     /**

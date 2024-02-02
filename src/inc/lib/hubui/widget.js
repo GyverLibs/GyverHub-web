@@ -46,9 +46,11 @@ class Widget {
      * @returns {Promise<undefined>}
      */
     set(value, ack = true) {
-        if (ack) Ack.set(this.id);
-        return this.renderer.device.set(this.id, value);
+        this.renderer.set(this.id, value, ack);
     }
+
+    handleSetTimeout() {}
+    handleAck() {}
 }
 
 /**
@@ -211,5 +213,13 @@ class BaseWidget extends Widget {
 
     setPlabel(text = null) {
         this.#plabel.innerHTML = text ?? '';
+    }
+
+    handleSetTimeout(){
+        this.setPlabel('[ERROR]');
+    }
+
+    handleAck() {
+        this.setPlabel();
     }
 }

@@ -1,25 +1,3 @@
-class Ack {
-  static set(id) {
-    Ack.clear(id);
-    Ack.buf[id] = setTimeout(() => {
-      Widget.setPlabel(id, '[' + lang.error.toUpperCase() + ']');
-      delete Ack.buf[id];
-    }, 1500);
-  }
-  static clear(id) {
-    Widget.setPlabel(id);
-    if (Ack.buf[id]) {
-      clearTimeout(Ack.buf[id]);
-      delete Ack.buf[id];
-    }
-  }
-  static clearAll() {
-    for (let id in Ack.buf) Ack.clear(id);
-  }
-
-  static buf = {};
-};
-
 // ================== POST ==================
 const set_prd = 15;
 let set_prd_buf = {};
@@ -56,8 +34,7 @@ function release_all() {
 let renderer;
 
 function showControls(id, controls) {
-  Ack.clearAll();
-
+  if (renderer) renderer.close();
   const device = hub.dev(id);
   renderer = new Renderer(device, controls);
   const $root = renderer.build();
