@@ -78,10 +78,11 @@ class Button extends BaseWidget {
         if (text) {
             if (text.includes(".svg")) {
                 hub.dev(focused).addFile(this.id, text, (data) => {
+                    this.setPlabel();
                     this.$btn.innerHTML = dataTotext(data);
                     this.$btn.style.width = this.#fontSize;
                     this.$btn.style.fill = this.#color;
-                });
+                }, perc => this.setPlabel(`[${perc}%]`));
                 this.#inline = false;
                 return;
             } else {

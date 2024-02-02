@@ -185,7 +185,7 @@ class Device extends EventEmitter {
   
       let res;
       try {
-        res = await this.fetch(file.path);
+        res = await this.fetch(file.path, file.progress);
       } catch (e) {
         return;
       }
@@ -209,10 +209,10 @@ class Device extends EventEmitter {
    * @param {string} path
    * @param {(string) => undefined} callback 
    */
-  async addFile(id, path, callback) {
+  async addFile(id, path, callback, progress = undefined) {
     let has = this.#files.some(f => f.id == id);
     if (!has) this.#files.push({
-      id, path, callback,
+      id, path, callback, progress
     });
     if (this.#file_flag && this.#files.length == 1) await this._fetchFiles();
   }
