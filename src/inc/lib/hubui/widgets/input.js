@@ -16,7 +16,7 @@ class Input extends BaseWidget {
                     name: 'el',
                     events: {
                         keydown: e => {
-                            if (e.key == 'Enter') this.#send(tru);
+                            if (e.key == 'Enter') this.#send(true);
                         },
                         input: () => {
                             this.#changed = true;

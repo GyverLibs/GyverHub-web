@@ -46,7 +46,7 @@ class Widget {
      * @returns {Promise<undefined>}
      */
     set(value, ack = true) {
-        this.renderer.set(this.id, value, ack);
+        this.renderer.set(this, value, ack);
     }
 
     handleSetTimeout() {}

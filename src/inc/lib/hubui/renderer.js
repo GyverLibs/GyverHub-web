@@ -69,7 +69,7 @@ class Renderer {
             });
             this.#ackTimers.set(widget.id, t);
         }
-        this.renderer.device.set(widget.id, value);
+        this.device.set(widget.id, value);
     }
 
     handleAck(name) {
