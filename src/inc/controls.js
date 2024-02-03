@@ -3,9 +3,7 @@ const set_prd = 15;
 let set_prd_buf = {};
 
 function post_set(name, value = '') {
-  ub.dev(focused).set(name, value);
-  // Widget.setPlabel(name, '•');
-  Ack.set(name);
+  hub.dev(focused).set(name, value);
 }
 function post_set_prd(name, value) {
   if (!(name in set_prd_buf)) set_prd_buf[name] = { value: null, tout: null };

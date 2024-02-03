@@ -14,29 +14,33 @@ function updateSystemMenu() {
 class Menu {
     static add(ctrl) {
         let labels = [];
-        let inner = '';
+        let inner = [];
         if (ctrl != null && ctrl.text) {
             labels = ctrl.text.toString().split(';');
-            for (let i in labels) {
-                let sel = (i == ctrl.value) ? 'menu_act' : '';
-                inner += `<div onclick="Menu.click(${i})" class="menu_item ${sel}">${labels[i].trim()}</div>`;
+            for (const i in labels) {
+                inner.push(createElement(null, {
+                    type: 'div',
+                    class: i == ctrl.value ? "menu_item menu_act" : "menu_item",
+                    text: labels[i].trim(),
+                    events: {
+                        click: () => {
+                            try {
+                                hub.dev(focused).fsStop();
+                            } catch (e) { }
+                            menu_show(0);
+                            Menu.deact();
+                            if (screen != 'ui') show_screen('ui');
+                            hub.dev(focused).set('_menu', i);
+                        }
+                    }
+                }));
             }
         }
-        EL('menu_user').innerHTML = inner;
+        EL('menu_user').replaceChildren(...inner);
     }
 
     static clear() {
         Menu.add(null);
-    }
-
-    static click(num) {
-        try {
-            hub.dev(focused).fsStop();
-        } catch (e) { }
-        menu_show(0);
-        Menu.deact();
-        if (screen != 'ui') show_screen('ui');
-        post_set('_menu', num);
     }
 
     static deact() {
@@ -44,4 +48,4 @@ class Menu {
         els.push(EL('menu_cfg'), EL('menu_info'), EL('menu_fsbr'), EL('menu_ota'));
         for (let el in els) if (els[el]) els[el].classList.remove('menu_act');
     }
-};
+}

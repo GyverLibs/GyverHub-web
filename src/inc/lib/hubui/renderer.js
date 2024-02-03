@@ -140,7 +140,8 @@ class Renderer {
         }
 
         for (const w of this.#widgets) {
-            $root.append(w.build());
+            const $w = w.build();
+            if ($w) $root.append($w);
         }
 
         $root.style.visibility = 'visible';
@@ -185,3 +186,13 @@ class RowColWidget extends Widget {
 
 Renderer.register('row', RowColWidget);
 Renderer.register('col', RowColWidget);
+
+
+class MenuWidget extends Widget {
+    constructor(data, renderer) {
+        super(data, renderer);
+        Menu.add(data);
+    }
+}
+
+Renderer.register('menu', MenuWidget);
