@@ -244,7 +244,7 @@ class Device extends EventEmitter {
   }
 
   async set(name, value){
-    await this.#postAndWait('set', ['ok', 'update', 'ui'], name, value);
+    await this.#postAndWait('set', ['ui', 'ack'], name, value);
   }
 
   _checkUpdates(updates) {

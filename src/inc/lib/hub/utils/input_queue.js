@@ -47,8 +47,8 @@ class InputQueue {
     }, this.#get_timeout);
 
     while (!timed_out) {
-      const res = this.#getIfMatches(types);
-      if (res) return [res.type, res.data];
+      const value = this.#getIfMatches(types);
+      if (value) return [value.type, value.data];
 
       [wait, release] = makeWaiter();
       this.#listeners.push(release);
@@ -60,10 +60,11 @@ class InputQueue {
 
   #getIfMatches(types) {
     for (let i = 0; i < this.#queue.length; i++) {
-      const element = this.#queue[i];
-      if (types.includes(element.type)) {
+      const value = this.#queue[i];
+      if (types.includes(value.type)) {
         this.#queue.splice(i, 1);
-        return element;
+        clearTimeout(value.timer);
+        return value;
       }
     }
     return undefined;
