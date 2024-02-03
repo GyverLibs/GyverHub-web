@@ -93,7 +93,9 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
 
   ev.device.addEventListener('connectionchanged', e => {
     EL(`device#${e.device.info.id}`).className = "device";
-    display(`${e.device.getConnection().name}#${e.device.info.id}`, 'inline-block');
+    const conn = e.device.getConnection().name;
+    if (conn !== 'WS')
+      display(`${conn}#${e.device.info.id}`, 'inline-block');
   });
 
 
