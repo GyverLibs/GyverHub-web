@@ -6,12 +6,14 @@ class WSconn extends Connection {
   #packet_buffer;
   #reconnect;
 
+  onConnChange(s){}
+
   constructor(hub) {
     super(hub);
     this.options.enabled = false;
     this.options.ip = false;
     this.options.port = false;
-    this.options.discover_timeout = 10000;
+    this.options.discover_timeout = 3000;
 
     this.#packet_buffer = new PacketBufferScanFirst(data => {
       this.hub._parsePacket(this, data);
@@ -34,12 +36,12 @@ class WSconn extends Connection {
     this.#reconnect = true;
     this.#ws = new WebSocket(`ws://${this.options.ip}:${this.options.port}/`, ['hub']);
 
-    this._ws.onopen = () => {
+    this.#ws.onopen = () => {
       this._setState(ConnectionState.CONNECTED);
       this.#packet_buffer.clear();
     };
 
-    this._ws.onclose = async () => {
+    this.#ws.onclose = async () => {
       this._setState(ConnectionState.DISCONNECTED);
       this.#ws = undefined;
       await sleep(500);

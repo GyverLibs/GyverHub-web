@@ -267,16 +267,19 @@ class Device extends EventEmitter {
 
   async focus() {
     if (this.info.ws_port && this.active_connections.some(conn => conn instanceof HTTPconn)) {
+      const ws = this._hub.ws;
+
       this._hub.config.set('connections', 'WS', 'ip', this.info.ip);
       this._hub.config.set('connections', 'WS', 'port', this.info.ws_port);
       this._hub.config.set('connections', 'WS', 'enabled', true);
-      await this._hub.ws.disconnect();
-      await this._hub.ws.connect();
-      setTimeout(() => {
-        if (!this._hub.ws.isConnected()) {
-          this.ws._hub.disconnect();
-        }
-      }, this.tout_prd);
+      await ws.disconnect();
+      await ws.connect();
+      await sleep(this.tout_prd);
+      if (!ws.isConnected()) {
+        await ws.disconnect();
+      } else {
+        this.addConnection(ws)
+      }
     }
 
     await this.updateUi();

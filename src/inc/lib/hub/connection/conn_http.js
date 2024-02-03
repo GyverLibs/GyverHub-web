@@ -12,26 +12,30 @@ class HTTPconn extends Connection {
     this.options.port = '80';
     this.options.netmask = '255.255.255.0';
     this.options.local_ip = '192.168.0.1';
-    this.options.request_timeout = 15;
-    this.options.delay = 5;
-    this.options.discover_timeout = 10000;
+    this.options.request_timeout = 2500;
+    this.options.delay = 100;
+    this.options.discover_timeout = 3000;
 
     this.addEventListener('statechange', () => this.onConnChange(this.getState()));
+  }
+
+  isConnected() {
+    return this.options.enabled;
   }
 
   // discover
   async discover() {
     if (this.isDiscovering() || !this.isConnected()) return;
-    for (const id in this.hub.getDeviceIds()) {
+    for (const id of this.hub.getDeviceIds()) {
       const dev = this.hub.dev(id);
-      if (dev.ip) {
+      if (dev.info.ip) {
+        this._discoverTimer();
         try {
-          await this.send(dev.ip, dev.http_port, `${dev.prefix}/${dev.id}`);
+          await this.send(dev.info.ip, dev.info.http_port, `${dev.info.prefix}/${dev.info.id}`);
         } catch (e) {}
         await sleep(this.options.delay);
       }
     }
-    this._discoverTimer();
   }
 
   async discover_ip(ip, port = undefined) {
@@ -46,12 +50,19 @@ class HTTPconn extends Connection {
     const ips = getIPs(this.options.local_ip, this.options.netmask);
     if (!ips) return;
 
+    let n = 0;
+    for (const i of ips) {
+      this.#searchInner(i, n++);
+    }
+  }
+
+  async #searchInner(ip, n) {
+    await sleep(this.options.delay * n);
     this._discoverTimer();
-    for (const i in ips) {
-      try {
-        await this.send(ips[i], this.options.port, this.hub.prefix);
-      } catch (e) {}
-      await sleep(this.options.delay);
+    try {
+      await this.send(ip, undefined, this.hub.prefix);
+    } catch (e) {
+      console.log(e);
     }
   }
 
