@@ -300,9 +300,6 @@ function CMP(id) {
 function display(id, value) {
   EL(id).style.display = value;
 }
-function getUnix(arg) {
-  return Math.floor(arg.valueAsNumber / 1000);
-}
 function showNotif(name, text) {
   if (!("Notification" in window) || Notification.permission != 'granted') return;
   let descr = name + ' (' + new Date(Date.now()).toLocaleString() + ')';
