@@ -222,17 +222,17 @@ class Device extends EventEmitter {
   //#region Interraction > Common
 
   async getInfo() {
-    const [type, data] = await this.#postAndWait('info', ['info', 'ok']);
+    const [type, data] = await this.#postAndWait('info', ['info', 'OK']);
     if (type === 'info') return data.info;
     return undefined;
   }
 
   async reboot() {
-    await this.#postAndWait('reboot', ['ok']);
+    await this.#postAndWait('reboot', ['OK']);
   }
 
   async sendCli(command) {
-    await this.#postAndWait('cli', ['ok'], 'cli', command);
+    await this.#postAndWait('cli', ['OK'], 'cli', command);
   }
 
   //#endregion
