@@ -11,16 +11,28 @@ class GyverHub extends EventEmitter {
   constructor() {
     super();
     this.config = new Config();
-    this.#connections.push(new HTTPconn(this));
+    this.addConnection(HTTPconn);
     /*@[if_not_target:esp]*/
-    this.#connections.push(
-      new MQTTconn(this),
-      new TGconn(this),
-      new SERIALconn(this),
-      new BTconn(this),
-      new WSconn(this),
-    );
+    this.addConnection(MQTTconn);
+    this.addConnection(TGconn);
+    this.addConnection(SERIALconn);
+    this.addConnection(BTconn);
+    this.addConnection(WSconn);
     /*@/[if_not_target:esp]*/
+  }
+
+  addConnection(connClass) {
+    for (const connection of this.#connections)
+      if (connection instanceof connClass)
+        return;
+
+    const conn = new connClass(this);
+    conn.addEventListener('statechange', () => {
+      this.dispatchEvent(new Event('connectionstatechange'));
+      this.dispatchEvent(new Event('connectionstatechange.' + conn.name));
+      if (conn.isConnected()) conn.discover();
+    });
+    this.#connections.push(conn);
   }
 
   get mqtt() {
