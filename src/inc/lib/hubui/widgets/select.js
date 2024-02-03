@@ -4,26 +4,23 @@ class Select extends BaseWidget {
     constructor(data, renderer) {
         super(data, renderer);
 
-        this.$container.append(createElement(this, {
+        this.makeLayout( {
             type: 'select',
             class: 'w_select',
             name: 'el',
             style: {
                 color: 'var(--prim)'
             },
-            also($el) {
-                $el.value = data.value;
-                $el.addEventListener('change', () => {
-                    this.set($el.value);
-                });
-            }
-        }));
+            events: {
+                change: () => this.set(this.$el.value)
+            },
+        });
 
         this.update(data);
-        this.disable(this.$el, data.disable);
     }
 
     update(data) {
+        super.update(data);
         if ('value' in data) this.$el.value = data.value;
         if ('text' in data) {
             while (this.$el.options.length > 0) this.$el.remove(0); // clear

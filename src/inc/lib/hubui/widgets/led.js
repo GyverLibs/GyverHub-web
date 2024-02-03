@@ -1,6 +1,7 @@
 class Led extends BaseWidget {
     $led;
     #color;
+    #value;
 
     constructor(data, renderer) {
         super(data, renderer);
@@ -20,8 +21,9 @@ class Led extends BaseWidget {
 
         if ('color' in data) this.#color = intToCol(data.color);
         if ('disable' in data) this.disable(this.$led, data.disable);
-        if ('value' in data) {
-            if (data.value) {
+        if ('value' in data) this.#value = data.value;
+        if ('value' in data || 'color' in data) {
+            if (this.#value) {
                 this.$led.classList.add('w_led_on');
                 this.$led.style.background = this.#color;
                 this.$led.style.boxShadow = this.#color + ' 0 0 9px 1px, inset 2px 3px 0px 0px #fff3;';

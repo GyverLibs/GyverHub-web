@@ -20,6 +20,7 @@ class Icon extends BaseWidget {
     }
 
     update(data) {
+        super.update(data);
         if ('icon' in data) this.$icon.innerHTML = getIcon(data.icon);
         if ('fsize' in data) this.$icon.style.fontSize = data.fsize + 'px';
         if ('color' in data) this.#color = intToCol(data.color);

@@ -63,10 +63,12 @@ class Renderer {
 
     set(widget, value, ack = true) {
         if (ack) {
+            const old = this.#ackTimers.get(widget.id);
+            if (old) clearTimeout(old);
             const t = setTimeout(() => {
                 this.#ackTimers.delete(widget.id);
                 widget.handleSetTimeout();
-            });
+            }, 3000);
             this.#ackTimers.set(widget.id, t);
         }
         this.device.set(widget.id, value);

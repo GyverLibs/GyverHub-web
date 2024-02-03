@@ -190,7 +190,7 @@ class BaseWidget extends Widget {
             else this.#container.classList.remove('widget_dsbl');
         }
         if ('hint' in data) {
-            const htext = 'name: ' + id + '\n' + (data.hint ?? '');
+            const htext = 'name: ' + this.id + '\n' + (data.hint ?? '');
             this.#label.title = htext;
             this.#hint.title = htext;
             this.#hint.style.display = (data.hint && data.hint.length) ? 'inline-block' : 'none';

@@ -20,30 +20,27 @@ class Button extends BaseWidget {
                 fontSize: this.#fontSize,
                 width: 'unset',
             },
-            also($btn) {
-                $btn.addEventListener('click', () => {
-                    this.set(2);
-                });
-                $btn.addEventListener('mousedown', () => {
+            events: {
+                click: () => this.set(2),
+                mousedown: () => {
                     if(!this.#touch) this.set(1);
-                });
-                $btn.addEventListener('mouseup', () => {
+                },
+                mouseup: () => {
                     if(!this.#touch&&this.#pressed) this.set(0);
-                });
-                $btn.addEventListener('mouseleave', () => {
+                },
+                mouseleave: () => {
                     if(!this.#touch&&this.#pressed) this.set(0);
-                });
-        
-                $btn.addEventListener('touchstart', () => {
+                },
+                touchstart: () => {
                     this.#touch=true;
                     this.#pressed = true;
                     this.set(1, false);
-                });
-                $btn.addEventListener('touchend', () => {
+                },
+                touchend: () => {
                     this.#pressed = false;
                     this.set(0, false);
-                });
-            }
+                },
+            },
         });
         this.update(data);
     }

@@ -27,7 +27,6 @@ class Title extends BaseWidget {
             ]
         });
         
-        this.align(data.align);
         this.update(data);
     }
 

@@ -4,7 +4,7 @@ class Display extends BaseWidget {
     constructor(data, renderer) {
         super(data, renderer);
 
-        createElement(this, {
+        this.makeLayout({
             type: 'textarea',
             class: 'w_disp',
             name: 'el',
@@ -12,18 +12,21 @@ class Display extends BaseWidget {
                 fontSize: '20px',
                 background: 'var(--prim)'
             },
-            also($el) {
-                $el.readonly = true;
-                $el.rows = 2;
-                $el.addEventListener('wheel', e => {
+            events: {
+                wheel: e => {
                     e.preventDefault();
-                    $el.scrollLeft += e.deltaY;
-                })
+                    this.$el.scrollLeft += e.deltaY;
+                }
             }
         });
+        this.$el.readonly = true;
+        this.$el.rows = 2;
+
+        this.update(data);
     }
 
     update(data) {
+        super.update(data);
         if ('value' in data) this.$el.innerHTML = data.value;
         if ('color' in data) this.$el.style.background = intToCol(data.color);
         if ('fsize' in data) this.$el.style.fontSize = data.fsize + 'px';
