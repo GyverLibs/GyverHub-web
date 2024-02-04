@@ -154,7 +154,7 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
 
   ev.device.addEventListener('update', e => {
     if (e.device.info.id == focused && screen == 'ui' && renderer)
-      renderer.applyUpdate(e.name, e.data);
+      renderer.handleUpdate(e.name, e.data);
   });
 });
 hub.addEventListener('deviceinfochanged', ev => {

@@ -28,7 +28,7 @@ class Renderer {
         this.#ackTimers = new Map();
 
         this.device.resetUIFiles();
-        this.makeWidgets(this.#widgets, 'col', controls);
+        this._makeWidgets(this.#widgets, 'col', controls);
         this.device.loadUIFiles();
     }
 
@@ -61,49 +61,20 @@ class Renderer {
         }
     }
 
-    set(widget, value, ack = true) {
-        if (ack) {
-            const old = this.#ackTimers.get(widget.id);
-            if (old) clearTimeout(old);
-            const t = setTimeout(() => {
-                this.#ackTimers.delete(widget.id);
-                widget.handleSetTimeout();
-            }, 3000);
-            this.#ackTimers.set(widget.id, t);
-        }
-        this.device.set(widget.id, value);
-    }
-
-    handleAck(name) {
-        const t = this.#ackTimers.get(name);
-        if (t) {
-            clearTimeout(t);
-            this.#ackTimers.delete(name);
-            const w = this.#idMap.get(name);
-            if (w) w.handleAck();
-        }
-    }
-
-    close() {
-        for (const t of this.#ackTimers.values())
-            clearTimeout(t);
-        this.#ackTimers.clear();
-    }
-
     /**
      * Generate widgets from layout.
      * @param {Widget[]} cont 
      * @param {'row' | 'col'} type 
      * @param {object[]} data 
      */
-    makeWidgets(cont, type, data) {
+    _makeWidgets(cont, type, data) {
         this.#updateWWidth(type, data);
         
         for (const ctrl of data) {
             if (!ctrl.type) continue;
 
             if ((ctrl.type == 'row' || ctrl.type == 'col') && this.#single) {
-                this.makeWidgets(cont, 'col', ctrl.data);
+                this._makeWidgets(cont, 'col', ctrl.data);
             } else {
                 const cls = Renderer.#WIDGETS.get(ctrl.type);
                 if (cls === undefined) {
@@ -116,6 +87,19 @@ class Renderer {
                 cont.push(obj);
             }
         }
+    }
+
+    _set(widget, value, ack = true) {
+        if (ack) {
+            const old = this.#ackTimers.get(widget.id);
+            if (old) clearTimeout(old);
+            const t = setTimeout(() => {
+                this.#ackTimers.delete(widget.id);
+                widget.handleSetTimeout();
+            }, 3000);
+            this.#ackTimers.set(widget.id, t);
+        }
+        this.device.set(widget.id, value);
     }
 
     /**
@@ -149,11 +133,37 @@ class Renderer {
     }
 
     /**
-     * Apply update to widget.
+     * Закрытие рендерера (остановка таймеров). Нужно вызвать перед удалением рендерера.
+     */
+    close() {
+        for (const t of this.#ackTimers.values())
+            clearTimeout(t);
+        this.#ackTimers.clear();
+        for (const W of this.#idMap.values()) {
+            W.close();
+        }
+    }
+
+    /**
+     * Обработчик пакета ack с устройства
+     * @param {string} name 
+     */
+    handleAck(id) {
+        const t = this.#ackTimers.get(id);
+        if (t) {
+            clearTimeout(t);
+            this.#ackTimers.delete(id);
+            const w = this.#idMap.get(id);
+            if (w) w.handleAck();
+        }
+    }
+
+    /**
+     * Обработчик пакета update с устройства
      * @param {string} id Widget id
      * @param {object} data 
      */
-    applyUpdate(id, data) {
+    handleUpdate(id, data) {
         const w = this.#idMap.get(id);
         if (w) w.update(data);
     }
@@ -168,7 +178,7 @@ class RowColWidget extends Widget {
         this.#children = [];
         this.#data = data;
 
-        renderer.makeWidgets(this.#children, data.type, data.data);
+        renderer._makeWidgets(this.#children, data.type, data.data);
     }
 
     build() {

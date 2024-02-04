@@ -21,7 +21,9 @@ class Widget {
 
     /**
      * Build HTML tree from widget.
-     * @returns {HTMLElement}
+     * 
+     * Should be overriden.
+     * @returns {HTMLElement | null}
      */
     build() {
         return null;
@@ -38,6 +40,27 @@ class Widget {
     }
 
     /**
+     * Handle previous set (with ack) was timed out.
+     * 
+     * Should be overriden.
+     */
+    handleSetTimeout() {}
+
+    /**
+     * Handle ack for previous set.
+     * 
+     * Should be overriden.
+     */
+    handleAck() {}
+
+    /**
+     * Handle renderer closing. 
+     * 
+     * Should be overriden to stop timers (if any).
+     */
+    close() {}
+
+    /**
      * Set widget value.
      * 
      * Should be called from subclass.
@@ -46,11 +69,8 @@ class Widget {
      * @returns {Promise<undefined>}
      */
     set(value, ack = true) {
-        this.renderer.set(this, value, ack);
+        this.renderer._set(this, value, ack);
     }
-
-    handleSetTimeout() {}
-    handleAck() {}
 }
 
 /**
@@ -153,7 +173,9 @@ class BaseWidget extends Widget {
     }
 
     /**
+     * Initialize widget layout.
      * 
+     * Should be called from subclass constructor.
      * @param {object} obj 
      */
     makeLayout(obj) {
@@ -215,10 +237,16 @@ class BaseWidget extends Widget {
         this.#plabel.innerHTML = text ?? '';
     }
 
+    /**
+     * Internal method.
+     */
     handleSetTimeout(){
         this.setPlabel('[ERROR]');
     }
 
+    /**
+     * Internal method.
+     */
     handleAck() {
         this.setPlabel();
     }
