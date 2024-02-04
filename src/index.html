@@ -33,7 +33,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="msapplication-starturl" content="/">
     
-    <!--@![add_file:script.js, compile]-->
+    <!--@![add_file:script.js, compile, raw]-->
     <script src="script.js?/*@![:version]*/="></script>
     <!--@![add_file:style.css, compile]-->
     <link href="style.css?/*@![:version]*/=" rel="stylesheet">
@@ -56,13 +56,13 @@
 
   <!--@/[if_target:host]-->
   <!--@[if_target:esp]-->
-    <!--@![add_file:script.js, compile]-->
+    <!--@![add_file:script.js, compile, raw]-->
     <script src="script.js?/*@![:version]*/="></script>
     <!--@![add_file:style.css, compile]-->
     <link href="style.css?/*@![:version]*/=" rel="stylesheet">
   <!--@/[if_target:esp]-->
   <!--@[if_not_target:host,esp]-->
-    <script>/*@![include:script.js, compile]*/</script>
+    <script>/*@![include:script.js, compile, raw]*/</script>
     <style>/*@![include:style.css, compile]*/</style>
   <!--@/[if_not_target:host,esp]-->
 </head>

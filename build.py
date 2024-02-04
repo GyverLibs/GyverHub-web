@@ -64,17 +64,18 @@ class Compiler:
         if "compile" in options:
             data = self.compile_str(data.decode('utf-8')).encode('utf-8')
 
-        if "js" in options:
-            data = rjsmin.jsmin(data.decode('utf-8')).encode('utf-8')
+        if "raw" not in options:
+            if "js" in options:
+                data = rjsmin.jsmin(data.decode('utf-8')).encode('utf-8')
 
-        if "css" in options:
-            data = rcssmin.cssmin(data.decode('utf-8')).encode('utf-8')
+            if "css" in options:
+                data = rcssmin.cssmin(data.decode('utf-8')).encode('utf-8')
 
-        if "html" in options:
-            data = HtmlMinifier().minify(data.decode('utf-8')).encode('utf-8')
+            if "html" in options:
+                data = HtmlMinifier().minify(data.decode('utf-8')).encode('utf-8')
 
-        if "json" in options:
-            data = minify_json(data.decode('utf-8')).encode('utf-8')
+            if "json" in options:
+                data = minify_json(data.decode('utf-8')).encode('utf-8')
 
         if "base64" in options:
             data = base64.b64encode(data)
