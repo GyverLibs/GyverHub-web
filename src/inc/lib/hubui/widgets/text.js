@@ -47,7 +47,7 @@ class LogWidget extends BaseWidget {
         super.update(data);
         if ('value' in data) {
             this.$el.innerHTML = data.value.trim();
-            this.$el.scrollTop = el.scrollHeight;
+            this.$el.scrollTop = this.$el.scrollHeight;
         }
         if ('rows' in data) this.$el.rows = data.rows;
     }
