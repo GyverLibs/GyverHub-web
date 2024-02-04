@@ -29,6 +29,7 @@ class GaugeWidget extends BaseWidget {
         });
         
         this.update(data);
+        wait2Frame().then(() => this.#redraw());
     }
 
     close() {
