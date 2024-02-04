@@ -176,10 +176,10 @@ class BaseWidget extends Widget {
      * Initialize widget layout.
      * 
      * Should be called from subclass constructor.
-     * @param {object} obj 
+     * @param {object[]} obj 
      */
-    makeLayout(obj) {
-        this.#container.replaceChildren(createElement(this, obj));
+    makeLayout(...obj) {
+        this.#container.replaceChildren(...obj.map(o => createElement(this, o)));
     }
 
     /**
