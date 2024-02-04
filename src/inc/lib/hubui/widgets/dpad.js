@@ -1,35 +1,33 @@
-class UiDpad {
-    constructor(cont, data) {
-        cont.innerHTML = `<canvas data-type="${data.type}" id="${ID(data.id)}"></canvas>`;
-        
-        waitFrame().then(() => {
-            let id = data.id;
-            let cb = function (d) {
-                post_set_prd(id, ((d.x + 255) << 16) | (d.y + 255));
-            }
-            let pad = new Dpad(CMP(id), data, cb);
-            pad.redraw(false);
-            UiDpad.pads[id] = pad;
+class DpadWidget extends BaseWidget  {
+    $el;
+    #pad;
+
+    constructor(data, renderer) {
+        super(data, renderer);
+
+        this.makeLayout({
+            type: 'canvas',
+            name: 'el'
         });
-        Widget.disable(data.id, data.disable);
-    }
 
-    static update(id, data) {
-    }
+        this.#pad = new Dpad(this.$el, data, d => {
+            this.set((d.x + 255) << 16) | (d.y + 255);
+        });
 
-    static resize() {
-        for (let pad in UiDpad.pads) {
-            UiDpad.pads[pad].redraw(false);
-        }
+        this.$el.parentNode.addEventListener('resize', () => {
+            this.#pad.redraw();
+        })
+        
+        this.update(data);
+        this.disable(this.$el, data.disable);
+        waitFrame().then(() => {
+            this.#pad.redraw(false);
+        });
     }
+}
 
-    static reset() {
-        for (let pad in UiDpad.pads) UiDpad.pads[pad].stop();
-        UiDpad.pads = {};
-    }
+Renderer.register('dpad', DpadWidget);
 
-    static pads = {};
-};
 
 class Dpad {
     color = 0;

@@ -239,6 +239,10 @@ class BaseWidget extends Widget {
         this.#plabel.innerHTML = text ?? '';
     }
 
+    setSuffix(text = null) {
+        this.#suffix.innerHTML = text ?? '';
+    }
+
     /**
      * Internal method.
      */

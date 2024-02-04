@@ -6,10 +6,12 @@
 /*@![include:inc/lib/hubui/widgets/button.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/color.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/datetime.js, compile]*/
+/*@![include:inc/lib/hubui/widgets/dpad.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/gauge.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/icon.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/image.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/input.js, compile]*/
+/*@![include:inc/lib/hubui/widgets/joy.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/label.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/led.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/popup.js, compile]*/

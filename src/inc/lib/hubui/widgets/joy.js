@@ -1,39 +1,39 @@
-class UiJoy {
-    constructor(cont, data) {
-        cont.innerHTML = `<canvas></canvas>`;
+class JoyWidget extends BaseWidget  {
+    $el;
+    #joy;
 
-        wait2Frame().then(() => {
-            let id = data.id;
-            let cb = function (d) {
-                post_set_prd(id, ((d.x + 255) << 16) | (d.y + 255));
-                if (!UiJoy.joys[id].suffix) {
-                    EL('wsuffix#' + id).innerHTML = '[' + d.x + ',' + d.y + ']';
-                }
-            }
-            let joy = new Joy(CMP(id), data, cb);
-            joy.redraw(false);
-            UiJoy.joys[id] = joy;
+    constructor(data, renderer) {
+        super(data, renderer);
+
+        this.makeLayout({
+            type: 'canvas',
+            name: 'el'
         });
-        Widget.disable(data.id, data.disable);
+
+        this.#joy = new Joy(this.$el, data, d => {
+            this.set((d.x + 255) << 16) | (d.y + 255);
+            this.setSuffix('[' + d.x + ',' + d.y + ']');
+        });
+
+        this.$el.parentNode.addEventListener('resize', () => {
+            this.#joy.reset();
+            this.#joy.redraw();
+        })
+        
+        this.update(data);
+        this.disable(this.$el, data.disable);
+        waitFrame().then(() => {
+            this.#joy.redraw(false);
+        });
     }
 
-    static update(id, data) {
+    close() {
+        this.#joy.stop();
     }
+}
 
-    static reset() {
-        for (let joy in UiJoy.joys) UiJoy.joys[joy].stop();
-        UiJoy.joys = {};
-    }
+Renderer.register('joy', JoyWidget);
 
-    static resize() {
-        for (let joy in UiJoy.joys) {
-            UiJoy.joys[joy].reset();
-            UiJoy.joys[joy].redraw(false);
-        }
-    }
-
-    static joys = {};
-};
 
 class Joy {
     keep = 0;
