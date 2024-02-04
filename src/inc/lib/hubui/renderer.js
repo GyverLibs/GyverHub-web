@@ -187,7 +187,8 @@ class RowColWidget extends Widget {
         $root.style.width = this.#data.wwidth_t + '%';
 
         for (const w of this.#children) {
-            $root.append(w.build());
+            const $w = w.build();
+            if ($w) $root.append($w);
         }
 
         return $root;
