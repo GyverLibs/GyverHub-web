@@ -13,5 +13,6 @@
 /*@![include:inc/lib/hubui/widgets/label.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/led.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/select.js, compile]*/
+/*@![include:inc/lib/hubui/widgets/slider.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/text.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/title.js, compile]*/

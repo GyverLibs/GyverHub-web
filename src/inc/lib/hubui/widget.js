@@ -8,6 +8,8 @@ class Widget {
     type;
     /** @type {Renderer} */
     renderer;
+    /** @type {object} */
+    data;
 
     /**
      * @param {object} data 
@@ -16,6 +18,7 @@ class Widget {
     constructor(data, renderer) {
         this.id = data.id;
         this.type = data.type;
+        this.data = data;
         this.renderer = renderer;
     }
 
@@ -36,7 +39,8 @@ class Widget {
      * @param {object} data 
      */
     update(data) {
-
+        for (const [k, v] of Object.entries(data))
+            this.data[k] = v;
     }
 
     /**
@@ -97,15 +101,12 @@ class BaseWidget extends Widget {
     /** @type {HTMLDivElement} */
     #container;
 
-    _origData;
-
     /**
      * @param {object} data 
      * @param {Renderer} renderer 
      */
     constructor(data, renderer) {
         super(data, renderer);
-        this._origData = data;
 
         this.#root = createElement(this, {
             type: 'div',
@@ -189,6 +190,7 @@ class BaseWidget extends Widget {
      * @param {object} data 
      */
     update(data) {
+        super.update(data);
         if ('label' in data) {
             this.#label.innerHTML = data.label.length ? data.label : this.type.toUpperCase();
         }
