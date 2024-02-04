@@ -1,5 +1,5 @@
-class Button extends BaseWidget {
-    $btn;
+class ButtonWidget extends BaseWidget {
+    $el;
     #color = 'var(--prim)';
     #fontSize = '45px';
     #inline = true;
@@ -12,7 +12,7 @@ class Button extends BaseWidget {
         this.makeLayout({
             type: 'button',
             class: 'icon w_btn',
-            name: 'btn',
+            name: 'el',
             text: "",
             style: {
                 color: this.#color,
@@ -42,6 +42,7 @@ class Button extends BaseWidget {
                 },
             },
         });
+
         this.update(data);
     }
 
@@ -54,31 +55,31 @@ class Button extends BaseWidget {
         if ('color' in data) {
             this.#color = intToCol(data.color);
 
-            this.$btn.style.color = this.#color;
-            this.$btn.style.fill = this.#color;
+            this.$el.style.color = this.#color;
+            this.$el.style.fill = this.#color;
         }
         if ('fsize' in data) {
             this.#fontSize = data.fsize + 'px';
 
             const size = this.#fontSize;
-            this.$btn.style.fontSize = size;
-            this.$btn.style.width = this.#inline ? 'unset' : size;
+            this.$el.style.fontSize = size;
+            this.$el.style.width = this.#inline ? 'unset' : size;
         }
         if ('disable' in data) {
-            this.disable(this.$btn, data.disable);
+            this.disable(this.$el, data.disable);
         }
     }
 
     #setIcon(text) {
         let icon = "";
-        this.$btn.style.width = 'unset';
+        this.$el.style.width = 'unset';
         if (text) {
             if (text.includes(".svg")) {
                 hub.dev(focused).addFile(this.id, text, (data) => {
                     this.setPlabel();
-                    this.$btn.innerHTML = dataTotext(data);
-                    this.$btn.style.width = this.#fontSize;
-                    this.$btn.style.fill = this.#color;
+                    this.$el.innerHTML = dataTotext(data);
+                    this.$el.style.width = this.#fontSize;
+                    this.$el.style.fill = this.#color;
                 }, perc => this.setPlabel(`[${perc}%]`));
                 this.#inline = false;
                 return;
@@ -86,8 +87,9 @@ class Button extends BaseWidget {
                 icon = getIcon(text);
             }
         }
-        this.$btn.innerHTML = icon;
+        this.$el.innerHTML = icon;
         this.#inline = true;
     }
 }
-Renderer.register('button', Button);
+
+Renderer.register('button', ButtonWidget);
