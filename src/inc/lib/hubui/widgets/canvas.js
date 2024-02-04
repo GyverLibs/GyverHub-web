@@ -1,50 +1,61 @@
-class UiCanvas {
-    constructor(cont, data) {
-        cont.innerHTML = `<div class="w_canvas"><canvas onclick="UiCanvas.click('${data.id}',event)"></canvas></div>`;
+class CanvasWidget extends BaseWidget {
+    $el;
+    #cv;
 
-        wait2Frame().then(() => {
-            let cv = new Canvas(data.id, CMP(data.id), data.width, data.height, data.active);
-            cv.update(data.data);
-            cv.show();
-            UiCanvas.canvases[data.id] = cv;
+    constructor(data, renderer) {
+        super(data, renderer);
+
+        this.makeLayout({
+            type: 'div',
+            class: '',
+            children: [
+                {
+                    type: 'canvas',
+                    name: 'el',
+                    events: {
+                        click: e => this.#click(e)
+                    }
+                }
+            ]
         });
 
-        Widget.disable(data.id, data.disable);
+        this.#cv = new Canvas(data.id, this.$el, data.width, data.height, data.active);
+
+        this.$el.parentNode.addEventListener('resize', () => {
+            this.#cv.resize();
+        });
+
+        wait2Frame().then(() => {
+            this.#cv.show();
+        });
+
+        this.update(data.data);
+        this.disable(this.$el, data.disable);
     }
 
-    static update(id, data) {
-        let cv = UiCanvas.canvases[id];
-        if (!cv) return;
+    update(data) {
+        super.update(data);
+        
         if ('data' in data) {
-            cv.update(data.data);
-            cv.show(data.data);
+            this.#cv.update(data.data);
+            this.#cv.show(data.data);
         }
     }
 
-    static reset() {
-        UiCanvas.canvases = {};
-    }
-
-    static resize() {
-        for (let cv in UiCanvas.canvases) {
-            UiCanvas.canvases[cv].resize();
-        }
-    }
-
-    static click(id, e) {
-        let cv = UiCanvas.canvases[id];
-        if (!cv || !cv.active) return;
-        let rect = CMP(id).getBoundingClientRect();
-        let x = Math.round((e.clientX - rect.left) / cv.scale * ratio());
+    #click(e) {
+        if (!this.#cv.active) return;
+        let rect = this.$el.getBoundingClientRect();
+        let x = Math.round((e.clientX - rect.left) / this.#cv.scale * ratio());
         if (x < 0) x = 0;
-        let y = Math.round((e.clientY - rect.top) / cv.scale * ratio());
+        let y = Math.round((e.clientY - rect.top) / this.#cv.scale * ratio());
         if (y < 0) y = 0;
-        post_set(id, (x << 16) | y);
-        EL('wsuffix#' + id).innerHTML = '[' + x + ',' + y + ']';
+        this.set((x << 16) | y);
+        this.setSuffix('[' + x + ',' + y + ']');
     }
+}
 
-    static canvases = {};
-};
+Renderer.register('canvas', CanvasWidget);
+
 
 class Canvas {
     constructor(id, cv, w, h, active) {
