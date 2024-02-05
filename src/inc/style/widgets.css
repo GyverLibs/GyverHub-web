@@ -436,47 +436,28 @@ select option {
 
 /* FLAGS */
 .w_flags {
-  margin: 7px 2px -2px 2px;
-  position: relative;
-  display: inline-block;
-  width: 30px;
-  height: 30px;
+  padding: 4px 13px;
+  margin: 3px;
+  border-radius: 35px;
+  cursor: pointer;
+  background: var(--dark);
+  font-size: 18px;
+  color: var(--font);
   user-select: none;
 }
 
-.w_flags_s {
-  border-radius: 35px;
-  display: flex;
-  position: absolute;
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-  top: -5px;
-  left: -4px;
-  background: var(--dark);
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-  color: var(--font);
-}
-
-.w_flags_s:hover {
+.w_flags:hover {
   background: var(--black);
 }
 
-input:checked+.w_flags_s {
-  background: var(--prim);
+.w_flags.checked {
+  background: var(--checked-color);
   color: white;
 }
 
 .w_flags_cont {
   display: flex;
-  margin-left: 20px;
   flex-wrap: wrap;
-  margin-right: -5px;
-}
-
-.w_flags_cont_tab {
   justify-content: center;
 }
 
@@ -487,6 +468,7 @@ input:checked+.w_flags_s {
   height: 100%;
   overflow: hidden;
   margin-bottom: -5px;
+  --checked-color: var(--prim);
 }
 
 /* ICON */

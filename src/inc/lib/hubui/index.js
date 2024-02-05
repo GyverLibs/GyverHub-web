@@ -8,6 +8,7 @@
 /*@![include:inc/lib/hubui/widgets/color.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/datetime.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/dpad.js, compile]*/
+/*@![include:inc/lib/hubui/widgets/flags.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/gauge.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/icon.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/image.js, compile]*/
