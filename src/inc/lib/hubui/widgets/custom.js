@@ -12,6 +12,7 @@ class HTMLWidget extends BaseWidget {
         this.#root = this.$el.attachShadow({
             mode: 'closed'
         });
+        this.#root.innerHTML = waiter();
         
         this.update(data);
     }
@@ -30,6 +31,11 @@ class HTMLWidget extends BaseWidget {
     }
 
     #apply(text) {
+        if (!this.renderer.device.info.trust) {
+            this.#root.replaceChildren();
+            this.setPlabel('[BLOCKED]');
+            return;
+        }
         this.#root.innerHTML = text;
     }
 }
@@ -67,6 +73,10 @@ class CustomWidget extends Widget {
     }
 
     #apply(text) {
+        if (!this.renderer.device.info.trust) {
+            this.$el.innerHTML = '<p>Dangerous element blocked!</p>';
+            return;
+        }
         const f = new Function('return (' + text + ');');
         const w = f();
         if (this.#widget) this.#widget.close();

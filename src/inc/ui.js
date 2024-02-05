@@ -111,6 +111,7 @@ function show_cfg() {
   EL('ui_block_width').value = dev.info.ui_block_width;
   display('ui_block_width_cont', dev.info.ui_mode >= 2 ? 'flex' : 'none');
   EL('info_cli_sw').checked = EL('cli_cont').style.display == 'block';
+  EL('info_trust').checked = dev.info.trust;
   EL('plugin_css').value = dev.info.plugin_css;
   EL('plugin_js').value = dev.info.plugin_js;
 }
@@ -374,6 +375,15 @@ function dev_up_h(id) {
 function dev_down_h(id) {
   hub.moveDevice(id, 1);
   render_devices();
+}
+async function trust_dev_h() {
+  const v = EL('info_trust').checked;
+  if (v && !await asyncConfirm(lang.dev_trust_warning)) {
+    EL('info_trust').checked = false;
+    return;
+  }
+  hub.dev(focused).info.trust = v;
+  save_devices();
 }
 
 // ============== CLI =============

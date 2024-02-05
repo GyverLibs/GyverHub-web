@@ -22,7 +22,7 @@ function enterMenu(sel = null) {
     for (const $i of document.getElementById('menu_user').children)
         $i.classList.remove('menu_act');
     if (sel !== null)
-        document.querySelector('.menu_item' + sel).classList.add('menu_act');
+        document.querySelector('.menu_item#' + sel).classList.add('menu_act');
 }
 
 class MenuWidget extends Widget {

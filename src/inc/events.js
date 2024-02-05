@@ -1,69 +1,43 @@
 // ============ CONNECTION ============
 /*@[if_not_target:esp]*/
 hub.mqtt.onConnChange = (state) => {
-  switch (state) {
-    case ConnectionState.CONNECTING:
-      mq_change(false);
-      display('mqtt_ok', 'none');
-      break;
-
-    case ConnectionState.CONNECTED:
-      mq_change(true);
-      display('mqtt_ok', 'inline-block');
-      break;
-
-    case ConnectionState.DISCONNECTED:
-      mq_change(false);
-      display('mqtt_ok', 'none');
-      break;
-  }
+  mq_change(state === ConnectionState.CONNECTED);
 }
 
 hub.bt.onConnChange = (state) => {
+  bt_change(state === ConnectionState.CONNECTED);
   switch (state) {
     case ConnectionState.CONNECTING:
       EL('bt_device').innerHTML = lang.connecting;
       break;
 
     case ConnectionState.CONNECTED:
-      bt_change(true);
       EL('bt_device').innerHTML = hub.bt.getName();
-      bt_show_ok(true);
-      hub.bt.discover();
       break;
 
     case ConnectionState.DISCONNECTED:
-      bt_change(false);
       EL('bt_device').innerHTML = lang.disconnected;
-      bt_show_ok(false);
       break;
   }
 }
 hub.serial.onConnChange = (state) => {
+  serial_change(state === ConnectionState.CONNECTED);
   switch (state) {
     case ConnectionState.CONNECTING:
       EL('serial_device').innerHTML = lang.connecting;
       break;
 
     case ConnectionState.CONNECTED:
-      serial_change(true);
       EL('serial_device').innerHTML = hub.bt.getName();
-      serial_show_ok(true);
-      if (state) {
-        setTimeout(() => hub.serial.discover(), cfg.serial_offset);
-      }
       break;
 
     case ConnectionState.DISCONNECTED:
-      serial_change(false);
       EL('serial_device').innerHTML = lang.disconnected;
-      serial_show_ok(false);
       break;
   }
 }
 hub.tg.onConnChange = (state) => {
-  display('tg_ok', state ? 'inline-block' : 'none');
-  tg_change(state);
+  tg_change(state === ConnectionState.CONNECTED);
 }
 /*@/[if_not_target:esp]*/
 
@@ -139,7 +113,10 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
   });
 
   ev.device.addEventListener('command.script', e => {
-    eval(e.data.script);
+    if (e.device.info.trust)
+      eval(e.data.script);
+    else 
+      showPopupError('Script from device was blocked!');
   });
 
   ev.device.addEventListener('command.error', e => {

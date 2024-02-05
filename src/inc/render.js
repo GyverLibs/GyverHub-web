@@ -115,6 +115,12 @@ function render_main() {
         </div>
 
         <div class="ui_row">
+          <label>${lang.i_trust}</label>
+          <label class="switch"><input type="checkbox" id="info_trust" onchange="trust_dev_h()">
+            <span class="slider"></span></label>
+        </div>
+
+        <div class="ui_row">
           <label>${lang.i_mode}</label>
           <div class="ui_inp_row">
             <select class="ui_inp ui_sel" id="ui_mode" onchange="ui_mode_h(this)">
@@ -807,27 +813,23 @@ function waiter(size = 50, col = 'var(--prim)', block = true) {
 function mq_change(opened) {
   display('mq_start', opened ? 'none' : 'inline-block');
   display('mq_stop', opened ? 'inline-block' : 'none');
+  display('mqtt_ok', opened ? 'inline-block' : 'none');
 }
 
 // bt
-function bt_show_ok(state) {
-  display('bt_ok', state ? 'inline-block' : 'none');
-}
 function bt_change(opened) {
   display('bt_open', opened ? 'none' : 'inline-block');
   display('bt_close', opened ? 'inline-block' : 'none');
+  display('bt_ok', state ? 'inline-block' : 'none');
 }
 
 // serial
-function serial_show_ok(state) {
-  display('serial_ok', state ? 'inline-block' : 'none');
-}
 function serial_change(opened) {
   display('serial_open', opened ? 'none' : 'inline-block');
   display('serial_close', opened ? 'inline-block' : 'none');
+  display('serial_ok', state ? 'inline-block' : 'none');
 }
 async function serial_toggle(state) {
-  serial_show_ok(false);
   serial_change(false);
   if (!state) hub.serial.close();
 }
@@ -836,6 +838,7 @@ async function serial_toggle(state) {
 function tg_change(opened) {
   display('tg_start', opened ? 'none' : 'inline-block');
   display('tg_stop', opened ? 'inline-block' : 'none');
+  display('tg_ok', opened ? 'inline-block' : 'none');
 }
 
 // ============= INFO =============

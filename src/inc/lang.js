@@ -60,6 +60,7 @@ const langBase = {
 
     i_settings: "Settings",
     i_console: "Console",
+    i_trust: "Trust this device",
     i_mode: "UI mode",
     i_default: "Default",
     i_single: "Single row",
@@ -71,6 +72,7 @@ const langBase = {
     i_js: "Plugin JS",
     i_reboot: "Reboot",
     i_link: "Link",
+    dev_trust_warning: "",
 
     i_topics: "Topics",
     i_version: "Version",
@@ -160,6 +162,7 @@ const langBase = {
     cfg_export: "Экспорт",
     cfg_reset: "Сброс",
     cfg_reset_conf: "Сбросить все настройки?",
+    dev_trust_warning: "Внимание: включение этой настройки разрешит устройству выполняить скрипты от в GyverHub. Включение этой настройки для неизвестных устройств может нарушить работу GyverHub и украсть ваши данные!\n\nВы действительно хотите доверять этому устройству?",
 
     m_config: "Настройки",
     m_info: "Инфо",
@@ -168,6 +171,7 @@ const langBase = {
 
     i_settings: "Настройки",
     i_console: "Консоль",
+    i_trust: "Доверять этому устройству",
     i_mode: "Режим ПУ",
     i_default: "По умолчанию",
     i_single: "Один столбец",
