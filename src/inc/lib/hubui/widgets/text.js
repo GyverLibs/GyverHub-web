@@ -19,6 +19,7 @@ class TextWidget extends BaseWidget {
         super.update(data);
         if ('value' in data) this.$el.innerHTML = data.value;
         if ('rows' in data) this.$el.rows = data.rows;
+        if ('disable' in data) this.disable(this.$el, data.disable);
     }
 }
 
@@ -52,6 +53,7 @@ class LogWidget extends BaseWidget {
             this.$el.scrollTop = this.$el.scrollHeight;
         }
         if ('rows' in data) this.$el.rows = data.rows;
+        if ('disable' in data) this.disable(this.$el, data.disable);
     }
 }
 
@@ -85,6 +87,7 @@ class TextFileWidget extends BaseWidget {
                 this.setPlabel();
             });
         }
+        if ('disable' in data) this.disable(this.$el, data.disable);
     }
 }
 
@@ -124,6 +127,7 @@ class Display extends BaseWidget {
         if ('color' in data) this.$el.style.background = intToCol(data.color);
         if ('fsize' in data) this.$el.style.fontSize = data.fsize + 'px';
         if ('rows' in data) this.$el.rows = data.rows;
+        if ('disable' in data) this.disable(this.$el, data.disable);
     }
 }
 
@@ -165,6 +169,7 @@ class Area extends BaseWidget {
         if ('value' in data) this.$el.innerHTML = data.value;
         if ('maxlen' in data) this.$el.maxlength = Math.ceil(data.maxlen);
         if ('rows' in data) this.$el.rows = data.rows;
+        if ('disable' in data) this.disable(this.$el, data.disable);
     }
 
     #send(force = false) {

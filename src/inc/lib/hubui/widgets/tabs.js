@@ -37,6 +37,8 @@ class TabsWidget  extends BaseWidget {
     }
 
     update(data) {
+        super.update(data);
+
         if ('text' in data) {
             const tabs = [];
             if (data.text) {

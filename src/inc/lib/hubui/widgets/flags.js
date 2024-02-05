@@ -33,6 +33,7 @@ class FlagsWidget extends BaseWidget {
         if ('value' in data) this.#value = Number(data.value);
         if ('text' in data) this.#items = data.text.split(/[,;]/);
         if ('color' in data) this.$el.style.setProperty('--checked-color', intToCol(data.color));
+        if ('disable' in data) this.disable(this.$el, data.disable);
         this.#render();
     }
 

@@ -15,6 +15,7 @@ class SliderWidget extends BaseWidget {
                 },
                 wheel: e => {
                     e.preventDefault();
+                    if (this.$el.getAttribute("disabled")) return;
                     this.$el.value = Number(this.$el.value) - Math.sign(Number(e.deltaY)) * Number(this.$el.step);
                     this.#move();
                 },
@@ -48,6 +49,7 @@ class SliderWidget extends BaseWidget {
         if ('min' in data) this.$el.min = data.min;
         if ('max' in data) this.$el.max = data.max;
         if ('step' in data) this.$el.step = data.step;
+        if ('disable' in data) this.disable(this.$el, data.disable);
         this.#move(false);
     }
 

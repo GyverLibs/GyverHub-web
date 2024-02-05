@@ -46,6 +46,7 @@ class ColorWidget extends BaseWidget {
         let col = null;
         if ('value' in data) col = intToCol(data.value);
         if ('color' in data) col = intToCol(data.color);
+        if ('disable' in data) this.disable(this.$el, data.disable);
 
         if (col) {
             try {
