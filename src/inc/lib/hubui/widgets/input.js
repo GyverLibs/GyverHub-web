@@ -39,6 +39,7 @@ class InputWidget extends BaseWidget {
         if ('color' in data) this.$el.style.boxShadow = '0px 2px 0px 0px ' + intToCol(data.color);
         if ('value' in data) this.$el.value = data.value;
         if ('maxlen' in data) this.$el.maxlength = Math.ceil(data.maxlen);
+        if ('disable' in data) this.disable(this.$el, data.disable);
     }
 
     #send(force = false) {
@@ -116,6 +117,7 @@ class PassWidget extends BaseWidget {
       if ('color' in data) this.$el.style.boxShadow = '0px 2px 0px 0px ' + intToCol(data.color);
       if ('value' in data) this.$el.value = data.value;
       if ('maxlen' in data) this.$el.maxlength = Math.ceil(data.maxlen);
+      if ('disable' in data) this.disable(this.$el, data.disable);
     }
 
     #send(force = false) {

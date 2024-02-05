@@ -7,7 +7,7 @@ class CanvasWidget extends BaseWidget {
 
         this.makeLayout({
             type: 'div',
-            class: '',
+            class: 'w_canvas',
             children: [
                 {
                     type: 'canvas',
@@ -26,10 +26,10 @@ class CanvasWidget extends BaseWidget {
         });
 
         wait2Frame().then(() => {
-            this.#cv.show();
+            this.#cv.resize();
         });
 
-        this.update(data.data);
+        this.update(data);
         this.disable(this.$el, data.disable);
     }
 

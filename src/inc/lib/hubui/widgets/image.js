@@ -25,4 +25,5 @@ class ImageWidget extends BaseWidget {
         }
     }
 }
+
 Renderer.register('image', ImageWidget);
