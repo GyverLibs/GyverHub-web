@@ -67,15 +67,6 @@ class MQTTconn extends Connection {
       return;
     }
 
-    this._setState(ConnectionState.CONNECTED);
-
-    this.#preflist = [];
-    await this.#upd_prefix(this.hub.prefix);
-    for (const id of this.hub.getDeviceIds()) {
-      const dev = this.hub.dev(id);
-      await this.#sub_device(dev.info.prefix, dev.info.id);
-    }
-
     this.#client.on('connect', () => {
       this._setState(ConnectionState.CONNECTED);
     });
@@ -123,6 +114,15 @@ class MQTTconn extends Connection {
         }
       }
     });
+
+    this.#preflist = [];
+    await this.#upd_prefix(this.hub.prefix);
+    for (const id of this.hub.getDeviceIds()) {
+      const dev = this.hub.dev(id);
+      await this.#sub_device(dev.info.prefix, dev.info.id);
+    }
+
+    this._setState(ConnectionState.CONNECTED);
   }
   
   async disconnect() {
