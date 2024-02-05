@@ -89,7 +89,7 @@ class PacketBufferScanAll {
       if (startIndex === this.#buf.length || endIndex === this.#buf.length)
         break;
 
-      const text = decoder.decode(new DataView(this.#buf, startIndex, endIndex + 2));
+      const text = decoder.decode(this.#buf.subarray(startIndex, endIndex + 2));
       this.#callback(text);
 
       index = endIndex + 2;
@@ -103,7 +103,7 @@ class PacketBufferScanAll {
   #indexOfSeq(seq, fromIndex = 0) {
     while (true) {
       const i = this.#buf.indexOf(seq.charCodeAt(0), fromIndex);
-      if (i === -1 || i >= this.#buf.length - 2)
+      if (i === -1 || i > this.#buf.length - 2)
         return this.#buf.length;
 
       if (this.#buf[i + 1] === seq.charCodeAt(1)) {
