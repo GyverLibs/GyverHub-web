@@ -139,8 +139,8 @@ class Renderer {
         for (const t of this.#ackTimers.values())
             clearTimeout(t);
         this.#ackTimers.clear();
-        for (const W of this.#idMap.values()) {
-            W.close();
+        for (const w of this.#idMap.values()) {
+            w.close();
         }
     }
 

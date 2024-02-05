@@ -11,13 +11,15 @@ class GyverHub extends EventEmitter {
   constructor() {
     super();
     this.config = new Config();
-    this.addConnection(HTTPconn);
+    this.config.set('hub', 'prefix', 'MyDevices');
+    this.config.set('hub', 'client_id', Math.round(Math.random() * 0xffffffff).toString(16));
+    this.addConnection(HTTPConnection);
+    this.addConnection(WebSocketConnection);
     /*@[if_not_target:esp]*/
-    this.addConnection(MQTTconn);
-    this.addConnection(TGconn);
-    this.addConnection(SERIALconn);
-    this.addConnection(BTconn);
-    this.addConnection(WSconn);
+    this.addConnection(MQTTConnection);
+    this.addConnection(TelegramConnection);
+    this.addConnection(SerialConnection);
+    this.addConnection(BLEConnection);
     /*@/[if_not_target:esp]*/
   }
 
@@ -37,35 +39,35 @@ class GyverHub extends EventEmitter {
 
   get mqtt() {
     for (const connection of this.#connections) {
-      if (connection instanceof MQTTconn)
+      if (connection instanceof MQTTConnection)
         return connection;
     }
   }
 
   get bt() {
     for (const connection of this.#connections) {
-      if (connection instanceof BTconn)
+      if (connection instanceof BLEConnection)
         return connection;
     }
   }
 
   get serial() {
     for (const connection of this.#connections) {
-      if (connection instanceof SERIALconn)
+      if (connection instanceof SerialConnection)
         return connection;
     }
   }
 
   get tg() {
     for (const connection of this.#connections) {
-      if (connection instanceof TGconn)
+      if (connection instanceof TelegramConnection)
         return connection;
     }
   }
 
   get ws() {
     for (const connection of this.#connections) {
-      if (connection instanceof WSconn)
+      if (connection instanceof WebSocketConnection)
         return connection;
     }
   }
@@ -91,7 +93,7 @@ class GyverHub extends EventEmitter {
    * @returns {string[]}
    */
   getAllPrefixes() {
-    const list = [this.clientId];
+    const list = [this.prefix];
     for (const dev_info of Object.values(this.config.get('devices') ?? {})) 
       if (dev_info.prefix && !list.includes(dev_info.prefix))
         list.push(dev_info.prefix);
@@ -119,7 +121,7 @@ class GyverHub extends EventEmitter {
     }
 
     for (const connection of this.#connections) {
-      await connection.discover();
+      connection.discover();
     }
 
     this._checkDiscoverEnd();
@@ -130,7 +132,7 @@ class GyverHub extends EventEmitter {
    */
   async search() {
     for (const connection of this.#connections) {
-      await connection.search();
+      connection.search();
     }
 
     this._checkDiscoverEnd();
@@ -290,7 +292,7 @@ class GyverHub extends EventEmitter {
         return;
       }
 
-      if (conn instanceof HTTPconn) {
+      if (conn instanceof HTTPConnection) {
         data.ip = ip;
         data.http_port = port;
       }

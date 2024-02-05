@@ -1,4 +1,4 @@
-class WSconn extends Connection {
+class WebSocketConnection extends Connection {
   static priority = 800;
   static name = 'WS';
 
@@ -13,7 +13,6 @@ class WSconn extends Connection {
     this.options.enabled = false;
     this.options.ip = false;
     this.options.port = false;
-    this.options.discover_timeout = 3000;
 
     this.#packet_buffer = new PacketBufferScanFirst(data => {
       this.hub._parsePacket(this, data);

@@ -481,7 +481,7 @@ function render_main() {
       <div class="ui_col" id="bt_col" ${hasBT() ? '' : 'style="display:none"'}>
         <div class="ui_row ui_head ui_tab" onclick="use_bt.click()">
           <label class="ui_label ui_tab" id="bt_label"><span class="icon icon_ui"></span>Bluetooth</label>
-          <input type="checkbox" id="use_bt" data-hub-config="connections.BT.enabled" onchange="update_cfg(this);save_cfg()" style="display:none">
+          <input type="checkbox" id="use_bt" data-hub-config="connections.BLE.enabled" onchange="update_cfg(this);save_cfg()" style="display:none">
         </div>
 
         <div id="bt_block" style="display:none">
@@ -750,7 +750,7 @@ function add_device(device, dev) {
       <div id="d_head#${dev.id}" style="display:contents">
         <div class="d_icon ${icon.length ? '' : 'd_icon_empty'}"><span class="icon icon_min ${icon.length ? '' : 'd_icon_none'}" id="icon#${dev.id}">${getIcon(icon)}</span></div>
         <div class="d_title">
-          <span><span class="d_name" id="name#${dev.id}">${dev.name}</span><sup class="conn_dev" id="Serial#${dev.id}">S</sup><sup class="conn_dev" id="BT#${dev.id}">B</sup><sup class="conn_dev" id="HTTP#${dev.id}">W</sup><sup class="conn_dev" id="MQTT#${dev.id}">M</sup><sup class="conn_dev" id="TG#${dev.id}">T</sup></span>
+          <span><span class="d_name" id="name#${dev.id}">${dev.name}</span><sup class="conn_dev" id="SERIAL#${dev.id}">S</sup><sup class="conn_dev" id="BLE#${dev.id}">B</sup><sup class="conn_dev" id="HTTP#${dev.id}">W</sup><sup class="conn_dev" id="MQTT#${dev.id}">M</sup><sup class="conn_dev" id="TG#${dev.id}">T</sup></span>
         </div>
       </div>
       <div id="d_cfg#${dev.id}" class="d_btn_cont">
@@ -820,18 +820,18 @@ function mq_change(opened) {
 function bt_change(opened) {
   display('bt_open', opened ? 'none' : 'inline-block');
   display('bt_close', opened ? 'inline-block' : 'none');
-  display('bt_ok', state ? 'inline-block' : 'none');
+  display('bt_ok', opened ? 'inline-block' : 'none');
 }
 
 // serial
 function serial_change(opened) {
   display('serial_open', opened ? 'none' : 'inline-block');
   display('serial_close', opened ? 'inline-block' : 'none');
-  display('serial_ok', state ? 'inline-block' : 'none');
+  display('serial_ok', opened ? 'inline-block' : 'none');
 }
 async function serial_toggle(state) {
   serial_change(false);
-  if (!state) hub.serial.close();
+  if (!state) hub.serial.disconnect();
 }
 
 // telegram

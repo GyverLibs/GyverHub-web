@@ -165,8 +165,8 @@ function discover() {
   spinArrows(true);   // before discover!
   for (const id of hub.getDeviceIds()) {
     EL(`device#${id}`).className = "device offline";
-    display(`Serial#${id}`, 'none');
-    display(`BT#${id}`, 'none');
+    display(`SERIAL#${id}`, 'none');
+    display(`BLE#${id}`, 'none');
     display(`HTTP#${id}`, 'none');
     display(`MQTT#${id}`, 'none');
   }

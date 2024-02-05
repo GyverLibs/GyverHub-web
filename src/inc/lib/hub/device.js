@@ -129,11 +129,7 @@ class Device extends EventEmitter {
    * @returns {boolean}
    */
   isHttpAccessable() {
-    for (const connection of this.active_connections) {
-      if (connection instanceof HTTPconn)
-        return true;
-    }
-    return false;
+    return this.active_connections.some(conn => conn instanceof HTTPConnection);
   }
 
   /**
@@ -266,7 +262,7 @@ class Device extends EventEmitter {
   }
 
   async focus() {
-    if (this.info.ws_port && this.active_connections.some(conn => conn instanceof HTTPconn)) {
+    if (this.info.ws_port && this.active_connections.some(conn => conn instanceof HTTPConnection)) {
       const ws = this._hub.ws;
 
       this._hub.config.set('connections', 'WS', 'ip', this.info.ip);

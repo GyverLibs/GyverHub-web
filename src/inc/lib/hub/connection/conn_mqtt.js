@@ -1,4 +1,4 @@
-class MQTTconn extends Connection {
+class MQTTConnection extends Connection {
   static priority = 500;
   static name = 'MQTT';
 
@@ -10,12 +10,11 @@ class MQTTconn extends Connection {
 
   constructor(hub) {
     super(hub);
-    this.options.enabled = false;
+    this.options.enabled = true;
     this.options.host = 'test.mosquitto.org';
     this.options.port = '8081';
     this.options.login = '';
     this.options.password = '';
-    this.options.discover_timeout = 10000;
 
     this.#preflist = [];
     this.#buffers = new Map();
@@ -29,9 +28,9 @@ class MQTTconn extends Connection {
 
   async discover() {
     if (this.isDiscovering() || !this.isConnected()) return;
-    this._discoverTimer();
     for (const id of this.hub.getDeviceIds()) {
       const dev = this.hub.dev(id);
+      this._discoverTimer();
       await this.send(dev.info.prefix + '/' + dev.info.id + '=' + this.hub.clientId);
     }
   }

@@ -109,7 +109,7 @@ function update_theme() {
   display('tg_block', hub.config.get('connections', 'TG', 'enabled') ? b : n);
   EL('tg_label').style.color = hub.config.get('connections', 'TG', 'enabled') ? f : f3;
 
-  let bt = hub.config.get('connections', 'BT', 'enabled') && hasBT();
+  let bt = hub.config.get('connections', 'BLE', 'enabled') && hasBT();
   display('bt_block', bt ? b : n);
   EL('bt_label').style.color = bt ? f : f3;
 

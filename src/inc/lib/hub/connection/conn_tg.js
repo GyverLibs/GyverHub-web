@@ -1,4 +1,4 @@
-class TGconn extends Connection {
+class TelegramConnection extends Connection {
   static priority = 400;
   static name = 'TG';
 

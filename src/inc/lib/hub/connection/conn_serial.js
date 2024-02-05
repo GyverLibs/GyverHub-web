@@ -1,4 +1,4 @@
-class SERIALconn extends Connection {
+class SerialConnection extends Connection {
   static priority = 900;
   static name = 'SERIAL';
 
@@ -10,8 +10,7 @@ class SERIALconn extends Connection {
   constructor(hub) {
     super(hub);
     this.options.enabled = false;
-    this.options.baudrate = 9600;
-    this.options.discover_timeout = 10000;
+    this.options.baudrate = 115200;
 
     this.#packet_buffer = new PacketBufferScanAll(data => {
       this.hub._parsePacket(this, data);
@@ -102,6 +101,14 @@ class SERIALconn extends Connection {
 
     if (!this.#port || !this.#port.writable)
       return;
+
+    // TODO найти какой-нибудь lock, на котором можно ждать 
+    // или сделать буфер на вывод
+    while (this.#port.writable.locked){
+      await sleep(10);
+      if (!this.#port || !this.#port.writable)
+        return;
+    }
 
     const writer = this.#port.writable.getWriter();
     try {

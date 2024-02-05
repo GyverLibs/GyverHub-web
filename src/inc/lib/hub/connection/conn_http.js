@@ -1,4 +1,4 @@
-class HTTPconn extends Connection {
+class HTTPConnection extends Connection {
   static priority = 700;
   static name = 'HTTP';
 
@@ -10,11 +10,10 @@ class HTTPconn extends Connection {
     this.options.enabled = false;
     this.options.local_ip = '192.168.0.1';
     this.options.port = '80';
-    this.options.netmask = '255.255.255.0';
+    this.options.netmask = '24';
     this.options.local_ip = '192.168.0.1';
-    this.options.request_timeout = 2500;
+    this.options.request_timeout = 4000;
     this.options.delay = 100;
-    this.options.discover_timeout = 3000;
 
     this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
@@ -32,7 +31,10 @@ class HTTPconn extends Connection {
         this._discoverTimer();
         try {
           await this.send(dev.info.ip, dev.info.http_port, `${dev.info.prefix}/${dev.info.id}`);
-        } catch (e) {}
+        } catch (e) {
+          console.log(e);
+        }
+        this._discoverTimer();  // чтобы случайно не сбросить discovering
         await sleep(this.options.delay);
       }
     }
@@ -51,6 +53,7 @@ class HTTPconn extends Connection {
     if (!ips) return;
 
     let n = 0;
+    this._discoverTimer();
     for (const i of ips) {
       this.#searchInner(i, n++);
     }
@@ -58,6 +61,7 @@ class HTTPconn extends Connection {
 
   async #searchInner(ip, n) {
     await sleep(this.options.delay * n);
+    if (!this.isDiscovering()) return;
     this._discoverTimer();
     try {
       await this.send(ip, undefined, this.hub.prefix);

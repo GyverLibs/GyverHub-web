@@ -1,14 +1,3 @@
-// const
-const Conn = {
-  SERIAL: 0,
-  BT: 1,
-  HTTP: 2,
-  MQTT: 3,
-  NONE: 4,
-  names: [
-    'Serial', 'BT', 'HTTP', 'MQTT', 'TG', 'None'
-  ],
-};
 const Modules = {
   UI: (1 << 0),
   INFO: (1 << 1),

@@ -1,7 +1,7 @@
 // based on https://github.com/loginov-rocks/Web-Bluetooth-Terminal
-class BTconn extends Connection {
+class BLEConnection extends Connection {
   static priority = 600;
-  static name = 'BT';
+  static name = 'BLE';
   
   #device;
   #characteristic;
@@ -16,7 +16,6 @@ class BTconn extends Connection {
     this.options.characteristic_uuid = 0xFFE1;
     this.options.max_size = 20;
     this.options.max_retries = 3;
-    this.options.discover_timeout = 10000;
 
     this.#packet_buffer = new PacketBufferScanAll(data => {
       this.hub._parsePacket(this, data);
