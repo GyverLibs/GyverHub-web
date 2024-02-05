@@ -187,7 +187,7 @@ class Device extends EventEmitter {
       try {
         res = await this.fetch(file.path, file.progress);
       } catch (e) {
-        return;
+        continue;
       }
       file.callback(`data:${getMime(file.path)};base64,${res}`);
     }
