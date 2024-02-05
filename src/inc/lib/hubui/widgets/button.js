@@ -75,7 +75,7 @@ class ButtonWidget extends BaseWidget {
         this.$el.style.width = 'unset';
         if (text) {
             if (text.includes(".svg")) {
-                hub.dev(focused).addFile(this.id, text, (data) => {
+                this.renderer.device.addFile(this.id, text, (data) => {
                     this.setPlabel();
                     this.$el.innerHTML = dataTotext(data);
                     this.$el.style.width = this.#fontSize;

@@ -174,8 +174,7 @@ async function back_h() {
     return;
   }
   if (menu_f) {
-    Menu.deact();
-    menu_show(0);
+    menu_show(false);
     return;
   }
   switch (screen) {
@@ -187,7 +186,7 @@ async function back_h() {
     case 'info':
     case 'files':
     case 'ota':
-      Menu.deact();
+      leaveSystemMenu();
       show_screen('ui');
       hub.dev(focused).updateUi();
       break;
@@ -214,30 +213,24 @@ function config_h() {
   }
 }
 async function info_h() {
-  Menu.deact();
-  menu_show(0);
+  enterMenu('menu_info');
   show_screen('info');
-  EL('menu_info').classList.add('menu_act');
   if (hub.dev(focused).isModuleEnabled(Modules.INFO)) {
     const info = await hub.dev(focused).getInfo();
     if (info) showInfo(info);
   };
 }
 function cfg_h() {
-  Menu.deact();
-  menu_show(0);
+  enterMenu('menu_cfg');
   show_screen('dev_config');
-  EL('menu_cfg').classList.add('menu_act');
 }
 async function fsbr_h() {
-  Menu.deact();
-  menu_show(0);
+  enterMenu('menu_fsbr');
   display('fs_browser', hub.dev(focused).isModuleEnabled(Modules.FILES) ? 'block' : 'none');
   display('fs_upload', hub.dev(focused).isModuleEnabled(Modules.UPLOAD) ? 'block' : 'none');
   display('fs_create', hub.dev(focused).isModuleEnabled(Modules.CREATE) ? 'block' : 'none');
   display('fs_format_row', hub.dev(focused).isModuleEnabled(Modules.FORMAT) ? 'flex' : 'none');
   show_screen('files');
-  EL('menu_fsbr').classList.add('menu_act');
   if (hub.dev(focused).isModuleEnabled(Modules.FILES)) {
     EL('fsbr_inner').innerHTML = waiter();
     await hub.dev(focused).updateFileList();
@@ -249,10 +242,8 @@ async function format_h() {
   }
 }
 function ota_h() {
-  Menu.deact();
-  menu_show(0);
+  enterMenu('menu_ota');
   show_screen('ota');
-  EL('menu_ota').classList.add('menu_act');
 
   let ota_t = '.' + hub.dev(focused).info.ota_t;
   EL('ota_upload').accept = ota_t;

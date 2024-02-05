@@ -11,41 +11,60 @@ function updateSystemMenu() {
     }
 }
 
-class Menu {
-    static add(ctrl) {
-        let labels = [];
-        let inner = [];
-        if (ctrl != null && ctrl.text) {
-            labels = ctrl.text.toString().split(';');
-            for (const i in labels) {
-                inner.push(createElement(null, {
-                    type: 'div',
-                    class: i == ctrl.value ? "menu_item menu_act" : "menu_item",
-                    text: labels[i].trim(),
-                    events: {
-                        click: () => {
-                            try {
-                                hub.dev(focused).fsStop();
-                            } catch (e) { }
-                            menu_show(0);
-                            Menu.deact();
-                            if (screen != 'ui') show_screen('ui');
-                            hub.dev(focused).set('_menu', i);
-                        }
-                    }
-                }));
-            }
+function leaveSystemMenu() {
+    for (const $i of document.getElementById('menu_system').children)
+        $i.classList.remove('menu_act');
+}
+
+function enterMenu(sel = null) {
+    menu_show(false);
+    leaveSystemMenu();
+    for (const $i of document.getElementById('menu_user').children)
+        $i.classList.remove('menu_act');
+    if (sel !== null)
+        document.querySelector('.menu_item' + sel).classList.add('menu_act');
+}
+
+class MenuWidget extends Widget {
+    $el = EL('menu_user');
+
+    constructor(data, renderer) {
+        super(data, renderer);
+        this.update(data);
+    }
+
+    update(data) {
+        super.update(data);
+    
+        if (!data.text) return;
+
+        this.$el.replaceChildren();
+        const labels = data.text.split(/[.;]/);
+        for (const i in labels) {
+            this.$el.append(createElement(null, {
+                type: 'div',
+                class: i == data.value ? "menu_item menu_act" : "menu_item",
+                text: labels[i].trim(),
+                events: {
+                    click: () => this.#openMenu(i)
+                }
+            }));
         }
-        EL('menu_user').replaceChildren(...inner);
     }
 
-    static clear() {
-        Menu.add(null);
+    #openMenu(i) {
+        try {
+            this.renderer.device.fsStop();
+        } catch (e) { }
+        enterMenu();
+        if (screen != 'ui') show_screen('ui');
+        this.set(i);
     }
 
-    static deact() {
-        let els = Array.from(document.getElementById('menu_user').children).filter(el => el.tagName == 'DIV');
-        els.push(EL('menu_cfg'), EL('menu_info'), EL('menu_fsbr'), EL('menu_ota'));
-        for (let el in els) if (els[el]) els[el].classList.remove('menu_act');
+    close() {
+        console.log('close')
+        this.$el.replaceChildren();
     }
 }
+
+Renderer.register('menu', MenuWidget);

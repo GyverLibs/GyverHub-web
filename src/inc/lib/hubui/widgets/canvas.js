@@ -19,7 +19,7 @@ class CanvasWidget extends BaseWidget {
             ]
         });
 
-        this.#cv = new Canvas(data.id, this.$el, data.width, data.height, data.active);
+        this.#cv = new Canvas(data.id, this.$el, this.renderer.device, data.width, data.height, data.active);
 
         this.$el.parentNode.addEventListener('resize', () => {
             this.#cv.resize();
@@ -58,10 +58,11 @@ Renderer.register('canvas', CanvasWidget);
 
 
 class Canvas {
-    constructor(id, cv, w, h, active) {
+    constructor(id, cv, device, w, h, active) {
         this.data = [];
         this.id = id;
         this.cv = cv;
+        this.device = device;
         this.width = w;
         this.height = h;
         this.scale = 1;
@@ -135,7 +136,7 @@ class Canvas {
                     if (args[0].startsWith('http://') || args[0].startsWith('https://')) {
                         img.src = args[0];
                     } else {
-                        hub.dev(focused).addFile(this.id, args[0], (file) => {
+                        this.device.addFile(this.id, args[0], (file) => {
                             Widget.setPlabel(this.id);
                             img.src = file;
                         });
