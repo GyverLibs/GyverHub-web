@@ -84,7 +84,7 @@ function hasBT() {
 }
 function userLang() {
   switch (navigator.language || navigator.userLanguage) {
-    case 'ru-RU': return 'Russian';
+    case 'ru-RU': case 'ru': return 'Russian';
   }
   return 'English';
 }

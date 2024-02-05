@@ -102,6 +102,12 @@ class Compiler:
         
         if tag == 'if_not_target':
             return '' if self._target in args else data
+        
+        if tag == 'if_dev':
+            return data if self._env.get('version') == 'dev' else ''
+        
+        if tag == 'if_not_dev':
+            return '' if self._env.get('version') == 'dev' else data
 
         if tag == 'include':
             options = args[1:]
@@ -297,7 +303,7 @@ def git_get_version():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--automatic', help='Enable CI/github fixes', action='store_true')
-    parser.add_argument('--version', help='Specify version', type=str)
+    parser.add_argument('--version', help='Specify version', type=str, default='dev')
     parser.add_argument('--next-version', help='Generate new version', action='store_true')
     parser.add_argument('--clean', help='Clean build files', action='store_true')
     parser.add_argument('--build', help='Build', action='store_true')
@@ -330,8 +336,12 @@ def main():
         print(version)
         return
 
+    with open(os.path.join(HERE, 'release-notes.txt'), 'rt', encoding='utf-8') as f:
+        release_notes = f.read()
+
     env = {
         'version': args.version,
+        'release_notes': release_notes.replace('\n', '\\n'),
     }
 
     b = Builder(env, PathResolver(SRCDIR, BUILDDIR, DISTDIR))

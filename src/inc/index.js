@@ -120,13 +120,15 @@ function startup() {
   }
 
   // show version
-  setTimeout(() => {
-    let ver = localStorage.getItem('version');
-    if (!ver || ver != app_version) {
+  let ver = localStorage.getItem('version');
+  if (!ver || ver != app_version) {
+    /*@[if_not_dev]*/
+    localStorage.setItem('version', app_version);
+    /*@/[if_not_dev]*/
+    setTimeout(() => {
       asyncAlert(lang.i_version + ' ' + app_version + '!\n' + '/*@![:release_notes]*/');
-      localStorage.setItem('version', app_version);
-    }
-  }, 1000);
+    }, 1000);
+  }
 
   render_devices();
   hub.begin();

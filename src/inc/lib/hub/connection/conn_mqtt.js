@@ -46,10 +46,17 @@ class MQTTConnection extends Connection {
     await this.disconnect();
     this._setState(ConnectionState.CONNECTING);
 
+    /*@[if_dev]*/
+    this.options.host = 'mqtt.neko-dev.ru';
+    this.options.port = '443';
+    this.options.login = 'testuser';
+    this.options.password = 'gyverhubtest';
+    /*@/[if_dev]*/
+
     const url = 'wss://' + this.options.host + ':' + this.options.port + '/mqtt';
     const options = {
       keepalive: 60,
-      clientId: 'HUB-' + Math.round(Math.random() * 0xffffffff).toString(16),
+      clientId: this.hub.clientId,
       username: this.options.login,
       password: this.options.password,
       protocolId: 'MQTT',
