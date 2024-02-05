@@ -93,94 +93,81 @@ class Canvas {
 
     show(data = null) {
         if (!data) data = this.data;
-        let cv = this.cv;
-        let cx = cv.getContext("2d");
-        let ev_str = '';
+        const cv = this.cv;
+        const cx = cv.getContext("2d");
         const cmd_list = ['fillStyle', 'strokeStyle', 'shadowColor', 'shadowBlur', 'shadowOffsetX', 'shadowOffsetY', 'lineWidth', 'miterLimit', 'font', 'textAlign', 'textBaseline', 'lineCap', 'lineJoin', 'globalCompositeOperation', 'globalAlpha', 'scale', 'rotate', 'rect', 'fillRect', 'strokeRect', 'clearRect', 'moveTo', 'lineTo', 'quadraticCurveTo', 'bezierCurveTo', 'translate', 'arcTo', 'arc', 'fillText', 'strokeText', 'drawImage', 'roundRect', 'fill', 'stroke', 'beginPath', 'closePath', 'clip', 'save', 'restore'];
         const const_list = ['butt', 'round', 'square', 'square', 'bevel', 'miter', 'start', 'end', 'center', 'left', 'right', 'alphabetic', 'top', 'hanging', 'middle', 'ideographic', 'bottom', 'source-over', 'source-atop', 'source-in', 'source-out', 'destination-over', 'destination-atop', 'destination-in', 'destination-out', 'lighter', 'copy', 'xor', 'top', 'bottom', 'middle', 'alphabetic'];
 
-        let cv_map = (v, h) => {
+        const cv_map = (v, h) => {
             v *= this.scale;
             return v >= 0 ? v : (h ? cv.height : cv.width) - v;
         }
-        let scale = () => {
-            return this.scale;
-        }
 
-        for (let d of data) {
-            let div = d.indexOf(':');
-            let cmd = parseInt(d, 10);
+        for (const item of data) {
+            let [cmdName, ...args] = ("" + item).split(':');
+            if (args.length === 1) args.push(...args.pop().split(','));
+            const cmd = parseInt(cmdName, 10);
 
-            if (!isNaN(cmd) && cmd <= 37) {
-                if (div == 1 || div == 2) {
-                    let val = d.slice(div + 1);
-                    let vals = val.split(',').map(v => (v > 0) ? v = Number(v) : v);
-                    if (cmd <= 2) ev_str += ('cx.' + cmd_list[cmd] + '=\'' + intToColA(val) + '\';');   // shadowColor
-                    else if (cmd <= 7) ev_str += ('cx.' + cmd_list[cmd] + '=' + (val * scale()) + ';'); // miterLimit
-                    else if (cmd <= 13) ev_str += ('cx.' + cmd_list[cmd] + '=\'' + const_list[val] + '\';');  // globalCompositeOperation
-                    else if (cmd <= 14) ev_str += ('cx.' + cmd_list[cmd] + '=' + val + ';');  // globalAlpha
-                    else if (cmd <= 16) ev_str += ('cx.' + cmd_list[cmd] + '(' + val + ');'); // rotate
-                    else if (cmd <= 26) {   // arcTo
-                        let str = 'cx.' + cmd_list[cmd] + '(';
-                        for (let i in vals) {
-                            if (i > 0) str += ',';
-                            str += `cv_map(${vals[i]},${(i % 2)})`;
-                        }
-                        ev_str += (str + ');');
-                    } else if (cmd == 27) { // arc
-                        ev_str += (`cx.${cmd_list[cmd]}(cv_map(${vals[0]},0),cv_map(${vals[1]},1),cv_map(${vals[2]},0),${vals[3]},${vals[4]},${vals[5]});`);
-                    } else if (cmd <= 29) { // strokeText
-                        ev_str += (`cx.${cmd_list[cmd]}(${vals[0]},cv_map(${vals[1]},0),cv_map(${vals[2]},1),${vals[3]});`);
-                    } else if (cmd == 30) { // drawImage
-                        let img = new Image();
-                        for (let i in vals) {
-                            if (i > 0) vals[i] = cv_map(vals[i], !(i % 2));
-                        }
-                        if (vals[0].startsWith('http://') || vals[0].startsWith('https://')) {
-                            img.src = vals[0];
-                        } else {
-                            hub.dev(focused).addFile(this.id, vals[0], (file) => {
-                                Widget.setPlabel(this.id);
-                                img.src = file;
-                            });
-                        }
+            args = args.map(v => {
+                const i = parseFloat(v);
+                return isNaN(i) ? v : i;
+            })
 
-                        img.onload = function () {
-                            let ev = 'cx.drawImage(img';
-                            for (let i in vals) {
-                                if (i > 0) ev += ',' + vals[i];
-                            }
-                            if (vals.length - 1 == 3) {
-                                ev += ',' + vals[3] * img.height / img.width;
-                            }
-                            ev += ')';
-                            eval(ev);// TODO notify on fetch
-                        }
-
-                    } else if (cmd == 31) { // roundRect
-                        let str = 'cx.' + cmd_list[cmd] + '(';
-                        for (let i = 0; i < 4; i++) {
-                            if (i > 0) str += ',';
-                            str += `cv_map(${vals[i]},${(i % 2)})`;
-                        }
-                        if (vals.length == 5) str += `,${vals[4] * scale()}`;
-                        else {
-                            str += ',[';
-                            for (let i = 4; i < vals.length; i++) {
-                                if (i > 4) str += ',';
-                                str += `cv_map(${vals[i]},${(i % 2)})`;
-                            }
-                            str += ']';
-                        }
-                        ev_str += (str + ');');
+            if (!isNaN(cmd) && cmd <= cmd_list.length) {
+                cmdName = cmd_list[cmd];
+                
+                if (cmd <= 2) args[0] = intToColA(args[0]);   // shadowColor
+                else if (cmd <= 7) args[0] *= this.scale; // miterLimit
+                else if (cmd <= 13) args[0] = const_list[args[0]];  // globalCompositeOperation
+                else if (cmd <= 14) ;  // globalAlpha
+                else if (cmd <= 16) ; // rotate
+                else if (cmd <= 26) {   // arcTo
+                    args = args.map((v, i) => cv_map(v, i % 2))
+                } else if (cmd == 27) { // arc
+                    args = [cv_map(args[0],0),cv_map(args[1],1),cv_map(args[2],0),args[3],args[4],args[5]];
+                } else if (cmd <= 29) { // strokeText
+                    args = [args[0],cv_map(args[1],0),cv_map(args[2],1),args[3]];
+                } else if (cmd == 30) { // drawImage
+                    let img = new Image();
+                    for (let i in args) {
+                        if (i > 0) args[i] = cv_map(args[i], !(i % 2));
                     }
-                } else {
-                    if (cmd >= 32) ev_str += ('cx.' + cmd_list[cmd] + '();');
+                    if (args[0].startsWith('http://') || args[0].startsWith('https://')) {
+                        img.src = args[0];
+                    } else {
+                        hub.dev(focused).addFile(this.id, args[0], (file) => {
+                            Widget.setPlabel(this.id);
+                            img.src = file;
+                        });
+                    }
+
+                    img.onload = function () {
+                        args[0] = img;
+                        cx.drawImage(...args);
+                    }
+                    continue;
+
+                } else if (cmd == 31) { // roundRect
+                    for (let i = 0; i < 4; i++) {
+                        args[i] = cv_map(args[i], i % 2);
+                    }
+                    if (args.length == 5) args[4] *= this.scale;
+                    else args.push(args.slice());
                 }
-            } else {
-                ev_str += d + ';';
+            }
+
+            try {
+                if (!args.length) {
+                    cx[cmdName].call(cx);
+                } else {
+                    const fn = cx[cmdName];
+                    if (typeof fn === 'function')
+                        fn.apply(cx, args);
+                    else cx[cmdName] = args[0];
+                }
+            } catch (e) {
+                console.log(e);
             }
         }
-        eval(ev_str);
     }
-};
+}
