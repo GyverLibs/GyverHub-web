@@ -1,12 +1,14 @@
-class HTMLWidget extends Widget {
+class HTMLWidget extends BaseWidget {
     $el;
     #root;
 
     constructor(data, renderer) {
         super(data, renderer);
-        this.$el = document.createElement('div');
-        this.$el.classList.add('widget_col');
-        this.$el.style.width = this.data.wwidth_t + '%';
+
+        this.makeLayout({
+            type: 'div',
+            name: 'el',
+        });
         this.#root = this.$el.attachShadow({
             mode: 'closed'
         });
@@ -25,10 +27,6 @@ class HTMLWidget extends Widget {
         } else {
             this.#apply(data.value);
         }
-    }
-
-    build() {
-        return this.$el;
     }
 
     #apply(text) {

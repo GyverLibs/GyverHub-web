@@ -207,3 +207,8 @@ class MenuWidget extends Widget {
 }
 
 Renderer.register('menu', MenuWidget);
+Renderer.register('css', Widget, true);
+Renderer.register('js', Widget, true);
+Renderer.register('hook', Widget, true);
+Renderer.register('func', Widget, true);
+Renderer.register('plugin', Widget, true);
