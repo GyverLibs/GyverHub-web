@@ -161,9 +161,7 @@ function getIPs(ip, netmask) {
 }*/
 
 function sleep(time) {
-  return new Promise((res) => {
-    setTimeout(() => res(), time);
-  });
+  return new Promise(res => setTimeout(res, time));
 }
 
 function readFileAsArrayBuffer(file) {
@@ -177,6 +175,44 @@ function readFileAsArrayBuffer(file) {
     });
     reader.readAsArrayBuffer(file);
   });
+}
+
+function crc32(data) {
+  let crc = new Uint32Array(1);
+  crc[0] = 0;
+  crc[0] = ~crc[0];
+  let str = (typeof (data) == 'string');
+  for (let i = 0; i < data.length; i++) {
+    crc[0] ^= str ? data[i].charCodeAt(0) : data[i];
+    for (let i = 0; i < 8; i++) crc[0] = (crc[0] & 1) ? ((crc[0] / 2) ^ 0x4C11DB7) : (crc[0] / 2);
+  }
+  crc[0] = ~crc[0];
+  return crc[0];
+}
+
+function getMime(name) {
+  const mime_table = {
+    'avi': 'video/x-msvideo',
+    'bin': 'application/octet-stream',
+    'bmp': 'image/bmp',
+    'css': 'text/css',
+    'csv': 'text/csv',
+    'gz': 'application/gzip',
+    'gif': 'image/gif',
+    'html': 'text/html',
+    'jpeg': 'image/jpeg',
+    'jpg': 'image/jpeg',
+    'js': 'text/javascript',
+    'json': 'application/json',
+    'png': 'image/png',
+    'svg': 'image/svg+xml',
+    'txt': 'text/plain',
+    'wav': 'audio/wav',
+    'xml': 'application/xml',
+  };
+  let ext = name.split('.').pop();
+  if (ext in mime_table) return mime_table[ext];
+  else return 'text/plain';
 }
 
 const ENCODINGS = new TextEncoder().encode('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/');

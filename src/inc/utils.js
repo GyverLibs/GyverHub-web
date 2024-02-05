@@ -2,7 +2,6 @@
 const app_title = 'GyverHub';
 const app_version = '/*@![:version]*/';
 const hub = new GyverHub();
-window.HUB = hub;
 
 const colors = {
   ORANGE: 0xd55f30,
@@ -110,20 +109,6 @@ async function pwa_install(ssl) {
     if (outcome === 'accepted') deferredPrompt = null;
   }
 }
-function addIdRecursive(node, add) {
-  for (let i = 0; i < node.childNodes.length; i++) {
-    let child = node.childNodes[i];
-    addIdRecursive(child, add);
-    if (child.id) child.id += add;
-  }
-}
-function truncIdRecursive(node, trunc) {
-  for (let i = 0; i < node.childNodes.length; i++) {
-    let child = node.childNodes[i];
-    truncIdRecursive(child, trunc);
-    if (child.id && child.id.endsWith(trunc)) child.id = child.id.split(trunc)[0];
-  }
-}
 
 function addDOM(el_id, tag, text, target) {
   if (EL(el_id)) EL(el_id).remove();
@@ -140,13 +125,6 @@ function getDefColor() {
   // return document.querySelector(':root').style.getPropertyValue('--prim');
   return intToCol(colors[cfg.maincolor]);
 }
-function dataTotext(data) {
-  return b64ToText(data.split('base64,')[1]);
-}
-function b64ToText(base64) {
-  const binString = atob(base64);
-  return new TextDecoder().decode(Uint8Array.from(binString, (m) => m.codePointAt(0)));
-}
 String.prototype.hashCode = function () {
   if (!this.length) return 0;
   let hash = new Uint32Array(1);
@@ -155,46 +133,11 @@ String.prototype.hashCode = function () {
   }
   return hash[0];
 }
-function getMime(name) {
-  const mime_table = {
-    'avi': 'video/x-msvideo',
-    'bin': 'application/octet-stream',
-    'bmp': 'image/bmp',
-    'css': 'text/css',
-    'csv': 'text/csv',
-    'gz': 'application/gzip',
-    'gif': 'image/gif',
-    'html': 'text/html',
-    'jpeg': 'image/jpeg',
-    'jpg': 'image/jpeg',
-    'js': 'text/javascript',
-    'json': 'application/json',
-    'png': 'image/png',
-    'svg': 'image/svg+xml',
-    'txt': 'text/plain',
-    'wav': 'audio/wav',
-    'xml': 'application/xml',
-  };
-  let ext = name.split('.').pop();
-  if (ext in mime_table) return mime_table[ext];
-  else return 'text/plain';
-}
 function openURL(url) {
   window.open(url, '_blank').focus();
 }
-function intToCol(val) {
-  if (val === null || val === undefined) return null;
-  return "#" + Number(val).toString(16).padStart(6, '0');
-}
-function intToColA(val) {
-  if (val === null || val === undefined) return null;
-  return "#" + Number(val).toString(16).padStart(8, '0');
-}
 function constrain(val, min, max) {
   return val < min ? min : (val > max ? max : val);
-}
-function colToInt(str) {
-  return parseInt(str.substr(1), 16);
 }
 function adjustColor(col, ratio) {
   let intcol = 0;
@@ -219,21 +162,6 @@ function adjustColor(col, ratio) {
   }
   return newcol;
 }
-function crc32(data) {
-  let crc = new Uint32Array(1);
-  crc[0] = 0;
-  crc[0] = ~crc[0];
-  let str = (typeof (data) == 'string');
-  for (let i = 0; i < data.length; i++) {
-    crc[0] ^= str ? data[i].charCodeAt(0) : data[i];
-    for (let i = 0; i < 8; i++) crc[0] = (crc[0] & 1) ? ((crc[0] / 2) ^ 0x4C11DB7) : (crc[0] / 2);
-  }
-  crc[0] = ~crc[0];
-  return crc[0];
-}
-function random(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min)
-}
 function openFile(src) {
   let w = window.open();
   src = w.document.write('<iframe src="' + src + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>');
@@ -245,10 +173,6 @@ async function copyClip(text) {
   } catch (e) {
     showPopupError(lang.error);
   }
-}
-function getIcon(icon) {
-  if (!icon) return '';
-  return icon.length == 1 ? icon : String.fromCharCode(Number('0x' + icon));
 }
 
 // ====================== BROWSER ======================
@@ -267,17 +191,8 @@ function browser() {
 function ratio() {
   return window.devicePixelRatio;
 }
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 function EL(id) {
   return document.getElementById(id);
-}
-function ID(id) {
-  return '__' + id;
-}
-function CMP(id) {
-  return EL(ID(id));
 }
 function display(id, value) {
   EL(id).style.display = value;
@@ -290,21 +205,6 @@ function showNotif(name, text) {
   }).catch(e => console.log(e));
   //new Notification(text, {body: descr});
   //self.registration.showNotification(text, {body: descr});
-}
-
-// ===================== RENDER =====================
-function waitFrame() {
-  return new Promise(requestAnimationFrame);
-}
-async function wait2Frame() {
-  await waitFrame();
-  await waitFrame();
-}
-async function waitRender(id) {
-  while (true) {
-    if (EL(id)) return Promise.resolve(1);
-    await waitFrame();
-  }
 }
 
 // ====================== NET ======================

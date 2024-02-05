@@ -58,3 +58,7 @@ class ColorWidget extends BaseWidget {
 }
 
 Renderer.register('color', ColorWidget);
+
+function colToInt(str) {
+  return parseInt(str.substr(1), 16);
+}

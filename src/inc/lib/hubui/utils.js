@@ -21,3 +21,32 @@ function createElement(self, obj) {
     return $el;
 }
 
+
+// ===================== RENDER =====================
+
+function waitFrame() {
+    return new Promise(requestAnimationFrame);
+}
+
+async function wait2Frame() {
+    await waitFrame();
+    await waitFrame();
+}
+
+function getIcon(icon) {
+    if (!icon) return '';
+    return icon.length == 1 ? icon : String.fromCharCode(Number('0x' + icon));
+}
+
+function intToCol(val) {
+    if (val === null || val === undefined) return null;
+    return "#" + Number(val).toString(16).padStart(6, '0');
+}
+
+function dataTotext(data) {
+    return b64ToText(data.split('base64,')[1]);
+}
+function b64ToText(base64) {
+    const binString = atob(base64);
+    return new TextDecoder().decode(Uint8Array.from(binString, (m) => m.codePointAt(0)));
+}

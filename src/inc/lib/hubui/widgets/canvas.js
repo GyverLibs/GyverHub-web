@@ -172,3 +172,8 @@ class Canvas {
         }
     }
 }
+
+function intToColA(val) {
+    if (val === null || val === undefined) return null;
+    return "#" + Number(val).toString(16).padStart(8, '0');
+}
