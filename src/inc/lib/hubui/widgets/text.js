@@ -10,6 +10,7 @@ class TextWidget extends BaseWidget {
             name: 'el'
         });
         this.$el.readonly = true;
+        this.$el.rows = 5;
         
         this.update(data);
     }
@@ -39,6 +40,7 @@ class LogWidget extends BaseWidget {
             },
         });
         this.$el.readonly = true;
+        this.$el.rows = 5;
         
         this.update(data);
     }

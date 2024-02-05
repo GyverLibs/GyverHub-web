@@ -377,6 +377,7 @@ select option {
 
 /* SWICON */
 .w_swicon {
+  --on-color: var(--prim);
   border-radius: 50%;
   aspect-ratio: 1;
   padding: 10px;
@@ -384,10 +385,13 @@ select option {
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
+  color: var(--on-color);
+  border: 2px solid var(--on-color);
 }
 
 .w_swicon_on {
   color: var(--tab);
+  background: var(--on-color);
 }
 
 /* TABS */

@@ -34,6 +34,7 @@ class SliderWidget extends BaseWidget {
         this.$el.max = 100;
         this.$el.step = 1;
         this.$el.dec = 0;
+        this.$el.value = 0;
         
         this.update(data);
 

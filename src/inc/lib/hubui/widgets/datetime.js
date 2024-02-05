@@ -8,6 +8,9 @@ class DateWidget extends BaseWidget {
             type: 'input',
             class: 'w_date',
             name: 'el',
+            style: {
+                color: 'var(--prim)'
+            },
             events: {
                 click: () => {
                     this.$el.showPicker();
@@ -39,6 +42,9 @@ class TimeWidget extends BaseWidget {
             type: 'input',
             class: 'w_date',
             name: 'el',
+            style: {
+                color: 'var(--prim)'
+            },
             events: {
                 click: () => {
                     this.$el.showPicker();
@@ -71,6 +77,9 @@ class DateTimeWidget extends BaseWidget {
             type: 'input',
             class: 'w_date',
             name: 'el',
+            style: {
+                color: 'var(--prim)'
+            },
             events: {
                 click: () => {
                     this.$el.showPicker();

@@ -90,22 +90,8 @@ class SwitchIconWidget extends BaseWidget {
             this.$el.style.width = data.fsize * 1.7 + 'px';
         }
         if ('icon' in data) this.$el.innerHTML = getIcon(data.icon);
-        if ('color' in data) this.color(intToCol(data.color));
+        if ('color' in data) this.$el.style.setProperty('--on-color', intToCol(data.color));
         if ('disable' in data) this.disable(this.$el, data.disable);
-    }
-
-    color(color) {
-        if (color) {
-            // EL('style#' + id).innerHTML = `
-            // #${ID(id)}.w_swicon {
-            //     color: ${color};
-            //     border: 2px solid ${color};
-            // }
-            // #${ID(id)}.w_swicon_on {
-            //     color: var(--tab);
-            //     background: ${color};
-            // `;
-        }
     }
 }
 
