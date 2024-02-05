@@ -6,6 +6,7 @@
 /*@![include:inc/lib/hubui/widgets/button.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/canvas.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/color.js, compile]*/
+/*@![include:inc/lib/hubui/widgets/custom.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/datetime.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/dpad.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/flags.js, compile]*/
@@ -21,6 +22,7 @@
 /*@![include:inc/lib/hubui/widgets/select.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/slider.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/spinner.js, compile]*/
+/*@![include:inc/lib/hubui/widgets/stream.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/switch.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/table.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/tabs.js, compile]*/
