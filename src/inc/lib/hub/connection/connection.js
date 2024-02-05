@@ -16,6 +16,7 @@ const ConnectionState = new Enum(
 class Connection extends EventEmitter {
   #state;
   #discovering;
+  #discoverTimer;
 
   /** @type {GyverHub} */
   hub;
@@ -60,8 +61,10 @@ class Connection extends EventEmitter {
 
   _discoverTimer() {
     this.#discovering = true;
-    setTimeout(() => {
+    if (this.#discoverTimer) clearTimeout(this.#discoverTimer);
+    this.#discoverTimer = setTimeout(() => {
       this.#discovering = false;
+      this.#discoverTimer = null;
       this.hub._checkDiscoverEnd();
     }, this.options.discover_timeout);
   }
