@@ -1,11 +1,8 @@
-class Led extends BaseWidget {
+class LedWidget extends BaseWidget {
     $led;
-    #color;
-    #value;
 
     constructor(data, renderer) {
         super(data, renderer);
-        this.#color = getDefColor();
 
         this.makeLayout({
             type: 'div',
@@ -19,20 +16,13 @@ class Led extends BaseWidget {
     update(data) {
         super.update(data);
 
-        if ('color' in data) this.#color = intToCol(data.color);
+        if ('color' in data) this.$el.style.setProperty('--on-color', intToCol(data.color));
         if ('disable' in data) this.disable(this.$led, data.disable);
-        if ('value' in data) this.#value = data.value;
-        if ('value' in data || 'color' in data) {
-            if (this.#value) {
-                this.$led.classList.add('w_led_on');
-                this.$led.style.background = this.#color;
-                this.$led.style.boxShadow = this.#color + ' 0 0 9px 1px, inset 2px 3px 0px 0px #fff3;';
-            } else {
-                this.$led.classList.remove('w_led_on');
-                this.$led.style.background = '';
-                this.$led.style.boxShadow = '';
-            }
+        if ('value' in data) {
+            if (data.value) this.$led.classList.add('w_led_on');
+            else this.$led.classList.remove('w_led_on');
         }
     }
-};
-Renderer.register('led', Led);
+}
+
+Renderer.register('led', LedWidget);

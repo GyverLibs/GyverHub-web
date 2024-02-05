@@ -1,16 +1,14 @@
-class Icon extends BaseWidget {
-    $icon;
-    #color;
+class IconWidget extends BaseWidget {
+    $el;
 
     constructor(data, renderer) {
         super(data, renderer);
-        this.#color = getDefColor();
 
         this.makeLayout({
             type: 'span',
             class: 'w_icon w_icon_led',
             text: "",
-            name: 'icon',
+            name: 'el',
             style: {
                 fontSize: '35px',
             },
@@ -21,20 +19,14 @@ class Icon extends BaseWidget {
 
     update(data) {
         super.update(data);
-        if ('icon' in data) this.$icon.innerHTML = getIcon(data.icon);
-        if ('fsize' in data) this.$icon.style.fontSize = data.fsize + 'px';
-        if ('color' in data) this.#color = intToCol(data.color);
+        if ('icon' in data) this.$el.innerHTML = getIcon(data.icon);
+        if ('fsize' in data) this.$el.style.fontSize = data.fsize + 'px';
+        if ('color' in data) this.$el.style.setProperty('--on-color', intToCol(data.color));
         if ('value' in data) {
-            if (Number(data.value)) {
-                this.$icon.classList.add('w_icon_on');
-                this.$icon.style.color = this.#color;
-                this.$icon.style.textShadow = '0 0 10px ' + this.#color;
-            } else {
-                this.$icon.classList.remove('w_icon_on');
-                this.$icon.style.color = '';
-                this.$icon.style.textShadow = '';
-            }
+            if (Number(data.value)) this.$el.classList.add('w_icon_on');
+            else this.$el.classList.remove('w_icon_on');
         }
     }
 }
-Renderer.register('icon', Icon);
+
+Renderer.register('icon', IconWidget);

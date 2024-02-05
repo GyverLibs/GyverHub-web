@@ -359,12 +359,18 @@ select option {
 
 /* LED */
 .w_led {
+  --on-color: var(--prim);
   margin: 0 auto;
   width: 30px;
   height: 30px;
   border-radius: 50%;
   background: var(--back);
   box-shadow: inset 0 0 2px 2px var(--black);
+}
+
+.w_led.w_led_on {
+  background: var(--on-color);
+  box-shadow: var(--on-color) 0 0 9px 1px, inset 2px 3px 0px 0px #fff3;
 }
 
 /* SWICON */
@@ -475,6 +481,12 @@ select option {
 
 /* ICON */
 .w_icon_led {
+  --on-color: var(--prim);
   color: var(--black);
   text-shadow: 0 0 4px #0003;
+}
+
+.w_icon_led.w_icon_on {
+  color: var(--on-color);
+  text-shadow: 0 0 10px var(--on-color);
 }
