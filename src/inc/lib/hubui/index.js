@@ -22,6 +22,7 @@
 /*@![include:inc/lib/hubui/widgets/slider.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/spinner.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/switch.js, compile]*/
+/*@![include:inc/lib/hubui/widgets/table.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/tabs.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/text.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/title.js, compile]*/
