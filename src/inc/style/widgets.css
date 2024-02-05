@@ -397,6 +397,7 @@ select option {
 }
 
 .w_tabs>ul {
+  --active-item-color: var(--prim);
   padding: 0;
   display: flex;
   list-style-type: none;
@@ -428,7 +429,7 @@ select option {
 }
 
 .w_tab_act {
-  background: var(--prim) !important;
+  background: var(--active-item-color) !important;
   color: var(--tab) !important;
   font-weight: 600;
 }
