@@ -179,7 +179,6 @@ async function back_h() {
   }
   switch (screen) {
     case 'ui':
-      release_all();
       close_device();
       break;
     case 'dev_config':
