@@ -1,5 +1,5 @@
 class LedWidget extends BaseWidget {
-    $led;
+    $el;
 
     constructor(data, renderer) {
         super(data, renderer);
@@ -7,7 +7,7 @@ class LedWidget extends BaseWidget {
         this.makeLayout({
             type: 'div',
             class: 'w_led',
-            name: 'led',
+            name: 'el',
         });
 
         this.update(data);
@@ -17,10 +17,10 @@ class LedWidget extends BaseWidget {
         super.update(data);
 
         if ('color' in data) this.$el.style.setProperty('--on-color', intToCol(data.color));
-        if ('disable' in data) this.disable(this.$led, data.disable);
+        if ('disable' in data) this.disable(this.$el, data.disable);
         if ('value' in data) {
-            if (data.value) this.$led.classList.add('w_led_on');
-            else this.$led.classList.remove('w_led_on');
+            if (data.value) this.$el.classList.add('w_led_on');
+            else this.$el.classList.remove('w_led_on');
         }
     }
 }
