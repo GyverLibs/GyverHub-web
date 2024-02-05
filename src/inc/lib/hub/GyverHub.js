@@ -11,7 +11,7 @@ class GyverHub extends EventEmitter {
   constructor() {
     super();
     this.config = new Config();
-    this.config.set('hub', 'prefix', 'MyDevices');
+    this.config.set('hub', 'prefix', 'MyDevices2');
     this.config.set('hub', 'client_id', Math.round(Math.random() * 0xffffffff).toString(16));
     this.addConnection(HTTPConnection);
     this.addConnection(WebSocketConnection);
