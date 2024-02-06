@@ -2,8 +2,9 @@ const langBase = {
   English: {
     errors: ["not an error", "open file error", "not enough space", "checksum error", "size error", "start error", "write error", "end error", "aborted", "timeout", "busy", "memory error", "wrong client", "forbidden", "module disabled", "FS busy", "cancelled"],
     themes: {
-      DARK: "Dark",
-      LIGHT: "Light"
+      auto: "System",
+      dark: "Dark",
+      light: "Light"
     },
     colors: {
       ORANGE: "Orange",
@@ -124,8 +125,9 @@ const langBase = {
   Russian: {
     errors: ["не ошибка", "невозможно открыть файл", "недостаточно места", "ошибка контрольной суммы", "ошибка размера", "ошибка старта", "ошибка записи", "ошибка завершения", "прервано", "тайм-аут", "занят", "ошибка памяти", "не тот клиент", "запрещено", "модуль отключен", "файловая система занята", "отменено"],
     themes: {
-      DARK: "Тёмная",
-      LIGHT: "Светлая"
+      auto: "Системная",
+      dark: "Тёмная",
+      light: "Светлая"
     },
     colors: {
       ORANGE: "Оранжевый",
@@ -243,9 +245,3 @@ const langBase = {
     redirect: "Перейти на",
   }
 };
-
-let lang = langBase[userLang()];
-
-function updateLang() {
-  lang = langBase[cfg.lang];
-}

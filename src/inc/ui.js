@@ -264,11 +264,7 @@ function update_ip_h() {
   EL('local_ip').value = window_ip();
   /*@/[if_target:esp]*/
   /*@[if_not_target:esp]*/
-  if (!Boolean(window.webkitRTCPeerConnection || window.mozRTCPeerConnection)) notSupported();
-  else getLocalIP().then((ip) => {
-    if (ip.indexOf("local") > 0) asyncAlert(`Disable WEB RTC anonymizer: ${browser()}:/`+`/flags/#enable-webrtc-hide-local-ips-with-mdns`);
-    else EL('local_ip').value = ip;
-  });
+  getLocalIP(false);
   /*@/[if_not_target:esp]*/
 }
 function menu_h() {

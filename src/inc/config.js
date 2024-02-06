@@ -40,18 +40,10 @@ async function cfg_reset() {
 }
 
 function update_theme() {
-  let v = themes[cfg.theme];
+  document.body.classList.remove('theme-dark', 'theme-light', 'theme-auto');
+  document.body.classList.add('theme-' + cfg.theme.toLowerCase());
+
   let r = document.querySelector(':root');
-  r.style.setProperty('--back', theme_cols[v][0]);
-  r.style.setProperty('--tab', theme_cols[v][1]);
-  r.style.setProperty('--font', theme_cols[v][2]);
-  r.style.setProperty('--font2', theme_cols[v][3]);
-  r.style.setProperty('--dark', theme_cols[v][4]);
-  r.style.setProperty('--thumb', theme_cols[v][5]);
-  r.style.setProperty('--black', theme_cols[v][6]);
-  r.style.setProperty('--scheme', theme_cols[v][7]);
-  r.style.setProperty('--font_inv', theme_cols[v][8]);
-  r.style.setProperty('--shad', theme_cols[v][9]);
   r.style.setProperty('--ui_width', cfg.ui_width + 'px');
   r.style.setProperty('--prim', intToCol(colors[cfg.maincolor]));
   r.style.setProperty('--font_f', cfg.font);
@@ -68,9 +60,8 @@ function update_theme() {
   display('local_block', hub.config.get('connections', 'HTTP', 'enabled') ? b : n);
   EL('local_label').style.color = hub.config.get('connections', 'HTTP', 'enabled') ? f : f3;
   display('pin_block', cfg.use_pin ? b : n);
-  EL('pin_label').style.color = cfg.use_pin ? f : f3;
 
-  updateLang();
+  EL('pin_label').style.color = cfg.use_pin ? f : f3;
 
 /*@[if_not_target:esp]*/
   display('mq_block', hub.config.get('connections', 'MQTT', 'enabled') ? b : n);

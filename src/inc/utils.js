@@ -3,6 +3,10 @@ const app_title = 'GyverHub';
 const app_version = '/*@![:version]*/';
 const hub = new GyverHub();
 
+if (localStorage.hasOwnProperty('hub_config')) {
+  hub.config.fromJson(localStorage.getItem('hub_config'));
+}
+
 const colors = {
   ORANGE: 0xd55f30,
   YELLOW: 0xd69d27,
@@ -13,15 +17,18 @@ const colors = {
   VIOLET: 0x825ae7,
   PINK: 0xc8589a,
 };
-const themes = {
-  DARK: 0,
-  LIGHT: 1
-};
+
 const theme_cols = [
   // back/tab/font/font2/dark/thumb/black/scheme/font4/shad/font3
   ['#1b1c20', '#26272c', '#eee', '#ccc', '#141516', '#444', '#0e0e0e', 'dark', '#222', '#000'],
   ['#eee', '#fff', '#111', '#333', '#ddd', '#999', '#bdbdbd', 'light', '#fff', '#000000a3']
 ];
+function getCurrentColorScheme() {
+  if (cfg.theme === 'dark') return theme_cols[0];
+  if (cfg.theme === 'light') return theme_cols[1];
+  if (window.matchMedia("(prefers-color-scheme: dark)").matches) return theme_cols[0];
+  return theme_cols[1];
+}
 
 function getError(code) {
   return lang.errors[code];
@@ -37,7 +44,7 @@ let cfg = {
   serial_offset: 2000,
   use_pin: false,
   pin: '',
-  theme: isDark() ? 'DARK' : 'LIGHT',
+  theme: 'auto',
   maincolor: 'GREEN',
   font: 'monospace',
   check_upd: true,
@@ -47,6 +54,28 @@ let cfg = {
   app_plugin_js: '',
   api_ver: 1,
 };
+
+if (localStorage.hasOwnProperty('app_config')) {
+  let cfg_r = JSON.parse(localStorage.getItem('app_config'));
+  if (cfg.api_ver === cfg_r.api_ver) {
+    cfg = cfg_r;
+  }
+}
+localStorage.setItem('app_config', JSON.stringify(cfg));
+
+let lang = langBase[cfg.lang];
+
+/*@[if_target:esp]*/
+  if (window_ip()) {
+    EL('local_ip').value = window_ip();
+    hub.config.set('connections', 'HTTP', 'local_ip', window_ip());
+  }
+/*@/[if_target:esp]*/
+
+
+/*@[if_not_target:esp]*/
+  getLocalIP();
+/*@/[if_not_target:esp]*/
 
 // ====================== CHECK ======================
 function platform() {
@@ -67,14 +96,8 @@ function platform() {
 /*@/[if_target:local]*/
 }
 
-function isDark() {
-  return window.matchMedia("(prefers-color-scheme: dark)").matches;
-}
 function isSSL() {
   return window.location.protocol == 'https:';
-}
-function isTouch() {
-  return navigator.maxTouchPoints || 'ontouchstart' in document.documentElement;
 }
 function hasSerial() {
   return "serial" in navigator;
@@ -176,9 +199,6 @@ async function copyClip(text) {
 }
 
 // ====================== BROWSER ======================
-function notSupported() {
-  asyncAlert(lang.p_not_support);
-}
 function browser() {
   if (navigator.userAgent.includes("Opera") || navigator.userAgent.includes('OPR')) return 'opera';
   else if (navigator.userAgent.includes("Edg")) return 'edge';
@@ -199,19 +219,19 @@ function display(id, value) {
 }
 function showNotif(name, text) {
   if (!("Notification" in window) || Notification.permission != 'granted') return;
-  let descr = name + ' (' + new Date(Date.now()).toLocaleString() + ')';
+  const descr = name + ' (' + new Date(Date.now()).toLocaleString() + ')';
   navigator.serviceWorker.getRegistration().then(function (reg) {
     reg.showNotification(text, { body: descr, vibrate: true });
   }).catch(e => console.log(e));
-  //new Notification(text, {body: descr});
-  //self.registration.showNotification(text, {body: descr});
 }
 
 // ====================== NET ======================
+/*@[if_target:esp]*/
 function window_ip() {
   let ip = window.location.hostname;
   return checkIP(ip) ? ip : null;
 }
+/*@/[if_target:esp]*/
 function getMaskList() {
   let list = [];
   for (let i = 0; i < 33; i++) {
@@ -223,50 +243,33 @@ function getMaskList() {
   return list;
 }
 /*@[if_not_target:esp]*/
-function getLocalIP() {
-  return new Promise(function (resolve, reject) {
-    var RTCPeerConnection = window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
-    if (!RTCPeerConnection) reject('Auto local IP not supported');
+function getLocalIP(silent = true) {
+  const RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+  if (!RTCPeerConnection) {
+    if (!silent)
+      asyncAlert(lang.p_not_support);
+    return;
+  }
 
-    var rtc = new RTCPeerConnection({ iceServers: [] });
-    var addrs = {};
-    addrs["0.0.0.0"] = false;
+  const rtc = new RTCPeerConnection({ iceServers: [] });
+  rtc.createDataChannel('', { reliable: false });
 
-    function grepSDP(sdp) {
-      var hosts = [];
-      var finalIP = '';
-      sdp.split('\r\n').forEach(function (line) { // c.f. http://tools.ietf.org/html/rfc4566#page-39
-        if (~line.indexOf("a=candidate")) {     // http://tools.ietf.org/html/rfc4566#section-5.13
-          var parts = line.split(' '),        // http://tools.ietf.org/html/rfc5245#section-15.1
-            addr = parts[4],
-            type = parts[7];
-          if (type === 'host') {
-            finalIP = addr;
-          }
-        } else if (~line.indexOf("c=")) {       // http://tools.ietf.org/html/rfc4566#section-5.7
-          var parts = line.split(' '),
-            addr = parts[2];
-          finalIP = addr;
-        }
-      });
-      return finalIP;
+  rtc.addEventListener("icecandidate", evt => {
+    if (!evt.candidate) return;
+
+    const ip = evt.candidate.address;
+    if (!ip) return;
+
+    if (ip.endsWith('.local')) {
+      if (!silent)
+        asyncAlert(`Disable WEB RTC anonymizer: ${browser()}:/`+`/flags/#enable-webrtc-hide-local-ips-with-mdns`);
+      return;
     }
 
-    if (1 || window.mozRTCPeerConnection) {      // FF [and now Chrome!] needs a channel/stream to proceed
-      rtc.createDataChannel('', { reliable: false });
-    };
-
-    rtc.onicecandidate = function (evt) {
-      // convert the candidate to SDP so we can run it through our general parser
-      // see https://twitter.com/lancestout/status/525796175425720320 for details
-      if (evt.candidate) {
-        var addr = grepSDP("a=" + evt.candidate.candidate);
-        resolve(addr);
-      }
-    };
-    rtc.createOffer(function (offerDesc) {
-      rtc.setLocalDescription(offerDesc);
-    }, function (e) { return; });
+    EL('local_ip').value = ip;
+    hub.config.set('connections', 'HTTP', 'local_ip', ip);
   });
+
+  rtc.createOffer().then(offerDesc => rtc.setLocalDescription(offerDesc));
 }
 /*@/[if_not_target:esp]*/

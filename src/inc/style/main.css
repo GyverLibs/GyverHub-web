@@ -36,19 +36,52 @@
 :root {
   --prim: #37a93c;
   --err: #8e1414;
-  --back: #eeeeee;
-  --tab: #fff;
-  --font: #111;
-  --font2: #333;
   --font3: #919191;
-  --font_inv: #fff;
-  --dark: #a8a8a8;
-  --thumb: #999;
   --scheme: light;
-  --shad: #000000a3;
   --font_f: monospace;
   --menu_h: 120px;
   --ui_width: 500px;
+}
+
+body {
+  color-scheme: light;
+  --back: #eeeeee;
+  --tab: #ffffff;
+  --font: #111111;
+  --font2: #333333;
+  --dark: #a8a8a8;
+  --thumb: #999999;
+  --black: #bdbdbd;
+  --font_inv: #ffffff;
+  --shad: #000000a3;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.theme-auto {
+    color-scheme: dark;
+    --back: #1b1c20;
+    --tab: #26272c;
+    --font: #eeeeee;
+    --font2: #cccccc;
+    --dark: #141516;
+    --thumb: #444444;
+    --black: #0e0e0e;
+    --font_inv: #222222;
+    --shad: #000;
+  }
+}
+
+body.theme-dark {
+  color-scheme: dark;
+  --back: #1b1c20;
+  --tab: #26272c;
+  --font: #eeeeee;
+  --font2: #cccccc;
+  --dark: #141516;
+  --thumb: #444444;
+  --black: #0e0e0e;
+  --font_inv: #222222;
+  --shad: #000;
 }
 
 body,

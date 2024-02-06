@@ -10,11 +10,12 @@
 /*@![include:inc/lib/hubui/index.js, compile, raw]*/
 
 
+/*@![include:inc/lang.js, compile]*/
+
 /*@![include:inc/utils.js, compile]*/
 /*@![include:inc/popup.js, compile]*/
 
 /*@![include:inc/controls.js, compile]*/
-/*@![include:inc/lang.js, compile]*/
 /*@![include:inc/render.js, compile]*/
 /*@![include:inc/config.js, compile]*/
 

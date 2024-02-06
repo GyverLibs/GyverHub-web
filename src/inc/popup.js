@@ -56,10 +56,10 @@ function makeDialog(title, text, buttons, additional) {
 
 function asyncAlert(text, title = null) {
   return new Promise(resolve => {
-    let box = makeDialog(title, text, [{
+    const $box = makeDialog(title, text, [{
       text: 'OK',
-      click:() => {
-        document.body.removeChild(box);
+      click: () => {
+        document.body.removeChild($box);
         resolve(true);
       }
     }]);
@@ -68,18 +68,18 @@ function asyncAlert(text, title = null) {
 
 function asyncConfirm(text, title = null) {
   return new Promise(resolve => {
-    let box = makeDialog(title, text, [
+    const $box = makeDialog(title, text, [
       {
         text: lang.pop_yes,
         click:() => {
-          document.body.removeChild(box);
+          document.body.removeChild($box);
           resolve(true);
         }
       },
       {
         text: lang.pop_no,
         click:() => {
-          document.body.removeChild(box);
+          document.body.removeChild($box);
           resolve(false);
         }
       }
@@ -89,19 +89,19 @@ function asyncConfirm(text, title = null) {
 
 function asyncPrompt(text, placeh = '', title = null) {
   return new Promise(resolve => {
-    let box = makeDialog(title, text, [
+    const $box = makeDialog(title, text, [
       {
         text: 'OK',
         click:() => {
           let res = EL('dia_input').value;
-          document.body.removeChild(box);
+          document.body.removeChild($box);
           resolve(res);
         }
       },
       {
         text: lang.cancel,
         click:() => {
-          document.body.removeChild(box);
+          document.body.removeChild($box);
           resolve(null);
         }
       }

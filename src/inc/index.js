@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  load_cfg();
   apply_cfg();
-  updateLang();
   render_main();
   EL('hub_stat').innerHTML = 'GyverHub v' + app_version + ' ' + platform();
 
@@ -9,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     hub.config.set('connections', 'HTTP', 'enabled', true);  // force local on esp
   /*@/[if_target:esp]*/
 
-  update_ip();
   update_theme();
   set_drop();
   key_change();
@@ -54,19 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (cfg.use_pin && cfg.pin.length) show_keypad(true);
   else startup();
 
-  function load_cfg() {
-    if (localStorage.hasOwnProperty('app_config')) {
-      let cfg_r = JSON.parse(localStorage.getItem('app_config'));
-      if (cfg.api_ver === cfg_r.api_ver) {
-        cfg = cfg_r;
-      }
-    }
-    localStorage.setItem('app_config', JSON.stringify(cfg));
-  
-    if (localStorage.hasOwnProperty('hub_config')) {
-      hub.config.fromJson(localStorage.getItem('hub_config'));
-    }
-  }
   function render_main() {
     const slots = document.getElementsByTagName('slot');
     while (slots.length) {
@@ -169,26 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
       window.history.pushState({ page: 1 }, "", "");
       back_h();
     }
-  }
-  function update_ip() {//TODO
-    /*@[if_target:esp]*/
-    if (window_ip()) {
-      EL('local_ip').value = window_ip();
-      hub.config.set('connections', 'HTTP', 'local_ip', window_ip());
-    }
-    /*@/[if_target:esp]*/
-    /*@[if_not_target:esp]*/
-    if (!Boolean(window.webkitRTCPeerConnection || window.mozRTCPeerConnection)) return;
-    getLocalIP()
-      .then((ip) => {
-        if (ip.indexOf("local") < 0) {
-          EL('local_ip').value = ip;
-          hub.config.set('connections', 'HTTP', 'local_ip', ip);
-        }
-        return;
-      })
-      .catch(e => console.log(e));
-    /*@/[if_not_target:esp]*/
   }
   function apply_cfg() {
     if (cfg.pin.length < 4) cfg.use_pin = false;
