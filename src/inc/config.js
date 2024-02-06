@@ -11,33 +11,6 @@ function save_cfg() {
   localStorage.setItem('app_config', JSON.stringify(cfg));
   localStorage.setItem('hub_config', hub.config.toJson());
 }
-function load_cfg() {
-  if (localStorage.hasOwnProperty('app_config')) {
-    let cfg_r = JSON.parse(localStorage.getItem('app_config'));
-    if (cfg.api_ver === cfg_r.api_ver) {
-      cfg = cfg_r;
-    }
-  }
-  localStorage.setItem('app_config', JSON.stringify(cfg));
-
-  if (localStorage.hasOwnProperty('hub_config')) {
-    hub.config.fromJson(localStorage.getItem('hub_config'));
-  }
-}
-function apply_cfg() {
-  if (cfg.pin.length < 4) cfg.use_pin = false;
-  for (let key in cfg) {
-    let el = EL(key);
-    if (el == undefined) continue;
-    if (el.type == 'checkbox') el.checked = cfg[key];
-    else el.value = cfg[key];
-  }
-  for (const el of document.querySelectorAll('[data-hub-config]')) {
-    const value = hub.config.get(...el.dataset.hubConfig.split('.'));
-    if (el.type == 'checkbox') el.checked = value;
-    else el.value = value;
-  }
-}
 async function cfg_export() {
   await copyClip(btoa(JSON.stringify(cfg)) + ';' + btoa(hub.config.toJson()));
 }
@@ -53,7 +26,6 @@ async function cfg_import() {
     } catch (e) { }
 
     save_cfg();
-    save_devices();
     showPopup(lang.import_ok);
     setTimeout(() => location.reload(), 500);
   } catch (e) {
@@ -62,9 +34,7 @@ async function cfg_import() {
 }
 async function cfg_reset() {
   if (await asyncConfirm(lang.cfg_reset_conf)) {
-    localStorage.removeItem("app_config");
-    localStorage.removeItem("hub_config");
-    localStorage.removeItem("devices");
+    localStorage.clear();
     setTimeout(() => location.reload(), 500);
   }
 }
@@ -117,7 +87,4 @@ function update_theme() {
   display('serial_block', ser ? b : n);
   EL('serial_label').style.color = ser ? f : f3;
   /*@/[if_not_target:esp]*/
-}
-function save_devices() {
-  save_cfg();
 }

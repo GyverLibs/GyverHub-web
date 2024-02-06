@@ -1,8 +1,20 @@
 const langBase = {
   English: {
     errors: ["not an error", "open file error", "not enough space", "checksum error", "size error", "start error", "write error", "end error", "aborted", "timeout", "busy", "memory error", "wrong client", "forbidden", "module disabled", "FS busy", "cancelled"],
-    themes: ["Dark", "Light"],
-    colors: ["Orange", "Yellow", "Green", "Mint", "Aqua", "Blue", "Violet", "Pink"],
+    themes: {
+      DARK: "Dark",
+      LIGHT: "Light"
+    },
+    colors: {
+      ORANGE: "Orange",
+      YELLOW: "Yellow",
+      GREEN: "Green",
+      MINT: "Mint",
+      AQUA: "Aqua",
+      BLUE: "Blue",
+      VIOLET: "Violet",
+      PINK: "Pink"
+    },
     api_mis: "Device and App API version mismatch. Update library and App!",
 
     pop_yes: "Yes",
@@ -111,8 +123,20 @@ const langBase = {
   
   Russian: {
     errors: ["не ошибка", "невозможно открыть файл", "недостаточно места", "ошибка контрольной суммы", "ошибка размера", "ошибка старта", "ошибка записи", "ошибка завершения", "прервано", "тайм-аут", "занят", "ошибка памяти", "не тот клиент", "запрещено", "модуль отключен", "файловая система занята", "отменено"],
-    themes: ["Тёмная", "Светлая"],
-    colors: ["Оранжевый", "Жёлтый", "Зелёный", "Мятный", "Бирюзовый", "Синий", "Фиолетовый", "Розовый"],
+    themes: {
+      DARK: "Тёмная",
+      LIGHT: "Светлая"
+    },
+    colors: {
+      ORANGE: "Оранжевый",
+      YELLOW: "Жёлтый",
+      GREEN: "Зелёный",
+      MINT: "Мятный",
+      AQUA: "Бирюзовый",
+      BLUE: "Синий",
+      VIOLET: "Фиолетовый",
+      PINK: "Розовый"
+    },
     api_mis: "Разная версия API у устройства и приложения. Обнови приложение и библиотеку!",
 
     pop_yes: "Да",

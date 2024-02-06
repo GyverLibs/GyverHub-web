@@ -43,7 +43,7 @@ hub.tg.onConnChange = (state) => {
 
 // ============ DEVICES ============
 hub.config.addEventListener('changed.devices', () => {
-  save_devices();
+  save_cfg();
 });
 hub.addEventListener('deviceadded', (ev) => {  // found new device (search)
   const dev = ev.device.info;

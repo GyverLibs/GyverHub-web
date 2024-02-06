@@ -292,25 +292,20 @@ function devLink() {
 }
 function ui_mode_h(el) {
   hub.dev(focused).info.ui_mode = el.value;
-  save_devices();
   display('ui_block_width_cont', el.value >= 2 ? 'flex' : 'none');
 }
 function ui_width_h(el) {
   hub.dev(focused).info.main_width = el.value;
-  save_devices();
 }
 function ui_block_width_h(el) {
   hub.dev(focused).info.ui_block_width = el.value;
-  save_devices();
 }
 function ui_plugin_css_h(el) {
   hub.dev(focused).info.plugin_css = el.value;
-  save_devices();
   addDOM('device_css', 'style', el.value, EL('plugins'));
 }
 function ui_plugin_js_h(el) {
   hub.dev(focused).info.plugin_js = el.value;
-  save_devices();
   addDOM('device_js', 'script', el.value, EL('plugins'));
 }
 
@@ -383,7 +378,6 @@ async function trust_dev_h() {
     return;
   }
   hub.dev(focused).info.trust = v;
-  save_devices();
 }
 
 // ============== CLI =============
