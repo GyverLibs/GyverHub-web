@@ -11,27 +11,46 @@ function save_cfg() {
   localStorage.setItem('app_config', JSON.stringify(cfg));
   localStorage.setItem('hub_config', hub.config.toJson());
 }
+
 async function cfg_export() {
-  await copyClip(btoa(JSON.stringify(cfg)) + ';' + btoa(hub.config.toJson()));
+  const config = {
+    app_config: cfg,
+    hub_config: hub.config.toJson(),
+  };
+  const $a = document.createElement('a');
+  $a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config));
+  $a.download = "GyverHub-config-export.json";
+  document.body.appendChild($a);
+  $a.click();
+  $a.remove();
 }
-async function cfg_import() {
-  try {
-    let text = await navigator.clipboard.readText();
-    text = text.split(';');
+
+function cfg_import() {
+  const $in = document.createElement('input');
+  $in.type = 'file';
+  $in.accept = ".json,application/json";
+  $in.addEventListener("change", async () => {
+    const file = $in.files[0];
+
     try {
-      cfg = JSON.parse(atob(text[0]));
-    } catch (e) { }
-    try {
-      hub.config.fromJson(atob(text[1]));
-    } catch (e) { }
+      const ab = await readFileAsArrayBuffer(file);
+      const text = new TextDecoder().decode(ab);
+      const data = JSON.parse(text);
+      cfg = data.app_config;
+      hub.config.fromJson(data.hub_config);
+    } catch (e) {
+      console.log(e);
+      showPopupError(lang.import_err);
+      return;
+    }
 
     save_cfg();
     showPopup(lang.import_ok);
     setTimeout(() => location.reload(), 500);
-  } catch (e) {
-    showPopupError(lang.import_err);
-  }
+  });
+  $in.click();
 }
+
 async function cfg_reset() {
   if (await asyncConfirm(lang.cfg_reset_conf)) {
     localStorage.clear();
