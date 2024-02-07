@@ -60,7 +60,7 @@ class TableWidget extends BaseWidget {
                 const $col = document.createElement('td');
                 if (widths[col]) $col.width = widths[col] + '%';
                 $col.align = aligns[col] ?? 'center';
-                $col.innerText = row[col];
+                $col.textContent = row[col];
                 $row.append($col);
             }
             items.push($row);

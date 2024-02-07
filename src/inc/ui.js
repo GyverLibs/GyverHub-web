@@ -6,7 +6,6 @@ async function show_screen(nscreen) {
   if (focused) hub.dev(focused).fsStop();
   spinArrows(false);
   screen = nscreen;
-  show_keypad(false);
 
   ['conn_icons', 'test_cont', 'projects_cont', 'config', 'devices',
     'controls', 'info', 'icon_menu', 'icon_cfg', 'files', 'ota', 'back', 'icon_refresh',
@@ -14,7 +13,7 @@ async function show_screen(nscreen) {
 
   display('main_cont', 'block');
 
-  EL('title').innerHTML = app_title;
+  EL('title').textContent = "GyverHub";
   EL('title_row').style.cursor = 'pointer';
   const dev = hub.dev(focused);
 
@@ -33,15 +32,15 @@ async function show_screen(nscreen) {
       display('main_cont', 'none');
       display('test_cont', 'block');
       display('back', 'inline-block');
-      EL('title').innerHTML = 'UI Test';
+      EL('title').textContent = 'UI Test';
       break;
 
     case 'projects':
       display('main_cont', 'none');
       display('projects_cont', 'block');
       display('back', 'inline-block');
-      EL('title').innerHTML = lang.p_proj;
-      EL('projects').innerHTML = '';
+      EL('title').textContent = lang.p_proj;
+      EL('projects').replaceChildren();
       loadProjects();
       break;
 
@@ -51,7 +50,7 @@ async function show_screen(nscreen) {
       display('back', 'inline-block');
       display('icon_refresh', 'inline-block');
       display('conn', 'inline-block');
-      EL('title').innerHTML = dev.info.name;
+      EL('title').textContent = dev.info.name;
       break;
 
     case 'config':
@@ -59,7 +58,7 @@ async function show_screen(nscreen) {
       display('config', 'block');
       display('icon_cfg', 'inline-block');
       display('back', 'inline-block');
-      EL('title').innerHTML = lang.config;
+      EL('title').textContent = lang.config;
       break;
 
     case 'info':
@@ -68,7 +67,7 @@ async function show_screen(nscreen) {
       display('back', 'inline-block');
       display('conn', 'inline-block');
       display('icon_refresh', 'inline-block');
-      EL('title').innerHTML = dev.info.name + '/info';
+      EL('title').textContent = dev.info.name + '/info';
       enterMenu('menu_info');
       await show_info();
       break;
@@ -79,8 +78,8 @@ async function show_screen(nscreen) {
       display('back', 'inline-block');
       display('conn', 'inline-block');
       display('icon_refresh', 'inline-block');
-      EL('title').innerHTML = dev.info.name + '/fs';
-      EL('file_upload_btn').innerHTML = lang.fs_upload;
+      EL('title').textContent = dev.info.name + '/fs';
+      EL('file_upload_btn').textContent = lang.fs_upload;
       enterMenu('menu_fsbr');
       display('fs_browser', dev.isModuleEnabled(Modules.FILES) ? 'block' : 'none');
       display('fs_upload', dev.isModuleEnabled(Modules.UPLOAD) ? 'block' : 'none');
@@ -97,7 +96,7 @@ async function show_screen(nscreen) {
       display('icon_menu', 'inline-block');
       display('back', 'inline-block');
       display('conn', 'inline-block');
-      EL('title').innerHTML = dev.info.name + '/ota';
+      EL('title').textContent = dev.info.name + '/ota';
       enterMenu('menu_ota');
     
       const ota_t = '.' + dev.info.ota_t;
@@ -114,14 +113,14 @@ async function show_screen(nscreen) {
       display('icon_menu', 'inline-block');
       display('back', 'inline-block');
       display('conn', 'inline-block');
-      EL('title').innerHTML = dev.info.name + '/cfg';
+      EL('title').textContent = dev.info.name + '/cfg';
       enterMenu('menu_cfg');
       show_cfg();
       break;
 
     case 'pin':
       display('back', 'inline-block');
-      show_keypad(true);
+      await askPin(dev.info.pin);
       break;
   }
 }
@@ -140,18 +139,18 @@ function show_cfg() {
 async function show_info() {
   const dev = hub.dev(focused);
 
-  EL('info_id').innerHTML = focused;
-  EL('info_set').innerHTML = dev.info.prefix + '/' + focused + '/ID/set/*';
-  EL('info_read').innerHTML = dev.info.prefix + '/' + focused + '/ID/read/*';
-  EL('info_get').innerHTML = dev.info.prefix + '/hub/' + focused + '/get/*';
-  EL('info_status').innerHTML = dev.info.prefix + '/hub/' + focused + '/status';
+  EL('info_id').textContent = focused;
+  EL('info_set').textContent = dev.info.prefix + '/' + focused + '/ID/set/*';
+  EL('info_read').textContent = dev.info.prefix + '/' + focused + '/ID/read/*';
+  EL('info_get').textContent = dev.info.prefix + '/hub/' + focused + '/get/*';
+  EL('info_status').textContent = dev.info.prefix + '/hub/' + focused + '/status';
   display('reboot_btn', dev.isModuleEnabled(Modules.REBOOT) ? 'block' : 'none');
   display('info_topics', dev.isModuleEnabled(Modules.MQTT) ? 'block' : 'none');
 
-  EL('info_version').innerHTML = '';
-  EL('info_net').innerHTML = '';
-  EL('info_memory').innerHTML = '';
-  EL('info_system').innerHTML = '';
+  EL('info_version').replaceChildren();
+  EL('info_net').replaceChildren();
+  EL('info_memory').replaceChildren();
+  EL('info_system').replaceChildren();
 
   if (dev.isModuleEnabled(Modules.INFO)) {
     const info = await dev.getInfo();
@@ -292,7 +291,7 @@ function menu_show(state) {
   let cl = EL('menu').classList;
   if (menu_f) cl.add('menu_show');
   else cl.remove('menu_show');
-  EL('icon_menu').innerHTML = menu_f ? '' : '';
+  EL('icon_menu').textContent = menu_f ? '' : '';
   display('menu_overlay', menu_f ? 'block' : 'none');
 }
 function updateSystemMenu() {
@@ -320,17 +319,16 @@ function enterMenu(sel = null) {
       document.querySelector('.menu_item#' + sel).classList.add('menu_act');
 }
 // ============== DEVICE =============
-function device_h(id) {
+async function device_h(id) {
   let dev = hub.dev(id);
   if (!dev || !dev.isConnected()) return;
   if (!dev.info.api_v || dev.info.api_v != GyverHub.api_v) asyncAlert(lang.api_mis);
 
   if (dev.info.PIN && !dev.granted) {
-    pin_id = id;
-    show_screen('pin');
-  } else {
-    open_device(id);
+    await askPin(dev.info.pin);
+    dev.granted = true;
   }
+  open_device(id);
 }
 function open_device(id) {
   /*@[if_not_target:esp]*/
@@ -340,8 +338,8 @@ function open_device(id) {
   focused = id;
   let dev = hub.dev(id);
   updateSystemMenu();
-  EL('menu_user').innerHTML = '';
-  EL('conn').innerHTML = dev.getConnection().name;
+  EL('menu_user').replaceChildren();
+  EL('conn').textContent = dev.getConnection().name;
   addDOM('device_css', 'style', dev.info.plugin_css, EL('plugins'));
   addDOM('device_js', 'script', dev.info.plugin_js, EL('plugins'));
   show_screen('ui');
@@ -349,8 +347,8 @@ function open_device(id) {
 }
 function close_device() {
   if (renderer) renderer.close();
-  EL('plugins').innerHTML = '';
-  EL('ota_label').innerHTML = "";
+  EL('plugins').replaceChildren();
+  EL('ota_label').replaceChildren();
 
   errorBar(false);
   hub.dev(focused).unfocus();
@@ -396,7 +394,7 @@ function printCLI(text, color) {
   }
 }
 function toggleCLI() {
-  EL('cli').innerHTML = "";
+  EL('cli').replaceChildren();
   EL('cli_input').value = "";
   showCLI(!(EL('cli_cont').style.display == 'block'));
 }
@@ -421,15 +419,9 @@ function pass_type(v) {
 
   if (pin_id) {   // device
     if (hash == hub.dev(pin_id).info.PIN) {
-      open_device(pin_id);
-      EL('pass_inp').value = '';
-      hub.dev(pin_id).granted = true;
     }
   } else {        // app
     if (hash == cfg.pin) {
-      display('password', 'none');
-      startup();
-      EL('pass_inp').value = '';
     }
   }
 }
@@ -439,11 +431,26 @@ function check_type(arg) {
     if (c < '0' || c > '9') arg.value = arg.value.slice(0, -1);
   }
 }
-function show_keypad(v) {
-  if (v) {
+
+function askPin(pin) {
+  return new Promise(res => {
+    const $inp = EL('pass_inp');
+
+    function pass_input(e) {
+      //if (e.target.tagName !== 'INPUT')
+
+
+    }
+
     display('password', 'block');
-    EL('pass_inp').focus();
-  } else {
-    display('password', 'none');
-  }
+    .focus();
+    EL('pass_inp').addEventListener('input', pass_input)
+
+    let hash = EL('pass_inp').value.hashCode();
+    if (hash == pin) {
+      EL('pass_inp').value = '';
+      display('password', 'none');
+      res();
+    }
+  });
 }

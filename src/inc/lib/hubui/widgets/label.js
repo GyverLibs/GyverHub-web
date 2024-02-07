@@ -32,7 +32,7 @@ class Label extends BaseWidget {
     update(data) {
         super.update(data);
 
-        if ('value' in data) this.$lbl.innerHTML = data.value;
+        if ('value' in data) this.$lbl.textContent = data.value;
         if ('color' in data) this.$lbl_cont.style.color = intToCol(data.color);
         if ('fsize' in data) this.$lbl_cont.style.fontSize = data.fsize + 'px';
         if ('align' in data) this.align(data.align);

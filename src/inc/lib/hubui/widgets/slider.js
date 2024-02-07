@@ -55,7 +55,7 @@ class SliderWidget extends BaseWidget {
 
     #move(send = true) {
         this.$el.style.backgroundSize = (Number(this.$el.value) - Number(this.$el.min)) * 100 / (Number(this.$el.max) - Number(this.$el.min)) + '% 100%';
-        this.$out.innerHTML = Number(this.$el.value).toFixed(Number(this.data.dec ?? 0)) + (this.data.unit ?? '');
+        this.$out.textContent = Number(this.$el.value).toFixed(Number(this.data.dec ?? 0)) + (this.data.unit ?? '');
         if (send) this.set(this.$el.value);
     }
 }

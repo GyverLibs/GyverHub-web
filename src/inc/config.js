@@ -21,7 +21,7 @@ function update_theme() {
   r.style.setProperty('--prim', intToCol(colors[cfg.maincolor]));
   r.style.setProperty('--font_f', cfg.font);
 
-  EL('app_plugins').innerHTML = '';
+  EL('app_plugins').replaceChildren();
   addDOM('app_css', 'style', cfg.app_plugin_css, EL('app_plugins'));
   addDOM('app_js', 'script', cfg.app_plugin_js, EL('app_plugins'));
 

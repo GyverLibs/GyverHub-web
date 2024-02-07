@@ -1,7 +1,6 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   apply_cfg();
   render_main();
-  EL('hub_stat').innerHTML = 'GyverHub v' + app_version + ' ' + platform();
 
   document.addEventListener('click', e => {
     const $t = e.composedPath().find(e => e.dataset && e.dataset.action);
@@ -12,8 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
         break;
     }
   });
-
-  for (const $i of document.querySelectorAll('[data-action]'))
 
   /*@[if_target:esp]*/
     hub.config.set('connections', 'HTTP', 'enabled', true);  // force local on esp
@@ -36,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // show version
   let ver = localStorage.getItem('version');
+  const app_version = '/*@![:version]*/';
   if (!ver || ver != app_version) {
     /*@[if_not_dev]*/
     localStorage.setItem('version', app_version);
@@ -46,22 +44,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /*@[if_target:host]*/
-    display('app_block', 'block');
     if (isSSL()) {
       display('http_only_http', 'block');
       display('http_settings', 'none');
       display('pwa_unsafe', 'none');
     }
   /*@/[if_target:host]*/
-  /*@[if_not_target:esp, host]*/
-    display('pwa_block', 'none');
-    display('devlink_btn', 'none');
-    display('qr_btn', 'none');
-  /*@/[if_not_target:esp, host]*/
 
   if ('Notification' in window && Notification.permission == 'default') Notification.requestPermission();
-  if (cfg.use_pin && cfg.pin.length) show_keypad(true);
-  else startup();
+  if (cfg.use_pin && cfg.pin.length) await askPin(cfg.pin);
+  startup();
 
   function render_main() {
     const slots = document.getElementsByTagName('slot');

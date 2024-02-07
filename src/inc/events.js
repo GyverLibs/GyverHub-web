@@ -8,15 +8,15 @@ hub.bt.onConnChange = (state) => {
   bt_change(state === ConnectionState.CONNECTED);
   switch (state) {
     case ConnectionState.CONNECTING:
-      EL('bt_device').innerHTML = lang.connecting;
+      EL('bt_device').textContent = lang.connecting;
       break;
 
     case ConnectionState.CONNECTED:
-      EL('bt_device').innerHTML = hub.bt.getName();
+      EL('bt_device').textContent = hub.bt.getName();
       break;
 
     case ConnectionState.DISCONNECTED:
-      EL('bt_device').innerHTML = lang.disconnected;
+      EL('bt_device').textContent = lang.disconnected;
       break;
   }
 }
@@ -24,15 +24,15 @@ hub.serial.onConnChange = (state) => {
   serial_change(state === ConnectionState.CONNECTED);
   switch (state) {
     case ConnectionState.CONNECTING:
-      EL('serial_device').innerHTML = lang.connecting;
+      EL('serial_device').textContent = lang.connecting;
       break;
 
     case ConnectionState.CONNECTED:
-      EL('serial_device').innerHTML = hub.bt.getName();
+      EL('serial_device').textContent = hub.bt.getName();
       break;
 
     case ConnectionState.DISCONNECTED:
-      EL('serial_device').innerHTML = lang.disconnected;
+      EL('serial_device').textContent = lang.disconnected;
       break;
   }
 }
@@ -135,7 +135,7 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
 });
 hub.addEventListener('deviceinfochanged', ev => {
   const dev = ev.device.info;
-  EL(`name#${dev.id}`).innerHTML = dev.name ? dev.name : 'Unknown';
+  EL(`name#${dev.id}`).textContent = dev.name ? dev.name : 'Unknown';
   EL(`device#${dev.id}`).title = `${dev.id} [${dev.prefix}]`;
 });
 hub.addEventListener('discoverfinished', () => {

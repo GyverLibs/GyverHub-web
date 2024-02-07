@@ -192,10 +192,10 @@ class BaseWidget extends Widget {
     update(data) {
         super.update(data);
         if ('label' in data) {
-            this.#label.innerHTML = data.label.length ? data.label : this.type.toUpperCase();
+            this.#label.textContent = data.label.length ? data.label : this.type.toUpperCase();
         }
         if ('suffix' in data) {
-            this.#suffix.innerHTML = data.suffix;
+            this.#suffix.textContent = data.suffix;
         }
         if ('nolabel' in data) {
             if (data.nolabel) this.#cont.classList.add('wnolabel');
@@ -236,11 +236,11 @@ class BaseWidget extends Widget {
     }
 
     setPlabel(text = null) {
-        this.#plabel.innerHTML = text ?? '';
+        this.#plabel.textContent = text ?? '';
     }
 
     setSuffix(text = null) {
-        this.#suffix.innerHTML = text ?? '';
+        this.#suffix.textContent = text ?? '';
     }
 
     /**

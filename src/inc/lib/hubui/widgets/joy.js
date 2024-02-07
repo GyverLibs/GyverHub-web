@@ -213,4 +213,8 @@ class Joy {
     disabled() {
         return this.cv.getAttribute('disabled');
     }
-};
+}
+
+function constrain(val, min, max) {
+  return val < min ? min : (val > max ? max : val);
+}

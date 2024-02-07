@@ -36,7 +36,7 @@ class Title extends BaseWidget {
         data.square = false;
         super.update(data);
 
-        if ('value' in data) this.$label.innerHTML = data.value;
+        if ('value' in data) this.$label.textContent = data.value;
         if ('color' in data) this.$cont.style.color = intToCol(data.color);
         if ('fsize' in data) this.$cont.style.fontSize = data.fsize + 'px';
         if ('align' in data) this.align(data.align);

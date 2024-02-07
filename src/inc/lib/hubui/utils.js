@@ -5,7 +5,7 @@ function createElement(self, obj) {
     const $el = document.createElement(obj.type);
     if (obj.class) $el.className = obj.class;
     if (obj.id) $el.id = obj.id;
-    if (obj.text) $el.innerText = obj.text;
+    if (obj.text) $el.textContent = obj.text;
     if (obj.html) $el.innerHTML = obj.html;
     if (obj.style)
         for (const [prop, value] of Object.entries(obj.style))

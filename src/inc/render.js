@@ -26,7 +26,7 @@ function add_device(device, dev) {
   EL('d_cfg#' + dev.id).style.display = device.cfg_flag ? 'flex' : 'none';
 }
 function render_devices() {
-  EL('devices').innerHTML = '';
+  EL('devices').replaceChildren();
   for (const id of hub.getDeviceIds()) {
     const dev = hub.dev(id);
     add_device(dev, dev.info);
@@ -110,10 +110,10 @@ function showInfo(info) {
       <label title="${title}" class="info_label">${value}</label>
     </div>`;
   }
-  EL('info_version').innerHTML = '';
-  EL('info_net').innerHTML = '';
-  EL('info_memory').innerHTML = '';
-  EL('info_system').innerHTML = '';
+  EL('info_version').replaceChildren();
+  EL('info_net').replaceChildren();
+  EL('info_memory').replaceChildren();
+  EL('info_system').replaceChildren();
 
   for (let i in info.version) addInfo('info_version', i, info.version[i]);
   for (let i in info.net) addInfo('info_net', i, info.net[i]);

@@ -17,7 +17,7 @@ class TextWidget extends BaseWidget {
 
     update(data) {
         super.update(data);
-        if ('value' in data) this.$el.innerHTML = data.value;
+        if ('value' in data) this.$el.value = data.value;
         if ('rows' in data) this.$el.rows = data.rows;
         if ('disable' in data) this.disable(this.$el, data.disable);
     }
@@ -49,7 +49,7 @@ class LogWidget extends BaseWidget {
     update(data) {
         super.update(data);
         if ('value' in data) {
-            this.$el.innerHTML = data.value.trim();
+            this.$el.value = data.value.trim();
             this.$el.scrollTop = this.$el.scrollHeight;
         }
         if ('rows' in data) this.$el.rows = data.rows;
@@ -83,7 +83,7 @@ class TextFileWidget extends BaseWidget {
         if ('rows' in data) this.$el.rows = data.rows;
         if ('action' in data || 'value' in data) {
             this.renderer.device.addFile(this.id, this.#path, (file) => {
-                this.$el.innerHTML = dataTotext(file);
+                this.$el.value = dataTotext(file);
                 this.setPlabel();
             });
         }
@@ -123,7 +123,7 @@ class Display extends BaseWidget {
 
     update(data) {
         super.update(data);
-        if ('value' in data) this.$el.innerHTML = data.value;
+        if ('value' in data) this.$el.value = data.value;
         if ('color' in data) this.$el.style.background = intToCol(data.color);
         if ('fsize' in data) this.$el.style.fontSize = data.fsize + 'px';
         if ('rows' in data) this.$el.rows = data.rows;
@@ -166,7 +166,7 @@ class Area extends BaseWidget {
         super.update(data);
         if ('regex' in data) this.#regex = data.regex;
         if ('color' in data) this.$el.style.boxShadow = '0px 2px 0px 0px ' + intToCol(data.color);
-        if ('value' in data) this.$el.innerHTML = data.value;
+        if ('value' in data) this.$el.value = data.value;
         if ('maxlen' in data) this.$el.maxlength = Math.ceil(data.maxlen);
         if ('rows' in data) this.$el.rows = data.rows;
         if ('disable' in data) this.disable(this.$el, data.disable);

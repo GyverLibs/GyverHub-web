@@ -1,6 +1,4 @@
 // ====================== CONST ======================
-const app_title = 'GyverHub';
-const app_version = '/*@![:version]*/';
 const hub = new GyverHub();
 
 if (localStorage.hasOwnProperty('hub_config')) {
@@ -159,9 +157,6 @@ String.prototype.hashCode = function () {
 function openURL(url) {
   window.open(url, '_blank').focus();
 }
-function constrain(val, min, max) {
-  return val < min ? min : (val > max ? max : val);
-}
 function adjustColor(col, ratio) {
   let intcol = 0;
   col = col.toString();
@@ -228,12 +223,12 @@ function showNotif(name, text) {
 // ====================== NET ======================
 /*@[if_target:esp]*/
 function window_ip() {
-  let ip = window.location.hostname;
+  const ip = window.location.hostname;
   return checkIP(ip) ? ip : null;
 }
 /*@/[if_target:esp]*/
 function getMaskList() {
-  let list = [];
+  const list = [];
   for (let i = 0; i < 33; i++) {
     let imask;
     if (i == 32) imask = 0xffffffff;

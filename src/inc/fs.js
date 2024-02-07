@@ -60,12 +60,12 @@ async function uploadFile(file, path) {
       showPopup(lang.upload + '... ' + perc + '%');
     });
   } catch (e) {
-    EL('file_upload_btn').innerHTML = lang.upload;
+    EL('file_upload_btn').textContent = lang.upload;
     showPopupError(`[${lang.upload}] ` + getError(e));
     return;
   }
 
-  EL('file_upload_btn').innerHTML = lang.upload;
+  EL('file_upload_btn').textContent = lang.upload;
   showPopup(`[${lang.upload}] ` + lang.done);
 }
 async function fetchFile(index, path) {
@@ -73,16 +73,16 @@ async function fetchFile(index, path) {
   display('edit#' + index, 'none');
   display('open#' + index, 'none');
   display('process#' + index, 'unset');
-  EL('process#' + index).innerHTML = '';
+  EL('process#' + index).replaceChildren();
 
   let data;
   try {
     data = await hub.dev(focused).fetch(path, perc => {
-      EL('process#' + index).innerHTML = perc + '%';
+      EL('process#' + index).textContent = perc + '%';
     });
   } catch (e) {
     showPopupError(`[${lang.fetch}] ` + getError(e));
-    EL('process#' + index).innerHTML = lang.error;
+    EL('process#' + index).textContent = lang.error;
     return;
   }
 
@@ -111,16 +111,16 @@ async function uploadOta(file, type) {
 
   try {
     await hub.dev(focused).uploadOta(file, type, perc => {
-      EL('ota_label').innerHTML = perc + '%';
+      EL('ota_label').textContent = perc + '%';
     });
   } catch (e) {
     showPopupError('[OTA] ' + getError(e));
-    EL('ota_label').innerHTML = lang.error;
+    EL('ota_label').textContent = lang.error;
     return;
   }
 
   showPopup('[OTA] ' + lang.done);
-  EL('ota_label').innerHTML = lang.done;
+  EL('ota_label').textContent = lang.done;
 }
 
 // ============ FILE UTILS ============
@@ -151,7 +151,7 @@ let edit_idx = 0;
 function editFile(data, idx) {
   EL('editor_area').value = dataTotext(data);
   EL('editor_area').scrollTop = 0;
-  EL('edit_path').innerHTML = fs_arr[idx];
+  EL('edit_path').textContent = fs_arr[idx];
   display('files', 'none');
   display('fsbr_edit', 'block');
   edit_idx = idx;
@@ -165,7 +165,6 @@ function editor_save() {
   let div = fs_arr[edit_idx].lastIndexOf('/');
   let path = fs_arr[edit_idx].slice(0, div);
   let name = fs_arr[edit_idx].slice(div + 1);
-  //EL('download#' + edit_idx).href = ('data:' + getMime(name) + ';base64,' + window.btoa(EL('editor_area').value));
   uploadFile(new File([EL('editor_area').value], name, { type: getMime(name), lastModified: new Date() }), path);
 }
 

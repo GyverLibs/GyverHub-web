@@ -189,9 +189,9 @@
   
           <div class="ui_btn_row">
             <button id="reboot_btn" class="ui_btn ui_btn_mini" onclick="reboot_h()"><span class="icon icon_inline"></span><slot name="lang.i_reboot"></slot></button>
-            <button id="devlink_btn" class="ui_btn ui_btn_mini" onclick="devlink_h()"><span class="icon icon_inline"></span><slot name="lang.i_link"></slot></button>
             <!--@[if_not_target:esp]-->
-            <button id="qr_btn" class="ui_btn ui_btn_mini" onclick="qr_h()"><span class="icon icon_inline"></span>QR</button>
+            <button class="ui_btn ui_btn_mini" onclick="devlink_h()"><span class="icon icon_inline"></span><slot name="lang.i_link"></slot></button>
+            <button class="ui_btn ui_btn_mini" onclick="qr_h()"><span class="icon icon_inline"></span>QR</button>
             <!--@/[if_not_target:esp]-->
           </div>
   
@@ -687,7 +687,7 @@
         </div>
   
         <!--@[if_not_target:esp]-->
-        <div class="ui_col" id="pwa_block">
+        <div class="ui_col">
           <div class="ui_row ui_head">
             <label class="ui_label"><span class="icon icon_ui"></span>Web App</label>
             <div class="ui_btn_row">
@@ -699,7 +699,8 @@
         </div>
         <!--@/[if_not_target:esp]-->
   
-        <div class="ui_col" id="app_block" style="display:none">
+        <!--@[if_target:host]-->
+        <div class="ui_col">
           <div class="ui_row ui_head">
             <label class="ui_label"><span class="icon icon_ui"></span>App</label>
             <div class="ui_btn_row">
@@ -708,9 +709,10 @@
             </div>
           </div>
         </div>
+        <!--@/[if_target:host]-->
   
         <div class="ui_col">
-          <div class="cfg_info" id="hub_stat"></div>
+          <div class="cfg_info" id="hub_stat">GyverHub v<!--@![:version]--> <!--@![platform]--></div>
           <div class="cfg_info">
             Contribution:
             <a href="https://github.com/Simonwep/pickr" target="_blank">Pickr</a>
