@@ -16,7 +16,7 @@ async function show_screen(nscreen) {
 
   EL('title').innerHTML = app_title;
   EL('title_row').style.cursor = 'pointer';
-  let dev = hub.dev(focused);
+  const dev = hub.dev(focused);
 
   switch (screen) {
     case 'main':
@@ -41,6 +41,8 @@ async function show_screen(nscreen) {
       display('projects_cont', 'block');
       display('back', 'inline-block');
       EL('title').innerHTML = lang.p_proj;
+      EL('projects').innerHTML = '';
+      loadProjects();
       break;
 
     case 'ui':
@@ -67,7 +69,8 @@ async function show_screen(nscreen) {
       display('conn', 'inline-block');
       display('icon_refresh', 'inline-block');
       EL('title').innerHTML = dev.info.name + '/info';
-      show_info();
+      enterMenu('menu_info');
+      await show_info();
       break;
 
     case 'files':
@@ -78,6 +81,15 @@ async function show_screen(nscreen) {
       display('icon_refresh', 'inline-block');
       EL('title').innerHTML = dev.info.name + '/fs';
       EL('file_upload_btn').innerHTML = lang.fs_upload;
+      enterMenu('menu_fsbr');
+      display('fs_browser', dev.isModuleEnabled(Modules.FILES) ? 'block' : 'none');
+      display('fs_upload', dev.isModuleEnabled(Modules.UPLOAD) ? 'block' : 'none');
+      display('fs_create', dev.isModuleEnabled(Modules.CREATE) ? 'block' : 'none');
+      display('fs_format_row', dev.isModuleEnabled(Modules.FORMAT) ? 'flex' : 'none');
+      if (dev.isModuleEnabled(Modules.FILES)) {
+        EL('fsbr_inner').innerHTML = waiter();
+        await dev.updateFileList();
+      }
       break;
 
     case 'ota':
@@ -86,6 +98,15 @@ async function show_screen(nscreen) {
       display('back', 'inline-block');
       display('conn', 'inline-block');
       EL('title').innerHTML = dev.info.name + '/ota';
+      enterMenu('menu_ota');
+    
+      const ota_t = '.' + dev.info.ota_t;
+      EL('ota_upload').accept = ota_t;
+      EL('ota_upload_fs').accept = ota_t;
+      EL('ota_url_f').value = "http://flash" + ota_t;
+      EL('ota_url_fs').value = "http://filesystem" + ota_t;
+      display('fs_otaf', dev.isModuleEnabled(Modules.OTA) ? 'block' : 'none');
+      display('fs_otaurl', dev.isModuleEnabled(Modules.OTA_URL) ? 'block' : 'none');
       break;
 
     case 'dev_config':
@@ -94,6 +115,7 @@ async function show_screen(nscreen) {
       display('back', 'inline-block');
       display('conn', 'inline-block');
       EL('title').innerHTML = dev.info.name + '/cfg';
+      enterMenu('menu_cfg');
       show_cfg();
       break;
 
@@ -115,8 +137,8 @@ function show_cfg() {
   EL('plugin_css').value = dev.info.plugin_css;
   EL('plugin_js').value = dev.info.plugin_js;
 }
-function show_info() {
-  let dev = hub.dev(focused);
+async function show_info() {
+  const dev = hub.dev(focused);
 
   EL('info_id').innerHTML = focused;
   EL('info_set').innerHTML = dev.info.prefix + '/' + focused + '/ID/set/*';
@@ -130,19 +152,14 @@ function show_info() {
   EL('info_net').innerHTML = '';
   EL('info_memory').innerHTML = '';
   EL('info_system').innerHTML = '';
+
+  if (dev.isModuleEnabled(Modules.INFO)) {
+    const info = await dev.getInfo();
+    if (info) showInfo(info);
+  }
 }
 
 // =========== HANDLERS ===========
-function resize_h() {
-}
-function test_h() {
-  show_screen('test');
-}
-function projects_h() {
-  EL('projects').innerHTML = '';
-  show_screen('projects');
-  loadProjects();
-}
 async function refresh_h() {
   if (!focused) {
     discover();
@@ -212,46 +229,10 @@ function config_h() {
     show_screen('config');
   }
 }
-async function info_h() {
-  enterMenu('menu_info');
-  show_screen('info');
-  if (hub.dev(focused).isModuleEnabled(Modules.INFO)) {
-    const info = await hub.dev(focused).getInfo();
-    if (info) showInfo(info);
-  };
-}
-function cfg_h() {
-  enterMenu('menu_cfg');
-  show_screen('dev_config');
-}
-async function fsbr_h() {
-  enterMenu('menu_fsbr');
-  display('fs_browser', hub.dev(focused).isModuleEnabled(Modules.FILES) ? 'block' : 'none');
-  display('fs_upload', hub.dev(focused).isModuleEnabled(Modules.UPLOAD) ? 'block' : 'none');
-  display('fs_create', hub.dev(focused).isModuleEnabled(Modules.CREATE) ? 'block' : 'none');
-  display('fs_format_row', hub.dev(focused).isModuleEnabled(Modules.FORMAT) ? 'flex' : 'none');
-  show_screen('files');
-  if (hub.dev(focused).isModuleEnabled(Modules.FILES)) {
-    EL('fsbr_inner').innerHTML = waiter();
-    await hub.dev(focused).updateFileList();
-  }
-}
 async function format_h() {
   if (await asyncConfirm(lang.fs_format + '?')) {
     await hub.dev(focused).formatFS();
   }
-}
-function ota_h() {
-  enterMenu('menu_ota');
-  show_screen('ota');
-
-  let ota_t = '.' + hub.dev(focused).info.ota_t;
-  EL('ota_upload').accept = ota_t;
-  EL('ota_upload_fs').accept = ota_t;
-  EL('ota_url_f').value = "http://flash" + ota_t;
-  EL('ota_url_fs').value = "http://filesystem" + ota_t;
-  display('fs_otaf', hub.dev(focused).isModuleEnabled(Modules.OTA) ? 'block' : 'none');
-  display('fs_otaurl', hub.dev(focused).isModuleEnabled(Modules.OTA_URL) ? 'block' : 'none');
 }
 function manual_ip_h(ip) {
   if (hub.http.discover_ip(ip)) {
@@ -314,7 +295,30 @@ function menu_show(state) {
   EL('icon_menu').innerHTML = menu_f ? '' : '';
   display('menu_overlay', menu_f ? 'block' : 'none');
 }
+function updateSystemMenu() {
+  let dev = hub.dev(focused);
 
+  EL('menu_system').innerHTML = `<div id="menu_cfg" class="menu_item" data-action="show_screen" data-screen="dev_config">${lang.m_config}</div>`;
+  EL('menu_system').innerHTML += `<div id="menu_info" class="menu_item" data-action="show_screen" data-screen="info">${lang.m_info}</div>`;
+  if (dev.isModuleEnabled(Modules.FILES)) {
+      EL('menu_system').innerHTML += `<div id="menu_fsbr" class="menu_item" data-action="show_screen" data-screen="files">${lang.m_files}</div>`;
+  }
+  if (dev.isModuleEnabled(Modules.OTA) || dev.isModuleEnabled(Modules.OTA_URL)) {
+      EL('menu_system').innerHTML += `<div id="menu_ota" class="menu_item" data-action="show_screen" data-screen="ota">${lang.m_ota}</div>`;
+  }
+}
+function leaveSystemMenu() {
+  for (const $i of document.getElementById('menu_system').children)
+      $i.classList.remove('menu_act');
+}
+function enterMenu(sel = null) {
+  menu_show(false);
+  leaveSystemMenu();
+  for (const $i of document.getElementById('menu_user').children)
+      $i.classList.remove('menu_act');
+  if (sel !== null)
+      document.querySelector('.menu_item#' + sel).classList.add('menu_act');
+}
 // ============== DEVICE =============
 function device_h(id) {
   let dev = hub.dev(id);

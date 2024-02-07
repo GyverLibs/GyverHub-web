@@ -67,7 +67,7 @@
   <!--@/[if_not_target:host,esp]-->
 </head>
 
-<body onresize="resize_h()">
+<body>
   <noscript>Please enable javascript in your browser to run this application</noscript>
   <div id="notice" class="notice"></div>
 
@@ -766,10 +766,10 @@
 
   <div class="footer" id="footer_cont" style="display:none">
     <div class="footer_inner">
-      <!--<a href="https://alexgyver.ru/support_alex/" target="_blank"><span class="icon icon_inline i_footer"></span>Support</a>-->
-      <a style="cursor:pointer" onclick="projects_h()"><span class="icon icon_inline i_footer"></span><slot name="lang.p_proj"></slot></a>
-      <!--<a style="cursor:pointer" onclick="test_h()"><span class="icon icon_inline i_footer"></span>Test</a>-->
-      <a style="cursor:pointer" onclick="window.open('https://hub.gyver.ru/old/')"><span class="icon icon_inline i_footer"></span>Old</a>
+      <a href="https://alexgyver.ru/support_alex/" target="_blank"><span class="icon icon_inline i_footer"></span>Support</a>
+      <a style="cursor:pointer" data-action="show_screen" data-screen="projects"><span class="icon icon_inline i_footer"></span><slot name="lang.p_proj"></slot></a>
+      <a style="cursor:pointer" data-action="show_screen" data-screen="test"><span class="icon icon_inline i_footer"></span>Test</a>
+      <a href="https://hub.gyver.ru/old/" target="_blank"><span class="icon icon_inline i_footer"></span>Old</a>
       <a href="https://github.com/GyverLibs/GyverHub/wiki" target="_blank"><span class="icon icon_inline i_footer"></span>Wiki</a>
     </div>
   </div>

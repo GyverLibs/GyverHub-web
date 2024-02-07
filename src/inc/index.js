@@ -3,6 +3,18 @@ document.addEventListener('DOMContentLoaded', () => {
   render_main();
   EL('hub_stat').innerHTML = 'GyverHub v' + app_version + ' ' + platform();
 
+  document.addEventListener('click', e => {
+    const $t = e.composedPath().find(e => e.dataset && e.dataset.action);
+    if (!$t) return;
+    switch ($t.dataset.action) {
+      case "show_screen":
+        show_screen($t.dataset.screen);
+        break;
+    }
+  });
+
+  for (const $i of document.querySelectorAll('[data-action]'))
+
   /*@[if_target:esp]*/
     hub.config.set('connections', 'HTTP', 'enabled', true);  // force local on esp
   /*@/[if_target:esp]*/

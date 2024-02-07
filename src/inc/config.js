@@ -12,7 +12,43 @@ function save_cfg() {
   localStorage.setItem('hub_config', hub.config.toJson());
 }
 
-async function cfg_export() {
+function update_theme() {
+  document.body.classList.remove('theme-dark', 'theme-light', 'theme-auto');
+  document.body.classList.add('theme-' + cfg.theme.toLowerCase());
+
+  let r = document.querySelector(':root');
+  r.style.setProperty('--ui_width', cfg.ui_width + 'px');
+  r.style.setProperty('--prim', intToCol(colors[cfg.maincolor]));
+  r.style.setProperty('--font_f', cfg.font);
+
+  EL('app_plugins').innerHTML = '';
+  addDOM('app_css', 'style', cfg.app_plugin_css, EL('app_plugins'));
+  addDOM('app_js', 'script', cfg.app_plugin_js, EL('app_plugins'));
+
+  display('local_block', hub.config.get('connections', 'HTTP', 'enabled') ? 'block' : 'none');
+  EL('local_label').style.color = hub.config.get('connections', 'HTTP', 'enabled') ? 'var(--font)' : 'var(--font3)';
+
+  display('pin_block', cfg.use_pin ? 'block' : 'none');
+  EL('pin_label').style.color = cfg.use_pin ? 'var(--font)' : 'var(--font3)';
+
+/*@[if_not_target:esp]*/
+  display('mq_block', hub.config.get('connections', 'MQTT', 'enabled') ? 'block' : 'none');
+  EL('mqtt_label').style.color = hub.config.get('connections', 'MQTT', 'enabled') ? 'var(--font)' : 'var(--font3)';
+
+  display('tg_block', hub.config.get('connections', 'TG', 'enabled') ? 'block' : 'none');
+  EL('tg_label').style.color = hub.config.get('connections', 'TG', 'enabled') ? 'var(--font)' : 'var(--font3)';
+
+  let bt = hub.config.get('connections', 'BLE', 'enabled') && hasBT();
+  display('bt_block', bt ? 'block' : 'none');
+  EL('bt_label').style.color = bt ? 'var(--font)' : 'var(--font3)';
+
+  let ser = hub.config.get('connections', 'SERIAL', 'enabled') && hasSerial();
+  display('serial_block', ser ? 'block' : 'none');
+  EL('serial_label').style.color = ser ? 'var(--font)' : 'var(--font3)';
+  /*@/[if_not_target:esp]*/
+}
+
+function cfg_export() {
   const config = {
     app_config: cfg,
     hub_config: hub.config.toJson(),
@@ -56,45 +92,4 @@ async function cfg_reset() {
     localStorage.clear();
     setTimeout(() => location.reload(), 500);
   }
-}
-
-function update_theme() {
-  document.body.classList.remove('theme-dark', 'theme-light', 'theme-auto');
-  document.body.classList.add('theme-' + cfg.theme.toLowerCase());
-
-  let r = document.querySelector(':root');
-  r.style.setProperty('--ui_width', cfg.ui_width + 'px');
-  r.style.setProperty('--prim', intToCol(colors[cfg.maincolor]));
-  r.style.setProperty('--font_f', cfg.font);
-
-  EL('app_plugins').innerHTML = '';
-  addDOM('app_css', 'style', cfg.app_plugin_css, EL('app_plugins'));
-  addDOM('app_js', 'script', cfg.app_plugin_js, EL('app_plugins'));
-
-  let b = 'block';
-  let n = 'none';
-  let f = 'var(--font)';
-  let f3 = 'var(--font3)';
-
-  display('local_block', hub.config.get('connections', 'HTTP', 'enabled') ? b : n);
-  EL('local_label').style.color = hub.config.get('connections', 'HTTP', 'enabled') ? f : f3;
-  display('pin_block', cfg.use_pin ? b : n);
-
-  EL('pin_label').style.color = cfg.use_pin ? f : f3;
-
-/*@[if_not_target:esp]*/
-  display('mq_block', hub.config.get('connections', 'MQTT', 'enabled') ? b : n);
-  EL('mqtt_label').style.color = hub.config.get('connections', 'MQTT', 'enabled') ? f : f3;
-
-  display('tg_block', hub.config.get('connections', 'TG', 'enabled') ? b : n);
-  EL('tg_label').style.color = hub.config.get('connections', 'TG', 'enabled') ? f : f3;
-
-  let bt = hub.config.get('connections', 'BLE', 'enabled') && hasBT();
-  display('bt_block', bt ? b : n);
-  EL('bt_label').style.color = bt ? f : f3;
-
-  let ser = hub.config.get('connections', 'SERIAL', 'enabled') && hasSerial();
-  display('serial_block', ser ? b : n);
-  EL('serial_label').style.color = ser ? f : f3;
-  /*@/[if_not_target:esp]*/
 }
