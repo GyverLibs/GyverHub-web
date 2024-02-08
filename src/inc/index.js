@@ -31,6 +31,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!hub.dev(data.id)) hub.addDevice(data);
   }
 
+  /*@[if_target:host]*/
+    if (isSSL()) {
+      display('http_only_http', 'block');
+      display('http_settings', 'none');
+      display('pwa_unsafe', 'none');
+    }
+  /*@/[if_target:host]*/
+
+  if (cfg.use_pin && cfg.pin.length) await asyncAskPin(lang.hub_pin, cfg.pin, false);
+
   // show version
   let ver = localStorage.getItem('version');
   const app_version = '/*@![:version]*/';
@@ -43,17 +53,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     }, 1000);
   }
 
-  /*@[if_target:host]*/
-    if (isSSL()) {
-      display('http_only_http', 'block');
-      display('http_settings', 'none');
-      display('pwa_unsafe', 'none');
-    }
-  /*@/[if_target:host]*/
-
   if ('Notification' in window && Notification.permission == 'default') Notification.requestPermission();
-  if (cfg.use_pin && cfg.pin.length) await asyncAskPin(lang.hub_pin, cfg.pin, false);
-  startup();
+
+  show_screen('main');
+
+  render_devices();
+  hub.begin();
+  discover();
+
+  /*@[if_target:esp]*/
+    for (const id of hub.getDeviceIds()) {
+      const dev = hub.dev(id);
+      if (window.location.href.includes(dev.info.ip)) {
+        // dev.conn = Conn.HTTP;
+        // dev.conn_arr[Conn.HTTP] = 1;  // TODO
+        device_h(dev.info.id);
+        return;
+      }
+    }
+  /*@/[if_target:esp]*/
 
   function render_main() {
     const slots = document.getElementsByTagName('slot');
@@ -174,26 +192,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-function startup() {
-  show_screen('main');
-
-  render_devices();
-  hub.begin();
-  discover();
-
-  /*@[if_target:esp]*/
-    for (const id of hub.getDeviceIds()) {
-      const dev = hub.dev(id);
-      if (window.location.href.includes(dev.info.ip)) {
-        // dev.conn = Conn.HTTP;
-        // dev.conn_arr[Conn.HTTP] = 1;  // TODO
-        device_h(dev.info.id);
-        return;
-      }
-    }
-  /*@/[if_target:esp]*/
-}
-
 // =================== FUNC ===================
 function discover() {
   spinArrows(true);   // before discover!
@@ -213,6 +211,13 @@ function discover() {
   /*@/[if_not_target:esp]*/
 }
 function search() {
+  if (cfg_changed) {
+    save_cfg();
+  }
+  cfg_changed = false;
+
+  show_screen('main');
+
   spinArrows(true);
   hub.search();
 }
