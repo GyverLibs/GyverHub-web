@@ -117,11 +117,6 @@ async function show_screen(nscreen) {
       enterMenu('menu_cfg');
       show_cfg();
       break;
-
-    case 'pin':
-      display('back', 'inline-block');
-      await askPin(dev.info.pin);
-      break;
   }
 }
 function show_cfg() {
@@ -209,7 +204,6 @@ async function back_h() {
     case 'config':
       config_h();
       break;
-    case 'pin':
     case 'projects':
     case 'test':
       show_screen('main');
@@ -324,19 +318,18 @@ async function device_h(id) {
   if (!dev || !dev.isConnected()) return;
   if (!dev.info.api_v || dev.info.api_v != GyverHub.api_v) asyncAlert(lang.api_mis);
 
-  if (dev.info.PIN && !dev.granted) {
-    await askPin(dev.info.pin);
+  if (dev.info.pin && !dev.granted) {
+    if (!await asyncAskPin(lang.dev_pin + dev.info.name, dev.info.pin, true)) {
+      return false;
+    }
     dev.granted = true;
   }
-  open_device(id);
-}
-function open_device(id) {
+  
   /*@[if_not_target:esp]*/
   checkUpdates(id);
   /*@/[if_not_target:esp]*/
 
   focused = id;
-  let dev = hub.dev(id);
   updateSystemMenu();
   EL('menu_user').replaceChildren();
   EL('conn').textContent = dev.getConnection().name;
@@ -413,44 +406,9 @@ function make_pin(arg) {
   if (arg.value.length >= 4) arg.value = arg.value.hashCode();
   else arg.value = '';
 }
-function pass_type(v) {
-  EL('pass_inp').value += v;
-  let hash = EL('pass_inp').value.hashCode();
-
-  if (pin_id) {   // device
-    if (hash == hub.dev(pin_id).info.PIN) {
-    }
-  } else {        // app
-    if (hash == cfg.pin) {
-    }
-  }
-}
 function check_type(arg) {
   if (arg.value.length > 0) {
     let c = arg.value[arg.value.length - 1];
     if (c < '0' || c > '9') arg.value = arg.value.slice(0, -1);
   }
-}
-
-function askPin(pin) {
-  return new Promise(res => {
-    const $inp = EL('pass_inp');
-
-    function pass_input(e) {
-      //if (e.target.tagName !== 'INPUT')
-
-
-    }
-
-    display('password', 'block');
-    .focus();
-    EL('pass_inp').addEventListener('input', pass_input)
-
-    let hash = EL('pass_inp').value.hashCode();
-    if (hash == pin) {
-      EL('pass_inp').value = '';
-      display('password', 'none');
-      res();
-    }
-  });
 }

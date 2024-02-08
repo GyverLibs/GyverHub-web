@@ -712,7 +712,7 @@
         <!--@/[if_target:host]-->
   
         <div class="ui_col">
-          <div class="cfg_info" id="hub_stat">GyverHub v<!--@![:version]--> <!--@![platform]--></div>
+          <div class="cfg_info" id="hub_stat">GyverHub v<!--@![:version]--> <!--@![:target]--></div>
           <div class="cfg_info">
             Contribution:
             <a href="https://github.com/Simonwep/pickr" target="_blank">Pickr</a>
@@ -723,32 +723,6 @@
             <a href="https://github.com/davidshimjs/qrcodejs" target="_blank">QRCode.js</a>
             <a href="https://esphome.github.io/esp-web-tools/" target="_blank">ESP Web Tools</a>
           </div>
-        </div>
-      </div>
-  
-      <div id="password" class="main_col">
-        <div class="pass_inp_inner">
-          <input class="ui_inp pass_inp" type="number" pattern="[0-9]*" inputmode="numeric" id="pass_inp" oninput="pass_type('')">
-        </div>
-        <div class="ui_row pin_inner">
-          <button class="ui_btn pin_btn" onclick="pass_type(1)">1</button>
-          <button class="ui_btn pin_btn" onclick="pass_type(2)">2</button>
-          <button class="ui_btn pin_btn" onclick="pass_type(3)">3</button>
-        </div>
-        <div class="ui_row pin_inner">
-          <button class="ui_btn pin_btn" onclick="pass_type(4)">4</button>
-          <button class="ui_btn pin_btn" onclick="pass_type(5)">5</button>
-          <button class="ui_btn pin_btn" onclick="pass_type(6)">6</button>
-        </div>
-        <div class="ui_row pin_inner">
-          <button class="ui_btn pin_btn" onclick="pass_type(7)">7</button>
-          <button class="ui_btn pin_btn" onclick="pass_type(8)">8</button>
-          <button class="ui_btn pin_btn" onclick="pass_type(9)">9</button>
-        </div>
-        <div class="ui_row pin_inner">
-          <button class="ui_btn pin_btn pin_no_btn"></button>
-          <button class="ui_btn pin_btn" onclick="pass_type(0)">0</button>
-          <button class="ui_btn pin_btn pin_red_btn" onclick="pass_inp.value=pass_inp.value.slice(0, -1)">&lt;</button>
         </div>
       </div>
     </div>
@@ -768,9 +742,9 @@
 
   <div class="footer" id="footer_cont" style="display:none">
     <div class="footer_inner">
-      <a href="https://alexgyver.ru/support_alex/" target="_blank"><span class="icon icon_inline i_footer"></span>Support</a>
+      <!-- <a href="https://alexgyver.ru/support_alex/" target="_blank"><span class="icon icon_inline i_footer"></span>Support</a> -->
       <a style="cursor:pointer" data-action="show_screen" data-screen="projects"><span class="icon icon_inline i_footer"></span><slot name="lang.p_proj"></slot></a>
-      <a style="cursor:pointer" data-action="show_screen" data-screen="test"><span class="icon icon_inline i_footer"></span>Test</a>
+      <!-- <a style="cursor:pointer" data-action="show_screen" data-screen="test"><span class="icon icon_inline i_footer"></span>Test</a> -->
       <a href="https://hub.gyver.ru/old/" target="_blank"><span class="icon icon_inline i_footer"></span>Old</a>
       <a href="https://github.com/GyverLibs/GyverHub/wiki" target="_blank"><span class="icon icon_inline i_footer"></span>Wiki</a>
     </div>

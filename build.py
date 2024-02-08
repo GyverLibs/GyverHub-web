@@ -165,13 +165,13 @@ class HtmlMinifier(html.parser.HTMLParser):
         return self._out.getvalue()
 
     def handle_startendtag(self, tag, attrs):
-        self._out.write(f'<{tag}{self._attrs(attrs)}/>')
+        self._out.write(f'<{tag}{self._attrs(attrs)}/> ')
 
     def handle_starttag(self, tag, attrs):
-        self._out.write(f'<{tag}{self._attrs(attrs)}>')
+        self._out.write(f'<{tag}{self._attrs(attrs)}> ')
 
     def handle_endtag(self, tag):
-        self._out.write(f'</{tag}>')
+        self._out.write(f'</{tag}> ')
 
     def handle_charref(self, name):
         self._out.write(f'&#{name};')
@@ -237,6 +237,7 @@ class Builder:
         self._resolver = pr
     
     def _compile(self, target: str, src: str, dst: str = None):
+        self._env['target'] = target
         Compiler(target, self._env, self._resolver).compile_file(src, dst)
 
     def _start_build(self, target):

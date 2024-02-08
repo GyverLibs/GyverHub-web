@@ -120,6 +120,8 @@ const langBase = {
     wrong_ip: "Wrong IP",
     dup_names: "Duplicated names",
     redirect: "Redirect to",
+    hub_pin: "Enter PIN",
+    dev_pin: "Enter PIN for device ",
   },
   
   Russian: {
@@ -243,5 +245,7 @@ const langBase = {
     wrong_ip: "Некорректный IP",
     dup_names: "Повторяющиеся имена",
     redirect: "Перейти на",
+    hub_pin: "Введите ПИН",
+    dev_pin: "Введите пин устройства ",
   }
 };

@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   /*@/[if_target:host]*/
 
   if ('Notification' in window && Notification.permission == 'default') Notification.requestPermission();
-  if (cfg.use_pin && cfg.pin.length) await askPin(cfg.pin);
+  if (cfg.use_pin && cfg.pin.length) await asyncAskPin(lang.hub_pin, cfg.pin, false);
   startup();
 
   function render_main() {
