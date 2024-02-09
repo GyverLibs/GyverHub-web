@@ -16,17 +16,6 @@ const colors = {
   PINK: 0xc8589a,
 };
 
-const theme_cols = [
-  // back/tab/font/font2/dark/thumb/black/scheme/font4/shad/font3
-  ['#1b1c20', '#26272c', '#eee', '#ccc', '#141516', '#444', '#0e0e0e', 'dark', '#222', '#000'],
-  ['#eee', '#fff', '#111', '#333', '#ddd', '#999', '#bdbdbd', 'light', '#fff', '#000000a3']
-];
-function getCurrentColorScheme() {
-  if (cfg.theme === 'dark') return theme_cols[0];
-  if (cfg.theme === 'light') return theme_cols[1];
-  if (window.matchMedia("(prefers-color-scheme: dark)").matches) return theme_cols[0];
-  return theme_cols[1];
-}
 
 function getError(code) {
   return lang.errors[code];
@@ -139,13 +128,6 @@ function addDOM(el_id, tag, text, target) {
   target.appendChild(el);
   return el;
 }
-function getErrColor() {
-  return '#8e1414';
-}
-function getDefColor() {
-  // return document.querySelector(':root').style.getPropertyValue('--prim');
-  return intToCol(colors[cfg.maincolor]);
-}
 String.prototype.hashCode = function () {
   if (!this.length) return 0;
   let hash = new Uint32Array(1);
@@ -156,29 +138,6 @@ String.prototype.hashCode = function () {
 }
 function openURL(url) {
   window.open(url, '_blank').focus();
-}
-function adjustColor(col, ratio) {
-  let intcol = 0;
-  col = col.toString();
-  if (col.startsWith('#')) {
-    col = col.slice(1);
-    if (col.length == 3) {
-      col = col[0] + col[0] + col[1] + col[1] + col[2] + col[2];
-    }
-    intcol = parseInt(col, 16);
-  } else if (col.startsWith("rgb(")) {
-    col.replace("rgb(", "").replace(")", "").replace(" ", "").split(',').forEach(v => intcol = (intcol << 8) | v);
-  } else {
-    intcol = Number(col);
-  }
-  let newcol = '#';
-  for (let i = 0; i < 3; i++) {
-    let comp = (intcol & 0xff0000) >> 16;
-    comp = Math.min(255, Math.floor((comp + 1) * ratio));
-    newcol += comp.toString(16).padStart(2, '0');
-    intcol <<= 8;
-  }
-  return newcol;
 }
 function openFile(src) {
   let w = window.open();
@@ -202,9 +161,6 @@ function browser() {
   else if (navigator.userAgent.includes("Firefox")) return 'firefox';
   else if ((navigator.userAgent.includes("MSIE")) || (!!document.documentMode == true)) return 'IE';
   else return 'unknown';
-}
-function ratio() {
-  return window.devicePixelRatio;
 }
 function EL(id) {
   return document.getElementById(id);
@@ -268,3 +224,7 @@ function getLocalIP(silent = true) {
   rtc.createOffer().then(offerDesc => rtc.setLocalDescription(offerDesc));
 }
 /*@/[if_not_target:esp]*/
+
+function checkIP(ip) {
+  return Boolean(ip && ip.match(/^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\.(?!$)|$)){4}$/));
+}

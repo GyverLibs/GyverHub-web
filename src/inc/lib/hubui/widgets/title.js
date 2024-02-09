@@ -4,7 +4,6 @@ class Title extends BaseWidget {
     $label;
 
     constructor(data, renderer) {
-        // 'space' data.nolabel = true; data.notab = true; break;
         super(data, renderer);
 
         this.makeLayout({

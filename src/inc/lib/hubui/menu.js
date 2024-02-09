@@ -1,5 +1,5 @@
 class MenuWidget extends Widget {
-    $el = EL('menu_user');
+    $el = document.getElementById('menu_user');
 
     constructor(data, renderer) {
         super(data, renderer);

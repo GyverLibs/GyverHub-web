@@ -43,20 +43,6 @@ function dev_cfg_h(id) {
 }
 
 // ============= UI =============
-let popupT1 = null, popupT2 = null;
-function showPopup(text, color = '#37a93c') {
-  if (popupT1) clearTimeout(popupT1);
-  if (popupT2) clearTimeout(popupT2);
-  EL('notice').innerHTML = text;
-  EL('notice').style.background = color;
-  display('notice', 'block');
-  EL('notice').style.animation = "fade-in 0.5s forwards";
-  popupT1 = setTimeout(() => { popupT1 = null; display('notice', 'none'); }, 3500);
-  popupT2 = setTimeout(() => { popupT2 = null; EL('notice').style.animation = "fade-out 0.5s forwards" }, 3000);
-}
-function showPopupError(text) {
-  showPopup(text, /*getErrColor()*/'#a93737');
-}
 function errorBar(v) {
   EL('head_cont').style.background = v ? 'var(--err)' : 'var(--prim)';
 }
@@ -64,10 +50,6 @@ function spinArrows(val) {
   if (val) EL('icon_refresh').classList.add('spinning');
   else EL('icon_refresh').classList.remove('spinning');
 }
-function waiter(size = 50, col = 'var(--prim)', block = true) {
-  return `<div class="waiter ${block ? 'waiter_b' : ''}"><span style="font-size:${size}px;color:${col}" class="icon spinning"></span></div>`;
-}
-
 // ============= CONNECTION =============
 // mqtt
 function mq_change(opened) {

@@ -65,7 +65,7 @@ class Dpad {
         if (!size) return;
         cv.style.width = size + 'px';
         cv.style.height = size + 'px';
-        size *= ratio();
+        size *= window.devicePixelRatio;
         let center = size / 2;
         cv.width = size;
         cv.height = size;
@@ -121,8 +121,9 @@ class Dpad {
         if (this.disabled()) return;
         event.preventDefault();
         this.pressed = 1;
-        this.posX = (event.targetTouches[0].pageX - this.cv.offsetLeft) * ratio();
-        this.posY = (event.targetTouches[0].pageY - this.cv.offsetTop) * ratio();
+        const ratio = window.devicePixelRatio;
+        this.posX = (event.targetTouches[0].pageX - this.cv.offsetLeft) * ratio;
+        this.posY = (event.targetTouches[0].pageY - this.cv.offsetTop) * ratio;
         this.redraw();
     }
 
@@ -136,8 +137,9 @@ class Dpad {
     _onMouseDown = (event) => {
         if (this.disabled()) return;
         this.pressed = 1;
-        this.posX = (event.pageX - this.cv.offsetLeft) * ratio();
-        this.posY = (event.pageY - this.cv.offsetTop) * ratio();
+        const ratio = window.devicePixelRatio;
+        this.posX = (event.pageX - this.cv.offsetLeft) * ratio;
+        this.posY = (event.pageY - this.cv.offsetTop) * ratio;
         this.redraw();
     }
 

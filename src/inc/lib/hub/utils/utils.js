@@ -20,43 +20,13 @@ const Modules = {
 };
 
 // http
-function http_get(url, tout) {
-  return new Promise((res, rej) => {
-    try {
-      let xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {
-          if (xhr.status == 200) res(xhr.responseText);
-          else rej("Error");
-        }
-      }
-      xhr.ontimeout = () => rej("Timeout");
-      xhr.onerror = () => rej("Error");
-      xhr.timeout = tout;
-      xhr.open('GET', url, true);
-      xhr.send();
-    } catch (e) {
-      rej(e);
-    }
-  });
-}
-
-function http_fetch(url, onprogress, tout) {
-  return new Promise((res, rej) => {
-    onprogress(0);
-    let xhr = new XMLHttpRequest();
-    xhr.onprogress = (e) => {
-      onprogress(Math.round(e.loaded * 100 / e.total));
-    };
-    xhr.onloadend = (e) => {
-      if (e.loaded && e.loaded == e.total) res(xhr.responseText);
-      else rej(xhr.responseText);
-    }
-    xhr.timeout = tout;
-    xhr.ontimeout = (e) => rej(HubErrors.Timeout);
-    xhr.open('GET', url, true);
-    xhr.send();
-  });
+async function http_get(url, tout) {
+  const res = await fetch(url, {
+    signal: AbortSignal.timeout(tout)
+  })
+  if (!res.ok)
+    throw new DOMException(res.statusText);
+  return await res.text();
 }
 
 function http_fetch_blob(url, onprogress, tout) {
@@ -89,29 +59,17 @@ function http_fetch_blob(url, onprogress, tout) {
   });
 }
 
-function http_post(url, data) {//TODO tout
-  return new Promise((res, rej) => {
-    let xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState == 4) {
-        if (xhr.status == 200) res(xhr.responseText);
-        else rej(xhr.responseText);
-      }
-    }
-    xhr.open('POST', url, true);
-    xhr.send(data);
+async function http_post(url, data) {//TODO tout
+  const res = await fetch(url, {
+    body: data
   });
+  if (!res.ok)
+    throw await res.text();
+  return await res.text();
 }
 
 // ip
-function checkIP(ip) {
-  return Boolean(ip && ip.match(/^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\.(?!$)|$)){4}$/));
-}
 function getIPs(ip, netmask) {
-  if (!checkIP(ip)) {
-    asyncAlert(lang.wrong_ip);
-    return null;
-  }
   let ip_a = ip.split('.');
   let sum_ip = (ip_a[0] << 24) | (ip_a[1] << 16) | (ip_a[2] << 8) | ip_a[3];
   let cidr = Number(netmask);
@@ -139,15 +97,6 @@ function getIPs(ip, netmask) {
   }
   return ips;
 }
-
-// fetch + timeout
-/*async function fetchT(url, options = {}, tout = 5000) {
-  const controller = new AbortController();
-  const t_id = setTimeout(() => controller.abort(), tout);
-  const response = await fetch(url, { ...options, signal: controller.signal });
-  clearTimeout(t_id);
-  return response;
-}*/
 
 function sleep(time) {
   return new Promise(res => setTimeout(res, time));
@@ -204,112 +153,15 @@ function getMime(name) {
   else return 'text/plain';
 }
 
-const ENCODINGS = new TextEncoder().encode('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/');
-const EQ = '='.charCodeAt(0);
-
-function b64EncodeAB(arrayBuffer) {
-  const bytes         = new Uint8Array(arrayBuffer);
-  const byteLength    = bytes.byteLength;
-  const byteRemainder = byteLength % 3;
-  const mainLength    = byteLength - byteRemainder;
-  const base64        = new Uint8Array((mainLength + !!byteRemainder) * 4);
-
-  let a, b, c, d, ii = 0;
-  let chunk;
-
-  for (let i = 0; i < mainLength; i += 3) {
-    chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2]
-
-    a = (chunk & 16515072) >> 18 // 16515072 = (2^6 - 1) << 18
-    b = (chunk & 258048)   >> 12 // 258048   = (2^6 - 1) << 12
-    c = (chunk & 4032)     >>  6 // 4032     = (2^6 - 1) << 6
-    d = chunk & 63               // 63       = 2^6 - 1
-
-    base64[ii] = ENCODINGS[a];
-    base64[ii+1] = ENCODINGS[b];
-    base64[ii+2] = ENCODINGS[c];
-    base64[ii+3] = ENCODINGS[d];
-    ii += 4;
-  }
-
-  if (byteRemainder == 1) {
-    chunk = bytes[mainLength]
-
-    a = (chunk & 252) >> 2 // 252 = (2^6 - 1) << 2
-
-    b = (chunk & 3)   << 4 // 3   = 2^2 - 1
-
-    base64[ii] = ENCODINGS[a];
-    base64[ii+1] = ENCODINGS[b];
-    base64[ii+2] = EQ;
-    base64[ii+3] = EQ;
-  } else if (byteRemainder == 2) {
-    chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1]
-
-    a = (chunk & 64512) >> 10 // 64512 = (2^6 - 1) << 10
-    b = (chunk & 1008)  >>  4 // 1008  = (2^6 - 1) << 4
-
-    c = (chunk & 15)    <<  2 // 15    = 2^4 - 1
-
-    base64[ii] = ENCODINGS[a];
-    base64[ii+1] = ENCODINGS[b];
-    base64[ii+2] = ENCODINGS[c];
-    base64[ii+3] = EQ;
-  }
-  
-  return base64;
+function Array_maxBy(arr, fn) {
+  return arr.reduce((best, next) => {
+    const value = fn(next);
+    if (best && Math.max(best[0], value) == best[0]) return best;
+    return [ value, next ];
+  }, null)[1];
 }
 
-// the only difference between minBy and maxBy is the ordering
-// function, so abstract that out
-Object.defineProperties(Array.prototype, {
-  minBy: {
-    enumerable: false,
-    writable: false,
-    value(fn) {
-      return this.extremumBy(fn, Math.min);
-    }
-  },
-  maxBy: {
-    enumerable: false,
-    writable: false,
-    value(fn) {
-      return this.extremumBy(fn, Math.max);
-    }
-  },
-  maxBy: {
-    enumerable: false,
-    writable: false,
-    value(fn) {
-      return this.extremumBy(fn, Math.max);
-    }
-  },
-  extremumBy: {
-    enumerable: false,
-    writable: false,
-    value(pluck, extremum) {
-      return this.reduce(function(best, next) {
-        var pair = [ pluck(next), next ];
-        if (!best) {
-           return pair;
-        } else if (extremum.apply(null, [ best[0], pair[0] ]) == best[0]) {
-           return best;
-        } else {
-           return pair;
-        }
-      }, null)[1];
-    }
-  },
-  remove: {
-    enumerable: false,
-    writable: false,
-    value(element) {
-      var index = this.indexOf(element);
-      if (index !== -1) {
-        this.splice(index, 1);
-        return true;
-      }
-      return false;
-    }
-  },
-});
+function Array_remove(arr, value) {
+  let index;
+  while ((index = arr.indexOf(value)) !== -1) arr.splice(index, 1);
+}

@@ -28,7 +28,7 @@ class InputQueue {
 
   put(type, data) {
     const timer = setTimeout(() => {
-      this.#queue.remove(value);
+      Array_remove(this.#queue, value);
     }, this.#object_timeout);
 
     const value = { type, data, timer };

@@ -45,10 +45,3 @@ class EventEmitter {
     return this.#delegate.dispatchEvent(event);
   }
 }
-
-class MessageEvent extends Event {
-  constructor(message) {
-    super('message');
-    this.message = message
-  }
-}

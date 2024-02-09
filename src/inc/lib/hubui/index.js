@@ -2,6 +2,7 @@
 /*@![include:inc/lib/hubui/utils.js, compile]*/
 /*@![include:inc/lib/hubui/renderer.js, compile]*/
 /*@![include:inc/lib/hubui/menu.js, compile]*/
+/*@![include:inc/lib/hubui/popup.js, compile]*/
 
 /*@![include:inc/lib/hubui/widgets/button.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/canvas.js, compile]*/

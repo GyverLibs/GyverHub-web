@@ -228,10 +228,13 @@ async function format_h() {
   }
 }
 function manual_ip_h(ip) {
-  if (hub.http.discover_ip(ip)) {
-    save_cfg();
-    show_screen('main');
-  } else showPopupError(lang.wrong_ip);
+  if (!checkIP(ip)) {
+    showPopupError(lang.wrong_ip);
+    return;
+  }
+  hub.http.discover_ip(ip);
+  save_cfg();
+  show_screen('main');
 }
 function update_ip_h() {
   /*@[if_target:esp]*/

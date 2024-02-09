@@ -2,7 +2,13 @@ function update_cfg(el) {
   if (el.type == 'text') el.value = el.value.trim();
   let val = (el.type == 'checkbox') ? el.checked : el.value;
   if (el.id in cfg) cfg[el.id] = val;
-  else if (el.dataset.hubConfig) hub.config.set(...el.dataset.hubConfig.split('.'), val);
+  else if (el.dataset.hubConfig) {
+    if (el.dataset.hubConfig === 'connections.HTTP.local_ip' && !checkIP(val)) {
+      asyncAlert(lang.wrong_ip);
+      return;
+    }
+    hub.config.set(...el.dataset.hubConfig.split('.'), val);
+  }
   cfg_changed = true;
   update_theme();
 }

@@ -54,11 +54,12 @@ class GaugeWidget extends BaseWidget {
         let rw = cv.parentNode.clientWidth;
         if (!rw) return;
 
+        const ratio = window.devicePixelRatio;
         let rh = Math.floor(rw * 0.47);
         cv.style.width = rw + 'px';
         cv.style.height = rh + 'px';
-        cv.width = Math.floor(rw * ratio());
-        cv.height = Math.floor(rh * ratio());
+        cv.width = Math.floor(rw * ratio);
+        cv.height = Math.floor(rh * ratio);
 
         let cx = cv.getContext("2d");
         let theme_cols = getCurrentColorScheme();
@@ -129,9 +130,10 @@ class GaugeWidget extends BaseWidget {
         let rw = cv.parentNode.clientWidth;
         if (!rw) return;
 
+        const ratio = window.devicePixelRatio;
         cv.style.width = rw + 'px';
         cv.style.height = cv.style.width;
-        cv.width = Math.floor(rw * ratio());
+        cv.width = Math.floor(rw * ratio);
         cv.height = cv.width;
 
         let cx = cv.getContext("2d");
@@ -196,8 +198,9 @@ class GaugeWidget extends BaseWidget {
         let rw = cv.parentNode.clientWidth;
         if (!rw) return;
 
+        const ratio = window.devicePixelRatio;
         let height = 30;
-        let r = ratio();
+        let r = ratio;
         let sw = 2 * r;
         let off = 5 * r;
 

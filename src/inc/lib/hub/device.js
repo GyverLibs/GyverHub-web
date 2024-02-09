@@ -137,7 +137,7 @@ class Device extends EventEmitter {
    * @returns {Connection}
    */
   getConnection() {
-    return this.active_connections.maxBy(conn => conn.priority);
+    return Array_maxBy(this.active_connections, conn => conn.priority);
   }
 
   /**
@@ -161,7 +161,7 @@ class Device extends EventEmitter {
     conn.addEventListener('statechange', e => {
       switch (e.state) {
         case ConnectionState.DISCONNECTED:
-          this.active_connections.remove(conn);
+          Array_remove(this.active_connections, conn);
           this.dispatchEvent(new DeviceEvent('connectionchanged', this));
           break;
       }

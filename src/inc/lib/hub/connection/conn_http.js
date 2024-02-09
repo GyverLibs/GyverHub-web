@@ -11,7 +11,6 @@ class HTTPConnection extends Connection {
     this.options.local_ip = '192.168.0.1';
     this.options.port = '80';
     this.options.netmask = '24';
-    this.options.local_ip = '192.168.0.1';
     this.options.request_timeout = 4000;
     this.options.delay = 100;
 
@@ -41,10 +40,9 @@ class HTTPConnection extends Connection {
   }
 
   async discover_ip(ip, port = undefined) {
-    if (!checkIP(ip) || this.isDiscovering() || !this.isConnected()) return false;
+    if (this.isDiscovering() || !this.isConnected()) return;
     this._discoverTimer();
     await this.send(ip, port, this.hub.prefix);
-    return true;
   }
 
   async search() {

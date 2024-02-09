@@ -85,7 +85,7 @@ class Joy {
         if (!size) return;
         cv.style.width = size + 'px';
         cv.style.height = size + 'px';
-        size *= ratio();
+        size *= window.devicePixelRatio;
         cv.width = size;
         cv.height = size;
         cv.style.cursor = 'pointer';
@@ -152,8 +152,9 @@ class Joy {
                 this.posY -= this.cv.offsetParent.offsetTop;
             }
 
-            this.posX *= ratio();
-            this.posY *= ratio();
+            const ratio = window.devicePixelRatio;
+            this.posX *= ratio;
+            this.posY *= ratio;
             this.redraw();
         }
     }
@@ -192,8 +193,9 @@ class Joy {
                 this.posX -= this.cv.offsetParent.offsetLeft;
                 this.posY -= this.cv.offsetParent.offsetTop;
             }
-            this.posX *= ratio();
-            this.posY *= ratio();
+            const ratio = window.devicePixelRatio;
+            this.posX *= ratio;
+            this.posY *= ratio;
             this.redraw();
         }
     }

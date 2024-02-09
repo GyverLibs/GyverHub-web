@@ -45,9 +45,10 @@ class CanvasWidget extends BaseWidget {
     #click(e) {
         if (!this.#cv.active) return;
         let rect = this.$el.getBoundingClientRect();
-        let x = Math.round((e.clientX - rect.left) / this.#cv.scale * ratio());
+        const ratio = window.devicePixelRatio;
+        let x = Math.round((e.clientX - rect.left) / this.#cv.scale * ratio);
         if (x < 0) x = 0;
-        let y = Math.round((e.clientY - rect.top) / this.#cv.scale * ratio());
+        let y = Math.round((e.clientY - rect.top) / this.#cv.scale * ratio);
         if (y < 0) y = 0;
         this.set((x << 16) | y);
         this.setSuffix('[' + x + ',' + y + ']');
@@ -79,12 +80,13 @@ class Canvas {
         let rw = this.cv.parentNode.clientWidth;
         if (!rw) return;
         let scale = rw / this.width;
-        this.scale = scale * ratio();
+        const ratio = window.devicePixelRatio;
+        this.scale = scale * ratio;
         let rh = Math.floor(this.height * scale);
         this.cv.style.width = rw + 'px';
         this.cv.style.height = rh + 'px';
-        this.cv.width = Math.floor(rw * ratio());
-        this.cv.height = Math.floor(rh * ratio());
+        this.cv.width = Math.floor(rw * ratio);
+        this.cv.height = Math.floor(rh * ratio);
         this.show(this.data);
     }
 
