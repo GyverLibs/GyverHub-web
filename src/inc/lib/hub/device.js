@@ -262,15 +262,14 @@ class Device extends EventEmitter {
   }
 
   async focus() {
-    if (this.info.ws_port && this.active_connections.some(conn => conn instanceof HTTPConnection)) {
-      const ws = this._hub.ws;
+    if (this.info.ws_port && this._hub._ws && this.active_connections.some(conn => conn instanceof HTTPConnection)) {
+      const ws = this._hub._ws;
 
-      this._hub.config.set('connections', 'WS', 'ip', this.info.ip);
-      this._hub.config.set('connections', 'WS', 'port', this.info.ws_port);
-      this._hub.config.set('connections', 'WS', 'enabled', true);
       await ws.disconnect();
+      ws.options.ip = this.info.ip;
+      ws.options.port = this.info.ws_port;
+      ws.options.enabled = true;
       await ws.connect();
-      await sleep(this.tout_prd);
       if (!ws.isConnected()) {
         await ws.disconnect();
       } else {
@@ -283,7 +282,7 @@ class Device extends EventEmitter {
 
   async unfocus() {
     await this.#post('unfocus');
-    await this._hub.ws.disconnect();
+    if (this._hub._ws) await this._hub._ws.disconnect();
   }
 
   //#endregion

@@ -13,6 +13,7 @@ class WebSocketConnection extends Connection {
     this.options.enabled = false;
     this.options.ip = false;
     this.options.port = false;
+    this.options.connect_timeout = 3000;
 
     this.#packet_buffer = new PacketBufferScanFirst(data => {
       this.hub._parsePacket(this, data);
@@ -33,12 +34,10 @@ class WebSocketConnection extends Connection {
 
     this._setState(ConnectionState.CONNECTING);
     this.#reconnect = true;
-    this.#ws = new WebSocket(`ws://${this.options.ip}:${this.options.port}/`, ['hub']);
+    this.#ws = await WebSocketConnection.#wsOpenAsync(`ws://${this.options.ip}:${this.options.port}/`, ['hub'], this.options.connect_timeout);
 
-    this.#ws.onopen = () => {
       this._setState(ConnectionState.CONNECTED);
       this.#packet_buffer.clear();
-    };
 
     this.#ws.onclose = async () => {
       this._setState(ConnectionState.DISCONNECTED);
@@ -63,5 +62,32 @@ class WebSocketConnection extends Connection {
   async send(text) {
     if (this.isConnected())
       this.#ws.send(text);
+  }
+
+  /**
+   * 
+   * @param {string} url 
+   * @param {string[]} protos 
+   * @param {number} timeout 
+   * @returns {Promise<WebSocket>}
+   */
+  static #wsOpenAsync(url, protos, timeout) {
+    return new Promise((res, rej) => {
+      const tid = setTimeout(handler, timeout);
+
+      function handler(e) {
+        ws.removeEventListener('open', handler);
+        ws.removeEventListener('error', handler);
+        clearTimeout(tid);
+
+        if (ws.readyState === WebSocket.OPEN)
+          res(ws);
+        else rej(e);
+      }
+
+      const ws = new WebSocket(url, protos);
+      ws.addEventListener('open', handler);
+      ws.addEventListener('error', handler);
+    })
   }
 }

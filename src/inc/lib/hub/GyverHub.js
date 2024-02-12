@@ -5,6 +5,7 @@ class GyverHub extends EventEmitter {
   #connections = [];
   /** @type {Device[]} */
   #devices = [];
+  _ws;
 
   static api_v = 1;
 
@@ -26,7 +27,7 @@ class GyverHub extends EventEmitter {
   addConnection(connClass) {
     for (const connection of this.#connections)
       if (connection instanceof connClass)
-        return;
+        return connection;
 
     const conn = new connClass(this);
     conn.addEventListener('statechange', () => {
@@ -35,6 +36,12 @@ class GyverHub extends EventEmitter {
       if (conn.isConnected()) conn.discover();
     });
     this.#connections.push(conn);
+
+    if (conn.name === 'HTTP') {
+      this._ws = this.addConnection(WebSocketConnection);
+    }
+
+    return conn;
   }
 
   get mqtt() {
