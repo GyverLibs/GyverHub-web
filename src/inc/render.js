@@ -71,10 +71,6 @@ function serial_change(opened) {
   display('serial_close', opened ? 'inline-block' : 'none');
   display('serial_ok', opened ? 'inline-block' : 'none');
 }
-async function serial_toggle(state) {
-  serial_change(false);
-  if (!state) hub.serial.disconnect();
-}
 
 // telegram
 function tg_change(opened) {

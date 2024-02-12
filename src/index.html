@@ -472,7 +472,7 @@
             <div class="ui_row">
               <label class="ui_label"><slot name="lang.tg_token"></slot></label>
               <div class="ui_inp_row">
-                <input class="ui_inp" type="text" id="tg_token" data-hub-config="connections.TG.token" onchange="update_cfg(this);hub.tg.disconnect();hub.tg.bot.setToken(this.value)">
+                <input class="ui_inp" type="text" id="tg_token" data-hub-config="connections.TG.token" onchange="update_cfg(this);hub.tg.disconnect()">
               </div>
             </div>
   
@@ -496,7 +496,7 @@
         <div class="ui_col" id="serial_col">
           <div class="ui_row ui_head ui_tab" onclick="use_serial.click()">
             <label class="ui_label ui_tab" id="serial_label"><span class="icon icon_ui"></span>Serial</label>
-            <input type="checkbox" id="use_serial" data-hub-config="connections.SERIAL.enabled" onchange="serial_toggle(this.checked);update_cfg(this);save_cfg()" style="display:none">
+            <input type="checkbox" id="use_serial" data-hub-config="connections.SERIAL.enabled" onchange="update_cfg(this);hub.serial.disconnect();save_cfg()" style="display:none">
           </div>
   
           <div id="serial_block" style="display:none">
