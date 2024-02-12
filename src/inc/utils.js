@@ -39,7 +39,7 @@ async function switch_ssl(ssl) {
 
 function addDOM(el_id, tag, text, target) {
   if (EL(el_id)) EL(el_id).remove();
-  let el = document.createElement(tag);
+  const el = document.createElement(tag);
   el.textContent = text;
   el.id = el_id;
   target.appendChild(el);

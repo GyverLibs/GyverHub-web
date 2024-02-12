@@ -124,7 +124,7 @@ async function show_screen(nscreen) {
   }
 }
 function show_cfg() {
-  let dev = hub.dev(focused);
+  const dev = hub.dev(focused);
 
   EL('main_width').value = dev.info.main_width;
   EL('info_cli_sw').checked = document.body.classList.contains('show-cli');
@@ -176,7 +176,7 @@ async function refresh_h() {
 }
 async function back_h() {
   if (focused) {
-    let dev = hub.dev(focused);
+    const dev = hub.dev(focused);
     if (dev.fsBusy()) {
       showPopupError(dev.fs_mode + ' ' + getError(HubErrors.Abort));  // TODO fs_mode
       dev.fsStop();
@@ -260,8 +260,8 @@ function qr_h() {
   /*@/[if_not_target:esp]*/
 }
 function devLink() {
-  let qs = window.location.origin + window.location.pathname + '?';
-  let info = hub.dev(focused).info;
+  const qs = window.location.origin + window.location.pathname + '?';
+  const info = hub.dev(focused).info;
   ["id", "prefix", "ip", "http_port"].forEach(x => { if (info[x]) qs += `${x}=${info[x]}&`; });
   return qs.slice(0, -1);
 }
@@ -280,14 +280,14 @@ function ui_plugin_js_h(el) {
 // ============== MENU =============
 function menu_show(state) {
   menu_f = state;
-  let cl = EL('menu').classList;
+  const cl = EL('menu').classList;
   if (menu_f) cl.add('menu_show');
   else cl.remove('menu_show');
   EL('icon_menu').textContent = menu_f ? '' : '';
   display('menu_overlay', menu_f ? 'block' : 'none');
 }
 function updateSystemMenu() {
-  let dev = hub.dev(focused);
+  const dev = hub.dev(focused);
 
   EL('menu_system').innerHTML = `<div id="menu_cfg" class="menu_item" data-action="show_screen" data-screen="dev_config">${lang.m_config}</div>`;
   EL('menu_system').innerHTML += `<div id="menu_info" class="menu_item" data-action="show_screen" data-screen="info">${lang.m_info}</div>`;
@@ -312,7 +312,7 @@ function enterMenu(sel = null) {
 }
 // ============== DEVICE =============
 async function device_h(id) {
-  let dev = hub.dev(id);
+  const dev = hub.dev(id);
   if (!dev || !dev.isConnected()) return;
   if (!dev.info.api_v || dev.info.api_v != GyverHub.api_v) asyncAlert(lang.api_mis);
 

@@ -3,15 +3,15 @@ let fs_arr = [];
 // ============ FS BROWSER ============
 function showFsbr(fs, total, used) {
   fs_arr = [];
-  for (let path in fs) fs_arr.push(path);
+  for (const path in fs) fs_arr.push(path);
   fs_arr = sortPaths(fs_arr, '/');
 
   let inner = '';
-  for (let i in fs_arr) {
+  for (const i in fs_arr) {
     if (fs_arr[i].endsWith('/')) {
       inner += `<div class="fs_file fs_folder drop_area" onclick="file_upload_path.value='${fs_arr[i]}'/*;file_upload_btn.click()*/" ondrop="file_upload_path.value='${fs_arr[i]}';uploadFile(event.dataTransfer.files[0],'${fs_arr[i]}')">${fs_arr[i]}</div>`;
     } else {
-      let none = "style='display:none'";
+      const none = "style='display:none'";
       inner += `<div class="fs_file" onclick="openFSctrl(${i})">${fs_arr[i]}<div class="fs_weight">${(fs[fs_arr[i]] / 1000).toFixed(2)} kB</div></div>
         <div id="fs#${i}" class="fs_controls">
           <button ${hub.dev(focused).isModuleEnabled(Modules.RENAME) ? '' : none} title="${lang.rename}" class="icon icon_btn_big" onclick="renameFile(${i})"></button>
@@ -24,8 +24,8 @@ function showFsbr(fs, total, used) {
     }
   }
   if (total) {
-    let color = adjustColor(getDefColor(), 0.9);
-    let style = `background-repeat: no-repeat;background-image:linear-gradient(${color},${color});background-size: ${used / total * 100}% 100%;`;
+    const color = adjustColor(getDefColor(), 0.9);
+    const style = `background-repeat: no-repeat;background-image:linear-gradient(${color},${color});background-size: ${used / total * 100}% 100%;`;
     inner += `<div style="${style}" class="fs_info">${lang.fs_used} ${(used / 1000).toFixed(2)}/${(total / 1000).toFixed(2)} kB [${Math.round(used / total * 100)}%]</div>`;
   } else {
     inner += `<div class="fs_info">${lang.fs_used} ${(used / 1000).toFixed(2)} kB</div>`;
@@ -33,7 +33,7 @@ function showFsbr(fs, total, used) {
   EL('fsbr_inner').innerHTML = inner;
 }
 function openFSctrl(i) {
-  let current = EL(`fs#${i}`).style.display == 'flex';
+  const current = EL(`fs#${i}`).style.display == 'flex';
   document.querySelectorAll('.fs_controls').forEach(el => el.style.display = 'none');
   if (!current) display(`fs#${i}`, 'flex');
 }
@@ -133,8 +133,8 @@ async function renameFile(i) {
     showPopupError(getError(HubErrors.FsBusy));
     return;
   }
-  let path = fs_arr[i];
-  let res = await asyncPrompt(lang.rename + ' ' + path + ':', path);
+  const path = fs_arr[i];
+  const res = await asyncPrompt(lang.rename + ' ' + path + ':', path);
   if (res && res != path) {
     await hub.dev(focused).renameFile(path, res);
   }
@@ -157,9 +157,9 @@ function editor_cancel() {
 }
 function editor_save() {
   editor_cancel();
-  let div = fs_arr[edit_idx].lastIndexOf('/');
-  let path = fs_arr[edit_idx].slice(0, div);
-  let name = fs_arr[edit_idx].slice(div + 1);
+  const div = fs_arr[edit_idx].lastIndexOf('/');
+  const path = fs_arr[edit_idx].slice(0, div);
+  const name = fs_arr[edit_idx].slice(div + 1);
   uploadFile(new File([EL('editor_area').value], name, { type: getMime(name), lastModified: new Date() }), path);
 }
 

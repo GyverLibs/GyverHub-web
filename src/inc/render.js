@@ -1,6 +1,6 @@
 // =========== MISC ===========
 function add_device(device, dev) {
-  let icon = dev.icon;
+  const icon = dev.icon;
   /*@[if_target:esp]*/
   if (icon.length) icon = '';
   /*@/[if_target:esp]*/
@@ -36,7 +36,7 @@ function render_devices() {
   }
 }
 function dev_cfg_h(id) {
-  let dev = hub.dev(id);
+  const dev = hub.dev(id);
   dev.cfg_flag = !dev.cfg_flag;
   EL('d_head#' + id).style.display = dev.cfg_flag ? 'none' : 'contents';
   EL('d_cfg#' + id).style.display = dev.cfg_flag ? 'flex' : 'none';
@@ -93,25 +93,25 @@ function showInfo(info) {
   EL('info_memory').replaceChildren();
   EL('info_system').replaceChildren();
 
-  for (let i in info.version) addInfo('info_version', i, info.version[i]);
-  for (let i in info.net) addInfo('info_net', i, info.net[i]);
-  for (let i in info.memory) {
+  for (const i in info.version) addInfo('info_version', i, info.version[i]);
+  for (const i in info.net) addInfo('info_net', i, info.net[i]);
+  for (const i in info.memory) {
     if (typeof (info.memory[i]) == 'object') {
-      let used = info.memory[i][0];
-      let total = info.memory[i][1];
-      let mem = (used / 1000).toFixed(1) + ' kB';
+      const used = info.memory[i][0];
+      const total = info.memory[i][1];
+      const mem = (used / 1000).toFixed(1) + ' kB';
       if (total) mem += ' [' + (used / total * 100).toFixed(0) + '%]';
       addInfo('info_memory', i, mem, `Total ${(total / 1000).toFixed(1)} kB`);
     } else {
       addInfo('info_memory', i, info.memory[i]);
     }
   }
-  for (let i in info.system) {
+  for (const i in info.system) {
     if (i == 'Uptime') {
-      let sec = info.system[i];
-      let upt = Math.floor(sec / 86400) + ':' + new Date(sec * 1000).toISOString().slice(11, 19);
-      let d = new Date();
-      let utc = d.getTime() - (d.getTimezoneOffset() * 60000);
+      const sec = info.system[i];
+      const upt = Math.floor(sec / 86400) + ':' + new Date(sec * 1000).toISOString().slice(11, 19);
+      const d = new Date();
+      const utc = d.getTime() - (d.getTimezoneOffset() * 60000);
       addInfo('info_system', i, upt);
       addInfo('info_system', 'Started', new Date(utc - sec * 1000).toISOString().split('.')[0].replace('T', ' '));
       continue;

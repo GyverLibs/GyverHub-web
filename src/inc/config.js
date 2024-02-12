@@ -16,7 +16,7 @@ let cfg = {
 };
 
 if (localStorage.hasOwnProperty('app_config')) {
-  let cfg_r = JSON.parse(localStorage.getItem('app_config'));
+  const cfg_r = JSON.parse(localStorage.getItem('app_config'));
   if (cfg.api_ver === cfg_r.api_ver) {
     cfg = cfg_r;
   }
@@ -39,7 +39,7 @@ let lang = langBase[cfg.lang];
 
 function update_cfg(el) {
   if (el.type == 'text') el.value = el.value.trim();
-  let val = (el.type == 'checkbox') ? el.checked : el.value;
+  const val = (el.type == 'checkbox') ? el.checked : el.value;
   if (el.id in cfg) cfg[el.id] = val;
   else if (el.dataset.hubConfig) {
     if (el.dataset.hubConfig === 'connections.HTTP.local_ip' && !checkIP(val)) {
@@ -61,7 +61,7 @@ function update_theme() {
   document.body.classList.remove('theme-dark', 'theme-light', 'theme-auto');
   document.body.classList.add('theme-' + cfg.theme.toLowerCase());
 
-  let r = document.querySelector(':root');
+  const r = document.querySelector(':root');
   r.style.setProperty('--ui_width', cfg.ui_width + 'px');
   r.style.setProperty('--prim', intToCol(colors[cfg.maincolor]));
   r.style.setProperty('--font_f', cfg.font);
@@ -83,11 +83,11 @@ function update_theme() {
   display('tg_block', hub.config.get('connections', 'TG', 'enabled') ? 'block' : 'none');
   EL('tg_label').style.color = hub.config.get('connections', 'TG', 'enabled') ? 'var(--font)' : 'var(--font3)';
 
-  let bt = hub.config.get('connections', 'BLE', 'enabled');
+  const bt = hub.config.get('connections', 'BLE', 'enabled');
   display('bt_block', bt ? 'block' : 'none');
   EL('bt_label').style.color = bt ? 'var(--font)' : 'var(--font3)';
 
-  let ser = hub.config.get('connections', 'SERIAL', 'enabled');
+  const ser = hub.config.get('connections', 'SERIAL', 'enabled');
   display('serial_block', ser ? 'block' : 'none');
   EL('serial_label').style.color = ser ? 'var(--font)' : 'var(--font3)';
   /*@/[if_not_target:esp]*/

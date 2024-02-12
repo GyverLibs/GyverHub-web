@@ -23,11 +23,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   register_SW();
 
   // device hook
-  let qs = window.location.search;
+  const qs = window.location.search;
   if (qs) {
-    let params = new URLSearchParams(qs).entries();
-    let data = {};
-    for (let param of params) data[param[0]] = param[1];
+    const params = new URLSearchParams(qs).entries();
+    const data = {};
+    for (const param of params) data[param[0]] = param[1];
     if (!hub.dev(data.id)) hub.addDevice(data);
   }
 
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (cfg.use_pin && cfg.pin.length) await asyncAskPin(lang.hub_pin, cfg.pin, false);
 
   // show version
-  let ver = localStorage.getItem('version');
+  const ver = localStorage.getItem('version');
   const app_version = '/*@![:version]*/';
   if (!ver || ver != app_version) {
     /*@[if_not_dev]*/
@@ -189,8 +189,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   function apply_cfg() {
     if (cfg.pin.length < 4) cfg.use_pin = false;
-    for (let key in cfg) {
-      let el = EL(key);
+    for (const key in cfg) {
+      const el = EL(key);
       if (el == undefined) continue;
       if (el.type == 'checkbox') el.checked = cfg[key];
       else el.value = cfg[key];

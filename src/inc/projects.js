@@ -4,9 +4,9 @@ let updates_list = [];
 async function checkUpdates(id) {
   if (!cfg.check_upd) return;
   if (updates_list.includes(id)) return;
-  let ver = hub.dev(id).info.version;
+  const ver = hub.dev(id).info.version;
   if (!ver.includes('@')) return;
-  let namever = ver.split('@');
+  const namever = ver.split('@');
   let proj;
   try {
     const resp = await fetch("https://raw.githubusercontent.com/"+namever[0]+"/main/project.json", { cache: "no-store" });
@@ -36,7 +36,7 @@ async function loadProjects() {
   projects = projects.split('\n');
   for (let proj of projects) {
     if (!proj) continue;
-    let rep = proj.split('https://github.com/')[1];
+    const rep = proj.split('https://github.com/')[1];
     if (!rep) continue;
     loadProj(rep);
   }
@@ -47,8 +47,8 @@ async function loadProj(rep) {
     const resp = await fetch(manifest, { cache: "no-store" });
     let proj = await resp.json();
     if (!('name' in proj) || !('version' in proj) || !('about' in proj)) return;
-    let name = proj.name;
-    let repname = rep.split('/')[1];
+    const name = proj.name;
+    const repname = rep.split('/')[1];
     if (name.length > 30) name = name.slice(0, 30) + '..';
 
     /*@[if_target:host,desktop]*/
