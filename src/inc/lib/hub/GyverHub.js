@@ -278,6 +278,8 @@ class GyverHub extends EventEmitter {
     let type = data.type;
     delete data.type;
 
+    console.log('[IN]', type, data);
+
     if (type == 'discover') {
       if (!this.#isDiscovering()) {
         console.log('Device not added (not discovering):', data);

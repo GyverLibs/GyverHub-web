@@ -73,6 +73,7 @@ class Device extends EventEmitter {
       this.prev_set[name] = setTimeout(() => delete this.prev_set[name], this.skip_prd);
     }
 
+    console.log('[OUT]', this.info.id, cmd, name, value);
     await this.getConnection().post(this, cmd, name, value);
   }
 
@@ -311,7 +312,7 @@ class Device extends EventEmitter {
 
   async fsStop() {
     if (this.isModuleEnabled(Modules.FETCH | Modules.UPLOAD | Modules.OTA))
-     await this.#post('fs_abort');
+      await this.#post('fs_abort');
   }
 
   fsBusy() {
