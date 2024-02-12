@@ -77,9 +77,12 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
   });
 
   ev.device.addEventListener('connectionchanged', e => {
-    EL(`device#${e.device.info.id}`).className = "device";
-    const conn = e.device.getConnection().name;
-    if (conn !== 'WS')
+    for (const $i of document.querySelectorAll('.conn_dev'))
+      $i.style.display = '';
+
+    const conn = e.device.getConnection()?.name;
+    EL(`device#${e.device.info.id}`).className = conn ? "device" : 'device offline';
+    if (conn && conn !== 'WS')
       display(`${conn}#${e.device.info.id}`, 'inline-block');
   });
 

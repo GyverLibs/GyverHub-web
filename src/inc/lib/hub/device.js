@@ -107,7 +107,7 @@ class Device extends EventEmitter {
 
     switch (type) {
     case 'ui':
-      await this.#post('unix', Math.floor(new Date().getTime() / 1000));
+      await this.#postAndWait('unix', ['OK'], Math.floor(new Date().getTime() / 1000));
       break;
 
     case 'refresh':
@@ -134,10 +134,10 @@ class Device extends EventEmitter {
 
   /**
    * Get primary connection
-   * @returns {Connection}
+   * @returns {Connection | null}
    */
   getConnection() {
-    return Array_maxBy(this.active_connections, conn => conn.priority);
+    return this.active_connections.length ? Array_maxBy(this.active_connections, conn => conn.priority) : null;
   }
 
   /**
@@ -310,6 +310,7 @@ class Device extends EventEmitter {
   }
 
   async fsStop() {
+    if (this.isModuleEnabled(Modules.FETCH | Modules.UPLOAD | Modules.OTA))
      await this.#post('fs_abort');
   }
 
