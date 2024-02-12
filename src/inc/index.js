@@ -116,9 +116,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     /*@[if_target:host]*/
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
-      window.addEventListener('beforeinstallprompt', (e) => deferredPrompt = e);
     }
     /*@/[if_target:host]*/
+    /*@[if_not_target:esp]*/
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        display('pwa_block', 'block');
+        EL('btn_pwa').addEventListener('click', async () => {
+          e.prompt();
+          const { outcome } = await e.userChoice;
+          if (outcome === 'accepted') 
+            display('pwa_block', 'none');
+        })
+      });
+    /*@/[if_not_target:esp]*/
   }
   function set_drop() {
     function preventDrop(e) {

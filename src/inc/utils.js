@@ -94,23 +94,12 @@ function userLang() {
 }
 
 // ====================== FUNC ======================
-async function pwa_install(ssl) {
+async function switch_ssl(ssl) {
   if (ssl && !isSSL()) {
     if (await asyncConfirm(lang.redirect + " HTTPS?")) window.location.href = window.location.href.replace('http:', 'https:');
-    else return;
   }
   if (!ssl && isSSL()) {
     if (await asyncConfirm(lang.redirect + " HTTP?")) window.location.href = window.location.href.replace('https:', 'http:');
-    else return;
-  }
-  if (!('serviceWorker' in navigator)) {
-    asyncAlert(lang.error);
-    return;
-  }
-  if (deferredPrompt !== null) {
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') deferredPrompt = null;
   }
 }
 
