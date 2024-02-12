@@ -121,11 +121,6 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
       showControls(focused, e.data.controls);
   });
 
-  ev.device.addEventListener('command.ack', e => {
-    if (e.device.info.id == focused && renderer)
-      renderer.handleAck(e.data.name);
-  });
-
   ev.device.addEventListener('command.script', e => {
     if (e.device.info.trust)
       eval(e.data.script);

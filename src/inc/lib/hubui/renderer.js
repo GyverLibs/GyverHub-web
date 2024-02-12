@@ -82,17 +82,14 @@ class Renderer {
         }
     }
 
-    _set(widget, value, ack = true) {
-        if (ack) {
-            const old = this.#ackTimers.get(widget.id);
-            if (old) clearTimeout(old);
-            const t = setTimeout(() => {
-                this.#ackTimers.delete(widget.id);
-                widget.handleSetTimeout();
-            }, 3000);
-            this.#ackTimers.set(widget.id, t);
+    async _set(widget, value, ack = true) {
+        try {
+            await this.device.set(widget.id, value);
+        } catch (e) {
+            console.log(e);
+            if (ack) widget.handleSetTimeout();
         }
-        this.device.set(widget.id, value);
+        if (ack) widget.handleAck();
     }
 
     /**
@@ -136,20 +133,6 @@ class Renderer {
         this.#ackTimers.clear();
         for (const w of this.#idMap.values()) {
             w.close();
-        }
-    }
-
-    /**
-     * Обработчик пакета ack с устройства
-     * @param {string} name 
-     */
-    handleAck(id) {
-        const t = this.#ackTimers.get(id);
-        if (t) {
-            clearTimeout(t);
-            this.#ackTimers.delete(id);
-            const w = this.#idMap.get(id);
-            if (w) w.handleAck();
         }
     }
 
