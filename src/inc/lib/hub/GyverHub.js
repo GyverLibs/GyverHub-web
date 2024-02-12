@@ -14,14 +14,6 @@ class GyverHub extends EventEmitter {
     this.config = new Config();
     this.config.set('hub', 'prefix', 'MyDevices2');
     this.config.set('hub', 'client_id', Math.round(Math.random() * 0xffffffff).toString(16));
-    this.addConnection(HTTPConnection);
-    this.addConnection(WebSocketConnection);
-    /*@[if_not_target:esp]*/
-    this.addConnection(MQTTConnection);
-    this.addConnection(TelegramConnection);
-    this.addConnection(SerialConnection);
-    this.addConnection(BLEConnection);
-    /*@/[if_not_target:esp]*/
   }
 
   addConnection(connClass) {
@@ -68,13 +60,6 @@ class GyverHub extends EventEmitter {
   get tg() {
     for (const connection of this.#connections) {
       if (connection instanceof TelegramConnection)
-        return connection;
-    }
-  }
-
-  get ws() {
-    for (const connection of this.#connections) {
-      if (connection instanceof WebSocketConnection)
         return connection;
     }
   }

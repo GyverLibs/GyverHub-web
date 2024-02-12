@@ -18,7 +18,6 @@ class WebSocketConnection extends Connection {
     this.#packet_buffer = new PacketBufferScanFirst(data => {
       this.hub._parsePacket(this, data);
     });
-    this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
 
   isConnected() {
@@ -36,8 +35,8 @@ class WebSocketConnection extends Connection {
     this.#reconnect = true;
     this.#ws = await WebSocketConnection.#wsOpenAsync(`ws://${this.options.ip}:${this.options.port}/`, ['hub'], this.options.connect_timeout);
 
-      this._setState(ConnectionState.CONNECTED);
-      this.#packet_buffer.clear();
+    this._setState(ConnectionState.CONNECTED);
+    this.#packet_buffer.clear();
 
     this.#ws.onclose = async () => {
       this._setState(ConnectionState.DISCONNECTED);

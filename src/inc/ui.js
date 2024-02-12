@@ -1,6 +1,10 @@
 let menu_f = false;
 let pin_id = null;
 
+// ====================== VARS ======================
+let screen = 'main';
+let focused = null;
+
 // ============== SCREEN ==============
 async function show_screen(nscreen) {
   if (focused) hub.dev(focused).fsStop();

@@ -25,7 +25,7 @@
 /*@![include:inc/ui.js, compile]*/
 /*@![include:inc/fs.js, compile]*/
 /*@![include:inc/index.js, compile]*/
-/*@![include:inc/events.js, compile]*/
+/*@![include:inc/hub.js, compile]*/
 
 /*@[if_target:host]*/
 /*@![add_file:sw.js, compile]*/

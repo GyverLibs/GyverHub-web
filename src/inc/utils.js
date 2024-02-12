@@ -1,9 +1,4 @@
 // ====================== CONST ======================
-const hub = new GyverHub();
-
-if (localStorage.hasOwnProperty('hub_config')) {
-  hub.config.fromJson(localStorage.getItem('hub_config'));
-}
 
 const colors = {
   ORANGE: 0xd55f30,
@@ -21,68 +16,7 @@ function getError(code) {
   return lang.errors[code];
 }
 
-// ====================== VARS ======================
-let deferredPrompt = null;
-let screen = 'main';
-let focused = null;
-let cfg_changed = false;
-
-let cfg = {
-  serial_offset: 2000,
-  use_pin: false,
-  pin: '',
-  theme: 'auto',
-  maincolor: 'GREEN',
-  font: 'monospace',
-  check_upd: true,
-  ui_width: 450,
-  lang: userLang(),
-  app_plugin_css: '',
-  app_plugin_js: '',
-  api_ver: 1,
-};
-
-if (localStorage.hasOwnProperty('app_config')) {
-  let cfg_r = JSON.parse(localStorage.getItem('app_config'));
-  if (cfg.api_ver === cfg_r.api_ver) {
-    cfg = cfg_r;
-  }
-}
-localStorage.setItem('app_config', JSON.stringify(cfg));
-
-let lang = langBase[cfg.lang];
-
-/*@[if_target:esp]*/
-  if (window_ip()) {
-    EL('local_ip').value = window_ip();
-    hub.config.set('connections', 'HTTP', 'local_ip', window_ip());
-  }
-/*@/[if_target:esp]*/
-
-
-/*@[if_not_target:esp]*/
-  getLocalIP();
-/*@/[if_not_target:esp]*/
-
 // ====================== CHECK ======================
-function platform() {
-/*@[if_target:host]*/
-  return 'host';
-/*@/[if_target:host]*/
-/*@[if_target:esp]*/
-  return 'esp';
-/*@/[if_target:esp]*/
-/*@[if_target:desktop]*/
-  return 'desktop';
-/*@/[if_target:desktop]*/
-/*@[if_target:mobile]*/
-  return 'mobile';
-/*@/[if_target:mobile]*/
-/*@[if_target:local]*/
-  return 'local';
-/*@/[if_target:local]*/
-}
-
 function isSSL() {
   return window.location.protocol == 'https:';
 }

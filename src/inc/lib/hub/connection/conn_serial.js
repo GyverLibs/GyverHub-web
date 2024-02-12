@@ -15,7 +15,6 @@ class SerialConnection extends Connection {
     this.#packet_buffer = new PacketBufferScanAll(data => {
       this.hub._parsePacket(this, data);
     });
-    this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
 
   getName() {

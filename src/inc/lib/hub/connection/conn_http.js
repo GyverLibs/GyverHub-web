@@ -13,8 +13,6 @@ class HTTPConnection extends Connection {
     this.options.netmask = '24';
     this.options.request_timeout = 4000;
     this.options.delay = 100;
-
-    this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
 
   isConnected() {

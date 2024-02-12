@@ -6,8 +6,6 @@ class MQTTConnection extends Connection {
   #preflist;
   #buffers;
 
-  onConnChange(state) { }
-
   constructor(hub) {
     super(hub);
     this.options.enabled = true;
@@ -18,7 +16,6 @@ class MQTTConnection extends Connection {
 
     this.#preflist = [];
     this.#buffers = new Map();
-    this.addEventListener('statechange', () => this.onConnChange(this.getState()));
     this.hub.addEventListener('deviceadded', ev => this.#sub_device(ev.device.info.prefix, ev.device.info.id));
   }
 

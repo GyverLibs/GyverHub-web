@@ -6,8 +6,6 @@ class TelegramConnection extends Connection {
   #offset;
   #buffers;
 
-  onConnChange(state) { }
-
   constructor(hub) {
     super(hub);
     this.options.enabled = false;
@@ -16,7 +14,6 @@ class TelegramConnection extends Connection {
     this.options.discover_timeout = 10000;
 
     this.#buffers = new Map();
-    this.addEventListener('statechange', () => this.onConnChange(this.getState()));
   }
 
   isConnected() {

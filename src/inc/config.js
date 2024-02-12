@@ -1,3 +1,42 @@
+let cfg_changed = false;
+let cfg = {
+  serial_offset: 2000,
+  use_pin: false,
+  pin: '',
+  theme: 'auto',
+  maincolor: 'GREEN',
+  font: 'monospace',
+  check_upd: true,
+  ui_width: 450,
+  wide_mode: false,
+  lang: userLang(),
+  app_plugin_css: '',
+  app_plugin_js: '',
+  api_ver: 1,
+};
+
+if (localStorage.hasOwnProperty('app_config')) {
+  let cfg_r = JSON.parse(localStorage.getItem('app_config'));
+  if (cfg.api_ver === cfg_r.api_ver) {
+    cfg = cfg_r;
+  }
+}
+localStorage.setItem('app_config', JSON.stringify(cfg));
+
+let lang = langBase[cfg.lang];
+
+/*@[if_target:esp]*/
+  if (window_ip()) {
+    EL('local_ip').value = window_ip();
+    hub.config.set('connections', 'HTTP', 'local_ip', window_ip());
+  }
+/*@/[if_target:esp]*/
+
+
+/*@[if_not_target:esp]*/
+  getLocalIP();
+/*@/[if_not_target:esp]*/
+
 function update_cfg(el) {
   if (el.type == 'text') el.value = el.value.trim();
   let val = (el.type == 'checkbox') ? el.checked : el.value;

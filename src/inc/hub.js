@@ -1,44 +1,57 @@
-// ============ CONNECTION ============
-/*@[if_not_target:esp]*/
-hub.mqtt.onConnChange = (state) => {
-  mq_change(state === ConnectionState.CONNECTED);
+const hub = new GyverHub();
+
+if (localStorage.hasOwnProperty('hub_config')) {
+  hub.config.fromJson(localStorage.getItem('hub_config'));
 }
 
-hub.bt.onConnChange = (state) => {
-  bt_change(state === ConnectionState.CONNECTED);
-  switch (state) {
+hub.addConnection(HTTPConnection);
+/*@[if_not_target:esp]*/
+hub.addConnection(MQTTConnection);
+hub.addConnection(TelegramConnection);
+hub.addConnection(SerialConnection);
+hub.addConnection(BLEConnection);
+/*@/[if_not_target:esp]*/
+
+// ============ CONNECTION ============
+/*@[if_not_target:esp]*/
+hub.addEventListener('connectionstatechange.BLE', e => {
+  bt_change(e.state === ConnectionState.CONNECTED);
+  switch (e.state) {
     case ConnectionState.CONNECTING:
       EL('bt_device').textContent = lang.connecting;
       break;
 
     case ConnectionState.CONNECTED:
-      EL('bt_device').textContent = hub.bt.getName();
+      EL('bt_device').textContent = e.connection.getName();
       break;
 
     case ConnectionState.DISCONNECTED:
       EL('bt_device').textContent = lang.disconnected;
       break;
   }
-}
-hub.serial.onConnChange = (state) => {
-  serial_change(state === ConnectionState.CONNECTED);
-  switch (state) {
+});
+hub.addEventListener('connectionstatechange.SERIAL', e => {
+  serial_change(e.state === ConnectionState.CONNECTED);
+  switch (e.state) {
     case ConnectionState.CONNECTING:
       EL('serial_device').textContent = lang.connecting;
       break;
 
     case ConnectionState.CONNECTED:
-      EL('serial_device').textContent = hub.bt.getName();
+      EL('serial_device').textContent = e.connection.getName();
       break;
 
     case ConnectionState.DISCONNECTED:
       EL('serial_device').textContent = lang.disconnected;
       break;
   }
-}
-hub.tg.onConnChange = (state) => {
-  tg_change(state === ConnectionState.CONNECTED);
-}
+});
+hub.addEventListener('connectionstatechange.TG', e => {
+  tg_change(e.state === ConnectionState.CONNECTED);
+});
+hub.addEventListener('connectionstatechange.MQTT', e => {
+  mq_change(e.state === ConnectionState.CONNECTED);
+});
 /*@/[if_not_target:esp]*/
 
 // ============ DEVICES ============
@@ -47,9 +60,7 @@ hub.config.addEventListener('changed.devices', () => {
 });
 hub.addEventListener('deviceadded', (ev) => {  // found new device (search)
   const dev = ev.device.info;
-  dev.ui_mode = 0;
   dev.main_width = 450;
-  dev.ui_block_width = 250;
   dev.plugin_css = '';
   dev.plugin_js = '';
   add_device(ev.device, dev);
