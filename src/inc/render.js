@@ -6,23 +6,23 @@ function add_device(device, dev) {
   /*@/[if_target:esp]*/
   EL('devices').innerHTML += `
   <div class="device ${device.isConnected() ? '' : 'offline'}" id="device#${dev.id}" onclick="device_h('${dev.id}')" title="${dev.id} [${dev.prefix}]">
-    <div class="device_inner">
-      <div id="d_head#${dev.id}" style="display:contents">
-        <div class="d_icon ${icon.length ? '' : 'd_icon_empty'}"><span class="icon icon_min ${icon.length ? '' : 'd_icon_none'}" id="icon#${dev.id}">${getIcon(icon)}</span></div>
-        <div class="d_title">
-          <span><span class="d_name" id="name#${dev.id}">${dev.name}</span><sup class="conn_dev" id="SERIAL#${dev.id}">S</sup><sup class="conn_dev" id="BLE#${dev.id}">B</sup><sup class="conn_dev" id="HTTP#${dev.id}">W</sup><sup class="conn_dev" id="MQTT#${dev.id}">M</sup><sup class="conn_dev" id="TG#${dev.id}">T</sup></span>
-        </div>
+    <div id="d_head#${dev.id}">
+      <div class="d_icon">
+        <span class="icon icon_min" id="icon#${dev.id}">${getIcon(icon) ?? ''}</span>
       </div>
-      <div id="d_cfg#${dev.id}" class="d_btn_cont">
-        <div class="icon d_btn_red" onclick="delete_h('${dev.id}');event.stopPropagation()"></div>
-        <div class="icon d_btn_green" onclick="dev_up_h('${dev.id}');event.stopPropagation()"></div>
-        <div class="icon d_btn_green" onclick="dev_down_h('${dev.id}');event.stopPropagation()"></div>
+      <div class="d_title">
+        <span class="d_name" id="name#${dev.id}">${dev.name}</span><sup class="conn_dev" id="SERIAL#${dev.id}">S</sup><sup class="conn_dev" id="BLE#${dev.id}">B</sup><sup class="conn_dev" id="HTTP#${dev.id}">W</sup><sup class="conn_dev" id="MQTT#${dev.id}">M</sup><sup class="conn_dev" id="TG#${dev.id}">T</sup>
       </div>
-      <span class="icon d_btn_cfg" onclick="dev_cfg_h('${dev.id}');event.stopPropagation()"></span>
     </div>
+    <div id="d_cfg#${dev.id}" class="d_btn_cont">
+      <div class="icon d_btn_red" onclick="delete_h('${dev.id}');event.stopPropagation()"></div>
+      <div class="icon d_btn_green" onclick="dev_up_h('${dev.id}');event.stopPropagation()"></div>
+      <div class="icon d_btn_green" onclick="dev_down_h('${dev.id}');event.stopPropagation()"></div>
+    </div>
+    <span class="icon d_btn_cfg" onclick="dev_cfg_h('${dev.id}');event.stopPropagation()"></span>
   </div>`;
 
-  EL('d_head#' + dev.id).style.display = device.cfg_flag ? 'none' : 'contents';
+  EL('d_head#' + dev.id).style.display = device.cfg_flag ? 'none' : 'flex';
   EL('d_cfg#' + dev.id).style.display = device.cfg_flag ? 'flex' : 'none';
 }
 function render_devices() {
@@ -38,7 +38,7 @@ function render_devices() {
 function dev_cfg_h(id) {
   const dev = hub.dev(id);
   dev.cfg_flag = !dev.cfg_flag;
-  EL('d_head#' + id).style.display = dev.cfg_flag ? 'none' : 'contents';
+  EL('d_head#' + id).style.display = dev.cfg_flag ? 'none' : 'flex';
   EL('d_cfg#' + id).style.display = dev.cfg_flag ? 'flex' : 'none';
 }
 

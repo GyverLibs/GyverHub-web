@@ -115,10 +115,6 @@ body::-webkit-scrollbar-thumb {
 }
 
 /* CONTAINER */
-#devices {
-  max-width: var(--ui_width);
-}
-
 #title_cont {
   max-width: var(--ui_width);
 }
