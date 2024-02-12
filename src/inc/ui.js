@@ -11,11 +11,10 @@ async function show_screen(nscreen) {
   spinArrows(false);
   screen = nscreen;
 
-  ['conn_icons', 'test_cont', 'projects_cont', 'config', 'devices',
-    'controls', 'info', 'icon_menu', 'icon_cfg', 'files', 'ota', 'back', 'icon_refresh',
-    'footer_cont', 'conn', 'dev_config'].forEach(e => display(e, 'none'));
-
-  display('main_cont', 'block');
+  document.body.dataset.screen = screen;
+  ['conn_icons', 'devices',
+    'controls', 'icon_menu', 'icon_cfg', 'files', 'ota', 'back', 'icon_refresh',
+    'conn', 'dev_config'].forEach(e => display(e, 'none'));
 
   EL('title').textContent = "GyverHub";
   EL('title_row').style.cursor = 'pointer';
@@ -27,27 +26,22 @@ async function show_screen(nscreen) {
       display('devices', 'grid');
       display('icon_cfg', 'inline-block');
       display('icon_refresh', 'inline-block');
-      display('footer_cont', 'block');
       EL('title_row').style.cursor = 'unset';
       showCLI(false);
       break;
 
     case 'test':
-      display('main_cont', 'none');
-      display('test_cont', 'block');
       display('back', 'inline-block');
       EL('title').textContent = 'UI Test';
       break;
 
     case 'projects':
-      display('projects_cont', 'block');
       display('back', 'inline-block');
       EL('title').textContent = lang.p_proj;
       loadProjects();
       break;
 
     case 'ui':
-      display('controls', 'block');
       display('icon_menu', 'inline-block');
       display('back', 'inline-block');
       display('icon_refresh', 'inline-block');
@@ -57,14 +51,12 @@ async function show_screen(nscreen) {
 
     case 'config':
       display('conn_icons', 'inline-block');
-      display('config', 'block');
       display('icon_cfg', 'inline-block');
       display('back', 'inline-block');
       EL('title').textContent = lang.config;
       break;
 
     case 'info':
-      display('info', 'block');
       display('icon_menu', 'inline-block');
       display('back', 'inline-block');
       display('conn', 'inline-block');

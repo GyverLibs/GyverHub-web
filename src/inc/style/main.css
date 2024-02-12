@@ -213,36 +213,35 @@ body.show-cli .cli {
 
 /* FOOTER */
 .footer {
+  position: fixed;
+  bottom: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 28px;
-  margin-top: -29px;
   background: var(--tab);
   box-shadow: 0px 1px var(--tab);
 }
 
-.footer_inner {
-  margin: auto;
-  width: fit-content;
-  position: relative;
-  top: 50%;
-  -webkit-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
+body[data-screen=main] .footer {
+  display: flex;
 }
 
-.footer_inner a {
+.footer a {
   color: var(--font2);
   text-decoration: none;
-  padding: 0px 5px;
+  padding: 0px 8px;
   font-size: 15px !important;
 }
 
-.footer_inner a:hover {
+.footer a:hover {
   color: var(--font);
 }
 
 .i_footer {
   font-size: 16px !important;
+  padding-right: 0 !important;
 }
 
 /* MOZ */
@@ -260,6 +259,10 @@ input[type=number] {
 /* ====================================================================== */
 /* ================================ PROJ ================================ */
 /* ====================================================================== */
+
+body[data-screen=projects] .screen-projects {
+  display: block;
+}
 
 .proj {
   background: var(--tab);
@@ -297,14 +300,11 @@ input[type=number] {
 /* ================================ TEST ================================ */
 /* ====================================================================== */
 
-#test_cont {
-  width: 100%;
-  height: 100%;
-  display: none;
+body[data-screen=test] .screen-test {
+  display: block;
 }
 
 .test_text {
-  padding-top: 75px;
   color: var(--font);
 }
 

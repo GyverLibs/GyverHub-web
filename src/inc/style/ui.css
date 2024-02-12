@@ -485,6 +485,10 @@
 /* ====================================================================== */
 /* ================================ INFO ================================ */
 /* ====================================================================== */
+body[data-screen=info] .screen-info {
+  display: block;
+}
+
 .info_label {
   user-select: text;
   cursor: text;
@@ -609,14 +613,14 @@
 /* ================================ CONFIG ============================== */
 /* ====================================================================== */
 
-.cfg_inner {
-  display: none;
-  width: 100%;
+body[data-screen=config] .screen-config {
+  display: block;
+}
+
+.screen-config {
   font-size: 17px;
   font-weight: 500;
   color: var(--font2);
-  max-width: var(--ui_width);
-  margin: auto;
 }
 
 .cfg_info {

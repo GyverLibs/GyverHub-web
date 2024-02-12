@@ -20,13 +20,12 @@ class Renderer {
     #prevWidth;
     #ackTimers;
 
-    constructor(device, controls, wideMode = false) {
+    constructor(device, controls) {
         this.device = device;
         this.#widgets = [];
         this.#idMap = new Map();
         this.#prevWidth = 1;
         this.#ackTimers = new Map();
-        this.wideMode = wideMode;
 
         this.device.resetUIFiles();
         this._makeWidgets(this.#widgets, 'col', controls);
@@ -97,31 +96,13 @@ class Renderer {
      * @returns {HTMLElement}
      */
     build(){
-        const $root = createElement(null, {
-            type: "div",
-            class: "main_col",
-            style: {
-                visibility: 'hidden'
-            }
-        });
-
-        if (this.wideMode) {
-            $root.style.display = 'grid';
-            $root.style.gridTemplateColumns = `repeat(auto-fit, ${this.device.info.main_width}px)`;
-            $root.style.maxWidth = 'unset';
-            $root.style.justifyContent = 'center';
-        } else {
-            $root.style.display = 'block';
-            $root.style.maxWidth = this.device.info.main_width + 'px'
-        }
-
+        const res = [];
         for (const w of this.#widgets) {
             const $w = w.build();
-            if ($w) $root.append($w);
+            if ($w) res.push($w);
         }
 
-        $root.style.visibility = 'visible';
-        return $root;
+        return res;
     }
 
     /**
