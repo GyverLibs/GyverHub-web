@@ -252,9 +252,10 @@ function devlink_h() {
 }
 function qr_h() {
   /*@[if_not_target:esp]*/
-  let qr = EL("qrcode");
-  new QRCode(qr, devLink());
-  setTimeout(() => openFile(qr.children[1].src), 100);
+  const $qr = document.createElement('div');
+  new QRCode($qr, devLink());
+  $qr.style.margin = '0 auto';
+  asyncShowQr($qr);
   /*@/[if_not_target:esp]*/
 }
 function devLink() {

@@ -28,7 +28,7 @@ function makeDialog(title, text, buttons, additional) {
     const $text = document.createElement('div');
     $d.append($text);
     $text.className = 'ui_row';
-    $text.innerHTML = additional;
+    $text.append(additional);
   }
 
   if (buttons) {
@@ -53,6 +53,18 @@ function makeDialog(title, text, buttons, additional) {
 
   document.body.appendChild($box);
   return $box;
+}
+
+function asyncShowQr($qr, title = null) {
+  return new Promise(resolve => {
+    const $box = makeDialog(title, null, [{
+      text: 'OK',
+      click: () => {
+        document.body.removeChild($box);
+        resolve(true);
+      }
+    }], $qr);
+  });
 }
 
 function asyncAlert(text, title = null) {
@@ -90,11 +102,16 @@ function asyncConfirm(text, title = null) {
 
 function asyncPrompt(text, placeh = '', title = null) {
   return new Promise(resolve => {
+    const $input = document.createElement('input');
+    $input.type = 'text';
+    $input.value = placeh;
+    $input.className = 'ui_inp';
+
     const $box = makeDialog(title, text, [
       {
         text: 'OK',
         click:() => {
-          let res = EL('dia_input').value;
+          const res = $input.value;
           document.body.removeChild($box);
           resolve(res);
         }
@@ -106,7 +123,7 @@ function asyncPrompt(text, placeh = '', title = null) {
           resolve(null);
         }
       }
-    ], `<input id="dia_input" class="ui_inp" type="text" value="${placeh}">`);
+    ], $input);
   });
 }
 
