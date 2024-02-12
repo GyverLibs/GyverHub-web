@@ -30,9 +30,9 @@ class GyverHub extends EventEmitter {
         return connection;
 
     const conn = new connClass(this);
-    conn.addEventListener('statechange', () => {
-      this.dispatchEvent(new Event('connectionstatechange'));
-      this.dispatchEvent(new Event('connectionstatechange.' + conn.name));
+    conn.addEventListener('statechange', e => {
+      this.dispatchEvent(new ConnectionStateChangeEvent('connectionstatechange', e.connection, e.state));
+      this.dispatchEvent(new ConnectionStateChangeEvent('connectionstatechange.' + conn.name, e.connection, e.state));
       if (conn.isConnected()) conn.discover();
     });
     this.#connections.push(conn);

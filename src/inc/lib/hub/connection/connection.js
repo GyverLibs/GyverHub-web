@@ -13,6 +13,14 @@ const ConnectionState = new Enum(
   'CONNECTED',
 );
 
+class ConnectionStateChangeEvent extends Event {
+  constructor(type, connection, state) {
+    super(type)
+    this.connection = connection;
+    this.state = state;
+  }
+}
+
 class Connection extends EventEmitter {
   #state;
   #discovering;
@@ -56,7 +64,7 @@ class Connection extends EventEmitter {
     if (this.#state === state)
       return;
     this.#state = state;
-    this.dispatchEvent(new Event('statechange'));
+    this.dispatchEvent(new ConnectionStateChangeEvent('statechange', this, state));
   }
 
   _discoverTimer() {
