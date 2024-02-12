@@ -148,25 +148,6 @@
           </div>
   
           <div class="ui_row">
-            <label><slot name="lang.i_mode"></slot></label>
-            <div class="ui_inp_row">
-              <select class="ui_inp ui_sel" id="ui_mode" onchange="ui_mode_h(this)">
-                <option value="0"><slot name="lang.i_default"></slot></option>
-                <option value="1"><slot name="lang.i_single"></slot></option>
-                <option value="2"><slot name="lang.i_resp"></slot></option>
-                <option value="3"><slot name="lang.i_grid"></slot></option>
-              </select>
-            </div>
-          </div>
-  
-          <div class="ui_row" id="ui_block_width_cont">
-            <label class="ui_label"><slot name="lang.i_block"></slot></label>
-            <div class="ui_inp_row">
-              <input class="ui_inp" type="text" id="ui_block_width" onchange="ui_block_width_h(this)">
-            </div>
-          </div>
-  
-          <div class="ui_row">
             <label class="ui_label"><slot name="lang.i_main"></slot></label>
             <div class="ui_inp_row">
               <input class="ui_inp" type="text" id="main_width" onchange="ui_width_h(this)">
@@ -644,6 +625,11 @@
           </div>
   
           <div class="ui_row">
+            <label><slot name="lang.cfg_wide_mode"></slot></label>
+            <label class="switch"><input type="checkbox" id="wide_mode" onchange="update_cfg(this)"><span class="slider"></span></label>
+          </div>
+  
+          <div class="ui_row">
             <label class="ui_label"><slot name="lang.cfg_css"></slot></label>
             <div class="ui_inp_row">
               <textarea class="w_area" id="app_plugin_css" onchange="update_cfg(this)"></textarea>
@@ -735,7 +721,6 @@
         </div>
       </div>
     </div>
-    <div id="bottom_space"></div>
   </div>
 
   <div class="cli" id="cli_cont">
@@ -758,8 +743,6 @@
       <a href="https://github.com/GyverLibs/GyverHub/wiki" target="_blank"><span class="icon icon_inline i_footer"></span>Wiki</a>
     </div>
   </div>
-
-  <div id="qrcode" style="display: none"></div>
 </body>
 
 </html>

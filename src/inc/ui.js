@@ -126,11 +126,8 @@ async function show_screen(nscreen) {
 function show_cfg() {
   let dev = hub.dev(focused);
 
-  EL('ui_mode').value = dev.info.ui_mode;
   EL('main_width').value = dev.info.main_width;
-  EL('ui_block_width').value = dev.info.ui_block_width;
-  display('ui_block_width_cont', dev.info.ui_mode >= 2 ? 'flex' : 'none');
-  EL('info_cli_sw').checked = EL('cli_cont').style.display == 'block';
+  EL('info_cli_sw').checked = document.body.classList.contains('show-cli');
   EL('info_trust').checked = dev.info.trust;
   EL('plugin_css').value = dev.info.plugin_css;
   EL('plugin_js').value = dev.info.plugin_js;
@@ -268,15 +265,8 @@ function devLink() {
   ["id", "prefix", "ip", "http_port"].forEach(x => { if (info[x]) qs += `${x}=${info[x]}&`; });
   return qs.slice(0, -1);
 }
-function ui_mode_h(el) {
-  hub.dev(focused).info.ui_mode = el.value;
-  display('ui_block_width_cont', el.value >= 2 ? 'flex' : 'none');
-}
 function ui_width_h(el) {
   hub.dev(focused).info.main_width = el.value;
-}
-function ui_block_width_h(el) {
-  hub.dev(focused).info.ui_block_width = el.value;
 }
 function ui_plugin_css_h(el) {
   hub.dev(focused).info.plugin_css = el.value;
@@ -381,13 +371,14 @@ async function trust_dev_h() {
 
 // ============== CLI =============
 function showCLI(v) {
-  EL('bottom_space').style.height = v ? '170px' : '50px';
-  display('cli_cont', v ? 'block' : 'none');
+  if (v) document.body.classList.add('show-cli');
+  else document.body.classList.remove('show-cli');
+
   if (v) EL('cli_input').focus();
   EL('info_cli_sw').checked = v;
 }
 function printCLI(text, color) {
-  if (EL('cli_cont').style.display == 'block') {
+  if (document.body.classList.contains('show-cli')) {
     if (EL('cli').innerHTML) EL('cli').innerHTML += '\n';
     let st = color ? `style="color:${intToCol(color)}"` : '';
     EL('cli').innerHTML += `<span ${st}>${text}</span>`;
@@ -397,7 +388,7 @@ function printCLI(text, color) {
 function toggleCLI() {
   EL('cli').replaceChildren();
   EL('cli_input').value = "";
-  showCLI(!(EL('cli_cont').style.display == 'block'));
+  showCLI(!document.body.classList.contains('show-cli'));
 }
 function checkCLI(event) {
   if (event.key == 'Enter') sendCLI();

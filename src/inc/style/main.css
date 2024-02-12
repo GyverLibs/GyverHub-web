@@ -191,7 +191,20 @@ body::-webkit-scrollbar-thumb {
 
 .main_inn {
   padding-top: 65px;
+  padding-bottom: 50px;
   margin: 0px 5px;
+}
+
+body.show-cli .main_inn {
+  padding-bottom: 170px;
+}
+
+.cli {
+  display: none;
+}
+
+body.show-cli .cli {
+  display: block;
 }
 
 .main_col {

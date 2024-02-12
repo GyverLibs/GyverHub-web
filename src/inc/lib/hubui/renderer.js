@@ -20,20 +20,17 @@ class Renderer {
     #prevWidth;
     #ackTimers;
 
-    constructor(device, controls) {
+    constructor(device, controls, wideMode = false) {
         this.device = device;
         this.#widgets = [];
         this.#idMap = new Map();
         this.#prevWidth = 1;
         this.#ackTimers = new Map();
+        this.wideMode = wideMode;
 
         this.device.resetUIFiles();
         this._makeWidgets(this.#widgets, 'col', controls);
         this.device.loadUIFiles();
-    }
-
-    get #single(){
-        return this.device.info.ui_mode == 1 || this.device.info.ui_mode == 3;
     }
 
     #updateWWidth(type, data) {
@@ -73,19 +70,15 @@ class Renderer {
         for (const ctrl of data) {
             if (!ctrl.type) continue;
 
-            if ((ctrl.type == 'row' || ctrl.type == 'col') && this.#single) {
-                this._makeWidgets(cont, 'col', ctrl.data);
-            } else {
-                const cls = Renderer.#WIDGETS.get(ctrl.type);
-                if (cls === undefined) {
-                    console.log('W: Missing widget:', ctrl);
-                    continue;
-                }
-
-                const obj = new cls(ctrl, this);
-                this.#idMap.set(obj.id, obj)
-                cont.push(obj);
+            const cls = Renderer.#WIDGETS.get(ctrl.type);
+            if (cls === undefined) {
+                console.log('W: Missing widget:', ctrl);
+                continue;
             }
+
+            const obj = new cls(ctrl, this);
+            this.#idMap.set(obj.id, obj)
+            cont.push(obj);
         }
     }
 
@@ -111,16 +104,18 @@ class Renderer {
             type: "div",
             class: "main_col",
             style: {
-                visibility: 'hidden',
-                maxWidth: this.device.info.main_width + 'px',
+                visibility: 'hidden'
             }
         });
 
-        if (this.device.info.ui_mode >= 2) {
+        if (this.wideMode) {
             $root.style.display = 'grid';
-            $root.style.gridTemplateColumns = `repeat(auto-fit, minmax(${this.device.info.ui_block_width}px, 1fr))`;
+            $root.style.gridTemplateColumns = `repeat(auto-fit, ${this.device.info.main_width}px)`;
+            $root.style.maxWidth = 'unset';
+            $root.style.justifyContent = 'center';
         } else {
             $root.style.display = 'block';
+            $root.style.maxWidth = this.device.info.main_width + 'px'
         }
 
         for (const w of this.#widgets) {
