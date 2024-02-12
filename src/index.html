@@ -62,6 +62,7 @@
     <link href="style.css?/*@![:version]*/=" rel="stylesheet">
   <!--@/[if_target:esp]-->
   <!--@[if_not_target:host,esp]-->
+    <script type="module" src="https://unpkg.com/esp-web-tools@9/dist/web/install-button.js?module"></script>
     <script>/*@![include:script.js, compile, raw]*/</script>
     <style>/*@![include:style.css, compile]*/</style>
   <!--@/[if_not_target:host,esp]-->
@@ -97,21 +98,6 @@
     <div class="test_text">А тут пока ничего нет. Но будет онлайн-тест интерфейса, в котором можно будет поиграться и проверить свой билд без загрузки прошивки</div>
   </div>
 
-  <div class="projects" id="projects_cont">
-    <div class="projects_inn">
-      <div id="projects" class="projects"></div>
-  
-      <div class="projects">
-        <div class="proj">
-          <div class="proj_inn">
-            <div class="proj_name">
-              <a href="https://github.com/GyverLibs/GyverHub-projects" target="_blank">+ <slot name="lang.p_add"></slot></a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <div class="main" id="main_cont">
     <div id="menu_overlay" onclick="menu_show(0)"></div>
@@ -125,6 +111,15 @@
     <div class="main_inn">
       <div id="plugins"></div>
       <div id="app_plugins"></div>
+
+      <div id="projects_cont" class="main_col">
+        <div class="proj">
+          <div class="proj_name">
+            <a href="https://github.com/GyverLibs/GyverHub-projects" target="_blank">+ <slot name="lang.p_add"></slot></a>
+          </div>
+        </div>
+      </div>
+
       <div id="devices" class="main_col"></div>
       <div id="controls"></div>
   

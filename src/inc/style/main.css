@@ -264,44 +264,17 @@ input[type=number] {
 /* ====================================================================== */
 /* ================================ PROJ ================================ */
 /* ====================================================================== */
-#projects_cont {
-  width: 100%;
-  height: 100%;
-  display: none;
-}
-
-.projects_inn {
-  max-width: 750px;
-  margin: auto;
-  padding: 0px 5px;
-  padding-top: 65px;
-}
-
-.projects {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-}
 
 .proj {
-  align-items: center;
-  width: 50%;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  padding: 5px;
-  width: 100%;
-}
-
-.proj_inn {
   background: var(--tab);
   border-radius: 5px;
   box-shadow: 0 0 10px 0px #00000020;
   width: 100%;
   height: 100%;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   padding: 7px;
+  margin: 5px auto 10px;
+  max-width: 740px;
 }
 
 .proj_name {

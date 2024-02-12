@@ -40,11 +40,9 @@ async function show_screen(nscreen) {
       break;
 
     case 'projects':
-      display('main_cont', 'none');
       display('projects_cont', 'block');
       display('back', 'inline-block');
       EL('title').textContent = lang.p_proj;
-      EL('projects').replaceChildren();
       loadProjects();
       break;
 

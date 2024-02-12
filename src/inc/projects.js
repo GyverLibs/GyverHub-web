@@ -31,6 +31,8 @@ async function checkUpdates(id) {
 
 // projects
 async function loadProjects() {
+  EL('projects_cont').replaceChildren(EL('projects_cont').lastElementChild);
+
   const resp = await fetch("https://raw.githubusercontent.com/GyverLibs/GyverHub-projects/main/projects.txt", { cache: "no-store" });
   let projects = await resp.text();
   projects = projects.split('\n');
@@ -45,42 +47,36 @@ async function loadProj(rep) {
   try {
     const manifest = `https://raw.githubusercontent.com/${rep}/main/project.json`;
     const resp = await fetch(manifest, { cache: "no-store" });
-    let proj = await resp.json();
+    const proj = await resp.json();
     if (!('name' in proj) || !('version' in proj) || !('about' in proj)) return;
-    const name = proj.name;
-    const repname = rep.split('/')[1];
+    let name = proj.name;
     if (name.length > 30) name = name.slice(0, 30) + '..';
 
-    /*@[if_target:host,desktop]*/
-    EL('projects').innerHTML += `
+    /*@[if_target:host,desktop,local]*/
+    EL('projects_cont').innerHTML = `
       <div class="proj">
-        <div class="proj_inn">
           <div class="proj_name">
             <a href="${'https://github.com/' + rep}" target="_blank" title="${rep} v${proj.version}">${name}</a>
-            <button title="${lang.p_install}" class="icon icon_btn_big" style="font-size:15px" onclick="EL('proj_${repname}').click()"></button>
+            <esp-web-install-button manifest="${manifest}">
+              <button title="${lang.p_install}" class="icon icon_btn_big" style="font-size:15px" slot="activate"></button>
+              <span slot="unsupported">${lang.p_not_support}</span>
+              <span slot="not-allowed">${lang.p_use_https}</span>
+            </esp-web-install-button>
           </div>
           <div class="proj_about">${proj.about}</div>
-        </div>
       </div>
-      <esp-web-install-button manifest="${manifest}" style="display:none">
-        <button id="proj_${repname}" slot="activate"></button>
-        <span slot="unsupported">${lang.p_not_support}</span>
-        <span slot="not-allowed">${lang.p_use_https}</span>
-      </esp-web-install-button>
-    `;
-    /*@/[if_target:host,desktop]*/
-    /*@[if_not_target:host,desktop]*/
-    EL('projects').innerHTML += `
+    ` + EL('projects_cont').innerHTML;
+    /*@/[if_target:host,desktop,local]*/
+    /*@[if_not_target:host,desktop,local]*/
+    EL('projects_cont').innerHTML += `
       <div class="proj">
-        <div class="proj_inn">
-          <div class="proj_name">
-            <a href="${'https://github.com/' + rep}" target="_blank" title="${rep} v${proj.version}">${name}</a>
-          </div>
-          <div class="proj_about">${proj.about}</div>
+        <div class="proj_name">
+          <a href="${'https://github.com/' + rep}" target="_blank" title="${rep} v${proj.version}">${name}</a>
         </div>
+        <div class="proj_about">${proj.about}</div>
       </div>
     `;
-    /*@/[if_not_target:host,desktop]*/
+    /*@/[if_not_target:host,desktop,local]*/
   } catch (e) {
     return;
   }
