@@ -19,7 +19,6 @@ function showFsbr(fs, total, used) {
           <button ${hub.dev(focused).isModuleEnabled(Modules.FETCH) ? '' : none} title="${lang.fetch}" class="icon icon_btn_big" onclick="fetchFile(${i},'${fs_arr[i]}')"></button>
           <label id="process#${i}"></label>
           <a id="download#${i}" title="${lang.download}" class="icon icon_btn_big" href="" download="" style="display:none"></a>
-          <button id="open#${i}" title="${lang.open}" class="icon icon_btn_big" onclick="openFile(EL('download#${i}').href)" style="display:none"></button>
           <button ${hub.dev(focused).isModuleEnabled(Modules.UPLOAD) ? '' : none} id="edit#${i}" title="${lang.edit}" class="icon icon_btn_big" onclick="editFile(EL('download#${i}').href,${i})" style="display:none"></button>
         </div>`;
     }
@@ -71,7 +70,6 @@ async function uploadFile(file, path) {
 async function fetchFile(index, path) {
   display('download#' + index, 'none');
   display('edit#' + index, 'none');
-  display('open#' + index, 'none');
   display('process#' + index, 'unset');
   EL('process#' + index).replaceChildren();
 
@@ -92,9 +90,6 @@ async function fetchFile(index, path) {
   EL('download#' + index).download = name;
   display('edit#' + index, 'inline-block');
   display('process#' + index, 'none');
-  /*@[if_not_target:mobile]*/
-  display('open#' + index, 'inline-block');
-  /*@/[if_not_target:mobile]*/
 }
 async function uploadOta(file, type) {
   if (!file.name.endsWith(this.info.ota_t)) {

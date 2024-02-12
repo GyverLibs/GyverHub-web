@@ -139,10 +139,6 @@ String.prototype.hashCode = function () {
 function openURL(url) {
   window.open(url, '_blank').focus();
 }
-function openFile(src) {
-  let w = window.open();
-  src = w.document.write('<iframe src="' + src + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>');
-}
 async function copyClip(text) {
   try {
     await navigator.clipboard.writeText(text);
