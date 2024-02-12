@@ -100,8 +100,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       i.text = lang.themes[i.value];
     }
 
-    if (!hasSerial()) EL('serial_col').style.display = 'none';
-    if (!hasBT()) EL('bt_col').style.display = 'none';
+    if (!("serial" in navigator)) EL('serial_col').style.display = 'none';
+    if (!("bluetooth" in navigator)) EL('bt_col').style.display = 'none';
     if (isSSL()) {
       EL('btn_pwa_http').classList.add('ui_btn_dis');
     } else {

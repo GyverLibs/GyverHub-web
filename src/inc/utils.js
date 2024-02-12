@@ -86,12 +86,6 @@ function platform() {
 function isSSL() {
   return window.location.protocol == 'https:';
 }
-function hasSerial() {
-  return "serial" in navigator;
-}
-function hasBT() {
-  return "bluetooth" in navigator;
-}
 function userLang() {
   switch (navigator.language || navigator.userLanguage) {
     case 'ru-RU': case 'ru': return 'Russian';

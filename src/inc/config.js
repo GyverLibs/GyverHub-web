@@ -44,11 +44,11 @@ function update_theme() {
   display('tg_block', hub.config.get('connections', 'TG', 'enabled') ? 'block' : 'none');
   EL('tg_label').style.color = hub.config.get('connections', 'TG', 'enabled') ? 'var(--font)' : 'var(--font3)';
 
-  let bt = hub.config.get('connections', 'BLE', 'enabled') && hasBT();
+  let bt = hub.config.get('connections', 'BLE', 'enabled');
   display('bt_block', bt ? 'block' : 'none');
   EL('bt_label').style.color = bt ? 'var(--font)' : 'var(--font3)';
 
-  let ser = hub.config.get('connections', 'SERIAL', 'enabled') && hasSerial();
+  let ser = hub.config.get('connections', 'SERIAL', 'enabled');
   display('serial_block', ser ? 'block' : 'none');
   EL('serial_label').style.color = ser ? 'var(--font)' : 'var(--font3)';
   /*@/[if_not_target:esp]*/
