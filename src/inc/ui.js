@@ -221,7 +221,7 @@ function qr_h() {
   /*@/[if_not_target:esp]*/
 }
 function devLink() {
-  const qs = window.location.origin + window.location.pathname + '?';
+  let qs = window.location.origin + window.location.pathname + '?';
   const info = hub.dev(focused).info;
   ["id", "prefix", "ip", "http_port"].forEach(x => { if (info[x]) qs += `${x}=${info[x]}&`; });
   return qs.slice(0, -1);

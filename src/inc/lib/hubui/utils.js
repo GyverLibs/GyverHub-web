@@ -97,16 +97,14 @@ function adjustColor(col, ratio) {
   }
   return newcol;
 }
-let popupT1 = null, popupT2 = null;
+
 function showPopup(text, color = '#37a93c') {
-  if (popupT1) clearTimeout(popupT1);
-  if (popupT2) clearTimeout(popupT2);
-  EL('notice').innerHTML = text;
-  EL('notice').style.background = color;
-  display('notice', 'block');
-  EL('notice').style.animation = "fade-in 0.5s forwards";
-  popupT1 = setTimeout(() => { popupT1 = null; display('notice', 'none'); }, 3500);
-  popupT2 = setTimeout(() => { popupT2 = null; EL('notice').style.animation = "fade-out 0.5s forwards" }, 3000);
+  const $e = document.createElement('div');
+  $e.className = 'notice';
+  $e.textContent = text;
+  $e.style.background = color;
+  document.body.append($e);
+  setTimeout(() => { $e.remove(); }, 3500);
 }
 function showPopupError(text) {
   showPopup(text, /*getErrColor()*/'#a93737');
