@@ -12,67 +12,42 @@ async function show_screen(nscreen) {
   screen = nscreen;
 
   document.body.dataset.screen = screen;
-  ['conn_icons', 'devices',
-    'controls', 'icon_menu', 'icon_cfg', 'files', 'ota', 'back', 'icon_refresh',
-    'conn', 'dev_config'].forEach(e => display(e, 'none'));
+  const $title = document.getElementsByClassName('header-title')[0];
 
-  EL('title').textContent = "GyverHub";
-  EL('title_row').style.cursor = 'pointer';
   const dev = hub.dev(focused);
 
   switch (screen) {
     case 'main':
-      display('conn_icons', 'inline-block');
-      display('devices', 'grid');
-      display('icon_cfg', 'inline-block');
-      display('icon_refresh', 'inline-block');
-      EL('title_row').style.cursor = 'unset';
+      $title.textContent = "GyverHub";
       showCLI(false);
       break;
 
     case 'test':
-      display('back', 'inline-block');
-      EL('title').textContent = 'UI Test';
+      $title.textContent = 'UI Test';
       break;
 
     case 'projects':
-      display('back', 'inline-block');
-      EL('title').textContent = lang.p_proj;
+      $title.textContent = lang.p_proj;
       loadProjects();
       break;
 
     case 'ui':
-      display('icon_menu', 'inline-block');
-      display('back', 'inline-block');
-      display('icon_refresh', 'inline-block');
-      display('conn', 'inline-block');
-      EL('title').textContent = dev.info.name;
+      $title.textContent = dev.info.name;
+      EL('controls').replaceChildren();
       break;
 
     case 'config':
-      display('conn_icons', 'inline-block');
-      display('icon_cfg', 'inline-block');
-      display('back', 'inline-block');
-      EL('title').textContent = lang.config;
+      $title.textContent = lang.config;
       break;
 
     case 'info':
-      display('icon_menu', 'inline-block');
-      display('back', 'inline-block');
-      display('conn', 'inline-block');
-      display('icon_refresh', 'inline-block');
-      EL('title').textContent = dev.info.name + '/info';
+      $title.textContent = dev.info.name + '/info';
       enterMenu('menu_info');
       await show_info();
       break;
 
     case 'files':
-      display('files', 'block');
-      display('icon_menu', 'inline-block');
-      display('back', 'inline-block');
-      display('conn', 'inline-block');
-      display('icon_refresh', 'inline-block');
-      EL('title').textContent = dev.info.name + '/fs';
+      $title.textContent = dev.info.name + '/fs';
       EL('file_upload_btn').textContent = lang.fs_upload;
       enterMenu('menu_fsbr');
       display('fs_browser', dev.isModuleEnabled(Modules.FILES) ? 'block' : 'none');
@@ -85,12 +60,13 @@ async function show_screen(nscreen) {
       }
       break;
 
+    case 'fsbr_edit':
+      $title.textContent = dev.info.name + '/fs';
+      enterMenu('menu_fsbr');
+      break;
+
     case 'ota':
-      display('ota', 'block');
-      display('icon_menu', 'inline-block');
-      display('back', 'inline-block');
-      display('conn', 'inline-block');
-      EL('title').textContent = dev.info.name + '/ota';
+      $title.textContent = dev.info.name + '/ota';
       enterMenu('menu_ota');
     
       const ota_t = '.' + dev.info.ota_t;
@@ -103,11 +79,7 @@ async function show_screen(nscreen) {
       break;
 
     case 'dev_config':
-      display('dev_config', 'block');
-      display('icon_menu', 'inline-block');
-      display('back', 'inline-block');
-      display('conn', 'inline-block');
-      EL('title').textContent = dev.info.name + '/cfg';
+      $title.textContent = dev.info.name + '/cfg';
       enterMenu('menu_cfg');
       show_cfg();
       break;
@@ -172,10 +144,6 @@ async function back_h() {
       dev.fsStop();
     }
   }
-  if (EL('fsbr_edit').style.display == 'block') {
-    editor_cancel();
-    return;
-  }
   if (menu_f) {
     menu_show(false);
     return;
@@ -191,6 +159,9 @@ async function back_h() {
       leaveSystemMenu();
       show_screen('ui');
       hub.dev(focused).updateUi();
+      break;
+    case 'fsbr_edit':
+      show_screen('files');
       break;
     case 'config':
       config_h();

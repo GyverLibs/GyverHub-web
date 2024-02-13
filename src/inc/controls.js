@@ -11,16 +11,10 @@ function showControls(id, controls) {
   const device = hub.dev(id);
   renderer = new Renderer(device, controls);
 
-  const $root = EL('controls');
-  $root.replaceChildren(...renderer.build());
+  const $root = document.getElementById('controls');
+  $root.style.setProperty('--device-width', device.info.main_width + 'px');
+  if (cfg.wide_mode) $root.classList.add('wide-mode');
+  else $root.classList.remove('wide-mode');
 
-  if (cfg.wide_mode) {
-      $root.style.display = 'grid';
-      $root.style.gridTemplateColumns = `repeat(auto-fit, ${device.info.main_width}px)`;
-      $root.style.maxWidth = 'unset';
-      $root.style.justifyContent = 'center';
-  } else {
-      $root.style.display = 'block';
-      $root.style.maxWidth = device.info.main_width + 'px'
-  }
+  $root.replaceChildren(...renderer.build());
 }

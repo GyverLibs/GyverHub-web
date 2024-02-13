@@ -84,6 +84,9 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
     EL(`device#${e.device.info.id}`).className = conn ? "device" : 'device offline';
     if (conn && conn !== 'WS')
       display(`${conn}#${e.device.info.id}`, 'inline-block');
+
+    if (e.device.info.id == focused)
+      EL('conn').textContent = dev.getConnection().name;
   });
 
 

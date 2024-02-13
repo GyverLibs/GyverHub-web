@@ -46,13 +46,6 @@
   margin-right: 5px;
 }
 
-.icon_ok {
-  font-size: 12px;
-  width: 5px;
-  margin: 0;
-  display: none;
-}
-
 .spinning {
   -webkit-animation: spin 0.8s linear infinite;
   -moz-animation: spin 0.8s linear infinite;
@@ -76,19 +69,6 @@
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
   }
-}
-
-.icon_head {
-  cursor: pointer;
-  width: 27px;
-}
-
-.icon_head:hover {
-  filter: brightness(0.9);
-}
-
-.icon_head:active {
-  filter: brightness(0.8);
 }
 
 .icon_inline {
@@ -565,12 +545,6 @@ body[data-screen=info] .screen-info {
   margin: 0;
 }
 
-#conn {
-  font-size: 13px;
-  margin-left: 3px;
-  font-weight: 400;
-}
-
 .conn_dev {
   font-size: 10px;
   margin-left: 1px;
@@ -787,4 +761,36 @@ input:checked+.slider:before {
 
 .dialog_row {
   white-space: pre-wrap;
+}
+
+.screen-ui {
+  --device-width: var(--ui_width);
+  max-width: var(--device-width);
+}
+
+.screen-ui.wide-mode {
+  justify-content: center;
+  max-width: unset;
+  grid-template-columns: repeat(auto-fit, var(--device-width));
+}
+
+body[data-screen=ui] .screen-ui {
+  display: block;
+}
+
+body[data-screen=ui] .screen-ui.wide-mode {
+  display: grid;
+}
+
+
+body[data-screen=ota] .screen-ota,
+body[data-screen=dev_config] .screen-dev_config,
+body[data-screen=files] .screen-files,
+body[data-screen=fsbr_edit] .screen-fsbr_edit 
+{
+  display: block;
+}
+
+body[data-screen=main] .screen-main {
+  display: grid;
 }

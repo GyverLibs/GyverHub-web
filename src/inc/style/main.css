@@ -114,69 +114,133 @@ body::-webkit-scrollbar-thumb {
   border-radius: 4px;
 }
 
-/* CONTAINER */
-#title_cont {
-  max-width: var(--ui_width);
-}
-
-/* HEADER */
-.title {
-  width: 100%;
-  height: 38px;
-  margin: auto;
-  user-select: none;
-}
-
 .version {
   font-size: 14px;
   font-weight: 400;
 }
 
-.head {
+/* HEADER */
+
+.header-row {
   width: 100%;
   height: 50px;
   background: var(--prim);
   position: fixed;
   z-index: 4;
-  /*box-shadow: 0px 5px 0px 0px var(--back);*/
   box-shadow: 0px 0px 7px 0px var(--shad);
 }
+body.connection-error .header-row {
+  background: var(--err);
+}
 
-.title_inn {
-  margin: auto 10px;
+.header {
+  max-width: var(--ui_width);
+  
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+
+  user-select: none;
   color: white;
   font-size: 21px;
   font-weight: bold;
-  position: relative;
-  top: 30%;
+
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
 }
 
-.title_row {
-  display: inline-block;
+.header-back {
+  cursor: pointer;
+  font-size: 22px !important;
+  width: 10px;
+  display: block;
+}
+.header-back:hover {
+  filter: brightness(0.9);
+}
+.header-back:active {
+  filter: brightness(0.8);
+}
+body[data-screen=main] .header-back {
+  visibility: hidden;
+}
+
+.header-title {
   cursor: pointer;
 }
-
-.head_btns {
-  display: inline-block;
-  float: right;
+body[data-screen=main] .header-title {
+  cursor: unset;
 }
 
-#conn_icons {
-  display: inline-block;
-  position: relative;
-  top: -10px;
-  left: -5px;
-}
-
-.back_btn {
+.header-connection {
+  align-self: stretch;
+  padding-top: 8px;
+  font-size: 13px;
+  font-weight: 400;
   display: none;
-  padding: 0px;
-  font-size: 22px !important;
-  width: 10px !important;
 }
+body[data-screen=ota] .header-connection,
+body[data-screen=dev_config] .header-connection,
+body[data-screen=fsbr_edit] .header-connection,
+body[data-screen=files] .header-connection,
+body[data-screen=info] .header-connection,
+body[data-screen=ui] .header-connection {
+  display: block;
+}
+
+.header-connection-icon {
+  align-self: stretch;
+  padding-top: 8px;
+  font-size: 12px !important;
+  display: none;
+}
+body[data-screen=ota] .header-connection-icon,
+body[data-screen=dev_config] .header-connection-icon,
+body[data-screen=fsbr_edit] .header-connection-icon,
+body[data-screen=files] .header-connection-icon,
+body[data-screen=info] .header-connection-icon,
+body[data-screen=ui] .header-connection-icon
+{
+  display: none !important;
+}
+
+.header-connections {
+  flex: 1;
+}
+
+.header-icon {
+  cursor: pointer;
+  width: 27px;
+  display: none;
+}
+.header-icon:hover {
+  filter: brightness(0.9);
+}
+.header-icon:active {
+  filter: brightness(0.8);
+}
+
+body[data-screen=ui] #icon_menu,
+body[data-screen=ota] #icon_menu,
+body[data-screen=dev_config] #icon_menu,
+body[data-screen=fsbr_edit] #icon_menu,
+body[data-screen=files] #icon_menu,
+body[data-screen=info] #icon_menu,
+
+body[data-screen=main] #icon_refresh,
+body[data-screen=ui] #icon_refresh,
+body[data-screen=info] #icon_refresh,
+body[data-screen=files] #icon_refresh,
+body[data-screen=fsbr_edit] #icon_refresh,
+
+body[data-screen=config] #icon_cfg,
+body[data-screen=main] #icon_cfg
+{
+  display: block;
+}
+
+
 
 /* MAIN */
 .main {
@@ -222,6 +286,7 @@ body.show-cli .cli {
   height: 28px;
   background: var(--tab);
   box-shadow: 0px 1px var(--tab);
+  gap: 12px;
 }
 
 body[data-screen=main] .footer {
@@ -231,7 +296,6 @@ body[data-screen=main] .footer {
 .footer a {
   color: var(--font2);
   text-decoration: none;
-  padding: 0px 8px;
   font-size: 15px !important;
 }
 

@@ -44,7 +44,8 @@ function dev_cfg_h(id) {
 
 // ============= UI =============
 function errorBar(v) {
-  EL('head_cont').style.background = v ? 'var(--err)' : 'var(--prim)';
+  if (v) document.body.classList.add('connection-error');
+  else document.body.classList.remove('connection-error');
 }
 function spinArrows(val) {
   if (val) EL('icon_refresh').classList.add('spinning');
@@ -55,28 +56,28 @@ function spinArrows(val) {
 function mq_change(opened) {
   display('mq_start', opened ? 'none' : 'inline-block');
   display('mq_stop', opened ? 'inline-block' : 'none');
-  display('mqtt_ok', opened ? 'inline-block' : 'none');
+  display('mqtt_ok', opened ? 'block' : 'none');
 }
 
 // bt
 function bt_change(opened) {
   display('bt_open', opened ? 'none' : 'inline-block');
   display('bt_close', opened ? 'inline-block' : 'none');
-  display('bt_ok', opened ? 'inline-block' : 'none');
+  display('bt_ok', opened ? 'block' : 'none');
 }
 
 // serial
 function serial_change(opened) {
   display('serial_open', opened ? 'none' : 'inline-block');
   display('serial_close', opened ? 'inline-block' : 'none');
-  display('serial_ok', opened ? 'inline-block' : 'none');
+  display('serial_ok', opened ? 'block' : 'none');
 }
 
 // telegram
 function tg_change(opened) {
   display('tg_start', opened ? 'none' : 'inline-block');
   display('tg_stop', opened ? 'inline-block' : 'none');
-  display('tg_ok', opened ? 'inline-block' : 'none');
+  display('tg_ok', opened ? 'block' : 'none');
 }
 
 // ============= INFO =============

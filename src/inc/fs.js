@@ -147,13 +147,11 @@ function editFile(data, idx) {
   EL('editor_area').value = dataTotext(data);
   EL('editor_area').scrollTop = 0;
   EL('edit_path').textContent = fs_arr[idx];
-  display('files', 'none');
-  display('fsbr_edit', 'block');
+  show_screen('fsbr_edit');
   edit_idx = idx;
 }
 function editor_cancel() {
-  display('files', 'block');
-  display('fsbr_edit', 'none');
+  show_screen('files');
 }
 function editor_save() {
   editor_cancel();

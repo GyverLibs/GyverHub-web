@@ -75,25 +75,21 @@
 
   <div id="notice" class="notice"></div>
 
-  <div class="head" id="head_cont">
-    <div class="title" id="title_cont">
-      <div class="title_inn">
-        <div id="title_row" class="title_row" onclick="back_h()">
-          <span class="icon icon_head back_btn" id="back"></span>
-          <span><span id="title">GyverHub</span><sup id="conn"></sup></span>
-          <div id="conn_icons">
-            <span id='bt_ok' class="icon icon_ui icon_ok"></span>
-            <span id='mqtt_ok' class="icon icon_ui icon_ok"></span>
-            <span id='serial_ok' class="icon icon_ui icon_ok"></span>
-            <span id='tg_ok' class="icon icon_ui icon_ok"></span>
-          </div>
-        </div>
-        <div class="head_btns">
-          <span class="icon icon_head" id='icon_refresh' onclick="refresh_h()"></span>
-          <span class="icon icon_head" id='icon_cfg' style="display:none" onclick="config_h()"></span>
-          <span class="icon icon_head" id='icon_menu' style="display:none" onclick="menu_h()"></span>
-        </div>
-      </div>
+  <div class="header-row">
+    <div class="header">
+      <div class="icon header-back" onclick="back_h()"></div>
+      <div class="header-title" onclick="back_h()">GyverHub</div>
+
+      <div id="conn" class="header-connection"></div>
+      <div id='bt_ok' class="icon header-connection-icon"></div>
+      <div id='mqtt_ok' class="icon header-connection-icon"></div>
+      <div id='serial_ok' class="icon header-connection-icon"></div>
+      <div id='tg_ok' class="icon header-connection-icon"></div>
+
+      <div class="header-connections"></div>
+      <div class="icon header-icon" id='icon_refresh' onclick="refresh_h()"></div>
+      <div class="icon header-icon" id='icon_cfg' onclick="config_h()"></div>
+      <div class="icon header-icon" id='icon_menu' onclick="menu_h()"></div>
     </div>
   </div>
 
@@ -119,10 +115,10 @@
         </div>
       </div>
 
-      <div id="devices" class="main_col"></div>
-      <div id="controls" class="main_col"></div>
+      <div id="devices" class="main_col screen-main"></div>
+      <div id="controls" class="main_col screen-ui"></div>
   
-      <div id="dev_config" class="main_col">
+      <div class="main_col screen-dev_config">
         <div class="ui_col">
   
           <div class="ui_row ui_head">
@@ -230,7 +226,7 @@
         </div>
       </div>
   
-      <div id="fsbr_edit" class="main_col">
+      <div class="main_col screen-fsbr_edit">
         <div class="ui_col">
   
           <div class="ui_row ui_head">
@@ -261,7 +257,7 @@
         </div>
       </div>
   
-      <div id="files" class="main_col">
+      <div  class="main_col screen-files">
   
         <div class="ui_col">
           <div class="ui_row ui_head">
@@ -304,7 +300,7 @@
   
       </div>
   
-      <div id="ota" class="main_col">
+      <div class="main_col screen-ota">
   
         <div class="ui_col">
           <div class="ui_row ui_head">
