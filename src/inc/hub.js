@@ -86,7 +86,7 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
       display(`${conn}#${e.device.info.id}`, 'inline-block');
 
     if (e.device.info.id == focused)
-      EL('conn').textContent = dev.getConnection().name;
+      EL('conn').textContent = conn ?? '';
   });
 
 

@@ -11,7 +11,6 @@ class ColorWidget extends BaseWidget {
             name: 'el',
             text: '',
             style: {
-                marginLeft: '-25px',
                 color: '#000'
             }
         });
@@ -35,6 +34,7 @@ class ColorWidget extends BaseWidget {
             const col = color.toHEXA().toString();
             this.$el.style.color = col;
             this.set(colToInt(col));
+            this.#pickr.hide();
         });
         
         this.update(data);
@@ -54,6 +54,10 @@ class ColorWidget extends BaseWidget {
                 this.#pickr.setColor(col);
             } catch (e) { }
         }
+    }
+
+    close() {
+        this.#pickr.destroyAndRemove();
     }
 }
 

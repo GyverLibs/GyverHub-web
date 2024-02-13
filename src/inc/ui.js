@@ -299,6 +299,9 @@ async function device_h(id) {
 }
 function close_device() {
   if (renderer) renderer.close();
+  renderer = null;
+  const $root = document.getElementById('controls');
+  $root.replaceChildren();
   EL('plugins').replaceChildren();
   EL('ota_label').replaceChildren();
 
