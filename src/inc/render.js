@@ -97,12 +97,16 @@ function showInfo(info) {
   for (const i in info.version) addInfo('info_version', i, info.version[i]);
   for (const i in info.net) addInfo('info_net', i, info.net[i]);
   for (const i in info.memory) {
-    if (typeof (info.memory[i]) == 'object') {
+    if (typeof (info.memory[i]) === 'object') {
       const used = info.memory[i][0];
       const total = info.memory[i][1];
-      const mem = (used / 1000).toFixed(1) + ' kB';
-      if (total) mem += ' [' + (used / total * 100).toFixed(0) + '%]';
-      addInfo('info_memory', i, mem, `Total ${(total / 1000).toFixed(1)} kB`);
+      let mem = (used / 1024).toFixed(1) + ' KiB';
+      let title = used;
+      if (total) {
+        mem += ' [' + (used / total * 100).toFixed(0) + '%]';
+        title += ' of ' + total; 
+      }
+      addInfo('info_memory', i, mem, `Used ${title} bytes`);
     } else {
       addInfo('info_memory', i, info.memory[i]);
     }
