@@ -1,5 +1,5 @@
 class MenuWidget extends Widget {
-    $el = document.getElementById('menu_user');
+    $el = document.getElementById('menu');
 
     constructor(data, renderer) {
         super(data, renderer);
@@ -23,6 +23,7 @@ class MenuWidget extends Widget {
                 }
             }));
         }
+        updateSystemMenu();
     }
 
     #openMenu(i) {

@@ -156,7 +156,7 @@ async function back_h() {
     case 'info':
     case 'files':
     case 'ota':
-      leaveSystemMenu();
+      enterMenu();
       show_screen('ui');
       hub.dev(focused).updateUi();
       break;
@@ -249,27 +249,50 @@ function menu_show(state) {
 }
 function updateSystemMenu() {
   const dev = hub.dev(focused);
+  EL('menu').append(createElement(null, {
+    type: 'div',
+    class: "menu_item menu_cfg",
+    text: lang.m_config,
+    events: {
+      click: () => show_screen('dev_config')
+    }
+  }));
+  EL('menu').append(createElement(null, {
+    type: 'div',
+    class: "menu_item menu_info",
+    text: lang.m_info,
+    events: {
+      click: () => show_screen('info')
+    }
+  }));
 
-  EL('menu_system').innerHTML = `<div id="menu_cfg" class="menu_item" data-action="show_screen" data-screen="dev_config">${lang.m_config}</div>`;
-  EL('menu_system').innerHTML += `<div id="menu_info" class="menu_item" data-action="show_screen" data-screen="info">${lang.m_info}</div>`;
   if (dev.isModuleEnabled(Modules.FILES)) {
-      EL('menu_system').innerHTML += `<div id="menu_fsbr" class="menu_item" data-action="show_screen" data-screen="files">${lang.m_files}</div>`;
+    EL('menu').append(createElement(null, {
+      type: 'div',
+      class: "menu_item menu_fsbr",
+      text: lang.m_files,
+      events: {
+        click: () => show_screen('files')
+      }
+    }));
   }
   if (dev.isModuleEnabled(Modules.OTA) || dev.isModuleEnabled(Modules.OTA_URL)) {
-      EL('menu_system').innerHTML += `<div id="menu_ota" class="menu_item" data-action="show_screen" data-screen="ota">${lang.m_ota}</div>`;
+    EL('menu').append(createElement(null, {
+      type: 'div',
+      class: "menu_item menu_ota",
+      text: lang.m_ota,
+      events: {
+        click: () => show_screen('ota')
+      }
+    }));
   }
-}
-function leaveSystemMenu() {
-  for (const $i of document.getElementById('menu_system').children)
-      $i.classList.remove('menu_act');
 }
 function enterMenu(sel = null) {
   menu_show(false);
-  leaveSystemMenu();
-  for (const $i of document.getElementById('menu_user').children)
+  for (const $i of document.getElementById('menu').children)
       $i.classList.remove('menu_act');
   if (sel !== null)
-      document.querySelector('.menu_item#' + sel).classList.add('menu_act');
+      document.querySelector('.menu_item.' + sel).classList.add('menu_act');
 }
 // ============== DEVICE =============
 async function device_h(id) {
@@ -289,8 +312,8 @@ async function device_h(id) {
   /*@/[if_not_target:esp]*/
 
   focused = id;
+  EL('menu').replaceChildren();
   updateSystemMenu();
-  EL('menu_user').replaceChildren();
   EL('conn').textContent = dev.getConnection().name;
   addDOM('device_css', 'style', dev.info.plugin_css, EL('plugins'));
   addDOM('device_js', 'script', dev.info.plugin_js, EL('plugins'));

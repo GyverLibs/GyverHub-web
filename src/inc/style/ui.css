@@ -342,10 +342,6 @@
   transition: max-height .1s ease-in;
 }
 
-.menu_inn {
-  padding: 8px 0;
-}
-
 .menu_item {
   cursor: pointer;
   height: 35px;
@@ -354,6 +350,12 @@
   padding-left: 10px;
   border: 5px solid transparent;
   border-width: 0 0 0 5px;
+}
+.menu_item:first-child {
+  margin-top: 8px;
+}
+.menu_item:last-child {
+  margin-bottom: 8px;
 }
 
 .menu_item:hover {
