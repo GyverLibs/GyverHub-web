@@ -24,9 +24,7 @@ function showFsbr(fs, total, used) {
     }
   }
   if (total) {
-    const color = adjustColor(getDefColor(), 0.9);
-    const style = `background-repeat: no-repeat;background-image:linear-gradient(${color},${color});background-size: ${used / total * 100}% 100%;`;
-    inner += `<div style="${style}" class="fs_info">${lang.fs_used} ${(used / 1000).toFixed(2)}/${(total / 1000).toFixed(2)} kB [${Math.round(used / total * 100)}%]</div>`;
+    inner += `<div class="fs_info" style="background-image:linear-gradient(90deg,var(--prim) ${used / total * 100}%, var(--back) 0%);">${lang.fs_used} ${(used / 1000).toFixed(2)}/${(total / 1000).toFixed(2)} kB [${Math.round(used / total * 100)}%]</div>`;
   } else {
     inner += `<div class="fs_info">${lang.fs_used} ${(used / 1000).toFixed(2)} kB</div>`;
   }
