@@ -1,6 +1,9 @@
 class GaugeWidget extends BaseWidget {
+    static OUT_OF_RANGE_COLOR = '#8e1414';
+
     $el;
     #redraw;
+    #cstyle;
 
     constructor(data, renderer) {
         super(data, renderer);
@@ -11,7 +14,6 @@ class GaugeWidget extends BaseWidget {
         this.dec = 0;
         this.unit = '';
         this.icon = '';
-        this.color = getDefColor();
         this.tout = null;
 
         switch (this.type) {
@@ -27,6 +29,7 @@ class GaugeWidget extends BaseWidget {
                 resize: () => this.#redraw()
             }
         });
+        this.#cstyle = window.getComputedStyle(this.$el);
         
         this.update(data);
         wait2Frame().then(() => this.#redraw());
@@ -45,11 +48,11 @@ class GaugeWidget extends BaseWidget {
         if ('dec' in data) this.dec = Number(data.dec);
         if ('unit' in data) this.unit = data.unit;
         if ('icon' in data) this.icon = data.icon;
-        if ('color' in data) this.color = intToCol(data.color);
         this.#redraw();
     }
 
     #redrawGauge() {
+        this.color = intToCol(this.data.color) ?? this.#cstyle.getPropertyValue('--prim');
         let cv = this.$el;
         let rw = cv.parentNode.clientWidth;
         if (!rw) return;
@@ -62,7 +65,6 @@ class GaugeWidget extends BaseWidget {
         cv.height = Math.floor(rh * ratio);
 
         let cx = cv.getContext("2d");
-        let theme_cols = getCurrentColorScheme();
         let perc = (this.value - this.min) * 100 / (this.max - this.min);
         if (perc < 0) perc = 0;
         if (perc > 100) perc = 100;
@@ -75,7 +77,7 @@ class GaugeWidget extends BaseWidget {
 
         cx.clearRect(0, 0, cv.width, cv.height);
         cx.lineWidth = cv.width / 8;
-        cx.strokeStyle = theme_cols[4];
+        cx.strokeStyle = this.#cstyle.getPropertyValue('--dark');
         cx.beginPath();
         cx.arc(cv.width / 2, cv.height * 0.97, cv.width / 2 - cx.lineWidth, Math.PI * (1 + this.perc / 100), Math.PI * 2);
         cx.stroke();
@@ -109,8 +111,8 @@ class GaugeWidget extends BaseWidget {
             cx.measureText(this.max.toFixed(this.dec) + text).width
         );
 
-        if (this.value > this.max || this.value < this.min) cx.fillStyle = getErrColor();
-        else cx.fillStyle = theme_cols[3];
+        if (this.value > this.max || this.value < this.min) cx.fillStyle = GaugeWidget.OUT_OF_RANGE_COLOR;
+        else cx.fillStyle = this.#cstyle.getPropertyValue('--font2');
         cx.font = cv.width * 0.43 * 10 / w + 'px ' + font;
         cx.fillText(this.value.toFixed(this.dec) + this.unit, cv.width / 2, cv.height * 0.93);
 
@@ -119,13 +121,14 @@ class GaugeWidget extends BaseWidget {
             cx.measureText(Math.round(this.min)).width,
             cx.measureText(Math.round(this.max)).width
         );
-        cx.fillStyle = theme_cols[2];
+        cx.fillStyle = this.#cstyle.getPropertyValue('--font');
         cx.font = cx.lineWidth * 0.55 * 10 / w + 'px ' + font;
         cx.fillText(this.min, cx.lineWidth, cv.height * 0.92);
         cx.fillText(this.max, cv.width - cx.lineWidth, cv.height * 0.92);
     }
 
     #redrawGaugeR() {
+        this.color = intToCol(this.data.color) ?? this.#cstyle.getPropertyValue('--prim');
         let cv = this.$el;
         let rw = cv.parentNode.clientWidth;
         if (!rw) return;
@@ -137,7 +140,6 @@ class GaugeWidget extends BaseWidget {
         cv.height = cv.width;
 
         let cx = cv.getContext("2d");
-        let theme_cols = getCurrentColorScheme();
         let perc = (this.value - this.min) * 100 / (this.max - this.min);
         if (perc < 0) perc = 0;
         if (perc > 100) perc = 100;
@@ -152,7 +154,7 @@ class GaugeWidget extends BaseWidget {
 
         cx.clearRect(0, 0, cv.width, cv.height);
         cx.lineWidth = cv.width / 8;
-        cx.strokeStyle = theme_cols[4];
+        cx.strokeStyle = this.#cstyle.getPropertyValue('--dark');
         cx.beginPath();
         cx.arc(cv.width / 2, cv.height / 2, cv.width / 2 - cx.lineWidth, joint, Math.PI * 2.5);
         cx.stroke();
@@ -187,13 +189,14 @@ class GaugeWidget extends BaseWidget {
             cx.measureText(this.max.toFixed(this.dec) + text).width
         );
 
-        if (this.value > this.max || this.value < this.min) cx.fillStyle = getErrColor();
-        else cx.fillStyle = theme_cols[3];
+        if (this.value > this.max || this.value < this.min) cx.fillStyle = GaugeWidget.OUT_OF_RANGE_COLOR;
+        else cx.fillStyle = this.#cstyle.getPropertyValue('--font2');
         cx.font = cv.width * 0.5 * 10 / w + 'px ' + font;
         cx.fillText(this.value.toFixed(this.dec) + this.unit, cv.width / 2, cv.height * 0.52);
     }
 
     #redrawGaugeL() {
+        this.color = intToCol(this.data.color) ?? this.#cstyle.getPropertyValue('--prim');
         let cv = this.$el;
         let rw = cv.parentNode.clientWidth;
         if (!rw) return;
@@ -209,8 +212,7 @@ class GaugeWidget extends BaseWidget {
         cv.width = Math.floor(rw * r);
         cv.height = Math.floor(height * r);
 
-        let cx = cv.getContext("2d");
-        let theme_cols = getCurrentColorScheme();
+        const cx = cv.getContext("2d");
         let perc = (this.value - this.min) * 100 / (this.max - this.min);
         if (perc < 0) perc = 0;
         if (perc > 100) perc = 100;
@@ -224,7 +226,7 @@ class GaugeWidget extends BaseWidget {
         let wid = cv.width - sw - off * 2;
 
         cx.clearRect(0, 0, cv.width, cv.height);
-        cx.fillStyle = theme_cols[0];
+        cx.fillStyle = this.#cstyle.getPropertyValue('--back');
         cx.beginPath();
         cx.roundRect(off + sw / 2, sw / 2, wid, cv.height - sw, 5 * r);
         cx.fill();
@@ -234,8 +236,8 @@ class GaugeWidget extends BaseWidget {
         cx.roundRect(off + sw / 2, sw / 2, wid * this.perc / 100, cv.height - sw, 5 * r);
         cx.fill();
 
-        if (this.value > this.max || this.value < this.min) cx.fillStyle = getErrColor();
-        else cx.fillStyle = theme_cols[2];
+        if (this.value > this.max || this.value < this.min) cx.fillStyle = GaugeWidget.OUT_OF_RANGE_COLOR;
+        else cx.fillStyle = this.#cstyle.getPropertyValue('--font');
 
         cx.font = (19 * r) + 'px ' + cfg.font;
         cx.textAlign = "center";
@@ -251,7 +253,7 @@ class GaugeWidget extends BaseWidget {
             cx.fillText(getIcon(this.icon), cv.width / 2 - tw / 2 - off, cv.height * 0.52);
         }
 
-        cx.fillStyle = theme_cols[2];
+        cx.fillStyle = this.#cstyle.getPropertyValue('--font');
         cx.font = (12 * r) + 'px ' + cfg.font;
         cx.textAlign = "left";
         cx.fillText(this.min.toFixed(this.dec), off + sw / 2 + off, cv.height * 0.52);

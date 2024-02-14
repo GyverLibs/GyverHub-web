@@ -54,27 +54,20 @@ function b64ToText(base64) {
 function waiter(size = 50, col = 'var(--prim)', block = true) {
     return `<div class="waiter ${block ? 'waiter_b' : ''}"><span style="font-size:${size}px;color:${col}" class="icon spinning"></span></div>`;
 }
-  
-function getErrColor() {
-    return '#8e1414';
-}
 
-function getDefColor() {
-    // return document.querySelector(':root').style.getPropertyValue('--prim');
-    return intToCol(colors[cfg.maincolor]);
-}
-const theme_cols = [
-  // back/tab/font/font2/dark/thumb/black/scheme/font4/shad/font3
-  ['#1b1c20', '#26272c', '#eee', '#ccc', '#141516', '#444', '#0e0e0e', 'dark', '#222', '#000'],
-  ['#eee', '#fff', '#111', '#333', '#ddd', '#999', '#bdbdbd', 'light', '#fff', '#000000a3']
-];
-function getCurrentColorScheme() {
-  if (cfg.theme === 'dark') return theme_cols[0];
-  if (cfg.theme === 'light') return theme_cols[1];
-  if (window.matchMedia("(prefers-color-scheme: dark)").matches) return theme_cols[0];
-  return theme_cols[1];
-}
 function adjustColor(col, ratio) {
+  if (typeof col === 'number') {
+    let newcol = 0;
+    for (let i = 0; i < 3; i++) {
+      let comp = (col & 0xff0000) >> 16;
+      comp = Math.min(255, Math.floor((comp + 1) * ratio));
+      newcol |= comp;
+      newcol <<= 8;
+      col <<= 8;
+    }
+    return newcol;
+  }
+
   let intcol = 0;
   col = col.toString();
   if (col.startsWith('#')) {
@@ -95,6 +88,7 @@ function adjustColor(col, ratio) {
     newcol += comp.toString(16).padStart(2, '0');
     intcol <<= 8;
   }
+  console.log('ADJ', col, ratio, newcol);
   return newcol;
 }
 

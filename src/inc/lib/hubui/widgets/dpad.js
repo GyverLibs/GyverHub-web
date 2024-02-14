@@ -1,6 +1,8 @@
 class DpadWidget extends BaseWidget  {
     $el;
-    #pad;
+    #posX = 0;
+    #posY = 0;
+    #pressed = false;
 
     constructor(data, renderer) {
         super(data, renderer);
@@ -9,64 +11,44 @@ class DpadWidget extends BaseWidget  {
             type: 'canvas',
             name: 'el'
         });
-
-        this.#pad = new Dpad(this.$el, data, d => {
-            this.set((d.x + 255) << 16) | (d.y + 255);
-        });
+        
+        if ("ontouchstart" in document.documentElement) {
+            this.$el.addEventListener("touchstart", this._onTouchStart);
+            document.addEventListener("touchend", this._onTouchEnd);
+        } else {
+            this.$el.addEventListener("mousedown", this._onMouseDown);
+            document.addEventListener("mouseup", this._onMouseUp);
+        }
 
         this.$el.parentNode.addEventListener('resize', () => {
-            this.#pad.redraw();
+            this.#redraw();
         })
-        
+
         this.update(data);
         this.disable(this.$el, data.disable);
         waitFrame().then(() => {
-            this.#pad.redraw(false);
+            this.#redraw(false);
         });
     }
-}
 
-Renderer.register('dpad', DpadWidget);
-
-
-class Dpad {
-    color = 0;
-    posX = 0;
-    posY = 0;
-    pressed = 0;
-
-    constructor(cv, data, cb) {
-        this.color = intToCol(data.color) ?? getDefColor();
-        this.cv = cv;
-        this.cb = cb;
-
+    close() {
         if ("ontouchstart" in document.documentElement) {
-            cv.addEventListener("touchstart", this._onTouchStart);
-            document.addEventListener("touchend", this._onTouchEnd);
-        } else {
-            cv.addEventListener("mousedown", this._onMouseDown);
-            document.addEventListener("mouseup", this._onMouseUp);
-        }
-    }
-
-    stop() {
-        if ("ontouchstart" in document.documentElement) {
-            this.cv.removeEventListener("touchstart", this._onTouchStart);
+            this.$el.removeEventListener("touchstart", this._onTouchStart);
             document.removeEventListener("touchend", this._onTouchEnd);
         } else {
-            this.cv.removeEventListener("mousedown", this._onMouseDown);
+            this.$el.removeEventListener("mousedown", this._onMouseDown);
             document.removeEventListener("mouseup", this._onMouseUp);
         }
     }
 
-    redraw(send = true) {
-        let cv = this.cv;
-        let size = cv.parentNode.clientWidth;
+    #redraw(send = true) {
+        const cv = this.$el;
+        const size = cv.parentNode.clientWidth;
         if (!size) return;
         cv.style.width = size + 'px';
         cv.style.height = size + 'px';
         size *= window.devicePixelRatio;
-        let center = size / 2;
+        const center = size / 2;
         cv.width = size;
         cv.height = size;
         cv.style.cursor = 'pointer';
@@ -74,9 +56,9 @@ class Dpad {
         let x = 0;
         let y = 0;
 
-        if (this.pressed) {
-            x = Math.round((this.posX - center) / (size / 2) * 255);
-            y = -Math.round((this.posY - center) / (size / 2) * 255);
+        if (this.#pressed) {
+            x = Math.round((this.#posX - center) / center * 255);
+            y = -Math.round((this.#posY - center) / center * 255);
 
             if (Math.abs(x) < 50 && Math.abs(y) < 50) {
                 x = 0;
@@ -92,65 +74,64 @@ class Dpad {
             }
         }
 
-        let cx = cv.getContext("2d");
+        const cx = cv.getContext("2d");
         cx.clearRect(0, 0, size, size);
 
         cx.beginPath();
         cx.arc(center, center, size * 0.44, 0, 2 * Math.PI, false);
         cx.lineWidth = size * 0.02;
-        cx.strokeStyle = adjustColor(this.color, this.pressed ? 1.3 : 1);
+        cx.strokeStyle = intToCol(this.#pressed ? adjustColor(this.data.color,  1.3) : this.data.color);
         cx.stroke();
 
         cx.lineWidth = size * 0.045;
-        let rr = size * 0.36;
-        let cw = size * 0.1;
-        let ch = rr - cw;
-        let sh = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+        const rr = size * 0.36;
+        const cw = size * 0.1;
+        const ch = rr - cw;
+        const sh = [[1, 0], [-1, 0], [0, 1], [0, -1]];
         for (let i = 0; i < 4; i++) {
             cx.beginPath();
-            cx.strokeStyle = (x == sh[i][0] && y == -sh[i][1]) ? adjustColor(this.color, 1.3) : this.color;
+            cx.strokeStyle = intToCol((x == sh[i][0] && y == -sh[i][1]) ? adjustColor(this.data.color, 1.3) : this.data.color);
             cx.moveTo(center + ch * sh[i][0] - cw * sh[i][1], center + ch * sh[i][1] - cw * sh[i][0]);
             cx.lineTo(center + rr * sh[i][0], center + rr * sh[i][1]);
             cx.lineTo(center + ch * sh[i][0] + cw * sh[i][1], center + ch * sh[i][1] + cw * sh[i][0]);
             cx.stroke();
         }
-        if (send) this.cb({ x: x, y: y });
+
+        if (send) this.set((x + 255) << 16) | (y + 255);
     }
 
-    _onTouchStart = (event) => {
-        if (this.disabled()) return;
+    _onTouchStart(event) {
+        if (this.data.disable) return;
         event.preventDefault();
-        this.pressed = 1;
+        this.#pressed = true;
         const ratio = window.devicePixelRatio;
-        this.posX = (event.targetTouches[0].pageX - this.cv.offsetLeft) * ratio;
-        this.posY = (event.targetTouches[0].pageY - this.cv.offsetTop) * ratio;
-        this.redraw();
+        this.#posX = (event.targetTouches[0].pageX - this.$el.offsetLeft) * ratio;
+        this.#posY = (event.targetTouches[0].pageY - this.$el.offsetTop) * ratio;
+        this.#redraw();
     }
 
-    _onTouchEnd = (event) => {
-        if (this.pressed) {
-            this.pressed = 0;
-            this.redraw();
+    _onMouseDown(event) {
+        if (this.data.disable) return;
+        this.#pressed = true;
+        const ratio = window.devicePixelRatio;
+        this.#posX = (event.pageX - this.$el.offsetLeft) * ratio;
+        this.#posY = (event.pageY - this.$el.offsetTop) * ratio;
+        this.#redraw();
+    }
+
+    _onTouchEnd() {
+        if (this.#pressed) {
+            this.#pressed = false;
+            this.#redraw();
         }
     }
 
-    _onMouseDown = (event) => {
-        if (this.disabled()) return;
-        this.pressed = 1;
-        const ratio = window.devicePixelRatio;
-        this.posX = (event.pageX - this.cv.offsetLeft) * ratio;
-        this.posY = (event.pageY - this.cv.offsetTop) * ratio;
-        this.redraw();
-    }
-
-    _onMouseUp = (event) => {
-        if (this.pressed) {
-            this.pressed = 0;
-            this.redraw();
+    _onMouseUp() {
+        if (this.#pressed) {
+            this.#pressed = false;
+            this.#redraw();
         }
     }
+}
 
-    disabled() {
-        return this.cv.getAttribute('disabled');
-    }
-};
+Renderer.register('dpad', DpadWidget);

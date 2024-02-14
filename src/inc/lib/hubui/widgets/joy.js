@@ -45,7 +45,7 @@ class Joy {
     pressed = 0;
 
     constructor(cv, data, cb) {
-        this.color = intToCol(data.color) ?? getDefColor();
+        this.color = intToCol(data.color) ?? window.getComputedStyle(document.body).getPropertyValue('--prim');
         this.keep = data.keep ?? 0;
         this.exp = data.exp ?? 0;
         this.cv = cv;
