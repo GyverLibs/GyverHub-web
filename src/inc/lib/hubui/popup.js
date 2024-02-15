@@ -221,3 +221,16 @@ function asyncAskPin(title, targetPin, canCancel = false) {
     });
   });
 }
+
+function showPopup(text, color = '#37a93c') {
+  const $e = document.createElement('div');
+  $e.className = 'notice';
+  $e.textContent = text;
+  $e.style.background = color;
+  document.body.append($e);
+  setTimeout(() => { $e.remove(); }, 3500);
+}
+
+function showPopupError(text) {
+  showPopup(text, /*getErrColor()*/'#a93737');
+}

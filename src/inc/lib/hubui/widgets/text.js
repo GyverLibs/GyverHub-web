@@ -82,8 +82,8 @@ class TextFileWidget extends BaseWidget {
         if ('value' in data) this.#path = data.value;
         if ('rows' in data) this.$el.rows = data.rows;
         if ('action' in data || 'value' in data) {
-            this.renderer.device.addFile(this.id, this.#path, (file) => {
-                this.$el.value = dataTotext(file);
+            this.renderer.device.addFile(this.id, this.#path, 'text', (file) => {
+                this.$el.value = file;
                 this.setPlabel();
             });
         }

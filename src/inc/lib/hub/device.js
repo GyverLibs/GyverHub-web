@@ -182,11 +182,11 @@ class Device extends EventEmitter {
   
       let res;
       try {
-        res = await this.fetch(file.path, file.progress);
+        res = await this.fetch(file.path, file.type, file.progress);
       } catch (e) {
         continue;
       }
-      file.callback(`data:${getMime(file.path)};base64,${res}`);
+      file.callback(res);
     }
   }
 
@@ -206,10 +206,10 @@ class Device extends EventEmitter {
    * @param {string} path
    * @param {(string) => undefined} callback 
    */
-  async addFile(id, path, callback, progress = undefined) {
+  async addFile(id, path, type, callback, progress = undefined) {
     let has = this.#files.some(f => f.id == id);
     if (!has) this.#files.push({
-      id, path, callback, progress
+      id, path, type, callback, progress
     });
     if (this.#file_flag && this.#files.length == 1) await this._fetchFiles();
   }
@@ -362,7 +362,7 @@ class Device extends EventEmitter {
     await this.updateFileList();
   }
 
-  async fetch(path, progress = undefined) {
+  async fetch(path, type, progress = undefined) {
     if (!this.isModuleEnabled(Modules.FETCH))
       throw new Error(HubErrors.Disabled);
     if (this.fsBusy())
@@ -372,7 +372,7 @@ class Device extends EventEmitter {
 
     if (this.isHttpAccessable() && this.info.http_t) {
       return await http_fetch_blob(`http://${this.info.ip}:${this.info.http_port}/hub/fetch?path=${path}&client_id=${this._hub.clientId}`, 
-          progress, this._hub.http.tout);
+          type, progress, this._hub.http.tout);
 
     } else {
       let [cmd, data] = await this.#postAndWait('fetch', ['fetch_start', 'fetch_err'], path);
@@ -395,7 +395,10 @@ class Device extends EventEmitter {
           if (crc != data.crc32)
             throw new Error(HubErrors.CrcMiss);
 
-          return btoa(fet_buf);
+          if (type === 'url')
+            return `data:${getMime(path)};base64,${btoa(fet_buf)}`;
+          else if (file.type === 'text')
+            return new TextDecoder().decode(Uint8Array.from(fet_buf, (m) => m.codePointAt(0)));
         }
 
         // not last chunk

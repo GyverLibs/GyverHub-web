@@ -39,8 +39,26 @@ function getIcon(icon) {
 }
 
 function intToCol(val) {
-    if (val === null || val === undefined) return null;
-    return "#" + Number(val).toString(16).padStart(6, '0');
+  if (val === null || val === undefined) return null;
+  return "#" + Number(val).toString(16).padStart(6, '0');
+}
+
+function colToInt(val) {
+  if (val === null || val === undefined) return null;
+  if (val.startsWith('#')) {
+    val = val.slice(1);
+    if (val.length == 3) {
+      val = val[0] + val[0] + val[1] + val[1] + val[2] + val[2];
+    }
+    return parseInt(val, 16);
+  }
+  if (val.startsWith("rgb(")) {
+    let intcol = 0;
+    for (const i of val.replace("rgb(", "").replace(")", "").replace(" ", "").split(','))
+      intcol = (intcol << 8) | i;
+    return intcol;
+  }
+  return Number(val);
 }
 
 function dataTotext(data) {
@@ -56,50 +74,13 @@ function waiter(size = 50, col = 'var(--prim)', block = true) {
 }
 
 function adjustColor(col, ratio) {
-  if (typeof col === 'number') {
-    let newcol = 0;
-    for (let i = 0; i < 3; i++) {
-      let comp = (col & 0xff0000) >> 16;
-      comp = Math.min(255, Math.floor((comp + 1) * ratio));
-      newcol |= comp;
-      newcol <<= 8;
-      col <<= 8;
-    }
-    return newcol;
-  }
-
-  let intcol = 0;
-  col = col.toString();
-  if (col.startsWith('#')) {
-    col = col.slice(1);
-    if (col.length == 3) {
-      col = col[0] + col[0] + col[1] + col[1] + col[2] + col[2];
-    }
-    intcol = parseInt(col, 16);
-  } else if (col.startsWith("rgb(")) {
-    col.replace("rgb(", "").replace(")", "").replace(" ", "").split(',').forEach(v => intcol = (intcol << 8) | v);
-  } else {
-    intcol = Number(col);
-  }
-  let newcol = '#';
+  let newcol = 0;
   for (let i = 0; i < 3; i++) {
-    let comp = (intcol & 0xff0000) >> 16;
+    let comp = (col & 0xff0000) >> 16;
     comp = Math.min(255, Math.floor((comp + 1) * ratio));
-    newcol += comp.toString(16).padStart(2, '0');
-    intcol <<= 8;
+    newcol |= comp;
+    newcol <<= 8;
+    col <<= 8;
   }
-  console.log('ADJ', col, ratio, newcol);
   return newcol;
-}
-
-function showPopup(text, color = '#37a93c') {
-  const $e = document.createElement('div');
-  $e.className = 'notice';
-  $e.textContent = text;
-  $e.style.background = color;
-  document.body.append($e);
-  setTimeout(() => { $e.remove(); }, 3500);
-}
-function showPopupError(text) {
-  showPopup(text, /*getErrColor()*/'#a93737');
 }

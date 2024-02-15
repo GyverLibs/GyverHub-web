@@ -18,7 +18,7 @@ class ImageWidget extends BaseWidget {
         super.update(data);
         if ('value' in data) this.#path = data.value;
         if ('action' in data || 'value' in data) {
-            this.renderer.device.addFile(this.id, this.#path, file => {
+            this.renderer.device.addFile(this.id, this.#path, 'url', file => {
                 this.setPlabel();
                 this.$el.innerHTML = `<img style="width:100%" src="${file}">`;
             }, perc => this.setPlabel(`[${perc}%]`));

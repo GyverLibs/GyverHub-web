@@ -73,7 +73,7 @@ async function fetchFile(index, path) {
 
   let data;
   try {
-    data = await hub.dev(focused).fetch(path, perc => {
+    data = await hub.dev(focused).fetch(path, 'url', perc => {
       EL('process#' + index).textContent = perc + '%';
     });
   } catch (e) {
@@ -84,7 +84,7 @@ async function fetchFile(index, path) {
 
   display('download#' + index, 'inline-block');
   const name = path.split('/').pop();
-  EL('download#' + index).href = ('data:' + getMime(name) + ';base64,' + data);
+  EL('download#' + index).href = data;
   EL('download#' + index).download = name;
   display('edit#' + index, 'inline-block');
   display('process#' + index, 'none');

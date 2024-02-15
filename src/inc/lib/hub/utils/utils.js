@@ -29,27 +29,30 @@ async function http_get(url, tout) {
   return await res.text();
 }
 
-function http_fetch_blob(url, onprogress, tout) {
+function http_fetch_blob(url, type, onprogress, tout) {
   return new Promise((res, rej) => {
     onprogress(0);
     let xhr = new XMLHttpRequest();
-    xhr.responseType = 'blob';
+    xhr.responseType = type === 'text' ? 'arraybuffer' : '';
     xhr.onprogress = (e) => {
       onprogress(Math.round(e.loaded * 100 / e.total));
     };
     xhr.onloadend = (e) => {
-      if (e.loaded == e.total && xhr.status == 200) {
-        let reader = new FileReader();
-        reader.readAsDataURL(xhr.response);
-        reader.onloadend = () => res(reader.result.split('base64,')[1]);
-      } else {
-        if (xhr.response) {
-          xhr.response.text()
-            .then(res => rej(res))
-            .catch(e => rej(e))
-        } else {
-          rej();
+      if (xhr.response) {
+        try {
+          if (type === 'type') {
+            const text = new TextDecoder().decode(xhr.response);
+            if (e.loaded == e.total && xhr.status == 200) res(text);
+            else rej(text);
+          } else {
+            
+          }
+
+        } catch (e) {
+          rej(e);
         }
+      } else {
+        rej();
       }
     }
     xhr.timeout = tout;

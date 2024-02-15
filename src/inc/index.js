@@ -9,6 +9,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       case "show_screen":
         show_screen($t.dataset.screen);
         break;
+        case "back":
+          back_h();
+          break;
+        case "refresh":
+          refresh_h();
+          break;
+        case "config":
+          config_h();
+          break;
+        case "menu":
+          menu_h();
+          break;
     }
   });
 

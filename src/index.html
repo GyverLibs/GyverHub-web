@@ -75,8 +75,8 @@
 
   <div class="header-row">
     <div class="header">
-      <div class="icon header-back" onclick="back_h()"></div>
-      <div class="header-title" onclick="back_h()">GyverHub</div>
+      <div class="icon header-back" data-action="back"></div>
+      <div class="header-title" data-action="back">GyverHub</div>
 
       <div id="conn" class="header-connection"></div>
       <div id='bt_ok' class="icon header-connection-icon"></div>
@@ -85,9 +85,9 @@
       <div id='tg_ok' class="icon header-connection-icon"></div>
 
       <div class="header-connections"></div>
-      <div class="icon header-icon" id='icon_refresh' onclick="refresh_h()"></div>
-      <div class="icon header-icon" id='icon_cfg' onclick="config_h()"></div>
-      <div class="icon header-icon" id='icon_menu' onclick="menu_h()"></div>
+      <div class="icon header-icon icon_refresh" id='icon_refresh' data-action="refresh"></div>
+      <div class="icon header-icon icon_cfg" data-action="config"></div>
+      <div class="icon header-icon icon_menu" id='icon_menu' data-action="menu"></div>
     </div>
   </div>
 
@@ -655,7 +655,7 @@
   
         </div>
   
-        <!--@[if_not_target:esp]-->
+        <!--@[if_target:host]-->
         <div class="ui_col" id="pwa_block" style="display: none;">
           <div class="ui_row ui_head">
             <label class="ui_label"><span class="icon icon_ui"></span>Web App</label>
@@ -675,9 +675,7 @@
             </div>
           </div>
         </div>
-        <!--@/[if_not_target:esp]-->
-  
-        <!--@[if_target:host]-->
+
         <div class="ui_col">
           <div class="ui_row ui_head">
             <label class="ui_label"><span class="icon icon_ui"></span>App</label>

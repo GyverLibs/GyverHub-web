@@ -11,6 +11,9 @@ class DpadWidget extends BaseWidget  {
             type: 'canvas',
             name: 'el'
         });
+
+        if (!this.data.color)
+            this.data.color = colToInt(window.getComputedStyle(document.body).getPropertyValue('--prim'));
         
         if ("ontouchstart" in document.documentElement) {
             this.$el.addEventListener("touchstart", this._onTouchStart);

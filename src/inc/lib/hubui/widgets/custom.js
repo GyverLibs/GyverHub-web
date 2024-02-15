@@ -64,8 +64,8 @@ class CustomWidget extends Widget {
 
         if (!data.value) return;
         if (data.value.endsWith('.js')) {
-            this.renderer.device.addFile(this.id, data.value, file => {
-                this.#apply(dataTotext(file));
+            this.renderer.device.addFile(this.id, data.value, 'text', file => {
+                this.#apply(file);
             });
         } else {
             this.#apply(data.value);
@@ -116,11 +116,10 @@ class UiFileWidget extends Widget {
         this.$el.classList.add('widget_col');
         this.$el.style.width = this.data.wwidth_t + '%';
     
-        this.renderer.device.addFile(this.id, data.value, (file) => {
-            const json = dataTotext(file);
+        this.renderer.device.addFile(this.id, data.value, 'text', (file) => {
             let controls = null;
             try {
-                controls = JSON.parse('[' + json + ']');
+                controls = JSON.parse('[' + file + ']');
             } catch (e) {
                 console.log('JSON parse error in ui_json from ' + data.path);
             }

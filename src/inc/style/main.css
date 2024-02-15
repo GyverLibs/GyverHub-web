@@ -221,21 +221,21 @@ body[data-screen=ui] .header-connection-icon
   filter: brightness(0.8);
 }
 
-body[data-screen=ui] #icon_menu,
-body[data-screen=ota] #icon_menu,
-body[data-screen=dev_config] #icon_menu,
-body[data-screen=fsbr_edit] #icon_menu,
-body[data-screen=files] #icon_menu,
-body[data-screen=info] #icon_menu,
+body[data-screen=ui] .icon_menu,
+body[data-screen=ota] .icon_menu,
+body[data-screen=dev_config] .icon_menu,
+body[data-screen=fsbr_edit] .icon_menu,
+body[data-screen=files] .icon_menu,
+body[data-screen=info] .icon_menu,
 
-body[data-screen=main] #icon_refresh,
-body[data-screen=ui] #icon_refresh,
-body[data-screen=info] #icon_refresh,
-body[data-screen=files] #icon_refresh,
-body[data-screen=fsbr_edit] #icon_refresh,
+body[data-screen=main] .icon_refresh,
+body[data-screen=ui] .icon_refresh,
+body[data-screen=info] .icon_refresh,
+body[data-screen=files] .icon_refresh,
+body[data-screen=fsbr_edit] .icon_refresh,
 
-body[data-screen=config] #icon_cfg,
-body[data-screen=main] #icon_cfg
+body[data-screen=config] .icon_cfg,
+body[data-screen=main] .icon_cfg
 {
   display: block;
 }
