@@ -308,7 +308,7 @@ async function device_h(id) {
   }
   
   /*@[if_not_target:esp]*/
-  checkUpdates(id);
+  await checkUpdates(dev);
   /*@/[if_not_target:esp]*/
 
   focused = id;

@@ -1,42 +1,10 @@
-// ============== PROJECTS =============
-// updates
-let updates_list = [];
-async function checkUpdates(id) {
-  if (!cfg.check_upd) return;
-  if (updates_list.includes(id)) return;
-  const ver = hub.dev(id).info.version;
-  if (!ver.includes('@')) return;
-  const namever = ver.split('@');
-  let proj;
-  try {
-    const resp = await fetch("https://raw.githubusercontent.com/"+namever[0]+"/main/project.json", { cache: "no-store" });
-    proj = await resp.text();
-    proj = JSON.parse(proj);
-  } catch (e) {
-    return;
-  }
-  if (!('builds' in proj) || !('version' in proj)) return;
-  if (proj.version == namever[1]) return;
-  if (id != focused) return;
-  updates_list.push(id);
-  const platform = hub.dev(id).info.platform;
-  for (build of proj.builds) {
-    if (build.chipFamily == platform) {
-      const text = `${namever[0]} v${proj.version}:\n${proj.notes}\n\n${lang.p_upd}?`;
-      if (await asyncConfirm(text, lang.p_has_upd + '!')) otaUrl(build.parts[0].path, 'flash');
-      break;
-    }
-  }
-}
-
-// projects
 async function loadProjects() {
   EL('projects_cont').replaceChildren(EL('projects_cont').lastElementChild);
 
   const resp = await fetch("https://raw.githubusercontent.com/GyverLibs/GyverHub-projects/main/projects.txt", { cache: "no-store" });
   let projects = await resp.text();
   projects = projects.split('\n');
-  for (let proj of projects) {
+  for (const proj of projects) {
     if (!proj) continue;
     const rep = proj.split('https://github.com/')[1];
     if (!rep) continue;

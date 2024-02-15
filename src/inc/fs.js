@@ -89,32 +89,6 @@ async function fetchFile(index, path) {
   display('edit#' + index, 'inline-block');
   display('process#' + index, 'none');
 }
-async function uploadOta(file, type) {
-  if (!file.name.endsWith(this.info.ota_t)) {
-    asyncAlert(lang.wrong_ota + ' .' + this.info.ota_t);
-    return;
-  }
-
-  const res = await asyncConfirm(lang.fs_upload + ' OTA ' + type + '?');
-  if (!res) return;
-
-  EL('ota_label').innerHTML = waiter(25, 'var(--font)', false);
-  EL('ota_upload').value = '';
-  EL('ota_upload_fs').value = '';
-
-  try {
-    await hub.dev(focused).uploadOta(file, type, perc => {
-      EL('ota_label').textContent = perc + '%';
-    });
-  } catch (e) {
-    showPopupError('[OTA] ' + getError(e));
-    EL('ota_label').textContent = lang.error;
-    return;
-  }
-
-  showPopup('[OTA] ' + lang.done);
-  EL('ota_label').textContent = lang.done;
-}
 
 // ============ FILE UTILS ============
 async function deleteFile(i) {
@@ -157,19 +131,4 @@ function editor_save() {
   const path = fs_arr[edit_idx].slice(0, div);
   const name = fs_arr[edit_idx].slice(div + 1);
   uploadFile(new File([EL('editor_area').value], name, { type: getMime(name), lastModified: new Date() }), path);
-}
-
-// ============ OTA ============
-async function otaUrl(url, type) {
-  if (await asyncConfirm(lang.fs_upload + ' OTA?')) {
-    showPopup('OTA start');
-    try {
-      await hub.dev(focused).otaUrl(type, url);
-    } catch (e) {
-      showPopupError('[OTA url] ' + getError(e));
-      return;
-    }
-  }
-  
-  showPopup('[OTA] ' + lang.done);
 }
