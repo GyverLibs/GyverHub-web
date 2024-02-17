@@ -10,7 +10,7 @@ function showFsbr(fs, total, used) {
   let inner = '';
   for (const i in fs_arr) {
     if (fs_arr[i].endsWith('/')) {
-      inner += `<div class="fs_file fs_folder drop_area" onclick="file_upload_path.value='${fs_arr[i]}'/*;file_upload_btn.click()*/" ondrop="file_upload_path.value='${fs_arr[i]}';uploadFile(event.dataTransfer.files[0],'${fs_arr[i]}')">${fs_arr[i]}</div>`;
+      inner += `<div class="fs_file fs_folder drop_area" onclick="upload_h('${fs_arr[i]}')" ondrop="upload_file(event.dataTransfer.files[0],'${fs_arr[i]}')">${fs_arr[i]}</div>`;
     } else {
       const none = "style='display:none'";
       inner += `<div class="fs_file" onclick="openFSctrl(${i})">${fs_arr[i]}<div class="fs_weight">${(fs[fs_arr[i]] / 1000).toFixed(2)} kB</div></div>
@@ -37,35 +37,42 @@ function openFSctrl(i) {
   if (!current) display(`fs#${i}`, 'flex');
 }
 
-async function create_h() {
-  await hub.dev(focused).createFile(EL('file_create_path').value);
-}
-
 
 // ============ TRANSFER ============
+function upload_h(dirname='/') {
+  const $in = document.createElement('input');
+  $in.type = 'file';
+  $in.addEventListener('change', async () => {
+    upload_file($in.files[0], dirname);
+  });
+  $in.click();
+}
+
+async function upload_file(file, dirname = '/') {
+  if (!dirname.endsWith('/')) dirname += '/';
+  const path = await asyncPrompt(lang.fs_name, dirname + file.name, lang.fs_upload);
+  if (!path) return;
+  uploadFile(file, path);
+}
 async function uploadFile(file, path) {
   if (!path.startsWith('/')) path = '/' + path;
-  if (!path.endsWith('/') && path !== '/') path += '/';
-  path += file.name;
-  const res = await asyncConfirm(lang.fs_upload + ' ' + path + '?');
-  if (!res) return;
   
-  EL('file_upload_btn').innerHTML = waiter(22, 'var(--font_inv)', false);
-  EL('file_upload').value = '';
+  EL('fs_upload').innerHTML = waiter(22, 'var(--font_inv)', false);
 
   try {
     await hub.dev(focused).upload(file, path, perc => {
       showPopup(lang.upload + '... ' + perc + '%');
     });
   } catch (e) {
-    EL('file_upload_btn').textContent = lang.upload;
+    EL('fs_upload').textContent = lang.fs_upload;
     showPopupError(`[${lang.upload}] ` + getError(e));
     return;
   }
 
-  EL('file_upload_btn').textContent = lang.upload;
+  EL('fs_upload').textContent = lang.fs_upload;
   showPopup(`[${lang.upload}] ` + lang.done);
 }
+
 async function fetchFile(index, path) {
   display('download#' + index, 'none');
   display('edit#' + index, 'none');
@@ -92,16 +99,45 @@ async function fetchFile(index, path) {
 }
 
 // ============ FILE UTILS ============
-async function deleteFile(i) {
-  if (await asyncConfirm(lang.delete + ' ' + fs_arr[i] + '?')) {
-    await hub.dev(focused).deleteFile(fs_arr[i]);
+
+async function format_h() {
+  if (!await asyncConfirm(lang.fs_format + '?')) return;
+  try {
+    await hub.dev(focused).formatFS();
+  } catch (e) {
+    showPopupError('[FS] ' + getError(e));
   }
 }
+
+async function create_h() {
+  const path = await asyncPrompt(lang.fs_name, '/', lang.fs_create_f);
+  if (!path) return;
+
+  if (path[0] != '/') path = '/' + path;
+  try {
+    await hub.dev(focused).createFile(path);
+  } catch (e) {
+    showPopupError('[FS] ' + getError(e));
+  }
+}
+
+async function deleteFile(i) {
+  if (!await asyncConfirm(lang.delete + ' ' + fs_arr[i] + '?')) return;
+  try {
+    await hub.dev(focused).deleteFile(fs_arr[i]);
+  } catch (e) {
+    showPopupError('[FS] ' + getError(e));
+  }
+}
+
 async function renameFile(i) {
   const path = fs_arr[i];
   const res = await asyncPrompt(lang.rename + ' ' + path + ':', path);
-  if (res && res != path) {
+  if (!res || res == path) return;
+  try {
     await hub.dev(focused).renameFile(path, res);
+  } catch (e) {
+    showPopupError('[FS] ' + getError(e));
   }
 }
 
@@ -121,7 +157,6 @@ function editor_cancel() {
 function editor_save() {
   editor_cancel();
   const div = fs_arr[edit_idx].lastIndexOf('/');
-  const path = fs_arr[edit_idx].slice(0, div);
   const name = fs_arr[edit_idx].slice(div + 1);
-  uploadFile(new File([EL('editor_area').value], name, { type: getMime(name), lastModified: new Date() }), path);
+  uploadFile(new File([EL('editor_area').value], name, { type: getMime(name), lastModified: new Date() }), fs_arr[edit_idx]);
 }

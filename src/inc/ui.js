@@ -48,12 +48,12 @@ async function show_screen(nscreen) {
 
     case 'files':
       $title.textContent = dev.info.name + '/fs';
-      EL('file_upload_btn').textContent = lang.fs_upload;
+      EL('fs_upload').textContent = lang.fs_upload;
       enterMenu('menu_fsbr');
       display('fs_browser', dev.isModuleEnabled(Modules.FILES) ? 'block' : 'none');
       display('fs_upload', dev.isModuleEnabled(Modules.UPLOAD) ? 'block' : 'none');
       display('fs_create', dev.isModuleEnabled(Modules.CREATE) ? 'block' : 'none');
-      display('fs_format_row', dev.isModuleEnabled(Modules.FORMAT) ? 'flex' : 'none');
+      display('fs_format', dev.isModuleEnabled(Modules.FORMAT) ? 'flex' : 'none');
       if (dev.isModuleEnabled(Modules.FILES)) {
         EL('fsbr_inner').innerHTML = waiter();
         await dev.updateFileList();
@@ -181,11 +181,7 @@ function config_h() {
     show_screen('config');
   }
 }
-async function format_h() {
-  if (await asyncConfirm(lang.fs_format + '?')) {
-    await hub.dev(focused).formatFS();
-  }
-}
+
 function manual_ip_h(ip) {
   if (!checkIP(ip)) {
     showPopupError(lang.wrong_ip);

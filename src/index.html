@@ -258,39 +258,13 @@
           </div>
           <div id="fs_browser">
             <div id="fsbr_inner"></div>
-            <div class="ui_row" id="fs_format_row">
-              <div>
-                <button id="fs_format" onclick="format_h()" class="ui_btn ui_btn_mini"><slot name="lang.fs_format"></slot></button>
-              </div>
+            <div class="ui_row" style="justify-content: flex-start;">
+              <button id="fs_format" onclick="format_h()" class="ui_btn ui_btn_mini"><slot name="lang.fs_format"></slot></button>
+              <button id="fs_create" onclick="create_h()" class="ui_btn ui_btn_mini"><slot name="lang.fs_create"></slot></button>
+              <button id="fs_upload" onclick="upload_h()" class="ui_btn ui_btn_mini"><slot name="lang.fs_upload"></slot></button>
             </div>
           </div>
         </div>
-  
-        <div class="ui_col">
-          <div class="ui_row ui_head">
-            <label><span class="icon icon_ui"></span><slot name="lang.fs_upload_to"></slot></label>
-          </div>
-          <div id="fs_upload">
-            <div class="upl_row">
-              <input class="ui_inp ui_inp_wbtn" type="text" id="file_upload_path" value="/">
-              <input type="file" id="file_upload" style="display:none" onchange="uploadFile(this.files[0], file_upload_path.value)">
-              <button id="file_upload_btn" onclick="file_upload.click()" class="ui_btn upl_btn"><slot name="lang.fs_upload"></slot></button>
-            </div>
-          </div>
-        </div>
-  
-        <div class="ui_col">
-          <div class="ui_row ui_head">
-            <label><span class="icon icon_ui"></span><slot name="lang.fs_create_f"></slot></label>
-          </div>
-          <div id="fs_create">
-            <div class="upl_row">
-              <input class="ui_inp ui_inp_wbtn" type="text" id="file_create_path" value="/">
-              <button onclick="create_h()" class="ui_btn upl_btn"><slot name="lang.fs_create"></slot></button>
-            </div>
-          </div>
-        </div>
-  
       </div>
   
       <div class="main_col screen-ota">
