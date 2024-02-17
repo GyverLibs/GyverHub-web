@@ -78,8 +78,8 @@ function adjustColor(col, ratio) {
   for (let i = 0; i < 3; i++) {
     let comp = (col & 0xff0000) >> 16;
     comp = Math.min(255, Math.floor((comp + 1) * ratio));
-    newcol |= comp;
     newcol <<= 8;
+    newcol |= comp;
     col <<= 8;
   }
   return newcol;

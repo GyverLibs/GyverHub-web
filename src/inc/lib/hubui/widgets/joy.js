@@ -5,6 +5,13 @@ class JoyWidget extends BaseWidget  {
     #posY = null;
     #pressed = 0;
 
+    #_onTouchStart;
+    #_onTouchMove;
+    #_onTouchEnd;
+    #_onMouseDown;
+    #_onMouseMove;
+    #_onMouseUp;
+
     constructor(data, renderer) {
         super(data, renderer);
 
@@ -17,13 +24,19 @@ class JoyWidget extends BaseWidget  {
             this.data.color = colToInt(window.getComputedStyle(document.body).getPropertyValue('--prim'));
 
         if ("ontouchstart" in document.documentElement) {
-            this.$el.addEventListener("touchstart", this._onTouchStart, { passive: false });
-            document.addEventListener("touchmove", this._onTouchMove, { passive: false });
-            document.addEventListener("touchend", this._onTouchEnd);
+            this.#_onTouchStart = this.#onTouchStart.bind(this);
+            this.#_onTouchMove = this.#onTouchMove.bind(this);
+            this.#_onTouchEnd = this.#onTouchEnd.bind(this);
+            this.$el.addEventListener("touchstart", this.#_onTouchStart, { passive: false });
+            document.addEventListener("touchmove", this.#_onTouchMove, { passive: false });
+            document.addEventListener("touchend", this.#_onTouchEnd);
         } else {
-            this.$el.addEventListener("mousedown", this._onMouseDown);
-            document.addEventListener("mousemove", this._onMouseMove);
-            document.addEventListener("mouseup", this._onMouseUp);
+            this.#_onMouseDown = this.#onMouseDown.bind(this);
+            this.#_onMouseMove = this.#onMouseMove.bind(this);
+            this.#_onMouseUp = this.#onMouseUp.bind(this);
+            this.$el.addEventListener("mousedown", this.#_onMouseDown);
+            document.addEventListener("mousemove", this.#_onMouseMove);
+            document.addEventListener("mouseup", this.#_onMouseUp);
         }
 
         this.$el.parentNode.addEventListener('resize', () => {
@@ -40,13 +53,13 @@ class JoyWidget extends BaseWidget  {
 
     close() {
         if ("ontouchstart" in document.documentElement) {
-            this.$el.removeEventListener("touchstart", this._onTouchStart);
-            document.removeEventListener("touchmove", this._onTouchMove);
-            document.removeEventListener("touchend", this._onTouchEnd);
+            this.$el.removeEventListener("touchstart", this.#_onTouchStart, { passive: false });
+            document.removeEventListener("touchmove", this.#_onTouchMove, { passive: false });
+            document.removeEventListener("touchend", this.#_onTouchEnd);
         } else {
-            this.$el.removeEventListener("mousedown", this._onMouseDown);
-            document.removeEventListener("mousemove", this._onMouseMove);
-            document.removeEventListener("mouseup", this._onMouseUp);
+            this.$el.removeEventListener("mousedown", this.#_onMouseDown);
+            document.removeEventListener("mousemove", this.#_onMouseMove);
+            document.removeEventListener("mouseup", this.#_onMouseUp);
         }
     }
 
@@ -105,13 +118,13 @@ class JoyWidget extends BaseWidget  {
         }
     }
 
-    _onTouchStart(event) {
+    #onTouchStart(event) {
         if (this.data.disabled) return;
         event.preventDefault();
         this.#pressed = true;
     }
 
-    _onTouchMove = (event) => {
+    #onTouchMove(event) {
         if (!this.#pressed) return;
         
         event.preventDefault();
@@ -138,7 +151,7 @@ class JoyWidget extends BaseWidget  {
         this.#redraw();
     }
 
-    _onTouchEnd(event) {
+    #onTouchEnd(event) {
         if (!this.#pressed) return;
 
         let target = null;
@@ -155,13 +168,13 @@ class JoyWidget extends BaseWidget  {
         this.#redraw();
     }
 
-    _onMouseDown() {
+    #onMouseDown() {
         if (this.data.disabled) return;
         this.#pressed = true;
         document.body.style.userSelect = 'none';
     }
 
-    _onMouseMove(event) {
+    #onMouseMove(event) {
         if (!this.#pressed) return;
 
         this.#posX = event.pageX;
@@ -179,7 +192,7 @@ class JoyWidget extends BaseWidget  {
         this.#redraw();
     }
 
-    _onMouseUp(event) {
+    #onMouseUp() {
         if (!this.#pressed) return;
 
         this.#pressed = false;

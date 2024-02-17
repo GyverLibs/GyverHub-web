@@ -9,7 +9,7 @@ class TextWidget extends BaseWidget {
             class: 'w_area w_area_passive',
             name: 'el'
         });
-        this.$el.readonly = true;
+        this.$el.readOnly = true;
         this.$el.rows = 5;
         
         this.update(data);
@@ -40,7 +40,7 @@ class LogWidget extends BaseWidget {
                 color: 'var(--prim)'
             },
         });
-        this.$el.readonly = true;
+        this.$el.readOnly = true;
         this.$el.rows = 5;
         
         this.update(data);
@@ -72,7 +72,7 @@ class TextFileWidget extends BaseWidget {
             class: 'w_area w_area_passive',
             name: 'el'
         });
-        this.$el.readonly = true;
+        this.$el.readOnly = true;
         
         this.update(data);
     }
@@ -115,7 +115,7 @@ class Display extends BaseWidget {
                 }
             }
         });
-        this.$el.readonly = true;
+        this.$el.readOnly = true;
         this.$el.rows = 2;
 
         this.update(data);

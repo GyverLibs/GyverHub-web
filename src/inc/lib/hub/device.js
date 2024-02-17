@@ -397,7 +397,7 @@ class Device extends EventEmitter {
 
           if (type === 'url')
             return `data:${getMime(path)};base64,${btoa(fet_buf)}`;
-          else if (file.type === 'text')
+          else if (type === 'text')
             return new TextDecoder().decode(Uint8Array.from(fet_buf, (m) => m.codePointAt(0)));
         }
 

@@ -4,6 +4,11 @@ class DpadWidget extends BaseWidget  {
     #posY = 0;
     #pressed = false;
 
+    #_onTouchStart;
+    #_onTouchEnd;
+    #_onMouseDown;
+    #_onMouseUp;
+
     constructor(data, renderer) {
         super(data, renderer);
 
@@ -16,11 +21,15 @@ class DpadWidget extends BaseWidget  {
             this.data.color = colToInt(window.getComputedStyle(document.body).getPropertyValue('--prim'));
         
         if ("ontouchstart" in document.documentElement) {
-            this.$el.addEventListener("touchstart", this._onTouchStart);
-            document.addEventListener("touchend", this._onTouchEnd);
+            this.#_onTouchStart = this.#onTouchStart.bind(this);
+            this.#_onTouchEnd = this.#onTouchEnd.bind(this);
+            this.$el.addEventListener("touchstart", this.#_onTouchStart);
+            document.addEventListener("touchend", this.#_onTouchEnd);
         } else {
-            this.$el.addEventListener("mousedown", this._onMouseDown);
-            document.addEventListener("mouseup", this._onMouseUp);
+            this.#_onMouseDown = this.#onMouseDown.bind(this);
+            this.#_onMouseUp = this.#onMouseUp.bind(this);
+            this.$el.addEventListener("mousedown", this.#_onMouseDown);
+            document.addEventListener("mouseup", this.#_onMouseUp);
         }
 
         this.$el.parentNode.addEventListener('resize', () => {
@@ -36,17 +45,17 @@ class DpadWidget extends BaseWidget  {
 
     close() {
         if ("ontouchstart" in document.documentElement) {
-            this.$el.removeEventListener("touchstart", this._onTouchStart);
-            document.removeEventListener("touchend", this._onTouchEnd);
+            this.$el.removeEventListener("touchstart", this.#_onTouchStart);
+            document.removeEventListener("touchend", this.#_onTouchEnd);
         } else {
-            this.$el.removeEventListener("mousedown", this._onMouseDown);
-            document.removeEventListener("mouseup", this._onMouseUp);
+            this.$el.removeEventListener("mousedown", this.#_onMouseDown);
+            document.removeEventListener("mouseup", this.#_onMouseUp);
         }
     }
 
     #redraw(send = true) {
         const cv = this.$el;
-        const size = cv.parentNode.clientWidth;
+        let size = cv.parentNode.clientWidth;
         if (!size) return;
         cv.style.width = size + 'px';
         cv.style.height = size + 'px';
@@ -103,7 +112,7 @@ class DpadWidget extends BaseWidget  {
         if (send) this.set((x + 255) << 16) | (y + 255);
     }
 
-    _onTouchStart(event) {
+    #onTouchStart(event) {
         if (this.data.disable) return;
         event.preventDefault();
         this.#pressed = true;
@@ -113,7 +122,7 @@ class DpadWidget extends BaseWidget  {
         this.#redraw();
     }
 
-    _onMouseDown(event) {
+    #onMouseDown(event) {
         if (this.data.disable) return;
         this.#pressed = true;
         const ratio = window.devicePixelRatio;
@@ -122,14 +131,14 @@ class DpadWidget extends BaseWidget  {
         this.#redraw();
     }
 
-    _onTouchEnd() {
+    #onTouchEnd() {
         if (this.#pressed) {
             this.#pressed = false;
             this.#redraw();
         }
     }
 
-    _onMouseUp() {
+    #onMouseUp() {
         if (this.#pressed) {
             this.#pressed = false;
             this.#redraw();

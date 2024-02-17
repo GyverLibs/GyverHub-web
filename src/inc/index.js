@@ -114,11 +114,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (!("serial" in navigator)) EL('serial_col').style.display = 'none';
     if (!("bluetooth" in navigator)) EL('bt_col').style.display = 'none';
+    /*@[if_target:host]*/
     if (isSSL()) {
       EL('btn_pwa_http').classList.add('ui_btn_dis');
     } else {
       EL('btn_pwa_https').classList.add('ui_btn_dis');
     }
+    /*@/[if_target:host]*/
     let masks = getMaskList();
     for (let mask in masks) {
       EL('netmask').innerHTML += `<option value="${mask}">${masks[mask]}</option>`;

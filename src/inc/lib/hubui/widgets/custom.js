@@ -22,8 +22,8 @@ class HTMLWidget extends BaseWidget {
 
         if (!data.value) return;
         if (data.value.endsWith('.html')) {
-            this.renderer.device.addFile(this.id, data.value, file => {
-                this.#apply(dataTotext(file));
+            this.renderer.device.addFile(this.id, data.value, 'text', file => {
+                this.#apply(file);
             });
         } else {
             this.#apply(data.value);

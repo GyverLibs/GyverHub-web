@@ -23,22 +23,29 @@ class ButtonWidget extends BaseWidget {
             events: {
                 click: () => this.set(2),
                 mousedown: () => {
-                    if(!this.#touch) this.set(1);
+                    if(this.#touch) return;
+                    this.#pressed = true;
+                    this.set(1);
                 },
                 mouseup: () => {
-                    if(!this.#touch&&this.#pressed) this.set(0);
+                    if(this.#touch || !this.#pressed) return;
+                    this.#pressed = false;
+                    this.set(0);
                 },
                 mouseleave: () => {
-                    if(!this.#touch&&this.#pressed) this.set(0);
+                    if(this.#touch || !this.#pressed) return;
+                    this.#pressed = false;
+                    this.set(0);
                 },
                 touchstart: () => {
-                    this.#touch=true;
+                    this.#touch = true;
                     this.#pressed = true;
-                    this.set(1, false);
+                    this.set(1);
                 },
                 touchend: () => {
+                    this.#touch = false;
                     this.#pressed = false;
-                    this.set(0, false);
+                    this.set(0);
                 },
             },
         });

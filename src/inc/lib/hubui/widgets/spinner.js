@@ -28,7 +28,7 @@ class SpinnerWidget extends BaseWidget {
                             name: 'el',
                             events: {
                                 input: () => this.#spin(0),
-                                keydown: () => {
+                                keydown: e => {
                                     if (e.key == 'Enter') {
                                         e.preventDefault();
                                         this.#spin(0);

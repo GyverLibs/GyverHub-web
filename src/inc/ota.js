@@ -50,7 +50,7 @@ async function installOta(dev, type, url) {
 async function checkUpdates(dev) {
     if (!cfg.check_upd) return;
     
-    const upd = await checkUpdates(dev);
+    const upd = await getUpdateInfo(dev);
     if (!upd) return;
     
     const text = `${upd.name} v${upd.version}:\n${upd.notes}\n\n${lang.p_upd}?`;
