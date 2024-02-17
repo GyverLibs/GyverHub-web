@@ -139,10 +139,7 @@ async function refresh_h() {
 async function back_h() {
   if (focused) {
     const dev = hub.dev(focused);
-    if (dev.fsBusy()) {
-      showPopupError(dev.fs_mode + ' ' + getError(HubErrors.Abort));  // TODO fs_mode
-      dev.fsStop();
-    }
+    dev.fsStop();
   }
   if (menu_f) {
     menu_show(false);

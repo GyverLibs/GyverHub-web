@@ -315,15 +315,9 @@ class Device extends EventEmitter {
       await this.#post('fs_abort');
   }
 
-  fsBusy() {
-    return false;
-  }
-
   async upload(file, path, progress = undefined) {
     if (!this.isModuleEnabled(Modules.UPLOAD)) 
       throw new Error(HubErrors.Disabled);
-    if (this.fsBusy())
-      throw new Error(HubErrors.FsBusy);
 
     const data = await readFileAsArrayBuffer(file);
     const buffer = new Uint8Array(data);
@@ -365,8 +359,6 @@ class Device extends EventEmitter {
   async fetch(path, type, progress = undefined) {
     if (!this.isModuleEnabled(Modules.FETCH))
       throw new Error(HubErrors.Disabled);
-    if (this.fsBusy())
-      throw new Error(HubErrors.FsBusy);
 
     if (!progress) progress = () => {};
 
@@ -424,9 +416,6 @@ class Device extends EventEmitter {
   async uploadOta(file, type, progress = undefined) {
     if (!this.isModuleEnabled(Modules.OTA)) 
       throw new Error(HubErrors.Disabled);
-  
-    if (this.fsBusy())
-      throw new Error(HubErrors.FsBusy);
 
     if (this.isHttpAccessable() && this.info.http_t) {
       let formData = new FormData();

@@ -1,6 +1,6 @@
 const langBase = {
   English: {
-    errors: ["not an error", "open file error", "not enough space", "checksum error", "size error", "start error", "write error", "end error", "aborted", "timeout", "busy", "memory error", "wrong client", "forbidden", "module disabled", "FS busy", "cancelled"],
+    errors: ["not an error", "open file error", "not enough space", "checksum error", "size error", "start error", "write error", "end error", "aborted", "timeout", "busy", "memory error", "wrong client", "forbidden", "module disabled", "incorret type", "damaged packet", "FS busy", "cancelled"],
     themes: {
       auto: "System",
       dark: "Dark",
@@ -119,7 +119,7 @@ const langBase = {
   },
   
   Russian: {
-    errors: ["не ошибка", "невозможно открыть файл", "недостаточно места", "ошибка контрольной суммы", "ошибка размера", "ошибка старта", "ошибка записи", "ошибка завершения", "прервано", "тайм-аут", "занят", "ошибка памяти", "не тот клиент", "запрещено", "модуль отключен", "файловая система занята", "отменено"],
+    errors: ["не ошибка", "невозможно открыть файл", "недостаточно места", "ошибка контрольной суммы", "ошибка размера", "ошибка старта", "ошибка записи", "ошибка завершения", "прервано", "тайм-аут", "занят", "ошибка памяти", "не тот клиент", "запрещено", "модуль отключен", "некорректный тип", "пакет повреждён", "файловая система занята", "отменено"],
     themes: {
       auto: "Системная",
       dark: "Тёмная",

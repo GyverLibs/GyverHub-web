@@ -14,9 +14,11 @@ const HubErrors = {
     WrongClient: 12,// не тот клиент
     Forbidden: 13,  // запрещено в request
     Disabled: 14,   // модуль отключен
+    WrongType: 15,  // некорректный тип
+    PacketDamage: 16,// пакет повреждён
 
-    FsBusy: 15,     // fs занята
-    Cancelled: 16,  // отменено пользователем
+    FsBusy: 17,     // fs занята
+    Cancelled: 18,  // отменено пользователем
 };
 
 const HubCodes = [

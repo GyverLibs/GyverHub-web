@@ -92,19 +92,11 @@ async function fetchFile(index, path) {
 
 // ============ FILE UTILS ============
 async function deleteFile(i) {
-  if (hub.dev(focused).fsBusy()) {
-    showPopupError(getError(HubErrors.FsBusy));
-    return;
-  }
   if (await asyncConfirm(lang.delete + ' ' + fs_arr[i] + '?')) {
     await hub.dev(focused).deleteFile(fs_arr[i]);
   }
 }
 async function renameFile(i) {
-  if (hub.dev(focused).fsBusy()) {
-    showPopupError(getError(HubErrors.FsBusy));
-    return;
-  }
   const path = fs_arr[i];
   const res = await asyncPrompt(lang.rename + ' ' + path + ':', path);
   if (res && res != path) {
