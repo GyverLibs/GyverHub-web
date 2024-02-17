@@ -171,51 +171,6 @@ class Device extends EventEmitter {
 
   //#endregion
 
-  //#region UI files
-
-  #files = [];
-  #file_flag = false;
-
-  async _fetchFiles() {
-    while (this.#files.length) {
-      const file = this.#files.shift();
-  
-      let res;
-      try {
-        res = await this.fetch(file.path, file.type, file.progress);
-      } catch (e) {
-        continue;
-      }
-      file.callback(res);
-    }
-  }
-
-  async loadUIFiles() {
-    this.#file_flag = true;
-    await this._fetchFiles();
-  }
-
-  resetUIFiles() {
-    this.#files.length = 0;
-    this.#file_flag = false;
-  }
-
-  /**
-   * Register an UI file to load.
-   * @param {string} id
-   * @param {string} path
-   * @param {(string) => undefined} callback 
-   */
-  async addFile(id, path, type, callback, progress = undefined) {
-    let has = this.#files.some(f => f.id == id);
-    if (!has) this.#files.push({
-      id, path, type, callback, progress
-    });
-    if (this.#file_flag && this.#files.length == 1) await this._fetchFiles();
-  }
-
-  //#endregion
-
   //#region Interraction > Common
 
   async getInfo() {

@@ -39,10 +39,9 @@ class TableWidget extends BaseWidget {
     #reload() {
         if (this.#path) {
             this.$el.innerHTML = waiter();
-            this.renderer.device.addFile(this.id, this.#path, 'text', file => {
+            this.addFile(this.#path, 'text', file => {
                 this.#data = file.replaceAll(/\\n/ig, "\n");
                 this.#render();
-                this.setPlabel();
             });
         } else {
             this.#render();

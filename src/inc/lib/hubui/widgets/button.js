@@ -82,12 +82,11 @@ class ButtonWidget extends BaseWidget {
         this.$el.style.width = 'unset';
         if (text) {
             if (text.includes(".svg")) {
-                this.renderer.device.addFile(this.id, text, 'text', (data) => {
-                    this.setPlabel();
+                this.addFile(text, 'text', (data) => {
                     this.$el.innerHTML = data;
                     this.$el.style.width = this.#fontSize;
                     this.$el.style.fill = this.#color;
-                }, perc => this.setPlabel(`[${perc}%]`));
+                });
                 this.#inline = false;
                 return;
             } else {

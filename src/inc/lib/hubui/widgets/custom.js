@@ -22,7 +22,7 @@ class HTMLWidget extends BaseWidget {
 
         if (!data.value) return;
         if (data.value.endsWith('.html')) {
-            this.renderer.device.addFile(this.id, data.value, 'text', file => {
+            this.addFile(data.value, 'text', file => {
                 this.#apply(file);
             });
         } else {
@@ -64,7 +64,7 @@ class CustomWidget extends Widget {
 
         if (!data.value) return;
         if (data.value.endsWith('.js')) {
-            this.renderer.device.addFile(this.id, data.value, 'text', file => {
+            this.addFile(data.value, 'text', file => {
                 this.#apply(file);
             });
         } else {
@@ -116,7 +116,7 @@ class UiFileWidget extends Widget {
         this.$el.classList.add('widget_col');
         this.$el.style.width = this.data.wwidth_t + '%';
     
-        this.renderer.device.addFile(this.id, data.value, 'text', (file) => {
+        this.addFile(data.value, 'text', (file) => {
             let controls = null;
             try {
                 controls = JSON.parse('[' + file + ']');

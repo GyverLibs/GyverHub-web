@@ -138,8 +138,7 @@ class Canvas {
                     if (args[0].startsWith('http://') || args[0].startsWith('https://')) {
                         img.src = args[0];
                     } else {
-                        this.renderer.device.addFile(this.id, args[0], 'url', (file) => {
-                            Widget.setPlabel(this.id);
+                        this.addFile(args[0], 'url', (file) => {
                             img.src = file;
                         });
                     }

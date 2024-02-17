@@ -48,14 +48,14 @@ class Widget {
      * 
      * Should be overriden.
      */
-    handleSetTimeout() {}
+    _handleSetError(err) {}
 
     /**
      * Handle ack for previous set.
      * 
      * Should be overriden.
      */
-    handleAck() {}
+    _handleAck() {}
 
     /**
      * Handle renderer closing. 
@@ -75,6 +75,22 @@ class Widget {
     set(value, ack = true) {
         this.renderer._set(this, value, ack);
     }
+
+    /**
+     * Register an UI file to load.
+     * 
+     * Should be called from subclass.
+     * @param {string} path
+     * @param {string} type
+     * @param {(string) => undefined} callback 
+     */
+    addFile(path, type, callback) {
+        this.renderer._addFile(this, path, type, callback);
+    }
+
+    _handleFileProgress(perc) {}
+    _handleFileError(err) {}
+    _handleFileLoaded(res) {}
 }
 
 /**
@@ -243,17 +259,25 @@ class BaseWidget extends Widget {
         this.#suffix.textContent = text ?? '';
     }
 
-    /**
-     * Internal method.
-     */
-    handleSetTimeout(){
-        this.setPlabel('[ERROR]');
+    _handleSetError(err){
+        this.setPlabel("[ERR]");
+        showPopupError(`Widget ${this.id}: ` + getError(err));
     }
 
-    /**
-     * Internal method.
-     */
-    handleAck() {
+    _handleAck() {
+        this.setPlabel();
+    }
+
+    _handleFileProgress(perc) {
+        this.setPlabel(`[${perc}%]`);
+    }
+
+    _handleFileError(err) {
+        this.setPlabel("[ERR]");
+        showPopupError(`Widget ${this.id}: ` + getError(err));
+    }
+
+    _handleFileLoaded() {
         this.setPlabel();
     }
 }

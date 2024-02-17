@@ -12,8 +12,15 @@ const colors = {
 };
 
 
-function getError(code) {
-  return lang.errors[code];
+function getError(err) {
+  if (err instanceof DeviceError)
+    return lang.errors[err.code];
+  if (err instanceof TimeoutError)
+    return lang.errors[HubErrors.Timeout];
+  if (err instanceof DOMException)
+    return `${err.name}: ${err.message}`
+  console.log(err);
+  return `${err}`;
 }
 
 // ====================== CHECK ======================

@@ -19,6 +19,8 @@ class Renderer {
     #idMap;
     #prevWidth;
     #ackTimers;
+    #files;
+    #filesLoaded;
 
     constructor(device, controls) {
         this.device = device;
@@ -26,10 +28,12 @@ class Renderer {
         this.#idMap = new Map();
         this.#prevWidth = 1;
         this.#ackTimers = new Map();
+        this.#files = [];
+        this.#filesLoaded = false;
 
-        this.device.resetUIFiles();
         this._makeWidgets(this.#widgets, 'col', controls);
-        this.device.loadUIFiles();
+        this.#filesLoaded = true;
+        this.#loadFiles();
     }
 
     #updateWWidth(type, data) {
@@ -86,9 +90,9 @@ class Renderer {
             await this.device.set(widget.id, value);
         } catch (e) {
             console.log(e);
-            if (ack) widget.handleSetTimeout();
+            if (ack) widget._handleSetError(e);
         }
-        if (ack) widget.handleAck();
+        if (ack) widget._handleAck();
     }
 
     /**
@@ -125,6 +129,40 @@ class Renderer {
     handleUpdate(id, data) {
         const w = this.#idMap.get(id);
         if (w) w.update(data);
+    }
+
+    /**
+     * Register an UI file to load.
+     * @param {Widget} widget
+     * @param {string} path
+     * @param {string} type
+     * @param {(string) => undefined} callback 
+     */
+    _addFile(widget, path, type, callback) {
+        let has = this.#files.some(f => f.widget.id == widget.id);
+        if (!has) this.#files.push({
+            widget, path, type, callback
+        });
+        this.#loadFiles();
+    }
+
+    async #loadFiles() {
+        if (!this.#filesLoaded) return;
+
+        while (this.#files.length) {
+            const file = this.#files.shift();
+        
+            let res;
+            try {
+                res = await this.device.fetch(file.path, file.type, file.widget._handleFileProgress.bind(file.widget));
+            } catch (e) {
+                console.log(e);
+                file.widget._handleFileError(e);
+                continue;
+            }
+            file.widget._handleFileLoaded(res);
+            file.callback(res);
+        }
     }
 }
 
