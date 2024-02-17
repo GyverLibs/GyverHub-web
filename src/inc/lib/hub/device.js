@@ -266,7 +266,7 @@ class Device extends EventEmitter {
   }
 
   async fsStop() {
-    if (this.isModuleEnabled(Modules.FETCH | Modules.UPLOAD | Modules.OTA))
+    if (this.isModuleEnabled(Modules.FETCH) || this.isModuleEnabled(Modules.UPLOAD) || this.isModuleEnabled(Modules.OTA))
       await this.#post('fs_abort');
   }
 

@@ -7,7 +7,6 @@ let focused = null;
 
 // ============== SCREEN ==============
 async function show_screen(nscreen) {
-  if (focused) hub.dev(focused).fsStop();
   spinArrows(false);
   screen = nscreen;
 
@@ -15,6 +14,7 @@ async function show_screen(nscreen) {
   const $title = document.getElementsByClassName('header-title')[0];
 
   const dev = hub.dev(focused);
+  dev.fsStop();
 
   switch (screen) {
     case 'main':

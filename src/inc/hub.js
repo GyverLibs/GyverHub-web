@@ -133,7 +133,7 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
 
   ev.device.addEventListener('command.error', e => {
     if (e.device.info.id == focused)
-      showPopupError(getError(e.data.code));
+      showPopupError(getError(new DeviceError(e.data.code)));
   });
   ev.device.addEventListener('command.fs_err', () => {
     if (e.device.info.id == focused)
