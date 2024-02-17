@@ -56,7 +56,7 @@ function http_fetch_blob(url, type, onprogress, tout) {
       }
     }
     xhr.timeout = tout;
-    xhr.ontimeout = (e) => rej(HubErrors.Timeout);
+    xhr.ontimeout = (e) => rej(new DeviceError(HubErrors.Timeout));
     xhr.open('GET', url, true);
     xhr.send();
   });

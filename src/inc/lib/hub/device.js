@@ -317,7 +317,7 @@ class Device extends EventEmitter {
 
   async upload(file, path, progress = undefined) {
     if (!this.isModuleEnabled(Modules.UPLOAD)) 
-      throw new Error(HubErrors.Disabled);
+      throw new DeviceError(HubErrors.Disabled);
 
     const data = await readFileAsArrayBuffer(file);
     const buffer = new Uint8Array(data);
@@ -350,7 +350,7 @@ class Device extends EventEmitter {
       }
 
       if (cmd === 'upload_err')
-        throw new Error(data.code);
+        throw new DeviceError(data.code);
     }
 
     await this.updateFileList();
@@ -358,7 +358,7 @@ class Device extends EventEmitter {
 
   async fetch(path, type, progress = undefined) {
     if (!this.isModuleEnabled(Modules.FETCH))
-      throw new Error(HubErrors.Disabled);
+      throw new DeviceError(HubErrors.Disabled);
 
     if (!progress) progress = () => {};
 
@@ -381,11 +381,11 @@ class Device extends EventEmitter {
 
         if (data.last) { 
           if (fet_buf.length != fet_len)
-            throw new Error(HubErrors.SizeMiss);
+            throw new DeviceError(HubErrors.SizeMiss);
   
           const crc = crc32(fet_buf);
           if (crc != data.crc32)
-            throw new Error(HubErrors.CrcMiss);
+            throw new DeviceError(HubErrors.CrcMiss);
 
           if (type === 'url')
             return `data:${getMime(path)};base64,${btoa(fet_buf)}`;
@@ -399,7 +399,7 @@ class Device extends EventEmitter {
       }
 
       if (cmd === 'fetch_err')
-        throw new Error(data.code);
+        throw new DeviceError(data.code);
     }
   }
   
@@ -410,12 +410,12 @@ class Device extends EventEmitter {
   async otaUrl(type, url) {
     const [t, data] = await this.#postAndWait('ota_url', ['ota_url_ok', 'ota_url_err'], type, url);
     if (t === 'ota_url_err')
-      throw new Error(data.code);
+      throw new DeviceError(data.code);
   }
 
   async uploadOta(file, type, progress = undefined) {
     if (!this.isModuleEnabled(Modules.OTA)) 
-      throw new Error(HubErrors.Disabled);
+      throw new DeviceError(HubErrors.Disabled);
 
     if (this.isHttpAccessable() && this.info.http_t) {
       let formData = new FormData();
@@ -439,7 +439,7 @@ class Device extends EventEmitter {
       }
 
       if (cmd === 'ota_err')
-        throw new Error(data.code);
+        throw new DeviceError(data.code);
     }
   }
 

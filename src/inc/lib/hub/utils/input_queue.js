@@ -55,7 +55,7 @@ class InputQueue {
       await wait;
     }
 
-    throw new Error("timed out");
+    throw new TimeoutError();
   }
 
   #getIfMatches(types) {

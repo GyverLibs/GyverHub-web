@@ -11,6 +11,7 @@
 /*@![include:inc/lib/hub/utils/utils.js, compile]*/
 
 /*@![include:inc/lib/hub/codes.js, compile, js]*/
+/*@![include:inc/lib/hub/errors.js, compile]*/
 /*@![include:inc/lib/hub/config.js, compile]*/
 
 /*@![include:inc/lib/hub/connection/connection.js, compile, js]*/
