@@ -281,7 +281,7 @@ class Device extends EventEmitter {
 
     if (this.isHttpAccessable() && this.info.http_t) {
       let formData = new FormData();
-      formData.append('upload', file);
+      formData.append('upload', file, "upload");
       await http_post(`http://${this.info.ip}:${this.info.http_port}/hub/upload?path=${path}&crc32=${crc}&client_id=${this._hub.clientId}&size=${buffer.length}`, formData)
     } else {
       if (!progress) progress = () => {};
@@ -374,7 +374,7 @@ class Device extends EventEmitter {
 
     if (this.isHttpAccessable() && this.info.http_t) {
       let formData = new FormData();
-      formData.append(type, file);
+      formData.append(type, file, "ota");
       await http_post(`http://${this.info.ip}:${this.info.http_port}/hub/ota?type=${type}&client_id=${this._hub.clientId}`, formData)
     } else {
       if (!progress) progress = () => {};
