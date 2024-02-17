@@ -14,7 +14,7 @@ async function show_screen(nscreen) {
   const $title = document.getElementsByClassName('header-title')[0];
 
   const dev = hub.dev(focused);
-  dev.fsStop();
+  if (dev) dev.fsStop();
 
   switch (screen) {
     case 'main':
