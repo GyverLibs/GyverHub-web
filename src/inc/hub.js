@@ -115,13 +115,13 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
 
   ev.device.addEventListener('command.files', e => {
     if (e.device.info.id == focused)
-      showFsbr(e.data.fs, e.data.total, e.data.used);
+      showFsbr(e.device, e.data.fs, e.data.total, e.data.used);
   });
 
 
   ev.device.addEventListener('command.ui', e => {
     if (e.device.info.id == focused && e.data.controls)
-      showControls(focused, e.data.controls);
+      showControls(e.device, e.data.controls);
   });
 
   ev.device.addEventListener('command.script', e => {

@@ -1,12 +1,11 @@
 let fs_arr = [];
 
 // ============ FS BROWSER ============
-function showFsbr(fs, total, used) {
+function showFsbr(device, fs, total, used) {
   fs_arr = [];
   for (const path in fs) fs_arr.push(path);
   fs_arr = sortPaths(fs_arr, '/');
 
-  const device = hub.dev(focused);
   let inner = '';
   for (const i in fs_arr) {
     if (fs_arr[i].endsWith('/')) {

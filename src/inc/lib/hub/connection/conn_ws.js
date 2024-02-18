@@ -81,7 +81,7 @@ class WebSocketConnection extends Connection {
 
         if (ws.readyState === WebSocket.OPEN)
           res(ws);
-        else rej(e);
+        else rej(e ?? new TimeoutError());
       }
 
       const ws = new WebSocket(url, protos);

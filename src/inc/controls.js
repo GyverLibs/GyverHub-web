@@ -6,9 +6,8 @@ async function reboot_h() {
 // ================== SHOW ==================
 let renderer;
 
-function showControls(id, controls) {
+function showControls(device, controls) {
   if (renderer) renderer.close();
-  const device = hub.dev(id);
   renderer = new Renderer(device, controls);
 
   const $root = document.getElementById('controls');

@@ -44,14 +44,14 @@ class TelegramConnection extends Connection {
     params.chat_id = chat_id;
     params.text = text;
     params.disable_notification = true;
-    let resp = await fetch(`https://api.telegram.org/bot${this.options.token}/sendMessage`, {
+    const resp = await fetch(`https://api.telegram.org/bot${this.options.token}/sendMessage`, {
       method: 'POST',
       body: JSON.stringify(params),
       headers: {
         'Content-Type': 'application/json;charset=utf-8'
       },
     });
-    let data = await resp.json();
+    const data = await resp.json();
     return data.ok;
   }
 
@@ -59,7 +59,7 @@ class TelegramConnection extends Connection {
     while (this.#running) {
       let data = null;
       try {
-        let resp = await fetch(`https://api.telegram.org/bot${this.options.token}/getUpdates?offset=${this.#offset}&timeout=${this.options.pool_time}`);
+        const resp = await fetch(`https://api.telegram.org/bot${this.options.token}/getUpdates?offset=${this.#offset}&timeout=${this.options.pool_time}`);
         data = await resp.json();
       } catch (e) {
       }
@@ -87,7 +87,7 @@ class TelegramConnection extends Connection {
   async #onmessage(data){
     try {
       if (data.channel_post.text == '/start') {
-        let msg = 'Channel *' + data.channel_post.chat.title + '* id: `' + data.channel_post.chat.id + '`';
+        const msg = 'Channel *' + data.channel_post.chat.title + '* id: `' + data.channel_post.chat.id + '`';
         await this.#sendMessage(data.channel_post.chat.id, msg, { parse_mode: "MarkdownV2" });
         return;
       }
@@ -95,8 +95,8 @@ class TelegramConnection extends Connection {
 
     try {
       if (data.channel_post.chat.id != this.options.chat) return;
-      let [id, ...rest] = data.channel_post.text.split(':');
-      let data = rest.join(':');
+      const [id, ...rest] = data.channel_post.text.split(':');
+      const data = rest.join(':');
       let buffer = this.#buffers.get(id);
       if (!buffer) {
         buffer = new PacketBufferScanFirst(data => {

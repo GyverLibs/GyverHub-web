@@ -87,7 +87,7 @@ class MQTTConnection extends Connection {
     this.#client.on('message', (topic, text) => {
       topic = topic.toString();
       text = text.toString();
-      let parts = topic.split('/');
+      const parts = topic.split('/');
 
       if (parts.length < 2 || parts[1] != 'hub' || !this.#preflist.includes(parts[0]))
         return;
@@ -109,7 +109,7 @@ class MQTTConnection extends Connection {
 
         // prefix/hub/id/get/name
       } else if (parts.length == 5 && parts[3] == 'get') {
-        let dev = this.hub.dev(parts[2]);
+        const dev = this.hub.dev(parts[2]);
         if (dev) {
           let upd = {};
           upd[parts[4]] = {value: text};
