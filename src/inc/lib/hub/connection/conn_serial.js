@@ -6,9 +6,11 @@ class SerialConnection extends Connection {
   #reader;
   #running;
   #packet_buffer;
+  #writeLock;
 
   constructor(hub) {
     super(hub);
+    this.#writeLock = new AsyncLock();
     this.options.enabled = false;
     this.options.baudrate = 115200;
 
@@ -98,23 +100,17 @@ class SerialConnection extends Connection {
   async send(data) {
     data = new TextEncoder().encode(data + '\0');
 
-    if (!this.#port || !this.#port.writable)
-      return;
-
-    // TODO найти какой-нибудь lock, на котором можно ждать 
-    // или сделать буфер на вывод
-    while (this.#port.writable.locked){
-      await sleep(10);
+    this.#writeLock.runExclusive(async () => {
       if (!this.#port || !this.#port.writable)
         return;
-    }
 
-    const writer = this.#port.writable.getWriter();
-    try {
-      await writer.write(data);
-    } finally {
-      writer.releaseLock();
-    }
+      const writer = this.#port.writable.getWriter();
+      try {
+        await writer.write(data);
+      } finally {
+        writer.releaseLock();
+      }
+    });
   }
 
   async _handleDisconnection(event) {
