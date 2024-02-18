@@ -37,7 +37,13 @@ class Connection extends EventEmitter {
   constructor(hub) {
     super();
     this.#state = ConnectionState.DISCONNECTED;
+  
     this.#discovering = false;
+    this.#discoverTimer = new AsyncTimer(undefined, () => {
+      this.#discovering = false;
+      this.hub._checkDiscoverEnd();
+    });
+  
     this.hub = hub;
     this.options = this.hub.config.getConnection(this.name);
 
@@ -69,12 +75,7 @@ class Connection extends EventEmitter {
 
   _discoverTimer() {
     this.#discovering = true;
-    if (this.#discoverTimer) clearTimeout(this.#discoverTimer);
-    this.#discoverTimer = setTimeout(() => {
-      this.#discovering = false;
-      this.#discoverTimer = null;
-      this.hub._checkDiscoverEnd();
-    }, this.options.discover_timeout);
+    this.#discoverTimer.restart(this.options.discover_timeout);
   }
 
   /**
