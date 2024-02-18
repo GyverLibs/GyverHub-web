@@ -21,6 +21,20 @@ class DeviceUpdateEvent extends DeviceEvent {
   }
 }
 
+class DeviceErrorEvent extends DeviceEvent {
+  constructor(device, error) {
+    super("error", device);
+    this.error = error;
+  }
+}
+
+class DeviceConnectionStatusEvent extends DeviceEvent {
+  constructor(device, status) {
+    super("connectionstatus", device);
+    this.status = status;
+  }
+}
+
 class Device extends EventEmitter {
   /** @type {Connection[]} */
   active_connections = [];
@@ -28,6 +42,7 @@ class Device extends EventEmitter {
   info;
 
   #input_queue;
+  #pingTimer;
 
   // device
   prev_set = {};
@@ -48,6 +63,16 @@ class Device extends EventEmitter {
     this._hub = hub;
     this.info = hub.config.getDevice(id);
     this.#input_queue = new InputQueue(1000, 1000);  // TODO config
+    this.#pingTimer = new AsyncTimer(3000, async () => {
+      try {
+        await this.#postAndWait('ping', ['OK']);
+        this.dispatchEvent(new DeviceConnectionStatusEvent(this, true));
+      } catch (e) {
+        console.log('[PING]', e);
+        this.dispatchEvent(new DeviceConnectionStatusEvent(this, false));
+      }
+      this.#pingTimer.restart();
+    })
   }
 
   /**
@@ -118,6 +143,9 @@ class Device extends EventEmitter {
     case 'update':
       this._checkUpdates(data.updates);
       break;
+
+    case 'error':
+      this.dispatchEvent(new DeviceErrorEvent(this, new DeviceError(data.code)));
     }
   }
 
@@ -234,9 +262,11 @@ class Device extends EventEmitter {
     }
 
     await this.updateUi();
+    this.#pingTimer.start();
   }
 
   async unfocus() {
+    this.#pingTimer.cancel();
     await this.#post('unfocus');
     if (this._hub._ws) await this._hub._ws.disconnect();
   }

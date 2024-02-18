@@ -3,6 +3,11 @@
 /*@/[if_not_target:esp]*/
 
 
+/*@![include:inc/lib/hub/errors.js, compile]*/
+
+/*@![include:inc/lib/hub/utils/async_timer.js, compile]*/
+/*@![include:inc/lib/hub/utils/async_lock.js, compile]*/
+
 /*@![include:inc/lib/hub/utils/packet_buffer.js, compile]*/
 /*@![include:inc/lib/hub/utils/cyclic_buffer.js, compile]*/
 /*@![include:inc/lib/hub/utils/enum.js, compile]*/
@@ -11,7 +16,6 @@
 /*@![include:inc/lib/hub/utils/utils.js, compile]*/
 
 /*@![include:inc/lib/hub/codes.js, compile, js]*/
-/*@![include:inc/lib/hub/errors.js, compile]*/
 /*@![include:inc/lib/hub/config.js, compile]*/
 
 /*@![include:inc/lib/hub/connection/connection.js, compile, js]*/

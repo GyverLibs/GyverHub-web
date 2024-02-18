@@ -1,11 +1,3 @@
-function makeWaiter() {
-  let release;
-  const wait = new Promise(res => {
-    release = res;
-  });
-  return [wait, release];
-}
-
 class InputQueue {
   #queue = [];
   #listeners = [];
@@ -39,7 +31,7 @@ class InputQueue {
 
   async get(types) {
     let timed_out = false;
-    let wait, release = () => {};
+    let release = () => {};
 
     setTimeout(() => {
       timed_out = true;
@@ -50,9 +42,10 @@ class InputQueue {
       const value = this.#getIfMatches(types);
       if (value) return [value.type, value.data];
 
-      [wait, release] = makeWaiter();
+      const e = makeWaiter();
+      release = e.resolve;
       this.#listeners.push(release);
-      await wait;
+      await e.wait;
     }
 
     throw new TimeoutError();

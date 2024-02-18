@@ -131,18 +131,24 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
       showPopupError('Script from device was blocked!');
   });
 
-  ev.device.addEventListener('command.error', e => {
-    if (e.device.info.id == focused)
-      showPopupError(getError(new DeviceError(e.data.code)));
-  });
   ev.device.addEventListener('command.fs_err', () => {
     if (e.device.info.id == focused)
       EL('fsbr_inner').innerHTML = `<div class="fs_err">FS ${lang.error}</div>`;
   });
 
+  ev.device.addEventListener('error', e => {
+    if (e.device.info.id == focused)
+      showPopupError(getError(e.error));
+  });
+
   ev.device.addEventListener('update', e => {
     if (e.device.info.id == focused && screen == 'ui' && renderer)
       renderer.handleUpdate(e.name, e.data);
+  });
+
+  ev.device.addEventListener('connectionstatus', e => {
+    if (e.device.info.id == focused)
+      errorBar(!e.status);
   });
 });
 hub.addEventListener('deviceinfochanged', ev => {
