@@ -16,7 +16,7 @@ function showControls(device, controls) {
   
     renderer.addEventListener('menuopen', () => {
       try {
-          this.renderer.device.fsStop();
+          device.fsStop();
       } catch (e) { }
       enterMenu();
       if (screen != 'ui') show_screen('ui');
