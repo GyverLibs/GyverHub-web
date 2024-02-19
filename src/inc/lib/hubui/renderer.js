@@ -17,8 +17,7 @@ class Renderer {
     device;
     #widgets;
     #idMap;
-    #prevWidth;
-    #ackTimers;
+    #idMapExt;
     #files;
     #filesLoaded;
 
@@ -26,8 +25,7 @@ class Renderer {
         this.device = device;
         this.#widgets = [];
         this.#idMap = new Map();
-        this.#prevWidth = 1;
-        this.#ackTimers = new Map();
+        this.#idMapExt = new Map();
         this.#files = [];
         this.#filesLoaded = false;
 
@@ -37,13 +35,14 @@ class Renderer {
     }
 
     #updateWWidth(type, data) {
+        let prevWidth = 1;
         switch (type) {
             case 'row':
                 let sumw = 0;
                 for (const ctrl of data) {
                     if (!ctrl.type || Renderer.#VIRTUAL_WIDGETS.has(ctrl.type)) continue;
-                    if (!ctrl.wwidth) ctrl.wwidth = this.#prevWidth;
-                    else this.#prevWidth = ctrl.wwidth;
+                    if (!ctrl.wwidth) ctrl.wwidth = prevWidth;
+                    else prevWidth = ctrl.wwidth;
                     sumw += ctrl.wwidth;
                 }
                 for (const ctrl of data) {
@@ -67,9 +66,10 @@ class Renderer {
      * @param {'row' | 'col'} type 
      * @param {object[]} data 
      */
-    _makeWidgets(cont, type, data) {
+    _makeWidgets(cont, type, data, isExt = false) {
         this.#updateWWidth(type, data);
         
+        const idMap = isExt ? this.#idMapExt : this.#idMap;
         for (const ctrl of data) {
             if (!ctrl.type) continue;
 
@@ -80,7 +80,7 @@ class Renderer {
             }
 
             const obj = new cls(ctrl, this);
-            this.#idMap.set(obj.id, obj)
+            idMap.set(obj.id, obj)
             cont.push(obj);
         }
     }
@@ -113,9 +113,6 @@ class Renderer {
      * Закрытие рендерера (остановка таймеров). Нужно вызвать перед удалением рендерера.
      */
     close() {
-        for (const t of this.#ackTimers.values())
-            clearTimeout(t);
-        this.#ackTimers.clear();
         for (const w of this.#idMap.values()) {
             w.close();
         }
