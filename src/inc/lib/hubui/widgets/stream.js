@@ -11,10 +11,15 @@ class StreamWidget extends BaseWidget {
                 width: '100%',
             }
         });
-        const info = this.renderer.device.info;
-        this.$el.src = `http://${info.ip}:${data.port}/${data.path ?? ''}`;
         
         this.update(data);
+    }
+
+    update(data){
+        super.update(data);
+
+        if ('port' in data || 'path' in data)
+            this.$el.src = `http://${this.renderer.device.info.ip}:${data.port}/${data.path ?? ''}`;
     }
 }
 

@@ -1,6 +1,8 @@
 class CanvasWidget extends BaseWidget {
     $el;
-    #cv;
+    #data = [];
+    #scale = 1;
+    #resize_h;
 
     constructor(data, renderer) {
         super(data, renderer);
@@ -19,14 +21,12 @@ class CanvasWidget extends BaseWidget {
             ]
         });
 
-        this.#cv = new Canvas(data.id, this.$el, this.renderer.device, data.width, data.height, data.active);
-
-        this.$el.parentNode.addEventListener('resize', () => {
-            this.#cv.resize();
-        });
+        this.#resize();
+        this.#resize_h = this.#resize.bind(this);
+        window.addEventListener('resize', this.#resize_h);
 
         wait2Frame().then(() => {
-            this.#cv.resize();
+            this.#resize();
         });
 
         this.update(data);
@@ -36,73 +36,54 @@ class CanvasWidget extends BaseWidget {
     update(data) {
         super.update(data);
         
+        if ('active' in data) this.$el.style.cursor = data.active ? 'pointer' : '';
         if ('data' in data) {
-            this.#cv.update(data.data);
-            this.#cv.show(data.data);
+            this.#data = this.#data.concat(data.data);
+            this.#show(data.data);
         }
     }
 
+    close() {
+        window.removeEventListener('resize', this.#resize_h);
+    }
+
     #click(e) {
-        if (!this.#cv.active) return;
-        let rect = this.$el.getBoundingClientRect();
+        if (!this.data.active) return;
+        const rect = this.$el.getBoundingClientRect();
         const ratio = window.devicePixelRatio;
-        let x = Math.round((e.clientX - rect.left) / this.#cv.scale * ratio);
+        let x = Math.round((e.clientX - rect.left) / this.#scale * ratio);
         if (x < 0) x = 0;
-        let y = Math.round((e.clientY - rect.top) / this.#cv.scale * ratio);
+        let y = Math.round((e.clientY - rect.top) / this.#scale * ratio);
         if (y < 0) y = 0;
         this.set((x << 16) | y);
         this.setSuffix('[' + x + ',' + y + ']');
     }
-}
 
-Renderer.register('canvas', CanvasWidget);
-
-
-class Canvas {
-    constructor(id, cv, device, w, h, active) {
-        this.data = [];
-        this.id = id;
-        this.cv = cv;
-        this.device = device;
-        this.width = w;
-        this.height = h;
-        this.scale = 1;
-        this.active = active;
-        if (active) cv.style.cursor = 'pointer';
-        this.resize();
-    }
-
-    clear() {
-        this.data = [];
-    }
-
-    resize() {
-        let rw = this.cv.parentNode.clientWidth;
+    #resize() {
+        const rw = this.$el.parentNode.clientWidth;
         if (!rw) return;
-        let scale = rw / this.width;
+        const scale = rw / this.data.width;
         const ratio = window.devicePixelRatio;
-        this.scale = scale * ratio;
-        let rh = Math.floor(this.height * scale);
-        this.cv.style.width = rw + 'px';
-        this.cv.style.height = rh + 'px';
-        this.cv.width = Math.floor(rw * ratio);
-        this.cv.height = Math.floor(rh * ratio);
-        this.show(this.data);
+        this.#scale = scale * ratio;
+        const rh = Math.floor(this.data.height * scale);
+        this.$el.style.width = rw + 'px';
+        this.$el.style.height = rh + 'px';
+        this.$el.width = Math.floor(rw * ratio);
+        this.$el.height = Math.floor(rh * ratio);
+        this.#show(this.#data);
     }
 
-    update(data) {
-        this.data = this.data.concat(data);
-    }
+    #show(data = null) {
+        if (!this.$el.parentNode.clientWidth) return;
 
-    show(data = null) {
-        if (!data) data = this.data;
-        const cv = this.cv;
+        if (!data) data = this.#data;
+        const cv = this.$el;
         const cx = cv.getContext("2d");
         const cmd_list = ['fillStyle', 'strokeStyle', 'shadowColor', 'shadowBlur', 'shadowOffsetX', 'shadowOffsetY', 'lineWidth', 'miterLimit', 'font', 'textAlign', 'textBaseline', 'lineCap', 'lineJoin', 'globalCompositeOperation', 'globalAlpha', 'scale', 'rotate', 'rect', 'fillRect', 'strokeRect', 'clearRect', 'moveTo', 'lineTo', 'quadraticCurveTo', 'bezierCurveTo', 'translate', 'arcTo', 'arc', 'fillText', 'strokeText', 'drawImage', 'roundRect', 'fill', 'stroke', 'beginPath', 'closePath', 'clip', 'save', 'restore'];
         const const_list = ['butt', 'round', 'square', 'square', 'bevel', 'miter', 'start', 'end', 'center', 'left', 'right', 'alphabetic', 'top', 'hanging', 'middle', 'ideographic', 'bottom', 'source-over', 'source-atop', 'source-in', 'source-out', 'destination-over', 'destination-atop', 'destination-in', 'destination-out', 'lighter', 'copy', 'xor', 'top', 'bottom', 'middle', 'alphabetic'];
 
         const cv_map = (v, h) => {
-            v *= this.scale;
+            v *= this.#scale;
             return v >= 0 ? v : (h ? cv.height : cv.width) - v;
         }
 
@@ -120,7 +101,7 @@ class Canvas {
                 cmdName = cmd_list[cmd];
                 
                 if (cmd <= 2) args[0] = intToColA(args[0]);   // shadowColor
-                else if (cmd <= 7) args[0] *= this.scale; // miterLimit
+                else if (cmd <= 7) args[0] *= this.#scale; // miterLimit
                 else if (cmd <= 13) args[0] = const_list[args[0]];  // globalCompositeOperation
                 else if (cmd <= 14) ;  // globalAlpha
                 else if (cmd <= 16) ; // rotate
@@ -153,7 +134,7 @@ class Canvas {
                     for (let i = 0; i < 4; i++) {
                         args[i] = cv_map(args[i], i % 2);
                     }
-                    if (args.length == 5) args[4] *= this.scale;
+                    if (args.length == 5) args[4] *= this.#scale;
                     else args.push(args.slice());
                 }
             }
@@ -173,6 +154,8 @@ class Canvas {
         }
     }
 }
+
+Renderer.register('canvas', CanvasWidget);
 
 function intToColA(val) {
     if (val === null || val === undefined) return null;
