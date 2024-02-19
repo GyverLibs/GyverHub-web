@@ -171,11 +171,10 @@ class Renderer extends EventEmitter {
             file.callback(res);
         }
     }
-}
 
-// TODO: remove on new version
-Renderer.register('css', Widget, true);
-Renderer.register('js', Widget, true);
-Renderer.register('hook', Widget, true);
-Renderer.register('func', Widget, true);
-Renderer.register('plugin', Widget, true);
+    _getPlugin(name) {
+        const widget = this.#idMap.get(name);
+        if (!widget || !(widget instanceof PluginWidget)) return undefined;
+        return widget.widgetClass;
+    }
+}
