@@ -1,9 +1,5 @@
 const hub = new GyverHub();
 
-if (localStorage.hasOwnProperty('hub_config')) {
-  hub.config.fromJson(localStorage.getItem('hub_config'));
-}
-
 hub.addConnection(HTTPConnection);
 /*@[if_not_target:esp]*/
 hub.addConnection(MQTTConnection);
@@ -11,6 +7,10 @@ hub.addConnection(TelegramConnection);
 hub.addConnection(SerialConnection);
 hub.addConnection(BLEConnection);
 /*@/[if_not_target:esp]*/
+
+if (localStorage.hasOwnProperty('hub_config')) {
+  hub.config.fromJson(localStorage.getItem('hub_config'));
+}
 
 // ============ CONNECTION ============
 /*@[if_not_target:esp]*/
