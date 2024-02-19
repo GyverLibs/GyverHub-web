@@ -1,6 +1,4 @@
 class ConfirmWidget extends Widget {
-    #text = '';
-
     constructor(data, renderer) {
         super(data, renderer);
         this.update(data);
@@ -9,18 +7,14 @@ class ConfirmWidget extends Widget {
     update(data) {
         super.update(data);
     
-        if ('text' in data) this.#text = data.text;
-        if ('action' in data) asyncConfirm(this.#text).then(res => this.set(res ? 1 : 0));
+        if ('action' in data) asyncConfirm(this.data.text).then(res => this.set(res ? 1 : 0));
     }
 }
 
-Renderer.register('confirm', ConfirmWidget);
+Renderer.register('confirm', ConfirmWidget, true);
 
 
 class PromptWidget extends Widget {
-    #text = '';
-    #value = '';
-
     constructor(data, renderer) {
         super(data, renderer);
         this.update(data);
@@ -29,20 +23,13 @@ class PromptWidget extends Widget {
     update(data) {
         super.update(data);
     
-        if ('text' in data) this.#text = data.text;
-        if ('value' in data) this.#value = data.value;
-        if ('action' in data) asyncPrompt(this.#text, this.#value).then(res => {
+        if ('action' in data) asyncPrompt(this.data.text, this.data.value).then(res => {
             if (res !== null){
-                this.#value = res;
+                this.data.value = res;
                 this.set(res);
             }
         });
     }
 }
 
-Renderer.register('prompt', PromptWidget);
-
-
-class DummyWidget extends Widget {}
-
-Renderer.register('dummy', DummyWidget);
+Renderer.register('prompt', PromptWidget, true);
