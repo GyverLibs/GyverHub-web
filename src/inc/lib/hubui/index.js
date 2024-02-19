@@ -1,7 +1,6 @@
 /*@![include:inc/lib/hubui/widget.js, compile]*/
 /*@![include:inc/lib/hubui/utils.js, compile]*/
 /*@![include:inc/lib/hubui/renderer.js, compile]*/
-/*@![include:inc/lib/hubui/menu.js, compile]*/
 /*@![include:inc/lib/hubui/popup.js, compile]*/
 
 /*@![include:inc/lib/hubui/widgets/button.js, compile]*/
@@ -18,6 +17,7 @@
 /*@![include:inc/lib/hubui/widgets/joy.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/label.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/led.js, compile]*/
+/*@![include:inc/lib/hubui/widgets/menu.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/plot.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/popup.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/row_col.js, compile]*/

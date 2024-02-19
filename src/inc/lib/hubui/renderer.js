@@ -1,4 +1,4 @@
-class Renderer {
+class Renderer extends EventEmitter {
     static #WIDGETS = new Map();
     static #VIRTUAL_WIDGETS = new Set();
 
@@ -21,12 +21,22 @@ class Renderer {
     #files;
     #filesLoaded;
 
-    constructor(device, controls) {
+    constructor(device) {
+        super();
         this.device = device;
         this.#widgets = [];
         this.#idMap = new Map();
         this.#idMapExt = new Map();
         this.#files = [];
+        this.#filesLoaded = false;
+    }
+
+    update(controls) {
+        this.close();
+        this.#widgets.length = 0;
+        this.#idMap.clear();
+        this.#idMapExt.clear();
+        this.#files.length = 0;
         this.#filesLoaded = false;
 
         this._makeWidgets(this.#widgets, 'col', controls);

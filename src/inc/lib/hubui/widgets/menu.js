@@ -1,18 +1,26 @@
+class MenuOpenEvent extends Event {
+    constructor(name) {
+        super('menuopen');
+        this.name = name;
+    }
+}
+
 class MenuWidget extends Widget {
-    $el = document.getElementById('menu');
+    $el;
 
     constructor(data, renderer) {
         super(data, renderer);
+        this.$el = document.getElementById('menu');
         this.update(data);
     }
 
     update(data) {
         super.update(data);
     
-        if (!data.text) return;
+        if (!data.text || !this.$el) return;
 
         this.$el.replaceChildren();
-        const labels = data.text.split(/[.;]/);
+        const labels = data.text.split(';');
         for (const i in labels) {
             this.$el.append(createElement(null, {
                 type: 'div',
@@ -23,20 +31,16 @@ class MenuWidget extends Widget {
                 }
             }));
         }
-        updateSystemMenu();
+        this.renderer.dispatchEvent(new Event('menuchanged'));
     }
 
     #openMenu(i) {
-        try {
-            this.renderer.device.fsStop();
-        } catch (e) { }
-        enterMenu();
-        if (screen != 'ui') show_screen('ui');
+        this.renderer.dispatchEvent(new MenuOpenEvent(i));
         this.set(i);
     }
 
     close() {
-        this.$el.replaceChildren();
+        if (this.$el) this.$el.replaceChildren();
     }
 }
 

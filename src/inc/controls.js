@@ -7,8 +7,23 @@ async function reboot_h() {
 let renderer;
 
 function showControls(device, controls) {
-  if (renderer) renderer.close();
-  renderer = new Renderer(device, controls);
+  if (!renderer) {
+    renderer = new Renderer(device);
+  
+    renderer.addEventListener('menuchanged', () => {
+      updateSystemMenu();
+    });
+  
+    renderer.addEventListener('menuopen', () => {
+      try {
+          this.renderer.device.fsStop();
+      } catch (e) { }
+      enterMenu();
+      if (screen != 'ui') show_screen('ui');
+    });
+  }
+
+  renderer.update(controls);
 
   const $root = document.getElementById('controls');
   $root.style.setProperty('--device-width', device.info.main_width + 'px');
