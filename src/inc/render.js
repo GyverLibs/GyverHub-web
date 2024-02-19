@@ -30,7 +30,7 @@ function render_devices() {
   for (const id of hub.getDeviceIds()) {
     const dev = hub.dev(id);
     add_device(dev, dev.info);
-    for (let connection in dev.active_connections) {
+    for (let connection of dev.active_connections) {
       display(`${connection.name}#${dev.info.id}`, 'inline-block');
     }
   }

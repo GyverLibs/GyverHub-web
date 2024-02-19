@@ -220,11 +220,14 @@ class Device extends EventEmitter {
   //#region Interraction > UI
 
   async updateUi(){
-    await this.#postAndWait('ui', ['ui']);
+    return (await this.#postAndWait('ui', ['ui']))[1];
   }
 
   async set(name, value){
-    await this.#postAndWait('set', ['ui', 'ack'], name, value);
+    const [cmd, data] = await this.#postAndWait('set', ['ui', 'ack'], name, value);
+    if (cmd === 'ui') return data;
+    if (data.name !== name) throw new HubError("set / ack check failed!");
+    return undefined;
   }
 
   _checkUpdates(updates) {
@@ -261,8 +264,8 @@ class Device extends EventEmitter {
       }
     }
 
-    await this.updateUi();
     this.#pingTimer.start();
+    return await this.updateUi();
   }
 
   async unfocus() {
@@ -276,23 +279,23 @@ class Device extends EventEmitter {
   //#region Interraction > FS
 
   async deleteFile(path) {
-    await this.#postAndWait('delete', ['files'], path);
+    return (await this.#postAndWait('delete', ['files'], path))[1];
   }
 
   async createFile(path) {
-    await this.#postAndWait('mkfile', ['files'], path);
+    return (await this.#postAndWait('mkfile', ['files'], path))[1];
   }
 
   async renameFile(path, new_name) {
-    await this.#postAndWait('rename', ['files'], path, new_name);
+    return (await this.#postAndWait('rename', ['files'], path, new_name))[1];
   }
 
   async formatFS() {
-    await this.#postAndWait('format', ['files']);
+    return (await this.#postAndWait('format', ['files']))[1];
   }
 
   async updateFileList() {
-    await this.#postAndWait('files', ['files']);
+    return (await this.#postAndWait('files', ['files']))[1];
   }
 
   async fsStop() {

@@ -170,7 +170,13 @@ class GyverHub extends EventEmitter {
    * @returns {string[]}
    */
   getDeviceIds() {
-    return Object.keys(this.config.get('devices') ?? {});
+    const ids = this.#devices.map(d => d.info.id);
+    const cfg = this.config.get('devices');
+    if (cfg)
+      for (const i of Object.keys(cfg))
+        if (!ids.includes(i))
+          ids.push(i);
+    return ids;
   }
 
   /**
