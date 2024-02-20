@@ -57,9 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const ver = localStorage.getItem('version');
   const app_version = '/*@![:version]*/';
   if (!ver || ver != app_version) {
-    /*@[if_not_dev]*/
     localStorage.setItem('version', app_version);
-    /*@/[if_not_dev]*/
     setTimeout(() => {
       asyncAlert(lang.i_version + ' ' + app_version + '!\n' + '/*@![:release_notes]*/');
     }, 1000);
