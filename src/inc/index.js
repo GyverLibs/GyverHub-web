@@ -49,6 +49,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       display('http_settings', 'none');
       display('pwa_unsafe', 'none');
     }
+    if (isSSL()) {
+      EL('btn_pwa_http').classList.add('ui_btn_dis');
+    } else {
+      EL('btn_pwa_https').classList.add('ui_btn_dis');
+    }
   /*@/[if_target:host]*/
 
   if (cfg.use_pin && cfg.pin.length) await asyncAskPin(lang.hub_pin, cfg.pin, false);
@@ -112,13 +117,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (!("serial" in navigator)) EL('serial_col').style.display = 'none';
     if (!("bluetooth" in navigator)) EL('bt_col').style.display = 'none';
-    /*@[if_target:host]*/
-    if (isSSL()) {
-      EL('btn_pwa_http').classList.add('ui_btn_dis');
-    } else {
-      EL('btn_pwa_https').classList.add('ui_btn_dis');
-    }
-    /*@/[if_target:host]*/
+
     let masks = getMaskList();
     for (let mask in masks) {
       EL('netmask').innerHTML += `<option value="${mask}">${masks[mask]}</option>`;
@@ -129,19 +128,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      display('pwa_block', 'block');
+      EL('btn_pwa').addEventListener('click', async () => {
+        e.prompt();
+        const { outcome } = await e.userChoice;
+        if (outcome === 'accepted') 
+          display('pwa_block', 'none');
+      })
+    });
     /*@/[if_target:host]*/
-    /*@[if_not_target:esp]*/
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        display('pwa_block', 'block');
-        EL('btn_pwa').addEventListener('click', async () => {
-          e.prompt();
-          const { outcome } = await e.userChoice;
-          if (outcome === 'accepted') 
-            display('pwa_block', 'none');
-        })
-      });
-    /*@/[if_not_target:esp]*/
   }
   function set_drop() {
     function preventDrop(e) {
