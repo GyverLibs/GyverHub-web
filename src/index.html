@@ -350,10 +350,10 @@
                 </div>
               </div>
   
-              <!--@[if_not_target:mobile,desktop]-->
+              <!--@[if_target:host,local,esp]-->
               <span class="notice_block">Disable:
                 <u><slot name="browser"></slot>://flags/#block-insecure-private-network-requests</u></span>
-              <!--@/[if_not_target:mobile,desktop]-->
+              <!--@/[if_target:host,local,esp]-->
             </div>
           </div>
         </div>
