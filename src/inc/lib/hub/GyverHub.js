@@ -64,6 +64,13 @@ class GyverHub extends EventEmitter {
     }
   }
 
+  get http() {
+    for (const connection of this.#connections) {
+      if (connection instanceof HTTPConnection)
+        return connection;
+    }
+  }
+
   /**
    * ID клиента (хаба).
    * @type {string}
