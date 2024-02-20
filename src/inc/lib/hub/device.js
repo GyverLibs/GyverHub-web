@@ -352,7 +352,7 @@ class Device extends EventEmitter {
 
     if (this.isHttpAccessable() && this.info.http_t) {
       return await http_fetch_blob(`http://${this.info.ip}:${this.info.http_port}/hub/fetch?path=${path}&client_id=${this._hub.clientId}`, 
-          type, progress, this._hub.http.tout);
+          type, progress, this._hub.config.get('connections', 'HTTP', 'request_timeout'));
 
     } else {
       let [cmd, data] = await this.#postAndWait('fetch', ['fetch_start', 'fetch_err'], path);

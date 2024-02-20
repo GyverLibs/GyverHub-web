@@ -31,32 +31,26 @@ async function http_get(url, tout) {
 
 function http_fetch_blob(url, type, onprogress, tout) {
   return new Promise((res, rej) => {
-    onprogress(0);
-    let xhr = new XMLHttpRequest();
-    xhr.responseType = type === 'text' ? 'arraybuffer' : '';
-    xhr.onprogress = (e) => {
-      onprogress(Math.round(e.loaded * 100 / e.total));
-    };
-    xhr.onloadend = (e) => {
-      if (xhr.response) {
-        try {
-          if (type === 'type') {
-            const text = new TextDecoder().decode(xhr.response);
-            if (e.loaded == e.total && xhr.status == 200) res(text);
-            else rej(text);
-          } else {
-            
-          }
-
-        } catch (e) {
-          rej(e);
-        }
-      } else {
-        rej();
+    async function handle(e) {
+      if (xhr.response === null) throw new HubError("Network error");
+  
+      if (e.loaded !== e.total || xhr.status !== 200) {
+        const ab = type === 'url' ? await readFileAsArrayBuffer(xhr.response) : xhr.response;
+        const text = new TextDecoder().decode(ab);
+        throw new HubError(text);
       }
+  
+      if (type === 'url') return await readFileAsDataUrl(xhr.response);
+      if (type === 'text') return new TextDecoder().decode(xhr.response);
     }
+
+    onprogress(0);
+    const xhr = new XMLHttpRequest();
+    xhr.onprogress = (e) => onprogress(Math.round(e.loaded * 100 / e.total));
+    xhr.onloadend = (e) => handle(e).then(res).catch(rej);
+    xhr.ontimeout = () => rej(new DeviceError(HubErrors.Timeout));
     xhr.timeout = tout;
-    xhr.ontimeout = (e) => rej(new DeviceError(HubErrors.Timeout));
+    xhr.responseType = type === 'url' ? 'blob' : 'arraybuffer';
     xhr.open('GET', url, true);
     xhr.send();
   });
@@ -64,6 +58,7 @@ function http_fetch_blob(url, type, onprogress, tout) {
 
 async function http_post(url, data) {//TODO tout
   const res = await fetch(url, {
+    method: 'POST',
     body: data
   });
   if (!res.ok)
@@ -115,6 +110,19 @@ function readFileAsArrayBuffer(file) {
       rej(reader.error);
     });
     reader.readAsArrayBuffer(file);
+  });
+}
+
+function readFileAsDataUrl(file) {
+  return new Promise((res, rej) => {
+    let reader = new FileReader();
+    reader.addEventListener('load', e => {
+      res(reader.result);
+    });
+    reader.addEventListener('error', e => {
+      rej(reader.error);
+    });
+    reader.readAsDataURL(file);
   });
 }
 
