@@ -300,7 +300,7 @@ class Device extends EventEmitter {
 
   async fsStop() {
     if (this.isModuleEnabled(Modules.FETCH) || this.isModuleEnabled(Modules.UPLOAD) || this.isModuleEnabled(Modules.OTA))
-      await this.#post('fs_abort');
+      await this.#post('fs_abort', 'all');
   }
 
   async upload(file, path, progress = undefined) {
