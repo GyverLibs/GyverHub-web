@@ -229,7 +229,7 @@ function discover() {
   }
 
   /*@[if_target:esp]*/
-    hub.http.discover_ip(window_ip(), window.location.port.length ? window.location.port : 80);
+    hub.http.discover_ip(window.location.hostname, window.location.port.length ? window.location.port : 80);
   /*@/[if_target:esp]*/
   /*@[if_not_target:esp]*/
     hub.discover();

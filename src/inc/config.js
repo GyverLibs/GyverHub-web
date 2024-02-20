@@ -25,17 +25,7 @@ localStorage.setItem('app_config', JSON.stringify(cfg));
 
 let lang = langBase[cfg.lang];
 
-/*@[if_target:esp]*/
-  if (window_ip()) {
-    EL('local_ip').value = window_ip();
-    hub.config.set('connections', 'HTTP', 'local_ip', window_ip());
-  }
-/*@/[if_target:esp]*/
-
-
-/*@[if_not_target:esp]*/
-  getLocalIP();
-/*@/[if_not_target:esp]*/
+getLocalIP();
 
 function update_cfg(el) {
   if (el.type == 'text') el.value = el.value.trim();
@@ -90,7 +80,7 @@ function update_theme() {
   const ser = hub.config.get('connections', 'SERIAL', 'enabled');
   display('serial_block', ser ? 'block' : 'none');
   EL('serial_label').style.color = ser ? 'var(--font)' : 'var(--font3)';
-  /*@/[if_not_target:esp]*/
+/*@/[if_not_target:esp]*/
 }
 
 function cfg_export() {

@@ -192,12 +192,7 @@ function manual_ip_h(ip) {
   show_screen('main');
 }
 function update_ip_h() {
-  /*@[if_target:esp]*/
-  EL('local_ip').value = window_ip();
-  /*@/[if_target:esp]*/
-  /*@[if_not_target:esp]*/
   getLocalIP(false);
-  /*@/[if_not_target:esp]*/
 }
 function menu_h() {
   menu_show(!menu_f);

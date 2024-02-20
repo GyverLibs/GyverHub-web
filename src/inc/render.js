@@ -1,6 +1,6 @@
 // =========== MISC ===========
 function add_device(device, dev) {
-  const icon = dev.icon;
+  let icon = dev.icon;
   /*@[if_target:esp]*/
   if (icon.length) icon = '';
   /*@/[if_target:esp]*/

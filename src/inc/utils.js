@@ -97,12 +97,6 @@ function showNotif(name, text) {
 }
 
 // ====================== NET ======================
-/*@[if_target:esp]*/
-function window_ip() {
-  const ip = window.location.hostname;
-  return checkIP(ip) ? ip : null;
-}
-/*@/[if_target:esp]*/
 function getMaskList() {
   const list = [];
   for (let i = 0; i < 33; i++) {
@@ -113,8 +107,19 @@ function getMaskList() {
   }
   return list;
 }
-/*@[if_not_target:esp]*/
 function getLocalIP(silent = true) {
+  /*@[if_target:esp]*/
+  const ip = window.location.hostname;
+  if (checkIP(ip)) {
+    EL('local_ip').value = ip;
+    hub.config.set('connections', 'HTTP', 'local_ip', ip);
+
+  } else if (!silent) {
+    asyncAlert(lang.p_not_support);
+  }
+  /*@/[if_target:esp]*/
+
+  /*@[if_not_target:esp]*/
   const RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
   if (!RTCPeerConnection) {
     if (!silent)
@@ -142,8 +147,8 @@ function getLocalIP(silent = true) {
   });
 
   rtc.createOffer().then(offerDesc => rtc.setLocalDescription(offerDesc));
+  /*@/[if_not_target:esp]*/
 }
-/*@/[if_not_target:esp]*/
 
 function checkIP(ip) {
   return Boolean(ip && ip.match(/^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\.(?!$)|$)){4}$/));
