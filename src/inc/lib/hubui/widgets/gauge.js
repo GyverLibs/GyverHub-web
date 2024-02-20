@@ -87,10 +87,7 @@ class GaugeWidget extends BaseWidget {
         cx.arc(cv.width / 2, cv.height * 0.97, cv.width / 2 - cx.lineWidth, Math.PI, Math.PI * (1 + this.perc / 100));
         cx.stroke();
 
-        let font = cfg.font;
-        /*@[if_not_target:esp]*/
-        font = 'Condensed';
-        /*@/[if_not_target:esp]*/
+        let font = this.#cstyle.fontFamily;
 
         cx.fillStyle = this.color;
         cx.font = '10px ' + font;
@@ -164,10 +161,7 @@ class GaugeWidget extends BaseWidget {
         cx.arc(cv.width / 2, cv.height / 2, cv.width / 2 - cx.lineWidth, Math.PI / 2, joint);
         cx.stroke();
 
-        let font = cfg.font;
-        /*@[if_not_target:esp]*/
-        font = 'Condensed';
-        /*@[if_not_target:esp]*/
+        let font = this.#cstyle.fontFamily;
 
         cx.fillStyle = this.color;
         cx.font = '10px ' + font;
@@ -239,7 +233,9 @@ class GaugeWidget extends BaseWidget {
         if (this.value > this.max || this.value < this.min) cx.fillStyle = GaugeWidget.OUT_OF_RANGE_COLOR;
         else cx.fillStyle = this.#cstyle.getPropertyValue('--font');
 
-        cx.font = (19 * r) + 'px ' + cfg.font;
+        let font = this.#cstyle.fontFamily;
+
+        cx.font = (19 * r) + 'px ' + font;
         cx.textAlign = "center";
         cx.textBaseline = "middle";
 
@@ -254,7 +250,7 @@ class GaugeWidget extends BaseWidget {
         }
 
         cx.fillStyle = this.#cstyle.getPropertyValue('--font');
-        cx.font = (12 * r) + 'px ' + cfg.font;
+        cx.font = (12 * r) + 'px ' + font;
         cx.textAlign = "left";
         cx.fillText(this.min.toFixed(this.dec), off + sw / 2 + off, cv.height * 0.52);
 
@@ -262,6 +258,7 @@ class GaugeWidget extends BaseWidget {
         cx.fillText(this.max.toFixed(this.dec), cv.width - (off + sw / 2 + off), cv.height * 0.52);
     }
 }
+
 Renderer.register('gauge', GaugeWidget);
 Renderer.register('gauge_l', GaugeWidget);
 Renderer.register('gauge_r', GaugeWidget);
