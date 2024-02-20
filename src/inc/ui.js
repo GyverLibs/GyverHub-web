@@ -183,10 +183,6 @@ function config_h() {
 }
 
 function manual_ip_h(ip) {
-  if (!checkIP(ip)) {
-    showPopupError(lang.wrong_ip);
-    return;
-  }
   hub.http.discover_ip(ip);
   save_cfg();
   show_screen('main');
