@@ -38,16 +38,16 @@ jobs:
 
       - run: pip install -r dev-requirements.txt
 
-      - run: echo "version=$(python ./build.py version)" >> $GITHUB_OUTPUT
+      - run: python ./build.py ci --version="${{ inputs.version }}" --release-notes="${{ inputs.release_notes }}" >> $GITHUB_OUTPUT
         id: version
 
-      - run: python ./build.py build --version="${{ steps.version.outputs.version }}"
+      - run: python ./build.py build --version="${{ steps.version.outputs.version }}" --release-notes="${{ steps.version.outputs.release_notes }}"
 
       - uses: ncipollo/release-action@v1
         with:
           artifacts: dist/*
-          body: "Automatic release"
+          body: "${{ steps.version.outputs.release_notes }}"
           draft: true
           makeLatest: true
-          name: GyverHub web ${{ steps.version.outputs.version }}
-          tag: v${{ steps.version.outputs.version }}
+          name: "GyverHub web ${{ steps.version.outputs.version }}"
+          tag: "v${{ steps.version.outputs.version }}"

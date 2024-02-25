@@ -302,8 +302,11 @@ def main():
     subparsers = parser.add_subparsers(dest="action", required=True, metavar="ACTION", help="Specify action")
     b = subparsers.add_parser('build', help='build')
     b.add_argument('-v', '--version', help='specify version (default: dev)', type=str, default='dev')
+    b.add_argument('-n', '--release-notes', help='specify release notes', type=str, default='')
     subparsers.add_parser('clean', help='clean build files')
-    subparsers.add_parser('version', help='print current version')
+    c = subparsers.add_parser('ci', help='CI helper')
+    c.add_argument('-v', '--version', help='version hint', type=str)
+    c.add_argument('-n', '--release-notes', help='release notes hint', type=str)
 
     args = parser.parse_args()
     
@@ -312,18 +315,33 @@ def main():
         shutil.rmtree(DISTDIR, ignore_errors=True)
         return
     
-    if args.action == 'version':
-        with open(os.path.join(HERE, 'version.txt'), 'rt') as f:
-            version = f.read().strip()
-        print(version)
-        return
+    if args.action == 'ci':
+        if args.version:
+            version = args.version
+        else:
+            with open(os.path.join(HERE, 'version.txt'), 'rt') as f:
+                version = f.read().strip()
 
-    with open(os.path.join(HERE, 'release-notes.txt'), 'rt', encoding='utf-8') as f:
-        release_notes = f.read()
+        if args.release_notes:
+            release_notes = args.release_notes
+        else:
+            with open(os.path.join(HERE, 'release-notes.txt'), 'rt', encoding='utf-8') as f:
+                release_notes = f.read().strip()
+
+        print(f"version={version}")
+
+        EOF = 'EOF'
+        while EOF in release_notes:
+            EOF += 'F'
+
+        print(f"release_notes<<{EOF}")
+        print(release_notes)
+        print(f"{EOF}")
+        return
 
     env = {
         'version': args.version,
-        'release_notes': release_notes.replace('\n', '\\n'),
+        'release_notes': args.release_notes.replace('\n', '\\n'),
     }
 
     b = Builder(env, PathResolver(SRCDIR, BUILDDIR, DISTDIR))
