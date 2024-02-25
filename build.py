@@ -4,8 +4,8 @@
 # pip install rcssmin
 # pip install rjsmin
 
-version = '0.54b'
-notes = 'оптимизация, нативные всплывающие окна, перевод'
+version = '0.55b'
+notes = 'Внимание, это новая версия! Старая версия библиотеки (old) несовместима с приложением! Читайте обновлённую wiki. Старая версия приложения доступна на http://hub.gyver.ru/old/'
 
 # ESP
 esp_remove_non_gz = True    # удалить несжатые файлы
