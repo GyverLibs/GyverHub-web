@@ -2,8 +2,20 @@ name: publish
 
 on:
   push:
-    branches: 
-      dev
+    paths:
+      - 'version.txt'
+
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Target version'
+        required: false
+        type: string
+      release_notes:
+        description: 'Release notes'
+        required: false
+        type: string
+
 
 jobs:
   build:
@@ -22,10 +34,10 @@ jobs:
       
       - run: pip install -r dev-requirements.txt
 
-      - run: echo "version=$(python ./build.py --next-version --automatic)" >> $GITHUB_OUTPUT
+      - run: echo "version=$(python ./build.py version)" >> $GITHUB_OUTPUT
         id: version
 
-      - run: python ./build.py --build --version="${{ steps.version.outputs.version }}" --automatic
+      - run: python ./build.py build --version="${{ steps.version.outputs.version }}"
 
       - uses: ncipollo/release-action@v1
         with:
