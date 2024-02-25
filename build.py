@@ -292,7 +292,8 @@ class Builder:
             for filename in filenames:
                 path = os.path.join(dirpath, filename)
                 dst = self._resolver.resolve('@' + os.path.relpath(path, src), target)
-                basename = os.path.splitext(os.path.basename(path))[0]
+                basename = os.path.basename(path).partition('.')[0]
+                dst = os.path.join(os.path.dirname(dst), basename + '.h')
                 file_to_h(path, dst, f'hub_{basename}_h', version)
         
         self._build_zip(target, name)
