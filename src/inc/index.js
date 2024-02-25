@@ -34,6 +34,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   handle_back();
   register_SW();
 
+  getLocalIP();
+
   // device hook
   const qs = window.location.search;
   if (qs) {
@@ -74,14 +76,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   render_devices();
   hub.begin();
-  discover();
+  await discover();
 
   /*@[if_target:esp]*/
     for (const id of hub.getDeviceIds()) {
       const dev = hub.dev(id);
       if (window.location.href.includes(dev.info.ip)) {
-        // dev.conn = Conn.HTTP;
-        // dev.conn_arr[Conn.HTTP] = 1;  // TODO
         device_h(dev.info.id);
         return;
       }
@@ -115,8 +115,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       i.text = lang.themes[i.value];
     }
 
+    /*@[if_not_target:esp]*/
     if (!("serial" in navigator)) EL('serial_col').style.display = 'none';
     if (!("bluetooth" in navigator)) EL('bt_col').style.display = 'none';
+    /*@/[if_not_target:esp]*/
 
     let masks = getMaskList();
     for (let mask in masks) {
@@ -213,7 +215,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // =================== FUNC ===================
-function discover() {
+async function discover() {
   spinArrows(true);   // before discover!
   for (const id of hub.getDeviceIds()) {
     EL(`device#${id}`).className = "device offline";
@@ -224,10 +226,10 @@ function discover() {
   }
 
   /*@[if_target:esp]*/
-    hub.http.discover_ip(window.location.hostname, window.location.port.length ? window.location.port : 80);
+    await hub.http.discover_ip(window.location.hostname, window.location.port.length ? window.location.port : 80);
   /*@/[if_target:esp]*/
   /*@[if_not_target:esp]*/
-    hub.discover();
+    await hub.discover();
   /*@/[if_not_target:esp]*/
 }
 function search() {

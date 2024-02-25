@@ -25,8 +25,6 @@ localStorage.setItem('app_config', JSON.stringify(cfg));
 
 let lang = langBase[cfg.lang];
 
-getLocalIP();
-
 function update_cfg(el) {
   if (el.type == 'text') el.value = el.value.trim();
   const val = (el.type == 'checkbox') ? el.checked : el.value;

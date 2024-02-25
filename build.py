@@ -256,9 +256,9 @@ class Builder:
                     path = os.path.join(dirpath, filename)
                     zf.write(path, os.path.relpath(path, src))
 
-    def build_package(self, target: str, src: str, name: str, dst: str = None):
+    def build_package(self, target: str, src: str, name: str):
         self._start_build(target)
-        self._compile(target, src, dst)
+        self._compile(target, src)
         self._build_zip(target, name)
 
     def build_direct(self, target: str, src: str, dst: str = None):
@@ -271,13 +271,14 @@ class Builder:
         os.makedirs(os.path.dirname(dst), exist_ok=True)
         shutil.copy(src, dst)
 
-    def build_esp_gzip(self, target, src_target, name):
+    def build_esp_gzip(self, target, src_target, src, name):
         self._start_build(target)
+        self._compile(src_target, src)
         src = self._resolver.resolve('@.', src_target)
         for dirpath, _, filenames in os.walk(src):
             for filename in filenames:
                 path = os.path.join(dirpath, filename)
-                dst = self._resolver.resolve('@' + os.path.relpath(path, src), target)
+                dst = self._resolver.resolve('@' + os.path.relpath(path, src) + ".gz", target)
                 pack_gzip(path, dst)
 
         self._build_zip(target, name)
@@ -348,8 +349,7 @@ def main():
     b.build_direct('lib', 'inc/lib/hub/index.js', 'GyverHub.min.js')
     b.build_package('host', 'index.html', 'host.zip')
     b.build_direct('local', 'index.html', 'GyverHub.html')
-    b.build_package('esp', 'index.html', 'esp.zip')
-    b.build_esp_gzip('esp-gz', 'esp', 'esp-gz.zip')
+    b.build_esp_gzip('esp-gz', 'esp', 'index.html', 'esp-gz.zip')
     b.build_esp_headers('esp-h', 'esp-gz', 'esp-headers.zip')
 
     with open(os.path.join(DISTDIR, 'version.txt'), 'wt', encoding='utf-8') as f:
