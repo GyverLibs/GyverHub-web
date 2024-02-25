@@ -7,31 +7,13 @@
   /*@![add_file_to:inc/style/fonts/fa-solid-900.woff2, @fonts/fa-solid-900.woff2]*/
   src: url(fonts/fa-solid-900.woff2) format("woff2");
 /*@/[if_target:host]*/
-/*@[if_not_target:host]*/
+/*@[if_target:esp]*/
+  src: url(data:font/woff2;charset=utf-8;base64,/*@![include:inc/style/fonts/fa-solid-900.min.woff2,base64]*/) format("woff2");
+/*@/[if_target:esp]*/
+/*@[if_not_target:host,esp]*/
   src: url(data:font/woff2;charset=utf-8;base64,/*@![include:inc/style/fonts/fa-solid-900.woff2,base64]*/) format("woff2");
-/*@/[if_not_target:host]*/
+  /*@/[if_not_target:host,esp]*/
 }
-
-/*@[if_target:host]*/
-@font-face {
-  font-family: "Condensed";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  /* src: url(fonts/PTSans-Narrow.woff2) format("woff2"); */
-  /*@![add_file_to:inc/style/fonts/Robotocondensed.woff2, @fonts/Robotocondensed.woff2]*/
-  src: url(fonts/Robotocondensed.woff2) format("woff2");
-}
-/*@/[if_target:host]*/
-/*@[if_not_target:esp,host]*/
-@font-face {
-  font-family: "Condensed";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url(data:font/woff2;charset=utf-8;base64,/*@![include:inc/style/fonts/Robotocondensed.woff2,base64]*/) format("woff2");
-}
-/*@/[if_not_target:esp,host]*/
 
 :root {
   --prim: #37a93c;

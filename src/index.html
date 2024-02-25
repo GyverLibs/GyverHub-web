@@ -5,14 +5,14 @@
   <meta charset="UTF-8">
   <title>GyverHub v<!--@![:version]--></title>
 
-  <!--@[if_target:local]-->
-  <link rel="icon" href="data:image/svg+xml;base64,/*@![include:favicon.svg, base64]*/">
-  <!--@/[if_target:local]-->
   <!--@[if_target:host]-->
     <!--@![add_file:favicon.svg]-->
     <link rel="icon" href="favicon.svg">
     <link rel="apple-touch-icon" href="favicon.svg">
   <!--@/[if_target:host]-->
+  <!--@[if_not_target:host,esp]-->
+  <link rel="icon" href="data:image/svg+xml;base64,/*@![include:favicon.svg, base64]*/">
+  <!--@/[if_not_target:host,esp]-->
 
   <meta name="description" content="Arduino/ESP8266/ESP32 Web Control Panel">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">

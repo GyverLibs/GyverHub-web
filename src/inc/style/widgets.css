@@ -34,9 +34,6 @@
   /* text-transform: uppercase; */
   white-space: nowrap;
   overflow-x: clip;
-  /*@[if_not_target:esp]*/
-  font-family: Condensed;
-  /*@/[if_not_target:esp]*/
 }
 
 .plabel {

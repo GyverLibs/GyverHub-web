@@ -297,43 +297,24 @@ class Builder:
         self._build_zip(target, name)
 
 
-def git_get_version():
-    return None
-
-
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--automatic', help='Enable CI/github fixes', action='store_true')
-    parser.add_argument('--version', help='Specify version', type=str, default='dev')
-    parser.add_argument('--next-version', help='Generate new version', action='store_true')
-    parser.add_argument('--clean', help='Clean build files', action='store_true')
-    parser.add_argument('--build', help='Build', action='store_true')
+    subparsers = parser.add_subparsers(dest="action", required=True, metavar="ACTION", help="Specify action")
+    b = subparsers.add_parser('build', help='build')
+    b.add_argument('-v', '--version', help='specify version (default: dev)', type=str, default='dev')
+    subparsers.add_parser('clean', help='clean build files')
+    subparsers.add_parser('version', help='print current version')
 
     args = parser.parse_args()
-
-    if sum((args.next_version, args.clean, args.build)) != 1:
-        print("You must specify exactly one of --build, --clean and --next-version!", file=sys.stderr)
-        exit(1)
     
-    if args.clean:
+    if args.action == 'clean':
         shutil.rmtree(BUILDDIR, ignore_errors=True)
         shutil.rmtree(DISTDIR, ignore_errors=True)
         return
     
-    if args.next_version:
-        version = git_get_version()
-        if version is None:
-            with open(os.path.join(HERE, 'version.txt'), 'rt') as f:
-                version = f.read().strip()
-        
-        beta = version.endswith('b')
-        version = version.rstrip('b').split('.')
-        version = [int(i) for i in version]
-        version[-1] += 1
-        version = '.'.join((str(i) for i in version))
-        if beta:
-            version += 'b'
-        
+    if args.action == 'version':
+        with open(os.path.join(HERE, 'version.txt'), 'rt') as f:
+            version = f.read().strip()
         print(version)
         return
 
@@ -348,12 +329,13 @@ def main():
     b = Builder(env, PathResolver(SRCDIR, BUILDDIR, DISTDIR))
     b.build_direct('lib', 'inc/lib/hub/index.js', 'GyverHub.min.js')
     b.build_package('host', 'index.html', 'host.zip')
-    b.build_direct('mobile', 'index.html', 'mobile.html')
-    b.build_direct('desktop', 'index.html', 'desktop.html')
     b.build_direct('local', 'index.html', 'GyverHub.html')
     b.build_package('esp', 'index.html', 'esp.zip')
     b.build_esp_gzip('esp-gz', 'esp', 'esp-gz.zip')
     b.build_esp_headers('esp-h', 'esp-gz', 'esp-headers.zip')
+
+    with open(os.path.join(DISTDIR, 'version.txt'), 'wt', encoding='utf-8') as f:
+        f.write(env['version'])
 
 
 if __name__ == '__main__':
