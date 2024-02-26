@@ -298,6 +298,35 @@ class Builder:
         
         self._build_zip(target, name)
 
+    def print_size(self, target):
+        print("========================================")
+        print("=" + (f"size stats for {target}".center(38)) + "=")
+        print("========================================")
+        src = self._resolver.resolve('@.', target)
+        total = 0
+        for dirpath, _, filenames in os.walk(src):
+            for filename in filenames:
+                path = os.path.join(dirpath, filename)
+                relpath = os.path.relpath(path, src)
+                size = os.stat(path).st_size
+                total += size
+                size = format_size(size)
+                print(f"{relpath: <25}{size: >15}")
+        
+        total = format_size(total)
+        print(f"Total {total: >34}")
+
+
+def format_size(size):
+    i = 0
+    sp = ["", "Ki", "Mi", "Gi", "Ti"]
+    while size / (1024 ** i) > 1024:
+        i += 1
+
+    size = f"{size / (1024 ** i):.2f}".rstrip('0').rstrip('.')
+    if not size:
+        size = '0'
+    return f"{size} {sp[i]}B"
 
 def main():
     parser = argparse.ArgumentParser()
@@ -352,6 +381,11 @@ def main():
     b.build_direct('local', 'index.html', 'GyverHub.html')
     b.build_esp_gzip('esp-gz', 'esp', 'index.html', 'esp-gz.zip')
     b.build_esp_headers('esp-h', 'esp-gz', 'esp-headers.zip')
+
+    b.print_size('host')
+    b.print_size('local')
+    b.print_size('esp')
+    b.print_size('esp-gz')
 
     with open(os.path.join(DISTDIR, 'version.txt'), 'wt', encoding='utf-8') as f:
         f.write(env['version'])
