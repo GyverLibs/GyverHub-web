@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
+  renderBody();
   apply_cfg();
   render_main();
 
