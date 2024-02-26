@@ -1,0 +1,495 @@
+/* ====================================================================== */
+/* =============================== WIDGET =============================== */
+/* ====================================================================== */
+
+.widget_row {
+  display: flex;
+  min-height: 50px;
+}
+
+.widget_col {}
+
+.widget_main {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 3px;
+}
+
+.widget_inner {
+  background: var(--tab);
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0px 3px 0px 0px inset #ffffff05, 0 0 10px 0px #00000021, 0px -3px 1px 0px inset #00000010;
+  overflow: hidden;
+  /*0px -3px 0px 0px inset #00000030*/
+}
+
+.widget_label {
+  font-size: 11px;
+  color: var(--font3);
+  margin: 3px 5px -4px 5px;
+  /* text-transform: uppercase; */
+  white-space: nowrap;
+  overflow-x: clip;
+  /*NON-ESP*/
+  font-family: Condensed;
+  /*/NON-ESP*/
+}
+
+.plabel {
+  padding-left: 1px;
+}
+
+.wsuffix {
+  float: right;
+}
+
+.widget_label_name {
+  text-transform: none !important;
+  user-select: text !important;
+}
+
+.widget_body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 6px;
+  min-height: 25px;
+}
+
+.widget_dsbl {
+  opacity: 45%;
+}
+
+.widget_notab {
+  background: none;
+  box-shadow: none;
+}
+
+.wsquare {
+  aspect-ratio: 1;
+}
+
+.wnolabel {
+  display: none;
+}
+
+.whint {
+  display: none;
+  color: var(--back);
+  background: var(--font3);
+  cursor: pointer;
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  line-height: 12px;
+  text-align: center;
+}
+
+.disable {
+  cursor: default !important;
+  user-select: none;
+}
+
+.disable:hover {
+  filter: brightness(1) !important;
+}
+
+.disable:active {
+  filter: brightness(1) !important;
+}
+
+/* ====================================================================== */
+/* ================================ UI ================================== */
+/* ====================================================================== */
+
+/* INPUT */
+.w_inp {
+  font-size: 17px;
+  border: none;
+  font-family: var(--font_f);
+  width: 100%;
+  color: var(--font);
+  padding-left: 4px;
+  margin-top: -4px;
+  background: none;
+  box-shadow: 0px 2px 0px 0px var(--prim);
+}
+
+.w_inp:focus {
+  filter: brightness(1.3);
+  outline: none;
+}
+
+.w_inp_cont {
+  display: flex;
+  width: 100%;
+}
+
+.w_eye {
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--font2);
+  margin-top: -7px;
+}
+
+
+/* BUTTON */
+.w_btn {
+  cursor: pointer;
+  margin: -5px;
+}
+
+.w_btn:hover {
+  filter: brightness(1.15);
+}
+
+.w_btn:active {
+  filter: brightness(0.7);
+}
+
+/* area */
+.w_area {
+  border: none;
+  outline: none;
+  font-family: var(--font_f);
+  border-radius: 5px;
+  width: 100% !important;
+  font-size: 15px;
+  color: var(--font2);
+  background: var(--back);
+  padding: 3px 7px;
+  /* margin-bottom: 3px; */
+}
+
+.w_area_passive {
+  cursor: default;
+}
+
+.w_area_wrap {
+  white-space: pre;
+}
+
+.w_area::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.w_area::-webkit-scrollbar-track {
+  background: #0000;
+}
+
+.w_area::-webkit-scrollbar-thumb {
+  background: var(--thumb);
+  border-radius: 3px;
+}
+
+/* label-title */
+.w_label {
+  padding: 0px 10px;
+  text-wrap: nowrap;
+}
+
+.w_icon {
+  font-weight: bold;
+  font-family: 'FA5';
+}
+
+/* table */
+.w_table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.w_table td,
+.w_table th {
+  border: 1px solid var(--font3);
+  padding: 4px 8px;
+}
+
+/* display */
+.w_disp {
+  border: none;
+  outline: none;
+  font-family: var(--font_f);
+  width: 100%;
+  color: white;
+  resize: none;
+  cursor: default;
+  padding: 3px 7px;
+  border-radius: 5px;
+  margin-bottom: 3px;
+  /* overflow: hidden; */
+  text-wrap: nowrap;
+}
+
+.w_disp::-webkit-resizer {
+  display: none;
+}
+
+.w_disp::-webkit-scrollbar {
+  display: none;
+}
+
+.w_disp::-webkit-scrollbar-track {
+  display: none;
+}
+
+.w_disp::-webkit-scrollbar-thumb {
+  display: none;
+}
+
+/* date */
+.w_date {
+  border: none;
+  outline: none;
+  font-family: var(--font_f);
+  cursor: pointer;
+  background: none;
+  font-size: 20px;
+  padding: 0;
+}
+
+.w_date::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+}
+
+/* SLIDER */
+.w_slider {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100%;
+  height: 35px;
+  padding: 0;
+  margin: 0;
+  background: var(--dark);
+  background-repeat: no-repeat;
+  background-image: linear-gradient(var(--prim), var(--prim));
+  border-radius: 5px;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.w_slider:hover {
+  filter: brightness(1.1);
+}
+
+.w_slider::-webkit-slider-runnable-track {}
+
+.w_slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 1px;
+  width: 1px;
+}
+
+.w_slider::-webkit-slider-thumb:hover {
+  filter: brightness(1.1);
+}
+
+.w_slider::-moz-range-track {}
+
+.w_slider::-moz-range-thumb {
+  -moz-appearance: none;
+  outline: none;
+  border: none;
+  background: none;
+  height: 1px;
+  width: 1px;
+}
+
+.w_slider_out {
+  margin-left: -110px;
+  pointer-events: none;
+  text-align: right;
+  z-index: 1;
+  width: 100px;
+  padding-right: 10px;
+}
+
+/* SPINNER */
+
+.w_spinner_row {
+  display: flex;
+  align-items: center;
+}
+
+.w_spinner_block {
+  margin: 0px 10px;
+  display: flex;
+}
+
+.w_spinner {
+  outline: none;
+  border: none;
+  background: none;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font_f);
+  color: var(--font2);
+  font-size: 20px;
+}
+
+.w_spinner_unit {
+  font-family: var(--font_f);
+  color: var(--font2);
+  font-size: 20px;
+}
+
+
+/* SELCT */
+.w_select {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-size: 18px;
+  font-family: var(--font_f);
+  width: 100%;
+  border-radius: 4px;
+  background: none;
+  padding-left: 7px;
+  min-height: 30px;
+}
+
+select {}
+
+select option {
+  background: var(--back);
+}
+
+/* LED */
+.w_led {
+  margin: 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--back);
+  box-shadow: inset 0 0 2px 2px var(--black);
+}
+
+/* SWICON */
+.w_swicon {
+  border-radius: 50%;
+  aspect-ratio: 1;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.w_swicon_on {
+  color: var(--tab);
+}
+
+/* TABS */
+.w_tabs {
+  width: 100%;
+  user-select: none;
+}
+
+.w_tabs>ul {
+  padding: 0;
+  display: flex;
+  list-style-type: none;
+  font-size: 19px;
+  flex-direction: row;
+  overflow-x: scroll;
+  white-space: nowrap;
+  scrollbar-width: none;
+  margin: 0;
+}
+
+.w_tabs ul::-webkit-scrollbar {
+  display: none;
+}
+
+.w_tabs>ul>li {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--font);
+  border-radius: 5px;
+  padding: 5px;
+  margin: 2px;
+}
+
+.w_tabs>ul>li:hover {
+  /*filter: brightness(0.8);*/
+  background: var(--back);
+}
+
+.w_tab_act {
+  background: var(--prim) !important;
+  color: var(--tab) !important;
+  font-weight: 600;
+}
+
+/* FLAGS */
+.w_flags {
+  margin: 7px 2px -2px 2px;
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  user-select: none;
+}
+
+.w_flags_s {
+  border-radius: 35px;
+  display: flex;
+  position: absolute;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  top: -5px;
+  left: -4px;
+  background: var(--dark);
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  color: var(--font);
+}
+
+.w_flags_s:hover {
+  background: var(--black);
+}
+
+input:checked+.w_flags_s {
+  background: var(--prim);
+  color: white;
+}
+
+.w_flags_cont {
+  display: flex;
+  margin-left: 20px;
+  flex-wrap: wrap;
+  margin-right: -5px;
+}
+
+.w_flags_cont_tab {
+  justify-content: center;
+}
+
+/* CANVAS */
+.w_canvas {
+  border-radius: 4px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  margin-bottom: -5px;
+}
+
+/* ICON */
+.w_icon_led {
+  color: var(--black);
+  text-shadow: 0 0 4px #0003;
+}
