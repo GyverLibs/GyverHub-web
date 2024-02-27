@@ -38,15 +38,9 @@ class HTTPConnection extends Connection {
   }
 
   async discover_ip(ip='', port = undefined) {
-    if (!port && ip.includes(':')) {
-      const i = ip.lastIndexOf(':');
-      port = ip.substring(i + 1);
-      ip = ip.substring(0, i);
-    }
-
     if (this.isDiscovering() || !this.isConnected()) return;
     this._discoverTimer();
-    await this.send(ip, port, this.hub.prefix);
+    return await this.send(ip, port, this.hub.prefix);
   }
 
   async search() {
@@ -87,6 +81,6 @@ class HTTPConnection extends Connection {
   async send(ip, port, uri) {
     if (!port) port = this.options.port;
     const res = await http_get(`http://${ip}:${port}/hub/${uri}`, this.options.request_timeout);
-    if (res.length) await this.hub._parsePacket(this, res, ip, port);
+    if (res.length) return await this.hub._parsePacket(this, res, ip, port);
   }
 };

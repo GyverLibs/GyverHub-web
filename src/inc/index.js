@@ -79,16 +79,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   hub.begin();
   await discover();
 
-  /*@[if_target:esp]*/
-    for (const id of hub.getDeviceIds()) {
-      const dev = hub.dev(id);
-      if (window.location.href.includes(dev.info.ip)) {
-        device_h(dev.info.id);
-        return;
-      }
-    }
-  /*@/[if_target:esp]*/
-
   function render_main() {
     const slots = document.getElementsByTagName('slot');
     while (slots.length) {
@@ -227,7 +217,14 @@ async function discover() {
   }
 
   /*@[if_target:esp]*/
-    await hub.http.discover_ip(window.location.hostname, window.location.port.length ? window.location.port : 80);
+    let device;
+    try {
+      device = await hub.http.discover_ip(window.location.hostname, window.location.port.length ? window.location.port : 80);
+    } catch (e) {
+      showPopupError(getError(e));
+      return;
+    }
+    if (device) device_h(device.info.id);
   /*@/[if_target:esp]*/
   /*@[if_not_target:esp]*/
     await hub.discover();

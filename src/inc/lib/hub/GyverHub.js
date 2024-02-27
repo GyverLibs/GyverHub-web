@@ -267,7 +267,7 @@ class GyverHub extends EventEmitter {
       .replaceAll(/\n/ig, "\\n")
       .replaceAll(/\r/ig, "\\r");
 
-    for (let code in HubCodes) {
+    for (const code in HubCodes) {
       const re = new RegExp(`(#${Number(code).toString(16)})([:,\\]\\}])`, "ig");
       data = data.replaceAll(re, `"${HubCodes[code]}"$2`);
     }
@@ -288,7 +288,7 @@ class GyverHub extends EventEmitter {
 
     if (!data.id) return this.onHubError('Wrong packet (ID)');
     if (data.client && this.clientId != data.client) return;
-    let type = data.type;
+    const type = data.type;
     delete data.type;
 
     console.log('[IN]', type, data);
@@ -306,10 +306,11 @@ class GyverHub extends EventEmitter {
       this.addDevice(data, conn);
     }
 
-    let device = this.dev(data.id);
+    const device = this.dev(data.id);
     if (device) {
       device.addConnection(conn);
       await device._parse(type, data);
     }
+    return device;
   }
 };

@@ -182,10 +182,17 @@ function config_h() {
   }
 }
 
-function manual_ip_h(ip) {
-  hub.http.discover_ip(ip);
+async function manual_ip_h(ip) {
+  let device;
+  try {
+    device = await hub.http.discover_ip(ip);
+  } catch (e) {
+    showPopupError(getError(e));
+    return;
+  }
   save_cfg();
   show_screen('main');
+  if (device) device_h(device.info.id);
 }
 function update_ip_h() {
   getLocalIP(false);
