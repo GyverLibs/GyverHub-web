@@ -1,27 +1,137 @@
-window.onload = () => {
-  load_cfg();
-  load_cfg_hub();
-  updateLang();
+document.addEventListener('DOMContentLoaded', async () => {
+  renderBody();
+  apply_cfg();
   render_main();
-  EL('hub_stat').innerHTML = 'GyverHub v' + app_version + ' ' + platform();
 
-  if (platform() == 'esp') hub.cfg.use_local = true;  // force local on esp
-  update_ip();
+  document.addEventListener('click', e => {
+    const $t = e.composedPath().find(e => e.dataset && e.dataset.action);
+    if (!$t) return;
+    switch ($t.dataset.action) {
+      case "show_screen":
+        show_screen($t.dataset.screen);
+        break;
+        case "back":
+          back_h();
+          break;
+        case "refresh":
+          refresh_h();
+          break;
+        case "config":
+          config_h();
+          break;
+        case "menu":
+          menu_h();
+          break;
+    }
+  });
+
+  /*@[if_target:esp]*/
+    hub.config.set('connections', 'HTTP', 'enabled', true);  // force local on esp
+  /*@/[if_target:esp]*/
+
   update_theme();
   set_drop();
   key_change();
   handle_back();
   register_SW();
-  if (cfg.use_pin && cfg.pin.length) show_keypad(true);
-  else startup();
 
-  function register_SW() {
-    /*NON-ESP*/
-    if ('serviceWorker' in navigator && platform() == 'host') {
-      navigator.serviceWorker.register('sw.js');
-      window.addEventListener('beforeinstallprompt', (e) => deferredPrompt = e);
+  getLocalIP();
+
+  // device hook
+  const qs = window.location.search;
+  if (qs) {
+    const params = new URLSearchParams(qs).entries();
+    const data = {};
+    for (const param of params) data[param[0]] = param[1];
+    if (!hub.dev(data.id)) hub.addDevice(data);
+  }
+
+  /*@[if_target:host]*/
+    if (isSSL()) {
+      display('http_only_http', 'block');
+      display('http_settings', 'none');
+      display('pwa_unsafe', 'none');
     }
-    /*/NON-ESP*/
+    if (isSSL()) {
+      EL('btn_pwa_http').classList.add('ui_btn_dis');
+    } else {
+      EL('btn_pwa_https').classList.add('ui_btn_dis');
+    }
+  /*@/[if_target:host]*/
+
+  if (cfg.use_pin && cfg.pin.length) await asyncAskPin(lang.hub_pin, cfg.pin, false);
+
+  // show version
+  const ver = localStorage.getItem('version');
+  const app_version = '/*@![:version]*/';
+  if (!ver || ver != app_version) {
+    localStorage.setItem('version', app_version);
+    setTimeout(() => {
+      asyncAlert(lang.i_version + ' ' + app_version + '!\n' + '/*@![:release_notes]*/');
+    }, 1000);
+  }
+
+  if ('Notification' in window && Notification.permission == 'default') Notification.requestPermission();
+
+  show_screen('main');
+
+  render_devices();
+  hub.begin();
+  await discover();
+
+  function render_main() {
+    const slots = document.getElementsByTagName('slot');
+    while (slots.length) {
+      const i = slots[0];
+      const p = i.name.split('.');
+      const n =  p.shift();
+      let v = '';
+      if (n === 'lang'){
+        v = lang;
+        for (const i of p)
+          v = v[i] ?? "";
+      }
+      if (n === 'browser')
+        v = browser();
+      if (n === 'location')
+        v = location.href;
+      i.replaceWith(v);
+    }
+
+    for (const i of EL('maincolor').children){
+      i.text = lang.colors[i.value];
+    }
+
+    for (const i of EL('theme').children){
+      i.text = lang.themes[i.value];
+    }
+
+    /*@[if_not_target:esp]*/
+    if (!("serial" in navigator)) EL('serial_col').style.display = 'none';
+    if (!("bluetooth" in navigator)) EL('bt_col').style.display = 'none';
+    /*@/[if_not_target:esp]*/
+
+    let masks = getMaskList();
+    for (let mask in masks) {
+      EL('netmask').innerHTML += `<option value="${mask}">${masks[mask]}</option>`;
+    }
+  }
+  function register_SW() {
+    /*@[if_target:host]*/
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      display('pwa_block', 'block');
+      EL('btn_pwa').addEventListener('click', async () => {
+        e.prompt();
+        const { outcome } = await e.userChoice;
+        if (outcome === 'accepted') 
+          display('pwa_block', 'none');
+      })
+    });
+    /*@/[if_target:host]*/
   }
   function set_drop() {
     function preventDrop(e) {
@@ -79,105 +189,55 @@ window.onload = () => {
       back_h();
     }
   }
-  function update_ip() {//TODO
-    if (platform() == 'esp' || window_ip()) {
-      EL('local_ip').value = window_ip();
-      hub.cfg.local_ip = window_ip();
+  function apply_cfg() {
+    if (cfg.pin.length < 4) cfg.use_pin = false;
+    for (const key in cfg) {
+      const el = EL(key);
+      if (el == undefined) continue;
+      if (el.type == 'checkbox') el.checked = cfg[key];
+      else el.value = cfg[key];
     }
-    /*NON-ESP*/
-    else if (!Boolean(window.webkitRTCPeerConnection || window.mozRTCPeerConnection)) return;
-    getLocalIP()
-      .then((ip) => {
-        if (ip.indexOf("local") < 0) {
-          EL('local_ip').value = ip;
-          hub.cfg.local_ip = ip;
-        }
-        return;
-      })
-      .catch(e => console.log(e));
-    /*/NON-ESP*/
-  }
-}
-function startup() {
-  render_selects();
-  render_info();
-  apply_cfg();
-  update_theme();
-  show_screen('main');
-  if ('Notification' in window && Notification.permission == 'default') Notification.requestPermission();
-  load_devices();
-
-  // device hook
-  let qs = window.location.search;
-  if (qs) {
-    let params = new URLSearchParams(qs).entries();
-    let data = {};
-    for (let param of params) data[param[0]] = param[1];
-    if (!hub.dev(data.id)) hub.addDevice(data);
-  }
-
-  // show version
-  setTimeout(() => {
-    let ver = localStorage.getItem('version');
-    if (!ver || ver != app_version) {
-      asyncAlert(lang.i_version + ' ' + app_version + '!\n' + '__NOTES__');
-      localStorage.setItem('version', app_version);
-    }
-  }, 1000);
-
-  render_devices();
-  hub.begin();
-  discover();
-
-  /*NON-ESP*/
-  if (!wifiAllowed()) {
-    display('http_only_http', 'block');
-    display('http_settings', 'none');
-    display('pwa_unsafe', 'none');
-  }
-  if (platform() != 'host') {
-    display('pwa_block', 'none');
-    display('devlink_btn', 'none');
-    display('qr_btn', 'none');
-  }
-  if (platform() == 'host') {
-    display('app_block', 'block');
-  }
-
-  serial_check_ports();
-  /*/NON-ESP*/
-
-  if (platform() == 'esp') {
-    for (let dev of hub.devices) {
-      if (window.location.href.includes(dev.info.ip)) {
-        dev.conn = Conn.HTTP;
-        dev.conn_arr[Conn.HTTP] = 1;
-        device_h(dev.info.id);
-        return;
-      }
+    for (const el of document.querySelectorAll('[data-hub-config]')) {
+      const value = hub.config.get(...el.dataset.hubConfig.split('.'));
+      if (el.type == 'checkbox') el.checked = value;
+      else el.value = value;
     }
   }
-}
+});
 
 // =================== FUNC ===================
-function discover() {
+async function discover() {
   spinArrows(true);   // before discover!
-  for (let dev of hub.devices) {
-    let id = dev.info.id;
+  for (const id of hub.getDeviceIds()) {
     EL(`device#${id}`).className = "device offline";
-    display(`Serial#${id}`, 'none');
-    display(`BT#${id}`, 'none');
+    display(`SERIAL#${id}`, 'none');
+    display(`BLE#${id}`, 'none');
     display(`HTTP#${id}`, 'none');
     display(`MQTT#${id}`, 'none');
   }
 
-  if (platform() == 'esp') {
-    hub.http.discover_ip(window_ip(), window.location.port.length ? window.location.port : 80);
-  } else {
-    hub.discover();
-  }
+  /*@[if_target:esp]*/
+    let device;
+    try {
+      device = await hub.http.discover_ip(window.location.hostname, window.location.port.length ? window.location.port : 80);
+    } catch (e) {
+      showPopupError(getError(e));
+      return;
+    }
+    if (device) device_h(device.info.id);
+  /*@/[if_target:esp]*/
+  /*@[if_not_target:esp]*/
+    await hub.discover();
+  /*@/[if_not_target:esp]*/
 }
 function search() {
+  if (cfg_changed) {
+    save_cfg();
+  }
+  cfg_changed = false;
+
+  show_screen('main');
+
   spinArrows(true);
   hub.search();
 }

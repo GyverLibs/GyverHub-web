@@ -1,186 +1,168 @@
 let menu_f = false;
 let pin_id = null;
 
+// ====================== VARS ======================
+let screen = 'main';
+let focused = null;
+
 // ============== SCREEN ==============
 async function show_screen(nscreen) {
-  if (focused) hub.dev(focused).fsStop();
   spinArrows(false);
   screen = nscreen;
-  show_keypad(false);
 
-  ['conn_icons', 'test_cont', 'projects_cont', 'config', 'devices',
-    'controls', 'info', 'icon_menu', 'icon_cfg', 'files', 'ota', 'back', 'icon_refresh',
-    'footer_cont', 'conn', 'dev_config'].forEach(e => display(e, 'none'));
+  document.body.dataset.screen = screen;
+  const $title = document.getElementsByClassName('header-title')[0];
 
-  display('main_cont', 'block');
-
-  EL('title').innerHTML = app_title;
-  EL('title_row').style.cursor = 'pointer';
-  let dev = hub.dev(focused);
+  const dev = hub.dev(focused);
+  if (dev) dev.fsStop();
 
   switch (screen) {
     case 'main':
-      display('conn_icons', 'inline-block');
-      display('devices', 'grid');
-      display('icon_cfg', 'inline-block');
-      display('icon_refresh', 'inline-block');
-      display('footer_cont', 'block');
-      EL('title_row').style.cursor = 'unset';
+      $title.textContent = "GyverHub";
       showCLI(false);
       break;
 
     case 'test':
-      display('main_cont', 'none');
-      display('test_cont', 'block');
-      display('back', 'inline-block');
-      EL('title').innerHTML = 'UI Test';
+      $title.textContent = 'UI Test';
       break;
 
     case 'projects':
-      display('main_cont', 'none');
-      display('projects_cont', 'block');
-      display('back', 'inline-block');
-      EL('title').innerHTML = lang.p_proj;
+      $title.textContent = lang.p_proj;
+      loadProjects();
       break;
 
     case 'ui':
-      display('controls', 'block');
-      display('icon_menu', 'inline-block');
-      display('back', 'inline-block');
-      display('icon_refresh', 'inline-block');
-      display('conn', 'inline-block');
-      EL('title').innerHTML = dev.info.name;
+      $title.textContent = dev.info.name;
+      EL('controls').replaceChildren();
       break;
 
     case 'config':
-      display('conn_icons', 'inline-block');
-      display('config', 'block');
-      display('icon_cfg', 'inline-block');
-      display('back', 'inline-block');
-      EL('title').innerHTML = lang.config;
+      $title.textContent = lang.config;
       break;
 
     case 'info':
-      display('info', 'block');
-      display('icon_menu', 'inline-block');
-      display('back', 'inline-block');
-      display('conn', 'inline-block');
-      display('icon_refresh', 'inline-block');
-      EL('title').innerHTML = dev.info.name + '/info';
-      show_info();
+      $title.textContent = dev.info.name + '/info';
+      enterMenu('menu_info');
+      await show_info();
       break;
 
     case 'files':
-      display('files', 'block');
-      display('icon_menu', 'inline-block');
-      display('back', 'inline-block');
-      display('conn', 'inline-block');
-      display('icon_refresh', 'inline-block');
-      EL('title').innerHTML = dev.info.name + '/fs';
-      EL('file_upload_btn').innerHTML = lang.fs_upload;
+      $title.textContent = dev.info.name + '/fs';
+      EL('fs_upload').textContent = lang.fs_upload;
+      enterMenu('menu_fsbr');
+      display('fs_browser', dev.isModuleEnabled(Modules.FILES) ? 'block' : 'none');
+      display('fs_upload', dev.isModuleEnabled(Modules.UPLOAD) ? 'block' : 'none');
+      display('fs_create', dev.isModuleEnabled(Modules.CREATE) ? 'block' : 'none');
+      display('fs_format', dev.isModuleEnabled(Modules.FORMAT) ? 'flex' : 'none');
+      if (dev.isModuleEnabled(Modules.FILES)) {
+        EL('fsbr_inner').innerHTML = waiter();
+        await dev.updateFileList();
+      }
+      break;
+
+    case 'fsbr_edit':
+      $title.textContent = dev.info.name + '/fs';
+      enterMenu('menu_fsbr');
       break;
 
     case 'ota':
-      display('ota', 'block');
-      display('icon_menu', 'inline-block');
-      display('back', 'inline-block');
-      display('conn', 'inline-block');
-      EL('title').innerHTML = dev.info.name + '/ota';
+      $title.textContent = dev.info.name + '/ota';
+      enterMenu('menu_ota');
+    
+      const ota_t = '.' + dev.info.ota_t;
+      EL('ota_upload').accept = ota_t;
+      EL('ota_upload_fs').accept = ota_t;
+      EL('ota_url_f').value = "http://flash" + ota_t;
+      EL('ota_url_fs').value = "http://filesystem" + ota_t;
+      display('fs_otaf', dev.isModuleEnabled(Modules.OTA) ? 'block' : 'none');
+      display('fs_otaurl', dev.isModuleEnabled(Modules.OTA_URL) ? 'block' : 'none');
       break;
 
     case 'dev_config':
-      display('dev_config', 'block');
-      display('icon_menu', 'inline-block');
-      display('back', 'inline-block');
-      display('conn', 'inline-block');
-      EL('title').innerHTML = dev.info.name + '/cfg';
+      $title.textContent = dev.info.name + '/cfg';
+      enterMenu('menu_cfg');
       show_cfg();
-      break;
-
-    case 'pin':
-      display('back', 'inline-block');
-      show_keypad(true);
       break;
   }
 }
 function show_cfg() {
-  let dev = hub.dev(focused);
+  const dev = hub.dev(focused);
 
-  EL('ui_mode').value = dev.info.ui_mode;
   EL('main_width').value = dev.info.main_width;
-  EL('ui_block_width').value = dev.info.ui_block_width;
-  display('ui_block_width_cont', dev.info.ui_mode >= 2 ? 'flex' : 'none');
-  EL('info_cli_sw').checked = EL('cli_cont').style.display == 'block';
+  EL('info_cli_sw').checked = document.body.classList.contains('show-cli');
+  EL('info_trust').checked = dev.info.trust;
   EL('plugin_css').value = dev.info.plugin_css;
   EL('plugin_js').value = dev.info.plugin_js;
 }
-function show_info() {
-  let dev = hub.dev(focused);
+async function show_info() {
+  const dev = hub.dev(focused);
 
-  EL('info_id').innerHTML = focused;
-  EL('info_set').innerHTML = dev.info.prefix + '/' + focused + '/ID/set/*';
-  EL('info_read').innerHTML = dev.info.prefix + '/' + focused + '/ID/read/*';
-  EL('info_get').innerHTML = dev.info.prefix + '/hub/' + focused + '/get/*';
-  EL('info_status').innerHTML = dev.info.prefix + '/hub/' + focused + '/status';
-  display('reboot_btn', dev.module(Modules.REBOOT) ? 'block' : 'none');
-  display('info_topics', dev.module(Modules.MQTT) ? 'block' : 'none');
+  EL('info_id').textContent = focused;
+  EL('info_set').textContent = dev.info.prefix + '/' + focused + '/ID/set/*';
+  EL('info_read').textContent = dev.info.prefix + '/' + focused + '/ID/read/*';
+  EL('info_get').textContent = dev.info.prefix + '/hub/' + focused + '/get/*';
+  EL('info_status').textContent = dev.info.prefix + '/hub/' + focused + '/status';
+  display('reboot_btn', dev.isModuleEnabled(Modules.REBOOT) ? 'block' : 'none');
+  display('info_topics', dev.isModuleEnabled(Modules.MQTT) ? 'block' : 'none');
 
-  EL('info_version').innerHTML = '';
-  EL('info_net').innerHTML = '';
-  EL('info_memory').innerHTML = '';
-  EL('info_system').innerHTML = '';
+  EL('info_version').replaceChildren();
+  EL('info_net').replaceChildren();
+  EL('info_memory').replaceChildren();
+  EL('info_system').replaceChildren();
+
+  if (dev.isModuleEnabled(Modules.INFO)) {
+    const info = await dev.getInfo();
+    if (info) showInfo(info);
+  }
 }
 
 // =========== HANDLERS ===========
-function resize_h() {
-  ui_render.resizeWidgets();
-}
-function test_h() {
-  show_screen('test');
-}
-function projects_h() {
-  EL('projects').innerHTML = '';
-  show_screen('projects');
-  loadProjects();
-}
-function refresh_h() {
-  if (focused) post(screen);
-  else discover();
+async function refresh_h() {
+  if (!focused) {
+    discover();
+    return
+  }
+  const dev = hub.dev(focused);
+  switch (screen) {
+    case "ui":
+      await dev.updateUi();
+      break;
+    case "files":
+      await dev.updateFileList();
+      break;
+    case "info":
+      const info = await dev.getInfo();
+      if (info) showInfo(info);
+      break;
+  }
 }
 async function back_h() {
   if (focused) {
-    let dev = hub.dev(focused);
-    if (dev.fsBusy()) {
-      showPopupError(dev.fs_mode + ' ' + getError(HubErrors.Abort));
-      dev.fsStop();
-    }
-  }
-  if (EL('fsbr_edit').style.display == 'block') {
-    editor_cancel();
-    return;
+    const dev = hub.dev(focused);
+    dev.fsStop();
   }
   if (menu_f) {
-    Menu.deact();
-    menu_show(0);
+    menu_show(false);
     return;
   }
   switch (screen) {
     case 'ui':
-      release_all();
       close_device();
       break;
     case 'dev_config':
     case 'info':
     case 'files':
     case 'ota':
-      Menu.deact();
+      enterMenu();
       show_screen('ui');
-      post('ui');
+      hub.dev(focused).updateUi();
+      break;
+    case 'fsbr_edit':
+      show_screen('files');
       break;
     case 'config':
       config_h();
       break;
-    case 'pin':
     case 'projects':
     case 'test':
       show_screen('main');
@@ -199,65 +181,21 @@ function config_h() {
     show_screen('config');
   }
 }
-function info_h() {
-  Menu.deact();
-  menu_show(0);
-  if (hub.dev(focused).module(Modules.INFO)) post('info');
-  show_screen('info');
-  EL('menu_info').classList.add('menu_act');
-}
-function cfg_h() {
-  Menu.deact();
-  menu_show(0);
-  show_screen('dev_config');
-  EL('menu_cfg').classList.add('menu_act');
-}
-function fsbr_h() {
-  Menu.deact();
-  menu_show(0);
-  if (hub.dev(focused).module(Modules.FILES)) {
-    post('files');
-    EL('fsbr_inner').innerHTML = waiter();
-  }
-  display('fs_browser', hub.dev(focused).module(Modules.FILES) ? 'block' : 'none');
-  display('fs_upload', hub.dev(focused).module(Modules.UPLOAD) ? 'block' : 'none');
-  display('fs_create', hub.dev(focused).module(Modules.CREATE) ? 'block' : 'none');
-  display('fs_format_row', hub.dev(focused).module(Modules.FORMAT) ? 'flex' : 'none');
-  show_screen('files');
-  EL('menu_fsbr').classList.add('menu_act');
-}
-async function format_h() {
-  if (await asyncConfirm(lang.fs_format + '?')) post('format');
-}
-function ota_h() {
-  Menu.deact();
-  menu_show(0);
-  show_screen('ota');
-  EL('menu_ota').classList.add('menu_act');
 
-  let ota_t = '.' + hub.dev(focused).info.ota_t;
-  EL('ota_upload').accept = ota_t;
-  EL('ota_upload_fs').accept = ota_t;
-  EL('ota_url_f').value = "http://flash" + ota_t;
-  EL('ota_url_fs').value = "http://filesystem" + ota_t;
-  display('fs_otaf', hub.dev(focused).module(Modules.OTA) ? 'block' : 'none');
-  display('fs_otaurl', hub.dev(focused).module(Modules.OTA_URL) ? 'block' : 'none');
-}
-function manual_ip_h(ip) {
-  if (hub.http.discover_ip(ip, hub.cfg.http_port)) {
-    save_cfg();
-    show_screen('main');
-  } else showPopupError(lang.wrong_ip);
+async function manual_ip_h(ip) {
+  let device;
+  try {
+    device = await hub.http.discover_ip(ip);
+  } catch (e) {
+    showPopupError(getError(e));
+    return;
+  }
+  save_cfg();
+  show_screen('main');
+  if (device) device_h(device.info.id);
 }
 function update_ip_h() {
-  /*NON-ESP*/
-  if (!Boolean(window.webkitRTCPeerConnection || window.mozRTCPeerConnection)) notSupported();
-  else getLocalIP().then((ip) => {
-    if (ip.indexOf("local") > 0) asyncAlert(`Disable WEB RTC anonymizer: ${browser()}://flags/#enable-webrtc-hide-local-ips-with-mdns`);
-    else EL('local_ip').value = ip;
-  });
-  /*/NON-ESP*/
-  if (platform() == 'esp') EL('local_ip').value = window_ip();
+  getLocalIP(false);
 }
 function menu_h() {
   menu_show(!menu_f);
@@ -266,99 +204,120 @@ function devlink_h() {
   copyClip(devLink());
 }
 function qr_h() {
-  /*NON-ESP*/
-  let qr = EL("qrcode");
-  new QRCode(qr, devLink());
-  setTimeout(() => openFile(qr.children[1].src), 100);
-  /*/NON-ESP*/
+  /*@[if_not_target:esp]*/
+  const $qr = document.createElement('div');
+  new QRCode($qr, devLink());
+  $qr.style.margin = '0 auto';
+  asyncShowQr($qr);
+  /*@/[if_not_target:esp]*/
 }
 function devLink() {
   let qs = window.location.origin + window.location.pathname + '?';
-  let info = hub.dev(focused).info;
+  const info = hub.dev(focused).info;
   ["id", "prefix", "ip", "http_port"].forEach(x => { if (info[x]) qs += `${x}=${info[x]}&`; });
   return qs.slice(0, -1);
 }
-function ui_mode_h(el) {
-  hub.dev(focused).info.ui_mode = el.value;
-  save_devices();
-  display('ui_block_width_cont', el.value >= 2 ? 'flex' : 'none');
-}
 function ui_width_h(el) {
   hub.dev(focused).info.main_width = el.value;
-  save_devices();
-}
-function ui_block_width_h(el) {
-  hub.dev(focused).info.ui_block_width = el.value;
-  save_devices();
 }
 function ui_plugin_css_h(el) {
   hub.dev(focused).info.plugin_css = el.value;
-  save_devices();
   addDOM('device_css', 'style', el.value, EL('plugins'));
 }
 function ui_plugin_js_h(el) {
   hub.dev(focused).info.plugin_js = el.value;
-  save_devices();
   addDOM('device_js', 'script', el.value, EL('plugins'));
 }
 
 // ============== MENU =============
 function menu_show(state) {
   menu_f = state;
-  let cl = EL('menu').classList;
+  const cl = EL('menu').classList;
   if (menu_f) cl.add('menu_show');
   else cl.remove('menu_show');
-  EL('icon_menu').innerHTML = menu_f ? '' : '';
+  EL('icon_menu').textContent = menu_f ? '' : '';
   display('menu_overlay', menu_f ? 'block' : 'none');
 }
+function updateSystemMenu() {
+  const dev = hub.dev(focused);
+  EL('menu').append(createElement(null, {
+    type: 'div',
+    class: "menu_item menu_cfg",
+    text: lang.m_config,
+    events: {
+      click: () => show_screen('dev_config')
+    }
+  }));
+  EL('menu').append(createElement(null, {
+    type: 'div',
+    class: "menu_item menu_info",
+    text: lang.m_info,
+    events: {
+      click: () => show_screen('info')
+    }
+  }));
 
-// ============== DEVICE =============
-function device_h(id) {
-  let dev = hub.dev(id);
-  if (!dev || dev.conn == Conn.NONE) return;
-  if (!dev.info.api_v || dev.info.api_v != hub.api_v) asyncAlert(lang.api_mis);
-
-  if (dev.info.PIN && !dev.granted) {
-    pin_id = id;
-    show_screen('pin');
-  } else {
-    open_device(id);
+  if (dev.isModuleEnabled(Modules.FILES)) {
+    EL('menu').append(createElement(null, {
+      type: 'div',
+      class: "menu_item menu_fsbr",
+      text: lang.m_files,
+      events: {
+        click: () => show_screen('files')
+      }
+    }));
+  }
+  if (dev.isModuleEnabled(Modules.OTA) || dev.isModuleEnabled(Modules.OTA_URL)) {
+    EL('menu').append(createElement(null, {
+      type: 'div',
+      class: "menu_item menu_ota",
+      text: lang.m_ota,
+      events: {
+        click: () => show_screen('ota')
+      }
+    }));
   }
 }
-function open_device(id) {
-  /*NON-ESP*/
-  checkUpdates(id);
-  /*/NON-ESP*/
+function enterMenu(sel = null) {
+  menu_show(false);
+  for (const $i of document.getElementById('menu').children)
+      $i.classList.remove('menu_act');
+  if (sel !== null)
+      document.querySelector('.menu_item.' + sel).classList.add('menu_act');
+}
+// ============== DEVICE =============
+async function device_h(id) {
+  const dev = hub.dev(id);
+  if (!dev || !dev.isConnected()) return;
+  if (!dev.info.api_v || dev.info.api_v != GyverHub.api_v) asyncAlert(lang.api_mis);
+
+  if (dev.info.pin && !dev.granted) {
+    if (!await asyncAskPin(lang.dev_pin + dev.info.name, dev.info.pin, true)) {
+      return false;
+    }
+    dev.granted = true;
+  }
+  
+  /*@[if_not_target:esp]*/
+  await checkUpdates(dev);
+  /*@/[if_not_target:esp]*/
 
   focused = id;
-  let dev = hub.dev(id)
-  EL('menu_user').innerHTML = '';
-  EL('conn').innerHTML = Conn.names[dev.conn];
-  UiPlugin.enableStyle(id);
+  EL('menu').replaceChildren();
+  updateSystemMenu();
+  EL('conn').textContent = dev.getConnection().name;
   addDOM('device_css', 'style', dev.info.plugin_css, EL('plugins'));
   addDOM('device_js', 'script', dev.info.plugin_js, EL('plugins'));
-  let ctrls = EL('controls#' + id);
-  if (ctrls) {
-    ctrls.style.display = 'block';
-    truncIdRecursive(ctrls, '__old');
-  }
   show_screen('ui');
   dev.focus();
 }
 function close_device() {
-  Ack.clearAll();
-
-  ui_render.clearWidgets();
-  UiPlugin.disableStyle(focused);
-  UiJS.disable();
-  UiCSS.disable();
-  EL('plugins').innerHTML = '';
-  let ctrls = EL('controls#' + focused);
-  if (ctrls) {
-    ctrls.style.display = 'none';
-    addIdRecursive(ctrls, '__old');
-  }
-  EL('ota_label').innerHTML = "";
+  if (renderer) renderer.close();
+  renderer = null;
+  const $root = document.getElementById('controls');
+  $root.replaceChildren();
+  EL('plugins').replaceChildren();
+  EL('ota_label').replaceChildren();
 
   errorBar(false);
   hub.dev(focused).unfocus();
@@ -367,7 +326,7 @@ function close_device() {
 }
 async function delete_h(id) {
   if (await asyncConfirm(lang.delete + ' ' + id + '?')) {
-    hub.delete(id);
+    hub.deleteDevice(id);
     EL(`device#${id}`).remove();
   }
 }
@@ -379,16 +338,25 @@ function dev_down_h(id) {
   hub.moveDevice(id, 1);
   render_devices();
 }
+async function trust_dev_h() {
+  const v = EL('info_trust').checked;
+  if (v && !await asyncConfirm(lang.dev_trust_warning)) {
+    EL('info_trust').checked = false;
+    return;
+  }
+  hub.dev(focused).info.trust = v;
+}
 
 // ============== CLI =============
 function showCLI(v) {
-  EL('bottom_space').style.height = v ? '170px' : '50px';
-  display('cli_cont', v ? 'block' : 'none');
+  if (v) document.body.classList.add('show-cli');
+  else document.body.classList.remove('show-cli');
+
   if (v) EL('cli_input').focus();
   EL('info_cli_sw').checked = v;
 }
 function printCLI(text, color) {
-  if (EL('cli_cont').style.display == 'block') {
+  if (document.body.classList.contains('show-cli')) {
     if (EL('cli').innerHTML) EL('cli').innerHTML += '\n';
     let st = color ? `style="color:${intToCol(color)}"` : '';
     EL('cli').innerHTML += `<span ${st}>${text}</span>`;
@@ -396,15 +364,15 @@ function printCLI(text, color) {
   }
 }
 function toggleCLI() {
-  EL('cli').innerHTML = "";
+  EL('cli').replaceChildren();
   EL('cli_input').value = "";
-  showCLI(!(EL('cli_cont').style.display == 'block'));
+  showCLI(!document.body.classList.contains('show-cli'));
 }
 function checkCLI(event) {
   if (event.key == 'Enter') sendCLI();
 }
-function sendCLI() {
-  post('cli', 'cli', EL('cli_input').value);
+async function sendCLI() {
+  await hub.dev(focused).sendCli(EL('cli_input').value);
   EL('cli').innerHTML += "\n>" + EL('cli_input').value;
   EL('cli').scrollTop = EL('cli').scrollHeight;
   EL('cli_input').value = "";
@@ -415,35 +383,9 @@ function make_pin(arg) {
   if (arg.value.length >= 4) arg.value = arg.value.hashCode();
   else arg.value = '';
 }
-function pass_type(v) {
-  EL('pass_inp').value += v;
-  let hash = EL('pass_inp').value.hashCode();
-
-  if (pin_id) {   // device
-    if (hash == hub.dev(pin_id).info.PIN) {
-      open_device(pin_id);
-      EL('pass_inp').value = '';
-      hub.dev(pin_id).granted = true;
-    }
-  } else {        // app
-    if (hash == cfg.pin) {
-      display('password', 'none');
-      startup();
-      EL('pass_inp').value = '';
-    }
-  }
-}
 function check_type(arg) {
   if (arg.value.length > 0) {
     let c = arg.value[arg.value.length - 1];
     if (c < '0' || c > '9') arg.value = arg.value.slice(0, -1);
-  }
-}
-function show_keypad(v) {
-  if (v) {
-    display('password', 'block');
-    EL('pass_inp').focus();
-  } else {
-    display('password', 'none');
   }
 }

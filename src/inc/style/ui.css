@@ -46,13 +46,6 @@
   margin-right: 5px;
 }
 
-.icon_ok {
-  font-size: 12px;
-  width: 5px;
-  margin: 0;
-  display: none;
-}
-
 .spinning {
   -webkit-animation: spin 0.8s linear infinite;
   -moz-animation: spin 0.8s linear infinite;
@@ -78,19 +71,6 @@
   }
 }
 
-.icon_head {
-  cursor: pointer;
-  width: 27px;
-}
-
-.icon_head:hover {
-  filter: brightness(0.9);
-}
-
-.icon_head:active {
-  filter: brightness(0.8);
-}
-
 .icon_inline {
   user-select: none !important;
   font-size: 18px !important;
@@ -103,7 +83,6 @@
 
 .notice {
   color: var(--font_inv);
-  background: var(--prim);
   box-shadow: 0px 0px 7px #0007;
   border-radius: 8px;
   position: fixed;
@@ -112,10 +91,26 @@
   transform: translate(-50%, -50%);
   padding: 10px;
   font-size: 20px;
-  z-index: 2;
-  display: none;
+  z-index: 5;
   opacity: 0;
+  animation: notif-anim 3.5s forwards;
 }
+
+@keyframes notif-anim { 
+  from {
+    opacity: 0%;
+  }
+  14.28571428571429% {
+    opacity: 100%;
+  }
+  85.71428571428571% {
+    opacity: 100%;
+  }
+  to {
+    opacity: 0%;
+  }
+}
+
 
 .notice_block {
   display: block;
@@ -126,26 +121,6 @@
   margin: 5px 15px;
   font-size: 15px;
   user-select: text;
-}
-
-@keyframes fade-out {
-  from {
-    opacity: 100%;
-  }
-
-  to {
-    opacity: 0%;
-  }
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0%;
-  }
-
-  to {
-    opacity: 100%;
-  }
 }
 
 /* ====================================================================== */
@@ -253,6 +228,11 @@
   background: #ce1d1d;
 }
 
+.pin_cancel {
+  font-size: 20px;
+  background: #cbce1d;
+}
+
 /* ====================================================================== */
 /* ================================= CLI ================================ */
 /* ====================================================================== */
@@ -358,12 +338,8 @@
 }
 
 .menu_show {
-  max-height: var(--menu_h);
+  max-height: 100%;
   transition: max-height .1s ease-in;
-}
-
-.menu_inn {
-  padding: 10px 0;
 }
 
 .menu_item {
@@ -374,6 +350,12 @@
   padding-left: 10px;
   border: 5px solid transparent;
   border-width: 0 0 0 5px;
+}
+.menu_item:first-child {
+  margin-top: 8px;
+}
+.menu_item:last-child {
+  margin-bottom: 8px;
 }
 
 .menu_item:hover {
@@ -480,6 +462,10 @@
 /* ====================================================================== */
 /* ================================ INFO ================================ */
 /* ====================================================================== */
+body[data-screen=info] .screen-info {
+  display: block;
+}
+
 .info_label {
   user-select: text;
   cursor: text;
@@ -504,35 +490,26 @@
 /* =============================== DEVICE =============================== */
 /* ====================================================================== */
 #devices {
-  /*grid-gap: 10px;*/
+  grid-gap: 8px;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   /*grid-template-columns: repeat(auto-fit, 200px);*/
 }
 
 .device {
-  /*display: inline-block;*/
-  align-items: center;
   cursor: pointer;
-  width: 50%;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
-  height: 65px;
   padding: 4px;
   width: 100%;
-}
+  height: 57px;
 
-.device_inner {
   background: var(--tab);
   border-radius: 10px;
   box-shadow: 0 0 10px 0px #00000020;
-  width: 100%;
-  height: 100%;
   display: flex;
   align-items: center;
 }
 
-.device_inner:hover {
+.device:hover {
   box-shadow: 0 0 10px 0px #00000030;
 }
 
@@ -542,12 +519,12 @@
   user-select: none;
 }
 
-.d_title {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  height: 100%;
+.device>div {
   width: 100%;
+}
+
+.d_title {
+  align-self: center;
   overflow: hidden;
 }
 
@@ -558,24 +535,11 @@
 }
 
 .d_icon {
-  width: 40px;
+  width: 43px;
   display: flex;
   justify-content: center;
-  margin: 0px 3px 0 7px;
-}
-
-.d_icon_empty {
-  width: 2px;
-}
-
-.d_icon_none {
-  display: none;
-}
-
-#conn {
-  font-size: 13px;
-  margin-left: 3px;
-  font-weight: 400;
+  align-items: center;
+  margin: 0;
 }
 
 .conn_dev {
@@ -586,7 +550,6 @@
 
 .d_btn_cont {
   display: none;
-  width: 100%;
   justify-content: space-evenly;
 }
 
@@ -607,12 +570,7 @@
 }
 
 .d_btn_cfg {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  right: 4px;
-  top: -15px;
+  align-self: flex-start;
   color: var(--back);
   font-size: 17px;
 }
@@ -626,14 +584,14 @@
 /* ================================ CONFIG ============================== */
 /* ====================================================================== */
 
-.cfg_inner {
-  display: none;
-  width: 100%;
+body[data-screen=config] .screen-config {
+  display: block;
+}
+
+.screen-config {
   font-size: 17px;
   font-weight: 500;
   color: var(--font2);
-  max-width: var(--ui_width);
-  margin: auto;
 }
 
 .cfg_info {
@@ -800,4 +758,36 @@ input:checked+.slider:before {
 
 .dialog_row {
   white-space: pre-wrap;
+}
+
+.screen-ui {
+  --device-width: var(--ui_width);
+  max-width: var(--device-width);
+}
+
+.screen-ui.wide-mode {
+  justify-content: center;
+  max-width: unset;
+  grid-template-columns: repeat(auto-fit, var(--device-width));
+}
+
+body[data-screen=ui] .screen-ui {
+  display: block;
+}
+
+body[data-screen=ui] .screen-ui.wide-mode {
+  display: grid;
+}
+
+
+body[data-screen=ota] .screen-ota,
+body[data-screen=dev_config] .screen-dev_config,
+body[data-screen=files] .screen-files,
+body[data-screen=fsbr_edit] .screen-fsbr_edit 
+{
+  display: block;
+}
+
+body[data-screen=main] .screen-main {
+  display: grid;
 }

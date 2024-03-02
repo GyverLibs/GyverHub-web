@@ -1,38 +1,50 @@
-class UiPlot {
-    static render(cont, data) {
-        cont.innerHTML = `<div class="w_canvas"><canvas data-type="${data.type}" id="${ID(data.id)}"></canvas></div>`;
+class PlotWidget extends BaseWidget {
+    $el;
+    #cv;
+
+    constructor(data, renderer) {
+        super(data, renderer);
+
+        this.makeLayout({
+            type: 'div',
+            class: '',
+            children: [
+                {
+                    type: 'canvas',
+                    name: 'el',
+                }
+            ]
+        });
+
+        this.#cv = new Plot(data.id, this.$el, data.height ?? 150, data.text, data.type, true);
+
+        this.$el.parentNode.addEventListener('resize', () => {
+            this.#cv.resize();
+        });
 
         wait2Frame().then(() => {
-            // TODO !themes[cfg.theme] DARK: 0, LIGHT: 1
-            let p = new Plot(data.id, CMP(data.id), data.height ?? 150, data.text, data.type, true);
-            p.update(data.data);
-            p.redraw();
-            UiPlot.plots[data.id] = p;
+            this.#cv.redraw();
         });
+
+        this.update(data.value);
     }
 
-    static update(id, data) {
-        let p = UiPlot.plots[id];
-        if (!p) return;
+    update(data) {
+        super.update(data);
+        
         if ('value' in data) {
-            // p.update(data.value);
-            // p.redraw(data.value);
+            this.#cv.update(data.value);
+            this.#cv.redraw();
         }
     }
 
-    static clear() {
-        for (let plot in UiPlot.plots) UiPlot.plots[plot].stop();
-        UiPlot.plots = {};
+    close() {
+        this.#cv.stop();
     }
+}
 
-    static resize() {
-        for (let p in UiPlot.plots) {
-            UiPlot.plots[p].resize();
-        }
-    }
+Renderer.register('plot', PlotWidget);
 
-    static plots = {};
-};
 
 class Plot {
     constructor(id, cv, height, labels, type, dark) {
@@ -81,8 +93,7 @@ class Plot {
         this.data = this.data.concat(data);
     }
 
-    redraw(data = null) {
-        if (!data) data = this.data;
+    redraw() {
         let cv = this.cv;
         let cx = cv.getContext("2d");
         let r = window.devicePixelRatio;

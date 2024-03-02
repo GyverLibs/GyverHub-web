@@ -1,386 +1,395 @@
-# GyverHub Web Builder
-
-# Для запуска нужно установить модули:
-# pip install rcssmin
-# pip install rjsmin
-
-version = '0.55b'
-notes = 'Внимание, это новая версия! Старая версия библиотеки (old) несовместима с приложением! Читайте обновлённую wiki. Старая версия приложения доступна на http://hub.gyver.ru/old/'
-
-# ESP
-esp_remove_non_gz = True    # удалить несжатые файлы
-esp_min_font = True         # использовать минимальный набор иконок
-
-##############################################################
-js_hub = [
-    "src/inc/lib/hub/mqtt.min.js",
-    "src/inc/lib/hub/codes.js",
-    "src/inc/lib/hub/bt.js",
-    "src/inc/lib/hub/tg.js",
-    "src/inc/lib/hub/serial.js",
-    "src/inc/lib/hub/utils.js",
-    "src/inc/lib/hub/buffer.js",
-    "src/inc/lib/hub/discover.js",
-    "src/inc/lib/hub/conn_bt.js",
-    "src/inc/lib/hub/conn_tg.js",
-    "src/inc/lib/hub/conn_http.js",
-    "src/inc/lib/hub/conn_mqtt.js",
-    "src/inc/lib/hub/conn_serial.js",
-    "src/inc/lib/hub/conn_ws.js",
-    "src/inc/lib/hub/device.js",
-    "src/inc/lib/hub/GyverHub.js",
-]
-
-js_files = [
-    "src/inc/lib/qrcode.min.js",
-    "src/inc/lib/sort-paths.min.js",
-    "src/inc/lib/pickr.min.js",
-    "src/inc/utils.js",
-
-    "src/inc/widgets/render.js",
-    "src/inc/widgets/menu.js",
-    "src/inc/widgets/widget.js",
-    "src/inc/widgets/button.js",
-    "src/inc/widgets/label.js",
-    "src/inc/widgets/title.js",
-    "src/inc/widgets/plugin.js",
-    "src/inc/widgets/switch.js",
-    "src/inc/widgets/swicon.js",
-    "src/inc/widgets/display.js",
-    "src/inc/widgets/image.js",
-    "src/inc/widgets/table.js",
-    "src/inc/widgets/datetime.js",
-    "src/inc/widgets/popup.js",
-    "src/inc/widgets/log.js",
-    "src/inc/widgets/text.js",
-    "src/inc/widgets/input.js",
-    "src/inc/widgets/pass.js",
-    "src/inc/widgets/area.js",
-    "src/inc/widgets/slider.js",
-    "src/inc/widgets/spinner.js",
-    "src/inc/widgets/custom.js",
-    "src/inc/widgets/func.js",
-    "src/inc/widgets/select.js",
-    "src/inc/widgets/color.js",
-    "src/inc/widgets/led.js",
-    "src/inc/widgets/icon.js",
-    "src/inc/widgets/ui_file.js",
-    "src/inc/widgets/hook.js",
-    "src/inc/widgets/gauge.js",
-    "src/inc/widgets/gauge_r.js",
-    "src/inc/widgets/gauge_l.js",
-    "src/inc/widgets/joy.js",
-    "src/inc/widgets/dpad.js",
-    "src/inc/widgets/flags.js",
-    "src/inc/widgets/tabs.js",
-    "src/inc/widgets/canvas.js",
-    "src/inc/widgets/stream.js",
-    "src/inc/widgets/plot.js",
-
-    "src/inc/popup.js",
-    "src/inc/controls.js",
-    "src/inc/lang.js",
-    "src/inc/render.js",
-    "src/inc/config.js",
-    "src/inc/projects.js",
-    "src/inc/ui.js",
-    "src/inc/fs.js",
-    "src/inc/index.js",
-    "src/inc/updates.js",
-    "src/inc/events.js",
-    "src/inc/test.js",
-]
-
-css_files = [
-    'src/inc/lib/nano.min.css',
-    'src/inc/style/main.css',
-    'src/inc/style/ui.css',
-    'src/inc/style/widgets.css',
-]
-
-sw_cache = '''
-  '/',
-  '/fa-solid-900.woff2',
-  '/Robotocondensed.woff2',
-  '/favicon.svg',
-  '/index.html',
-  '/script.js',
-  '/style.css',
-'''
-
-copy_web = [
-    'favicon.svg',
-    'index.html',
-    'manifest.json',
-    'sw.js',
-    'icons/icon-192x192.png',
-    'icons/icon-256x256.png',
-    'icons/icon-384x384.png',
-    'icons/icon-512x512.png',
-]
-
-inc_min = '''
-  <script src="script.js?__VER__="></script>
-  <link href="style.css?__VER__=" rel="stylesheet">
-'''
-
-##############################################################
-
-from rcssmin import cssmin
-from rjsmin import jsmin
-import gzip
-import shutil
+import argparse
+import sys
 import os
+import shutil
+import gzip
+import zipfile
 import re
 import base64
+import json
+import io
+import html.parser
 
-##############################################################
+import rjsmin
+import rcssmin
 
-if os.path.exists('app'): shutil.rmtree('app')
-if os.path.exists('esp'): shutil.rmtree('esp')
-if os.path.exists('esp_h'): shutil.rmtree('esp_h')
-if os.path.exists('host'): shutil.rmtree('host')
-if os.path.exists('lib'): shutil.rmtree('lib')
+HERE = os.path.dirname(__file__)
+SRCDIR = os.path.join(HERE, 'src')
+BUILDDIR = os.path.join(HERE, 'build')
+DISTDIR = os.path.join(HERE, 'dist')
 
-os.mkdir('app')
-os.mkdir('esp')
-os.mkdir('esp_h')
-os.mkdir('host')
-os.mkdir('host/icons')
-os.mkdir('host/fonts')
-os.mkdir('lib')
+RE_TAG_SINGLELINE = re.compile(r'(?:/\*|<!--)\s*@!\[(?P<tag>[^\]]*)\]\s*(?:\*/|-->)')
+RE_TAG_MULTILINE = re.compile(r'(?:/\*|<!--)\s*@\[(?P<tag>[^\]]*)\]\s*(?:\*/|-->)(?P<data>(.|\n)*?)(?:/\*|<!--)\s*@/\[(?P<end_tag>[^\]]*)\]\s*(?:\*/|-->)', re.MULTILINE)
 
-with open('version.txt', "w") as f:
-    f.write(version)
 
-###############################################################
-###                          HUBJS                          ###
-###############################################################
-js_min = ''
-for file in js_hub:
-    with open(file, 'r') as f:
-        read = f.read()
-        if ('.min.' not in file): read = jsmin(read)
-        js_min += read + '\n'
+class PathResolver:
+    def __init__(self, src_dir: str, build_dir: str, dist_dir: str):
+        self.src_dir = src_dir
+        self.build_dir = build_dir
+        self.dist_dir = dist_dir
 
-js_min = re.sub(r'(^\s+)', '' , js_min, flags=re.MULTILINE)
+    def resolve(self, path: str, target: str, dist: bool = False):
+        if dist:
+            return os.path.join(self.dist_dir, path)
 
-with open('lib/GyverHub.min.js', 'w') as f:
-    f.write(js_min)
+        if path.startswith('@'):
+            return os.path.join(self.build_dir, target, path[1:])
+        
+        return os.path.join(self.src_dir, path)
 
-###############################################################
-###                           HOST                          ###
-###############################################################
 
-host_inc = '''
-  <script type="module" src="https://unpkg.com/esp-web-tools@9/dist/web/install-button.js?module"></script>
-  
-  <script type="text/javascript">
-    (function (m, e, t, r, i, k, a) {
-        m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
-        m[i].l = 1 * new Date();
-        for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
-        k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
-    })
-        (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-    ym(93507215, "init", {clickmap: true, trackLinks: true, accurateTrackBounce: true});
-  </script>
-  <noscript>
-    <div><img src="https://mc.yandex.ru/watch/93507215" style="position:absolute; left:-9999px;" alt="" /></div>
-  </noscript>
-'''
+class Compiler:
+    def __init__(self, target: str, env: dict[str, str], pr: PathResolver):
+        self._env = env.copy()
+        self._env['target'] = target
+        self._target = target
+        self._resolver = pr
 
-shutil.copyfile('src/inc/style/fonts/fa-solid-900.woff2', 'host/fonts/fa-solid-900.woff2')
-shutil.copyfile('src/inc/style/fonts/Robotocondensed.woff2', 'host/fonts/Robotocondensed.woff2')
+    def _resolve_read(self, path: str) -> bytes:
+        print('  [R]', path)
+        path = self._resolver.resolve(path, self._target)
+        with open(path, 'rb') as f:
+            return f.read()
 
-for file in copy_web:
-    shutil.copyfile('src/' + file, 'host/' + file)
+    def _resolve_write(self, path: str, data: bytes):
+        print('  [W]', path)
+        path = self._resolver.resolve(path, self._target)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'wb') as f:
+            f.write(data)
 
-with open('host/index.html', "r+") as f:
-    data = f.read()
-    data = re.sub(r'<!--INC-->([\s\S]*?)<!--\/INC-->', inc_min, data)
-    data = re.sub(r'<!--HOST_INC-->', host_inc, data)
-    data = re.sub(r'__VER__', version, data)
-    data = re.sub(r'<!--([\s\S]*?)-->', '', data)
-    data = re.sub(r'<!--\/([\s\S]*?)-->', '', data)
-    data = "".join([s for s in data.strip().splitlines(True) if s.strip()])
-    f.seek(0)
-    f.write(data)
-    f.truncate()
+    def _include(self, path: str, options: list) -> bytes:
+        data = self._resolve_read(path)
 
-with open('host/sw.js', "r+") as f:
-    data = f.read()
-    data = re.sub(r'__VER__', version, data)
-    data = re.sub(r'\'__CACHE__\'', sw_cache, data)
-    f.seek(0)
-    f.write(data)
-    f.truncate()
+        if "compile" in options:
+            data = self.compile_str(data.decode('utf-8')).encode('utf-8')
 
-# JS
-js_min = ''
-with open('lib/GyverHub.min.js', 'r') as f:
-    js_min = f.read()
+        if "raw" not in options:
+            if "js" in options:
+                data = rjsmin.jsmin(data.decode('utf-8')).encode('utf-8')
 
-for file in js_files:
-    with open(file, 'r', encoding="utf8") as f:
-        read = f.read()
-        if ('.min.' not in file): read = jsmin(read)
-        js_min += read + '\n'
+            if "css" in options:
+                data = rcssmin.cssmin(data.decode('utf-8')).encode('utf-8')
 
-js_min = js_min.replace('__VER__', version)
-js_min = js_min.replace('__NOTES__', notes)
-js_min = re.sub(r'(^\s+)', '' , js_min, flags=re.MULTILINE)
+            if "html" in options:
+                data = HtmlMinifier().minify(data.decode('utf-8')).encode('utf-8')
 
-host_js = js_min.replace('__HOST__', '')
+            if "json" in options:
+                data = minify_json(data.decode('utf-8')).encode('utf-8')
 
-with open('host/script.js', 'w', encoding="utf8") as f:
-    f.write(host_js)
+        if "base64" in options:
+            data = base64.b64encode(data)
 
-# CSS
-css_min = ''
-for file in css_files:
-    with open(file, 'r') as f:
-        read = f.read()
-        if ('.min.' not in file): read = cssmin(read)
-        css_min += read + '\n'
+        return data
 
-with open('host/style.css', 'w') as f:
-    f.write(css_min)
+    def _re_matched(self, match: re.Match[str]) -> str:
+        d = match.groupdict()
+        tag = d['tag']
+        end_tag = d.get('end_tag')
+        if end_tag is not None and end_tag != tag:
+            raise RuntimeError(f'End tag does not match {tag!r} != {end_tag!r}')
 
-#################################################################
-###                            APP                            ###
-#################################################################
-# js_min from HOST
-fa_b64 = 'data:font/woff2;charset=utf-8;base64,'
-with open("src/inc/style/fonts/fa-solid-900.woff2", "rb") as f:
-    fa_b64 += (base64.b64encode(f.read())).decode('ascii')
+        tag, _, args = tag.partition(':')
+        tag = tag.strip()
+        args = [i.strip() for i in args.split(',')]
+        data = d.get('data', '')
 
-cond_64 = 'data:font/woff2;charset=utf-8;base64,'
-with open("src/inc/style/fonts/Robotocondensed.woff2", "rb") as f:
-    cond_64 += (base64.b64encode(f.read())).decode('ascii')
+        if tag == 'env' or tag == '':
+            return self._env.get(args[0], '')
+        
+        if tag == 'if_target':
+            return data if self._target in args else ''
+        
+        if tag == 'if_not_target':
+            return '' if self._target in args else data
+        
+        if tag == 'if_dev':
+            return data if self._env.get('version') == 'dev' else ''
+        
+        if tag == 'if_not_dev':
+            return '' if self._env.get('version') == 'dev' else data
 
-css_min_l = css_min
-css_min_l = css_min_l.replace('url(fonts/fa-solid-900.woff2)', 'url(' + fa_b64 + ')')
-css_min_l = css_min_l.replace('url(fonts/Robotocondensed.woff2)', 'url(' + cond_64 + ')')
+        if tag == 'include':
+            options = args[1:]
+            options.append(os.path.splitext(args[0])[1][1:])
+            return self._include(args[0], options).decode('utf-8')
 
-icon_b64 = "<link rel='icon' href='data:image/svg+xml;base64,"
-with open("src/favicon.svg", "rb") as f:
-    icon_b64 += (base64.b64encode(f.read())).decode('ascii') + "'>"
+        if tag == 'add_file':
+            self.compile_file(args[0], options=args[1:])
+            return ''
 
-inc_app = '<style>\n' + css_min_l + '\n</style>\n'
-inc_app += '<script>\n' + js_min + '\n</script>\n'
-inc_app = inc_app.replace('__APP__', '')
+        if tag == 'add_file_to':
+            self.compile_file(args[0], args[1], options=args[2:])
+            return ''
 
-shutil.copyfile('src/index.html', 'app/index.html')
+        print('W: unknown tag:', tag)
+        return ''
 
-with open('app/index.html', "r+", encoding="utf8") as f:
-    data = f.read()
-    data = re.sub(r'<!--INC-->([\s\S]*?)<!--\/INC-->', '__INC__', data)
-    data = data.replace('__INC__', inc_app)
-    data = re.sub(r'<!--ICON-->([\s\S]*?)<!--\/ICON-->', icon_b64, data)
-    # data = re.sub(r'<!--ICON-->([\s\S]*?)<!--\/ICON-->', '', data)
-    data = re.sub(r'<!--PWA-->([\s\S]*?)<!--\/PWA-->', '', data)
-    data = re.sub(r'<!--APP-->([\s\S]*?)<!--\/APP-->', '', data)
-    data = re.sub(r'<!--HOST_INC-->', '', data)
-    data = re.sub(r'__VER__', version, data)
-    data = re.sub(r'<!--([\s\S]*?)-->', '', data)
-    data = re.sub(r'<!--\/([\s\S]*?)-->', '', data)
-    data = "".join([s for s in data.strip().splitlines(True) if s.strip()])
-    f.seek(0)
-    f.write(data)
-    f.truncate()
+    def compile_str(self, source: str):
+        source = RE_TAG_MULTILINE.sub(self._re_matched, source)
+        source = RE_TAG_SINGLELINE.sub(self._re_matched, source)
+        return source
+    
+    def compile_file(self, source: str, target: str = None, *, language: str = None, options: list = None):
+        if options is None:
+            options = ['compile']
+        if target is None:
+            target = '@' + source
+        if language is None:
+            options.append(os.path.splitext(source)[1][1:])
+        else:
+            options.append(language)
+        
+        data = self._include(source, options)
+        self._resolve_write(target, data)
 
-###############################################################
-###                           ESP                           ###
-###############################################################
-# JS
-js_min = ''
-for file in js_hub:
-    with open(file, 'r', encoding="utf8") as f:
-        read = f.read()
-        read = re.sub(r'\/\*NON-ESP\*\/([\s\S]*?)\/\*\/NON-ESP\*\/', '', read)
-        read = jsmin(read)
-        js_min += read + '\n'
 
-js_min = re.sub(r'(^\s+)', '' , js_min, flags=re.MULTILINE) # hub min js
+class HtmlMinifier(html.parser.HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=False)
+        self._out = io.StringIO()
 
-for file in js_files:
-    with open(file, 'r', encoding="utf8") as f:
-        read = f.read()
-        read = re.sub(r'\/\*NON-ESP\*\/([\s\S]*?)\/\*\/NON-ESP\*\/', '', read)
-        read = re.sub(r'<!--NON-ESP-->([\s\S]*?)<!--\/NON-ESP-->', '', read)
-        if ('.min.' not in file): read = jsmin(read)
-        js_min += read + '\n'
+    @staticmethod
+    def _attrv(v):
+        if v is None:
+            return v
+        return f'="{html.escape(v)}"'
+    
+    @classmethod
+    def _attrs(cls, attrs):
+        if not attrs:
+            return ''
+        return ' ' + ' '.join((f'{k}{cls._attrv(v)}' for k, v in attrs))
 
-js_min = js_min.replace('__VER__', version)
-js_min = js_min.replace('__NOTES__', notes)
-js_min = js_min.replace('__ESP__', '')
-js_min = re.sub(r'(^\s+)', '' , js_min, flags=re.MULTILINE)
+    def get_value(self):
+        return self._out.getvalue()
 
-with open('esp/script.js', 'w', encoding="utf8") as f: f.write(js_min)
-with open('esp/script.js', 'rb') as f_in, gzip.open('esp/script.js.gz', 'wb') as f_out: f_out.writelines(f_in)
+    def handle_startendtag(self, tag, attrs):
+        self._out.write(f'<{tag}{self._attrs(attrs)}/> ')
 
-# CSS
-fa_min_b64 = 'data:font/woff2;charset=utf-8;base64,'
-with open("src/inc/style/fonts/fa-solid-900.min.woff2", "rb") as f:
-    fa_min_b64 += (base64.b64encode(f.read())).decode('ascii')
+    def handle_starttag(self, tag, attrs):
+        self._out.write(f'<{tag}{self._attrs(attrs)}> ')
 
-css_min = ''
-for file in css_files:
-    with open(file, 'r', encoding="utf8") as f:
-        read = f.read()
-        read = re.sub(r'\/\*NON-ESP\*\/([\s\S]*?)\/\*\/NON-ESP\*\/', '', read)
-        read = read.replace('url(fonts/fa-solid-900.woff2)', 'url(' + (fa_min_b64 if esp_min_font else fa_b64) + ')')
-        if ('.min.' not in file): read = cssmin(read)
-        css_min += read + '\n'
+    def handle_endtag(self, tag):
+        self._out.write(f'</{tag}> ')
 
-with open('esp/style.css', 'w') as f: f.write(css_min)
-with open('esp/style.css', 'rb') as f_in, gzip.open('esp/style.css.gz', 'wb') as f_out: f_out.writelines(f_in)
+    def handle_charref(self, name):
+        self._out.write(f'&#{name};')
 
-# INDEX
-shutil.copyfile('src/index.html', 'esp/index.html')
-with open('esp/index.html', "r+", encoding="utf8") as f:
-    data = f.read()
-    data = re.sub(r'<!--ICON-->([\s\S]*?)<!--\/ICON-->', '', data)
-    data = re.sub(r'<!--INC-->([\s\S]*?)<!--\/INC-->', inc_min, data)
-    data = re.sub(r'<!--PWA-->([\s\S]*?)<!--\/PWA-->', '', data)
-    data = re.sub(r'<!--HOST_INC-->', '', data)
-    data = re.sub(r'__VER__', version, data)
-    data = re.sub(r'<!--([\s\S]*?)-->', '', data)
-    data = re.sub(r'<!--\/([\s\S]*?)-->', '', data)
-    data = "".join([s for s in data.strip().splitlines(True) if s.strip()])
-    f.seek(0)
-    f.write(data)
-    f.truncate()
+    def handle_entityref(self, name):
+        self._out.write(f'&{name};')
 
-with open('esp/index.html', 'rb') as f_in, gzip.open('esp/index.html.gz', 'wb') as f_out: f_out.writelines(f_in)
+    def handle_data(self, data):
+        self._out.write(data.strip())
 
-if (esp_remove_non_gz): os.remove("esp/script.js")
-if (esp_remove_non_gz): os.remove("esp/style.css")
-if (esp_remove_non_gz): os.remove("esp/index.html")
+    def handle_decl(self, decl):
+        self._out.write(f'<!{decl}>')
 
-###############################################################
-###                         ESP INC                         ###
-###############################################################
+    def minify(self, text):
+        self.feed(text)
+        self.close()
+        return self.get_value()
 
-def file_to_h(src, dest, name):
+
+def minify_json(text):
+    return json.dumps(json.loads(text), ensure_ascii=False, separators=(',', ':'))
+
+
+def pack_gzip(src, dst):
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    with open(src, 'rb') as f_in, gzip.open(dst, 'wb') as f_out:
+        shutil.copyfileobj(f_in, f_out)
+
+
+def pack_zip(srcdir, dst):
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    with zipfile.ZipFile(dst, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        for i in os.listdir(srcdir):
+            zf.write(os.path.join(srcdir, i), i)
+
+
+def file_to_h(src, dst, name, version):
     with open(src, "rb") as f:
         bytes = bytearray(f.read())
-        data = '#pragma once\n'
-        data += '// app v' + version + '\n\n'
-        data += '#define ' + name + '_len ' + str(len(bytes)) + '\n\n'
-        data += 'const uint8_t ' + name + '[] PROGMEM = {\n\t'
-        count = 0
-        for b in bytes:
-            data += "0x{:02x}".format(b) + ', '
-            count += 1
-            if (count % 16 == 0): data += '\n\t'
 
-        data += '\n};'
-        with open(dest, "w") as f: f.write(data)
+    data = '#pragma once\n'
+    data += '// app v' + version + '\n\n'
+    data += '#define ' + name + '_len ' + str(len(bytes)) + '\n\n'
+    data += 'const uint8_t ' + name + '[] PROGMEM = {\n\t'
 
-file_to_h('esp/index.html.gz', 'esp_h/index.h', 'hub_index_h')
-file_to_h('esp/style.css.gz', 'esp_h/style.h', 'hub_style_h')
-file_to_h('esp/script.js.gz', 'esp_h/script.h', 'hub_script_h')
+    count = 0
+    for b in bytes:
+        data += "0x{:02x}".format(b) + ', '
+        count += 1
+        if count % 16 == 0:
+            data += '\n\t'
 
-print('Done')
+    data += '\n};'
+
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    with open(dst, 'wt', encoding='utf-8') as f:
+        f.write(data)
+
+
+class Builder:
+    def __init__(self, env, pr: PathResolver):
+        self._env = env
+        self._resolver = pr
+    
+    def _compile(self, target: str, src: str, dst: str = None):
+        self._env['target'] = target
+        Compiler(target, self._env, self._resolver).compile_file(src, dst)
+
+    def _start_build(self, target):
+        print(f'Building for target {target!r}...')
+
+    def _build_zip(self, target, name):
+        src = self._resolver.resolve('@.', target)
+        dst = self._resolver.resolve(name, target, dist=True)
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        with zipfile.ZipFile(dst, 'w') as zf:
+            for dirpath, dirnames, filenames in os.walk(src):
+                for dirname in dirnames:
+                    path = os.path.join(dirpath, dirname)
+                    zf.write(path, os.path.relpath(path, src))
+                for filename in filenames:
+                    path = os.path.join(dirpath, filename)
+                    zf.write(path, os.path.relpath(path, src))
+
+    def build_package(self, target: str, src: str, name: str):
+        self._start_build(target)
+        self._compile(target, src)
+        self._build_zip(target, name)
+
+    def build_direct(self, target: str, src: str, dst: str = None):
+        self._start_build(target)
+        temp = '@tempfile'
+        self._compile(target, src, temp)
+        
+        src = self._resolver.resolve(temp, target)
+        dst = self._resolver.resolve(dst, target, dist=True)
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        shutil.copy(src, dst)
+
+    def build_esp_gzip(self, target, src_target, src, name):
+        self._start_build(target)
+        self._compile(src_target, src)
+        src = self._resolver.resolve('@.', src_target)
+        for dirpath, _, filenames in os.walk(src):
+            for filename in filenames:
+                path = os.path.join(dirpath, filename)
+                dst = self._resolver.resolve('@' + os.path.relpath(path, src) + ".gz", target)
+                pack_gzip(path, dst)
+
+        self._build_zip(target, name)
+
+    def build_esp_headers(self, target, src_target, name):
+        self._start_build(target)
+        version = self._env['version']
+
+        src = self._resolver.resolve('@.', src_target)
+        for dirpath, _, filenames in os.walk(src):
+            for filename in filenames:
+                path = os.path.join(dirpath, filename)
+                dst = self._resolver.resolve('@' + os.path.relpath(path, src), target)
+                basename = os.path.basename(path).partition('.')[0]
+                dst = os.path.join(os.path.dirname(dst), basename + '.h')
+                file_to_h(path, dst, f'hub_{basename}_h', version)
+        
+        self._build_zip(target, name)
+
+    def print_size(self, target):
+        print("========================================")
+        print("=" + (f"size stats for {target}".center(38)) + "=")
+        print("========================================")
+        src = self._resolver.resolve('@.', target)
+        total = 0
+        for dirpath, _, filenames in os.walk(src):
+            for filename in filenames:
+                path = os.path.join(dirpath, filename)
+                relpath = os.path.relpath(path, src)
+                size = os.stat(path).st_size
+                total += size
+                size = format_size(size)
+                print(f"{relpath: <25}{size: >15}")
+        
+        total = format_size(total)
+        print(f"Total {total: >34}")
+
+
+def format_size(size):
+    i = 0
+    sp = ["", "Ki", "Mi", "Gi", "Ti"]
+    while size / (1024 ** i) > 1024:
+        i += 1
+
+    size = f"{size / (1024 ** i):.2f}".rstrip('0').rstrip('.')
+    if not size:
+        size = '0'
+    return f"{size} {sp[i]}B"
+
+def main():
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(dest="action", required=True, metavar="ACTION", help="Specify action")
+    b = subparsers.add_parser('build', help='build')
+    b.add_argument('-v', '--version', help='specify version (default: dev)', type=str, default='dev')
+    b.add_argument('-n', '--release-notes', help='specify release notes', type=str, default='')
+    subparsers.add_parser('clean', help='clean build files')
+    c = subparsers.add_parser('ci', help='CI helper')
+    c.add_argument('-v', '--version', help='version hint', type=str)
+    c.add_argument('-n', '--release-notes', help='release notes hint', type=str)
+
+    args = parser.parse_args()
+    
+    if args.action == 'clean':
+        shutil.rmtree(BUILDDIR, ignore_errors=True)
+        shutil.rmtree(DISTDIR, ignore_errors=True)
+        return
+    
+    if args.action == 'ci':
+        if args.version:
+            version = args.version
+        else:
+            with open(os.path.join(HERE, 'version.txt'), 'rt') as f:
+                version = f.read().strip()
+
+        if args.release_notes:
+            release_notes = args.release_notes
+        else:
+            with open(os.path.join(HERE, 'release-notes.txt'), 'rt', encoding='utf-8') as f:
+                release_notes = f.read().strip()
+
+        print(f"version={version}")
+
+        EOF = 'EOF'
+        while EOF in release_notes:
+            EOF += 'F'
+
+        print(f"release_notes<<{EOF}")
+        print(release_notes)
+        print(f"{EOF}")
+        return
+
+    env = {
+        'version': args.version,
+        'release_notes': args.release_notes.replace('\n', '\\n'),
+    }
+
+    b = Builder(env, PathResolver(SRCDIR, BUILDDIR, DISTDIR))
+    b.build_direct('lib', 'inc/lib/hub/index.js', 'GyverHub.min.js')
+    b.build_package('host', 'index.html', 'host.zip')
+    b.build_direct('local', 'index.html', 'GyverHub.html')
+    b.build_esp_gzip('esp-gz', 'esp', 'index.html', 'esp-gz.zip')
+    b.build_esp_headers('esp-h', 'esp-gz', 'esp-headers.zip')
+
+    b.print_size('host')
+    b.print_size('local')
+    b.print_size('esp')
+    b.print_size('esp-gz')
+
+    with open(os.path.join(DISTDIR, 'version.txt'), 'wt', encoding='utf-8') as f:
+        f.write(env['version'])
+
+
+if __name__ == '__main__':
+    main()

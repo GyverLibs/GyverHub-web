@@ -1,81 +1,143 @@
 let fs_arr = [];
 
 // ============ FS BROWSER ============
-function showFsbr(fs, total, used) {
+function showFsbr(device, fs, total, used) {
   fs_arr = [];
-  for (let path in fs) fs_arr.push(path);
+  for (const path in fs) fs_arr.push(path);
   fs_arr = sortPaths(fs_arr, '/');
 
   let inner = '';
-  for (let i in fs_arr) {
+  for (const i in fs_arr) {
     if (fs_arr[i].endsWith('/')) {
-      inner += `<div class="fs_file fs_folder drop_area" onclick="file_upload_path.value='${fs_arr[i]}'/*;file_upload_btn.click()*/" ondrop="file_upload_path.value='${fs_arr[i]}';uploadFile(event.dataTransfer.files[0],'${fs_arr[i]}')">${fs_arr[i]}</div>`;
+      inner += `<div class="fs_file fs_folder drop_area" onclick="upload_h('${fs_arr[i]}')" ondrop="upload_file(event.dataTransfer.files[0],'${fs_arr[i]}')">${fs_arr[i]}</div>`;
     } else {
-      let none = "style='display:none'";
+      const none = "style='display:none'";
       inner += `<div class="fs_file" onclick="openFSctrl(${i})">${fs_arr[i]}<div class="fs_weight">${(fs[fs_arr[i]] / 1000).toFixed(2)} kB</div></div>
         <div id="fs#${i}" class="fs_controls">
-          <button ${hub.dev(focused).module(Modules.RENAME) ? '' : none} title="${lang.rename}" class="icon icon_btn_big" onclick="renameFile(${i})"></button>
-          <button ${hub.dev(focused).module(Modules.DELETE) ? '' : none} title="${lang.delete}" class="icon icon_btn_big" onclick="deleteFile(${i})"></button>
-          <button ${hub.dev(focused).module(Modules.FETCH) ? '' : none} title="${lang.fetch}" class="icon icon_btn_big" onclick="fetchFile(${i},'${fs_arr[i]}')"></button>
+          <button ${device.isModuleEnabled(Modules.RENAME) ? '' : none} title="${lang.rename}" class="icon icon_btn_big" onclick="renameFile(${i})"></button>
+          <button ${device.isModuleEnabled(Modules.DELETE) ? '' : none} title="${lang.delete}" class="icon icon_btn_big" onclick="deleteFile(${i})"></button>
+          <button ${device.isModuleEnabled(Modules.FETCH) ? '' : none} title="${lang.fetch}" class="icon icon_btn_big" onclick="fetchFile(${i},'${fs_arr[i]}')"></button>
           <label id="process#${i}"></label>
           <a id="download#${i}" title="${lang.download}" class="icon icon_btn_big" href="" download="" style="display:none"></a>
-          <button id="open#${i}" title="${lang.open}" class="icon icon_btn_big" onclick="openFile(EL('download#${i}').href)" style="display:none"></button>
-          <button ${hub.dev(focused).module(Modules.UPLOAD) ? '' : none} id="edit#${i}" title="${lang.edit}" class="icon icon_btn_big" onclick="editFile(EL('download#${i}').href,'${i}')" style="display:none"></button>
+          <button ${device.isModuleEnabled(Modules.UPLOAD) ? '' : none} id="edit#${i}" title="${lang.edit}" class="icon icon_btn_big" onclick="editFile(EL('download#${i}').href,${i})" style="display:none"></button>
         </div>`;
     }
   }
   if (total) {
-    let color = adjustColor(getDefColor(), 0.9);
-    let style = `background-repeat: no-repeat;background-image:linear-gradient(${color},${color});background-size: ${used / total * 100}% 100%;`;
-    inner += `<div style="${style}" class="fs_info">${lang.fs_used} ${(used / 1000).toFixed(2)}/${(total / 1000).toFixed(2)} kB [${Math.round(used / total * 100)}%]</div>`;
+    inner += `<div class="fs_info" style="background-image:linear-gradient(90deg,var(--prim) ${used / total * 100}%, var(--back) 0%);">${lang.fs_used} ${(used / 1000).toFixed(2)}/${(total / 1000).toFixed(2)} kB [${Math.round(used / total * 100)}%]</div>`;
   } else {
     inner += `<div class="fs_info">${lang.fs_used} ${(used / 1000).toFixed(2)} kB</div>`;
   }
   EL('fsbr_inner').innerHTML = inner;
 }
 function openFSctrl(i) {
-  let current = EL(`fs#${i}`).style.display == 'flex';
+  const current = EL(`fs#${i}`).style.display == 'flex';
   document.querySelectorAll('.fs_controls').forEach(el => el.style.display = 'none');
   if (!current) display(`fs#${i}`, 'flex');
 }
 
-function create_h() {
-  post('mkfile', EL('file_create_path').value);
-}
-
 
 // ============ TRANSFER ============
-function uploadFile(file, path) {
-  hub.dev(focused).upload(file, path);
-  EL('file_upload').value = '';
+function upload_h(dirname='/') {
+  const $in = document.createElement('input');
+  $in.type = 'file';
+  $in.addEventListener('change', async () => {
+    upload_file($in.files[0], dirname);
+  });
+  $in.click();
 }
-function fetchFile(index, path) {
-  hub.dev(focused).fetch(index, path);
+
+async function upload_file(file, dirname = '/') {
+  if (!dirname.endsWith('/')) dirname += '/';
+  const path = await asyncPrompt(lang.fs_name, dirname + file.name, lang.fs_upload);
+  if (!path) return;
+  uploadFile(file, path);
 }
-function uploadOta(file, type) {
-  hub.dev(focused).uploadOta(file, type);
-  EL('ota_upload').value = '';
-  EL('ota_upload_fs').value = '';
+async function uploadFile(file, path) {
+  if (!path.startsWith('/')) path = '/' + path;
+  
+  EL('fs_upload').innerHTML = waiter(22, 'var(--font_inv)', false);
+
+  try {
+    await hub.dev(focused).upload(file, path, perc => {
+      showPopup(lang.upload + '... ' + perc + '%');
+    });
+  } catch (e) {
+    EL('fs_upload').textContent = lang.fs_upload;
+    showPopupError(`[${lang.upload}] ` + getError(e));
+    return;
+  }
+
+  EL('fs_upload').textContent = lang.fs_upload;
+  showPopup(`[${lang.upload}] ` + lang.done);
+}
+
+async function fetchFile(index, path) {
+  display('download#' + index, 'none');
+  display('edit#' + index, 'none');
+  display('process#' + index, 'unset');
+  EL('process#' + index).replaceChildren();
+
+  let data;
+  try {
+    data = await hub.dev(focused).fetch(path, 'url', perc => {
+      EL('process#' + index).textContent = perc + '%';
+    });
+  } catch (e) {
+    showPopupError(`[${lang.fetch}] ` + getError(e));
+    EL('process#' + index).textContent = lang.error;
+    return;
+  }
+
+  display('download#' + index, 'inline-block');
+  const name = path.split('/').pop();
+  EL('download#' + index).href = data;
+  EL('download#' + index).download = name;
+  display('edit#' + index, 'inline-block');
+  display('process#' + index, 'none');
 }
 
 // ============ FILE UTILS ============
-async function deleteFile(i) {
-  if (hub.dev(focused).fsBusy()) {
-    showPopupError(getError(HubErrors.FsBusy));
-    return;
-  }
-  if (await asyncConfirm(lang.delete + ' ' + fs_arr[i] + '?')) {
-    post('delete', fs_arr[i]);
+
+async function format_h() {
+  if (!await asyncConfirm(lang.fs_format + '?')) return;
+  try {
+    await hub.dev(focused).formatFS();
+  } catch (e) {
+    showPopupError('[FS] ' + getError(e));
   }
 }
-async function renameFile(i) {
-  if (hub.dev(focused).fsBusy()) {
-    showPopupError(getError(HubErrors.FsBusy));
-    return;
+
+async function create_h() {
+  const path = await asyncPrompt(lang.fs_name, '/', lang.fs_create_f);
+  if (!path) return;
+
+  if (path[0] != '/') path = '/' + path;
+  try {
+    await hub.dev(focused).createFile(path);
+  } catch (e) {
+    showPopupError('[FS] ' + getError(e));
   }
-  let path = fs_arr[i];
-  let res = await asyncPrompt(lang.rename + ' ' + path + ':', path);
-  if (res && res != path) post('rename', path, res);
+}
+
+async function deleteFile(i) {
+  if (!await asyncConfirm(lang.delete + ' ' + fs_arr[i] + '?')) return;
+  try {
+    await hub.dev(focused).deleteFile(fs_arr[i]);
+  } catch (e) {
+    showPopupError('[FS] ' + getError(e));
+  }
+}
+
+async function renameFile(i) {
+  const path = fs_arr[i];
+  const res = await asyncPrompt(lang.rename + ' ' + path + ':', path);
+  if (!res || res == path) return;
+  try {
+    await hub.dev(focused).renameFile(path, res);
+  } catch (e) {
+    showPopupError('[FS] ' + getError(e));
+  }
 }
 
 // ============ EDITOR ============
@@ -84,28 +146,16 @@ let edit_idx = 0;
 function editFile(data, idx) {
   EL('editor_area').value = dataTotext(data);
   EL('editor_area').scrollTop = 0;
-  EL('edit_path').innerHTML = fs_arr[idx];
-  display('files', 'none');
-  display('fsbr_edit', 'block');
+  EL('edit_path').textContent = fs_arr[idx];
+  show_screen('fsbr_edit');
   edit_idx = idx;
 }
 function editor_cancel() {
-  display('files', 'block');
-  display('fsbr_edit', 'none');
+  show_screen('files');
 }
 function editor_save() {
   editor_cancel();
-  let div = fs_arr[edit_idx].lastIndexOf('/');
-  let path = fs_arr[edit_idx].slice(0, div);
-  let name = fs_arr[edit_idx].slice(div + 1);
-  //EL('download#' + edit_idx).href = ('data:' + getMime(name) + ';base64,' + window.btoa(EL('editor_area').value));
-  uploadFile(new File([EL('editor_area').value], name, { type: getMime(name), lastModified: new Date() }), path);
-}
-
-// ============ OTA ============
-async function otaUrl(url, type) {
-  if (await asyncConfirm(lang.fs_upload + ' OTA?')) {
-    post('ota_url', type, url);
-    showPopup('OTA start');
-  }
+  const div = fs_arr[edit_idx].lastIndexOf('/');
+  const name = fs_arr[edit_idx].slice(div + 1);
+  uploadFile(new File([EL('editor_area').value], name, { type: getMime(name), lastModified: new Date() }), fs_arr[edit_idx]);
 }

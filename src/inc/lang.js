@@ -1,8 +1,21 @@
 const langBase = {
   English: {
-    errors: ["not an error", "open file error", "not enough space", "checksum error", "size error", "start error", "write error", "end error", "aborted", "timeout", "busy", "memory error", "wrong client", "forbidden", "module disabled", "FS busy", "cancelled"],
-    themes: ["Dark", "Light"],
-    colors: ["Orange", "Yellow", "Green", "Mint", "Aqua", "Blue", "Violet", "Pink"],
+    errors: ["not an error", "open file error", "not enough space", "checksum error", "size error", "start error", "write error", "end error", "aborted", "timeout", "busy", "memory error", "wrong client", "forbidden", "module disabled", "incorret type", "damaged packet", "FS busy", "cancelled"],
+    themes: {
+      auto: "System",
+      dark: "Dark",
+      light: "Light"
+    },
+    colors: {
+      ORANGE: "Orange",
+      YELLOW: "Yellow",
+      GREEN: "Green",
+      MINT: "Mint",
+      AQUA: "Aqua",
+      BLUE: "Blue",
+      VIOLET: "Violet",
+      PINK: "Pink"
+    },
     api_mis: "Device and App API version mismatch. Update library and App!",
 
     pop_yes: "Yes",
@@ -44,6 +57,7 @@ const langBase = {
     cfg_color: "Main Color",
     cfg_font: "Font",
     cfg_width: "App width",
+    cfg_wide_mode: "Wide device UI",
     cfg_css: "Plugin CSS",
     cfg_js: "Plugin JS",
     cfg_updates: "Check updates",
@@ -60,17 +74,13 @@ const langBase = {
 
     i_settings: "Settings",
     i_console: "Console",
-    i_mode: "UI mode",
-    i_default: "Default",
-    i_single: "Single row",
-    i_resp: "Responsive",
-    i_grid: "Grid",
+    i_trust: "Trust this device",
     i_main: "UI width",
-    i_block: "Block width",
     i_css: "Plugin CSS",
     i_js: "Plugin JS",
     i_reboot: "Reboot",
     i_link: "Link",
+    dev_trust_warning: "",
 
     i_topics: "Topics",
     i_version: "Version",
@@ -85,11 +95,11 @@ const langBase = {
     fs_upload: "Upload",
     fs_create_f: "Create file",
     fs_create: "Create",
+    fs_name: "File name",
     rename: "Rename",
     delete: "Delete",
     fetch: "Fetch",
     download: "Download",
-    open: "Open",
     edit: "Edit",
     wrong_ota: "Wrong file! Use",
 
@@ -105,12 +115,27 @@ const langBase = {
     wrong_ip: "Wrong IP",
     dup_names: "Duplicated names",
     redirect: "Redirect to",
+    hub_pin: "Enter PIN",
+    dev_pin: "Enter PIN for device ",
   },
   
   Russian: {
-    errors: ["не ошибка", "невозможно открыть файл", "недостаточно места", "ошибка контрольной суммы", "ошибка размера", "ошибка старта", "ошибка записи", "ошибка завершения", "прервано", "тайм-аут", "занят", "ошибка памяти", "не тот клиент", "запрещено", "модуль отключен", "файловая система занята", "отменено"],
-    themes: ["Тёмная", "Светлая"],
-    colors: ["Оранжевый", "Жёлтый", "Зелёный", "Мятный", "Бирюзовый", "Синий", "Фиолетовый", "Розовый"],
+    errors: ["не ошибка", "невозможно открыть файл", "недостаточно места", "ошибка контрольной суммы", "ошибка размера", "ошибка старта", "ошибка записи", "ошибка завершения", "прервано", "тайм-аут", "занят", "ошибка памяти", "не тот клиент", "запрещено", "модуль отключен", "некорректный тип", "пакет повреждён", "файловая система занята", "отменено"],
+    themes: {
+      auto: "Системная",
+      dark: "Тёмная",
+      light: "Светлая"
+    },
+    colors: {
+      ORANGE: "Оранжевый",
+      YELLOW: "Жёлтый",
+      GREEN: "Зелёный",
+      MINT: "Мятный",
+      AQUA: "Бирюзовый",
+      BLUE: "Синий",
+      VIOLET: "Фиолетовый",
+      PINK: "Розовый"
+    },
     api_mis: "Разная версия API у устройства и приложения. Обнови приложение и библиотеку!",
 
     pop_yes: "Да",
@@ -152,6 +177,7 @@ const langBase = {
     cfg_color: "Цвет",
     cfg_font: "Шрифт",
     cfg_width: "Ширина окна",
+    cfg_wide_mode: "Интерфейс по ширине окна",
     cfg_css: "Плагин CSS",
     cfg_js: "Плагин JS",
     cfg_updates: "Проверять обновления",
@@ -160,6 +186,7 @@ const langBase = {
     cfg_export: "Экспорт",
     cfg_reset: "Сброс",
     cfg_reset_conf: "Сбросить все настройки?",
+    dev_trust_warning: "Внимание: включение этой настройки разрешит устройству выполняить скрипты от в GyverHub. Включение этой настройки для неизвестных устройств может нарушить работу GyverHub и украсть ваши данные!\n\nВы действительно хотите доверять этому устройству?",
 
     m_config: "Настройки",
     m_info: "Инфо",
@@ -168,13 +195,8 @@ const langBase = {
 
     i_settings: "Настройки",
     i_console: "Консоль",
-    i_mode: "Режим ПУ",
-    i_default: "По умолчанию",
-    i_single: "Один столбец",
-    i_resp: "Адаптивный",
-    i_grid: "Сетка",
+    i_trust: "Доверять этому устройству",
     i_main: "Ширина ПУ",
-    i_block: "Ширина блока",
     i_css: "Плагин CSS",
     i_js: "Плагин JS",
     i_reboot: "Перезагрузка",
@@ -193,11 +215,11 @@ const langBase = {
     fs_upload: "Загрузить",
     fs_create_f: "Создать файл",
     fs_create: "Создать",
+    fs_name: "Имя файла",
     rename: "Переименовать",
     delete: "Удалить",
     fetch: "Скачать",
     download: "Скачать",
-    open: "Открыть",
     edit: "Редактировать",
     wrong_ota: "Некорректный файл! Используй",
 
@@ -213,11 +235,7 @@ const langBase = {
     wrong_ip: "Некорректный IP",
     dup_names: "Повторяющиеся имена",
     redirect: "Перейти на",
+    hub_pin: "Введите ПИН",
+    dev_pin: "Введите пин устройства ",
   }
 };
-
-let lang = langBase[userLang()];
-
-function updateLang() {
-  lang = langBase[cfg.lang];
-}
