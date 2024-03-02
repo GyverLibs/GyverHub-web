@@ -49,5 +49,5 @@ jobs:
           body: "${{ steps.version.outputs.release_notes }}"
           draft: true
           makeLatest: true
-          name: "GyverHub web ${{ steps.version.outputs.version }}"
-          tag: "v${{ steps.version.outputs.version }}"
+          name: "GyverHub-web v${{ steps.version.outputs.version }}"
+          tag: "${{ steps.version.outputs.version }}"
