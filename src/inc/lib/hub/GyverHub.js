@@ -93,7 +93,7 @@ class GyverHub extends EventEmitter {
    */
   getAllPrefixes() {
     const list = [this.prefix];
-    for (const dev_info of Object.values(this.config.get('devices') ?? {})) 
+    for (const dev_info of Object.values(this.config.get('devices') ?? {}))
       if (dev_info.prefix && !list.includes(dev_info.prefix))
         list.push(dev_info.prefix);
 

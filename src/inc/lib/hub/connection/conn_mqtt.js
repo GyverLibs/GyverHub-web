@@ -8,7 +8,7 @@ class MQTTConnection extends Connection {
 
   constructor(hub) {
     super(hub);
-    this.options.enabled = true;
+    this.options.enabled = false;
     this.options.host = 'test.mosquitto.org';
     this.options.port = '8081';
     this.options.login = '';
