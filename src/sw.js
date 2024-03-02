@@ -1,7 +1,13 @@
-const CACHE_NAME = 'hub-cache-__VER__'
+const CACHE_NAME = 'hub-cache-<!--@![:version]-->';
 
 const CACHED_URLS = [
-  '__CACHE__'
+  '/',
+  '/fonts/fa-solid-900.woff2',
+  '/fonts/Robotocondensed.woff2',
+  '/favicon.svg',
+  '/index.html',
+  '/script.js',
+  '/style.css',
 ]
 
 self.addEventListener('install', event => {

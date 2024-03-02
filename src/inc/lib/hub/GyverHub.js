@@ -1,232 +1,262 @@
-class GyverHub {
-  onHubError(text) { }
+class GyverHub extends EventEmitter {
+  /** @type {Config} */
+  config;
+  /** @type {Connection[]} */
+  #connections = [];
+  /** @type {Device[]} */
+  #devices = [];
+  _ws;
 
-  // devices
-  onSaveDevices() { }
-  onAddDevice(dev) { }
-  onUpdDevice(dev) { }
-  onDiscoverEnd() { }
-  onDiscover(id, conn) { }
-
-  // data
-  onUpdate(id, name, data) { }
-  onInfo(id, info) { }
-  onFsbr(id, fs, total, used) { }
-  onPrint(id, text, color) { }
-  onUi(id, controls) { }
-  onData(id, data) { }
-  onAlert(id, text) { }
-  onNotice(id, text, color) { }
-  onPush(id, text) { }
-  onAck(id, name) { }
-
-  // connection
-  onDeviceConnChange(id, state) { }
-  onWsConnChange(id, state) { }
-  onWaitAnswer(id, state) { }
-  onPingLost(id) { }
-  onError(id, code) { }
-
-  // fs
-  onFsError(id) { }
-
-  // upload
-  onFsUploadStart(id) { }
-  onFsUploadEnd(id) { }
-  onFsUploadError(id, code) { }
-  onFsUploadPerc(id, perc) { }
-
-  // ota
-  onOtaStart(id) { }
-  onOtaEnd(id) { }
-  onOtaError(id, code) { }
-  onOtaPerc(id, perc) { }
-  onOtaUrlEnd(id) { }
-  onOtaUrlError(id, code) { }
-
-  // fetch fs
-  onFsFetchStart(id, index) { }
-  onFsFetchEnd(id, name, index, data) { }
-  onFsFetchError(id, index, code) { }
-  onFsFetchPerc(id, index, perc) { }
-
-  // fetch
-  onFetchStart(id, name) { }
-  onFetchEnd(id, name, data, file) { }
-  onFetchError(id, name, data, code) { }
-  onFetchPerc(id, name, perc) { }
-
-  // vars
-  devices = [];
-  cfg = {
-    prefix: 'MyDevices', client_id: new Date().getTime().toString(16).slice(-8),
-    use_local: false, local_ip: '192.168.1.1', netmask: 24, http_port: 80,
-    use_bt: false,
-    use_serial: false, baudrate: 115200,
-    use_mqtt: false, mq_host: 'test.mosquitto.org', mq_port: '8081', mq_login: '', mq_pass: '',
-    use_tg: false, tg_token: '', tg_chat: '',
-    api_ver: 3
-  };
-
-  api_v = 1;
-  skip_prd = 1000;  // skip updates
-  tout_prd = 2500;  // connection timeout
-  ping_prd = 3000;  // ping period > timeout
+  static api_v = 1;
 
   constructor() {
-    this.http = new HTTPconn(this);
-    /*NON-ESP*/
-    this.mqtt = new MQTTconn(this);
-    this.tg = new TGconn(this);
-    this.serial = new SERIALconn(this);
-    this.bt = new BTconn(this);
-    /*/NON-ESP*/
+    super();
+    this.config = new Config();
+    this.config.set('hub', 'prefix', 'MyDevices');
+    this.config.set('hub', 'client_id', Math.round(Math.random() * 0xffffffff).toString(16));
   }
 
-  // network
-  begin() {
-    /*NON-ESP*/
-    if (this.cfg.use_mqtt) this.mqtt.start();
-    if (this.cfg.use_tg) this.tg.start();
-    /*/NON-ESP*/
-  }
-  post(id, cmd, name = '', value = '') {
-    this.dev(id).post(cmd, name, value);
-  }
-  discover() {
-    for (let dev of this.devices) {
-      dev.conn = Conn.NONE;
-      dev.conn_arr = [0, 0, 0, 0];
+  addConnection(connClass) {
+    for (const connection of this.#connections)
+      if (connection instanceof connClass)
+        return connection;
+
+    const conn = new connClass(this);
+    conn.addEventListener('statechange', e => {
+      this.dispatchEvent(new ConnectionStateChangeEvent('connectionstatechange', e.connection, e.state));
+      this.dispatchEvent(new ConnectionStateChangeEvent('connectionstatechange.' + conn.name, e.connection, e.state));
+      if (conn.isConnected()) conn.discover();
+    });
+    this.#connections.push(conn);
+
+    if (conn.name === 'HTTP') {
+      this._ws = this.addConnection(WebSocketConnection);
     }
-    /*NON-ESP*/
-    if (this.cfg.use_mqtt) this.mqtt.discover();
-    if (this.cfg.use_tg) this.tg.discover();
-    if (this.cfg.use_serial && "serial" in navigator) this.serial.discover();
-    if (this.cfg.use_bt && "bluetooth" in navigator) this.bt.discover();
-    /*/NON-ESP*/
-    if (this.cfg.use_local && wifiAllowed()) this.http.discover();
-    this._checkDiscoverEnd();
+
+    return conn;
   }
-  search() {
-    /*NON-ESP*/
-    if (this.cfg.use_mqtt) this.mqtt.search();
-    if (this.cfg.use_tg) this.tg.search();
-    if (this.cfg.use_serial && "serial" in navigator) this.serial.search();
-    if (this.cfg.use_bt && "bluetooth" in navigator) this.bt.search();
-    /*/NON-ESP*/
-    if (this.cfg.use_local && wifiAllowed()) this.http.search();
+
+  get mqtt() {
+    for (const connection of this.#connections) {
+      if (connection instanceof MQTTConnection)
+        return connection;
+    }
+  }
+
+  get bt() {
+    for (const connection of this.#connections) {
+      if (connection instanceof BLEConnection)
+        return connection;
+    }
+  }
+
+  get serial() {
+    for (const connection of this.#connections) {
+      if (connection instanceof SerialConnection)
+        return connection;
+    }
+  }
+
+  get tg() {
+    for (const connection of this.#connections) {
+      if (connection instanceof TelegramConnection)
+        return connection;
+    }
+  }
+
+  get http() {
+    for (const connection of this.#connections) {
+      if (connection instanceof HTTPConnection)
+        return connection;
+    }
+  }
+
+  /**
+   * ID клиента (хаба).
+   * @type {string}
+   */
+  get clientId() {
+    return this.config.get('hub', 'client_id');
+  }
+
+  /**
+   * Текущий префикс устройств.
+   * @type {string}
+   */
+  get prefix() {
+    return this.config.get('hub', 'prefix');
+  }
+
+  /**
+   * Получить список всех известных префиксов (текущий и префиксы устройств), без дубликатов.
+   * @returns {string[]}
+   */
+  getAllPrefixes() {
+    const list = [this.prefix];
+    for (const dev_info of Object.values(this.config.get('devices') ?? {})) 
+      if (dev_info.prefix && !list.includes(dev_info.prefix))
+        list.push(dev_info.prefix);
+
+    return list;
+  }
+
+  /**
+   * Initialize connections.
+   */
+  async begin() {
+    for (const connection of this.#connections) {
+      await connection.begin();
+    }
+  }
+
+  //#region Device communication
+
+  /**
+   * Discover all known devices by all active connnections.
+   */
+  async discover() {
+    for (let dev of this.#devices) {
+      dev.active_connections.length = 0;
+    }
+
+    for (const connection of this.#connections) {
+      connection.discover();
+    }
+
     this._checkDiscoverEnd();
   }
 
-  // devices
+  /**
+   * Search for new devices on all active connections.
+   */
+  async search() {
+    for (const connection of this.#connections) {
+      connection.search();
+    }
+
+    this._checkDiscoverEnd();
+  }
+
+  /**
+   * Check if hub currently allows discover.
+   * @returns {boolean}
+   */
+  #isDiscovering() {
+    return this.#connections.some(conn => conn.isDiscovering());
+  }
+
+  _checkDiscoverEnd() {
+    if (!this.#isDiscovering()) this.dispatchEvent(new Event('discoverfinished'));
+  }
+
+  //#endregion
+
+  //#region Device list management
+
+  /**
+   * Получить объект устройства по ID.
+   * @param {string} id 
+   * @returns {Device | null}
+   */
   dev(id) {
     if (!id) return null;
-    for (let d of this.devices) {
+    for (let d of this.#devices) {
       if (d.info.id == id) return d;
+    }
+    if (this.config.get('devices', id, 'id') === id) {
+      const device = new Device(this, id);
+      this.#devices.push(device);
+      this.dispatchEvent(new DeviceEvent('devicecreated', device));
+      return device;
     }
     return null;
   }
-  export() {
-    let devs = [];
-    for (let d of this.devices) {
-      devs.push(d.info);
-    }
-    return JSON.stringify(devs);
+
+  /**
+   * Получить список ID устройств.
+   * @returns {string[]}
+   */
+  getDeviceIds() {
+    const ids = this.#devices.map(d => d.info.id);
+    const cfg = this.config.get('devices');
+    if (cfg)
+      for (const i of Object.keys(cfg))
+        if (!ids.includes(i))
+          ids.push(i);
+    return ids;
   }
-  import(str) {
-    let devsi = JSON.parse(str);
-    this.devices = [];
-    for (let di of devsi) {
-      let dev = new Device(this);
-      for (let key in di) {
-        dev.info[key] = di[key];
+
+  /**
+   * Add or update device info.
+   * @param {object} data 
+   * @param {Connection | undefined} conn 
+   */
+  addDevice(data, conn = undefined) {
+    let device = this.dev(data.id);
+
+    if (device) {  // exists
+      let infoChanged = false;
+      for (const key in data) {
+        if (device.info[key] !== data[key]) {
+          device.info[key] = data[key];
+          infoChanged = true;
+        }
       }
-      this.devices.push(dev);
+
+      if (conn) device.addConnection(conn);
+      if (infoChanged) this.dispatchEvent(new DeviceEvent('deviceinfochanged', device));
+
+    } else {    // not exists
+      if (!data.prefix) data.prefix = this.prefix;
+      device = new Device(this, data.id);
+
+      for (const key in data) {
+        device.info[key] = data[key];
+      }
+
+      if (conn) device.addConnection(conn);
+      this.#devices.push(device);
+      this.dispatchEvent(new DeviceEvent('devicecreated', device));
+      this.dispatchEvent(new DeviceEvent('deviceadded', device));
     }
   }
-  delete(id) {
-    for (let i in this.devices) {
-      if (this.devices[i].info.id == id) {
-        this.devices.splice(i, 1);
-        this.onSaveDevices();
+
+  /**
+   * Move device in list
+   * @param {string} id 
+   * @param {number} dir 
+   */
+  moveDevice(id, dir) {
+    if (this.#devices.length == 1) return;
+    let idx = 0;
+    for (let d of this.#devices) {
+      if (d.info.id == id) break;
+      idx++;
+    }
+    if (dir == 1 ? idx <= this.#devices.length - 2 : idx >= 1) {
+      let b = this.#devices[idx];
+      this.#devices[idx] = this.#devices[idx + dir];
+      this.#devices[idx + dir] = b;
+    }
+  }
+
+  /**
+   * Remove device from hub
+   * @param {string} id 
+   */
+  deleteDevice(id) {
+    this.config.delete('devices', id);
+    for (const i in this.#devices) {
+      if (this.#devices[i].info.id === id) {
+        this.#devices.splice(i, 1);
         return;
       }
     }
   }
-  addDevice(data, conn = Conn.NONE) {
-    let device = this.dev(data.id);
-    let flag = false;
-    if (device) {  // exists
-      for (let key in data) {
-        if (device.info[key] != data[key]) {
-          device.info[key] = data[key];
-          flag = true;
-        }
-      }
-      device.conn_arr[conn] = 1;
-      if (device.conn > conn) {  // priority
-        device.conn = conn;
-        flag = true;
-      }
-      if (flag) this.onUpdDevice(device.info);
-    } else {    // not exists
-      device = new Device(this); // Device(hub)
-      for (let key in data) {
-        device.info[key] = data[key];
-      }
-      device.conn = conn;
-      this.devices.push(device);
-      this.onAddDevice(device.info);
-      flag = true;
-    }
-    if (flag) {
-      /*NON-ESP*/
-      this.mqtt._sub_device(device.info.prefix, device.info.id);
-      /*/NON-ESP*/
-      this.onSaveDevices();
-    }
-  }
-  moveDevice(id, dir) {
-    if (this.devices.length == 1) return;
-    let idx = 0;
-    for (let d of this.devices) {
-      if (d.info.id == id) break;
-      idx++;
-    }
-    if ((dir == 1 && idx <= this.devices.length - 2) || (dir == -1 && idx >= 1)) {
-      let b = this.devices[idx];
-      this.devices[idx] = this.devices[idx + dir];
-      this.devices[idx + dir] = b;
-    }
-  }
 
-  // log
-  log(t) {
-    console.log('Log: ' + t);
-  }
-  err(e) {
-    console.log('Error: ' + e.toString());
-    this.onHubError(e.toString());
-  }
+  //#endregion
 
-  // private
-  _checkDiscoverEnd() {
-    if (!this._discovering()) this.onDiscoverEnd();
-  }
-  _discovering() {
-    /*NON-ESP*/
-    return (this.http.discovering || this.mqtt.discovering || this.tg.discovering || this.serial.discovering || this.bt.discovering);
-    /*/NON-ESP*/
-    return this.http.discovering;
-  }
-  _preflist() {
-    let list = [this.cfg.prefix];
-    for (let dev of this.devices) {
-      if (!list.includes(dev.info.prefix)) list.push(dev.info.prefix);
-    }
-    return list;
-  }
-  _parsePacket(conn, data, ip = null, port = null) {
+  async _parsePacket(conn, data, ip = null, port = null) {
     if (!data || !data.length) return;
 
     data = data.trim()
@@ -237,14 +267,14 @@ class GyverHub {
       .replaceAll(/\n/ig, "\\n")
       .replaceAll(/\r/ig, "\\r");
 
-    for (let code in HubCodes) {
+    for (const code in HubCodes) {
       const re = new RegExp(`(#${Number(code).toString(16)})([:,\\]\\}])`, "ig");
       data = data.replaceAll(re, `"${HubCodes[code]}"$2`);
     }
 
-    const re = new RegExp(`(#[0-9a-f][0-9a-f])([:,\\]\\}])`, "ig");
+    const re = /(#[0-9a-f][0-9a-f])([:,\]\}])/ig;
     if (data.match(re)) {
-      this.err('Device has newer API version. Update App!');
+      this.onHubError('Device has newer API version. Update App!');
       return;
     }
 
@@ -252,95 +282,35 @@ class GyverHub {
       data = JSON.parse(data);
     } catch (e) {
       console.log('Wrong packet (JSON): ' + e + ' in: ' + data);
-      // this.err('Wrong packet (JSON)');
+      // this.onHubError('Wrong packet (JSON)');
       return;
     }
 
-    if (!data.id) return this.err('Wrong packet (ID)');
-    if (data.client && this.cfg.client_id != data.client) return;
-    let type = data.type;
+    if (!data.id) return this.onHubError('Wrong packet (ID)');
+    if (data.client && this.clientId != data.client) return;
+    const type = data.type;
     delete data.type;
 
-    if (type == 'discover' && this._discovering()) {
-      if (conn == Conn.HTTP) {
+    console.log('[IN]', type, data);
+
+    if (type == 'discover') {
+      if (!this.#isDiscovering()) {
+        console.log('Device not added (not discovering):', data);
+        return;
+      }
+
+      if (conn instanceof HTTPConnection) {
         data.ip = ip;
         data.http_port = port;
       }
       this.addDevice(data, conn);
     }
 
-    let device = this.dev(data.id);
-
+    const device = this.dev(data.id);
     if (device) {
-      device._parse(type, data);
-
-      let id = data.id;
-      switch (type) {
-        case 'error':
-          this.onError(id, data.code);
-          break;
-
-        case 'refresh':
-          this.post(id, 'ui');
-          break;
-
-        case 'script':
-          eval(data.script);
-          break;
-
-        case 'ack':
-          this.onAck(id, data.name);
-          break;
-
-        case 'fs_err':
-          this.onFsError(id);
-          break;
-
-        case 'info':
-          this.onInfo(id, data.info);
-          break;
-
-        case 'files':
-          this.onFsbr(id, data.fs, data.total, data.used);
-          break;
-
-        case 'print':
-          this.onPrint(id, data.text, data.color);
-          break;
-
-        case 'discover':
-          if (this._discovering()) this.onDiscover(id, conn);
-          break;
-
-        case 'ui':
-          if (device.module(Modules.UI)) this.onUi(id, data.controls);
-          this.post(id, 'unix', Math.floor(new Date().getTime() / 1000));
-          break;
-
-        case 'data':
-          if (device.module(Modules.DATA)) this.onData(id, data.data);
-          break;
-
-        case 'alert':
-          this.onAlert(id, data.text);
-          break;
-
-        case 'notice':
-          this.onNotice(id, data.text, intToCol(data.color));
-          break;
-
-        case 'push':
-          this.onPush(id, data.text);
-          break;
-
-        case 'ota_url_ok':
-          this.onOtaUrlEnd(id);
-          break;
-
-        case 'ota_url_err':
-          this.onOtaUrlError(id, data.code);
-          break;
-      }
+      device.addConnection(conn);
+      await device._parse(type, data);
     }
+    return device;
   }
 };

@@ -3,37 +3,67 @@
   font-style: normal;
   font-weight: 900;
   font-display: block;
+/*@[if_target:host]*/
+  /*@![add_file_to:inc/style/fonts/fa-solid-900.woff2, @fonts/fa-solid-900.woff2]*/
   src: url(fonts/fa-solid-900.woff2) format("woff2");
+/*@/[if_target:host]*/
+/*@[if_target:esp]*/
+  src: url(data:font/woff2;charset=utf-8;base64,/*@![include:inc/style/fonts/fa-solid-900.min.woff2,base64]*/) format("woff2");
+/*@/[if_target:esp]*/
+/*@[if_not_target:host,esp]*/
+  src: url(data:font/woff2;charset=utf-8;base64,/*@![include:inc/style/fonts/fa-solid-900.woff2,base64]*/) format("woff2");
+  /*@/[if_not_target:host,esp]*/
 }
-
-/*NON-ESP*/
-@font-face {
-  font-family: "Condensed";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  /* src: url(fonts/PTSans-Narrow.woff2) format("woff2"); */
-  src: url(fonts/Robotocondensed.woff2) format("woff2");
-}
-
-/*/NON-ESP*/
 
 :root {
   --prim: #37a93c;
   --err: #8e1414;
-  --back: #eeeeee;
-  --tab: #fff;
-  --font: #111;
-  --font2: #333;
   --font3: #919191;
-  --font_inv: #fff;
-  --dark: #a8a8a8;
-  --thumb: #999;
   --scheme: light;
-  --shad: #000000a3;
   --font_f: monospace;
   --menu_h: 120px;
   --ui_width: 500px;
+}
+
+body {
+  color-scheme: light;
+  --back: #eeeeee;
+  --tab: #ffffff;
+  --font: #111111;
+  --font2: #333333;
+  --dark: #a8a8a8;
+  --thumb: #999999;
+  --black: #bdbdbd;
+  --font_inv: #ffffff;
+  --shad: #000000a3;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.theme-auto {
+    color-scheme: dark;
+    --back: #1b1c20;
+    --tab: #26272c;
+    --font: #eeeeee;
+    --font2: #cccccc;
+    --dark: #141516;
+    --thumb: #444444;
+    --black: #0e0e0e;
+    --font_inv: #222222;
+    --shad: #000;
+  }
+}
+
+body.theme-dark {
+  color-scheme: dark;
+  --back: #1b1c20;
+  --tab: #26272c;
+  --font: #eeeeee;
+  --font2: #cccccc;
+  --dark: #141516;
+  --thumb: #444444;
+  --black: #0e0e0e;
+  --font_inv: #222222;
+  --shad: #000;
 }
 
 body,
@@ -66,73 +96,133 @@ body::-webkit-scrollbar-thumb {
   border-radius: 4px;
 }
 
-/* CONTAINER */
-#devices {
-  max-width: var(--ui_width);
-}
-
-#title_cont {
-  max-width: var(--ui_width);
-}
-
-/* HEADER */
-.title {
-  width: 100%;
-  height: 38px;
-  margin: auto;
-  user-select: none;
-}
-
 .version {
   font-size: 14px;
   font-weight: 400;
 }
 
-.head {
+/* HEADER */
+
+.header-row {
   width: 100%;
   height: 50px;
   background: var(--prim);
   position: fixed;
   z-index: 4;
-  /*box-shadow: 0px 5px 0px 0px var(--back);*/
   box-shadow: 0px 0px 7px 0px var(--shad);
 }
+body.connection-error .header-row {
+  background: var(--err);
+}
 
-.title_inn {
-  margin: auto 10px;
+.header {
+  max-width: var(--ui_width);
+  
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+
+  user-select: none;
   color: white;
   font-size: 21px;
   font-weight: bold;
-  position: relative;
-  top: 30%;
+
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
 }
 
-.title_row {
-  display: inline-block;
+.header-back {
+  cursor: pointer;
+  font-size: 22px !important;
+  width: 10px;
+  display: block;
+}
+.header-back:hover {
+  filter: brightness(0.9);
+}
+.header-back:active {
+  filter: brightness(0.8);
+}
+body[data-screen=main] .header-back {
+  visibility: hidden;
+}
+
+.header-title {
   cursor: pointer;
 }
-
-.head_btns {
-  display: inline-block;
-  float: right;
+body[data-screen=main] .header-title {
+  cursor: unset;
 }
 
-#conn_icons {
-  display: inline-block;
-  position: relative;
-  top: -10px;
-  left: -5px;
-}
-
-.back_btn {
+.header-connection {
+  align-self: stretch;
+  padding-top: 8px;
+  font-size: 13px;
+  font-weight: 400;
   display: none;
-  padding: 0px;
-  font-size: 22px !important;
-  width: 10px !important;
 }
+body[data-screen=ota] .header-connection,
+body[data-screen=dev_config] .header-connection,
+body[data-screen=fsbr_edit] .header-connection,
+body[data-screen=files] .header-connection,
+body[data-screen=info] .header-connection,
+body[data-screen=ui] .header-connection {
+  display: block;
+}
+
+.header-connection-icon {
+  align-self: stretch;
+  padding-top: 8px;
+  font-size: 12px !important;
+  display: none;
+}
+body[data-screen=ota] .header-connection-icon,
+body[data-screen=dev_config] .header-connection-icon,
+body[data-screen=fsbr_edit] .header-connection-icon,
+body[data-screen=files] .header-connection-icon,
+body[data-screen=info] .header-connection-icon,
+body[data-screen=ui] .header-connection-icon
+{
+  display: none !important;
+}
+
+.header-connections {
+  flex: 1;
+}
+
+.header-icon {
+  cursor: pointer;
+  width: 27px;
+  display: none;
+}
+.header-icon:hover {
+  filter: brightness(0.9);
+}
+.header-icon:active {
+  filter: brightness(0.8);
+}
+
+body[data-screen=ui] .icon_menu,
+body[data-screen=ota] .icon_menu,
+body[data-screen=dev_config] .icon_menu,
+body[data-screen=fsbr_edit] .icon_menu,
+body[data-screen=files] .icon_menu,
+body[data-screen=info] .icon_menu,
+
+body[data-screen=main] .icon_refresh,
+body[data-screen=ui] .icon_refresh,
+body[data-screen=info] .icon_refresh,
+body[data-screen=files] .icon_refresh,
+body[data-screen=fsbr_edit] .icon_refresh,
+
+body[data-screen=config] .icon_cfg,
+body[data-screen=main] .icon_cfg
+{
+  display: block;
+}
+
+
 
 /* MAIN */
 .main {
@@ -143,7 +233,20 @@ body::-webkit-scrollbar-thumb {
 
 .main_inn {
   padding-top: 65px;
+  padding-bottom: 50px;
   margin: 0px 5px;
+}
+
+body.show-cli .main_inn {
+  padding-bottom: 170px;
+}
+
+.cli {
+  display: none;
+}
+
+body.show-cli .cli {
+  display: block;
 }
 
 .main_col {
@@ -156,36 +259,35 @@ body::-webkit-scrollbar-thumb {
 
 /* FOOTER */
 .footer {
+  position: fixed;
+  bottom: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 28px;
-  margin-top: -29px;
   background: var(--tab);
   box-shadow: 0px 1px var(--tab);
+  gap: 12px;
 }
 
-.footer_inner {
-  margin: auto;
-  width: fit-content;
-  position: relative;
-  top: 50%;
-  -webkit-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
+body[data-screen=main] .footer {
+  display: flex;
 }
 
-.footer_inner a {
+.footer a {
   color: var(--font2);
   text-decoration: none;
-  padding: 0px 5px;
   font-size: 15px !important;
 }
 
-.footer_inner a:hover {
+.footer a:hover {
   color: var(--font);
 }
 
 .i_footer {
   font-size: 16px !important;
+  padding-right: 0 !important;
 }
 
 /* MOZ */
@@ -199,48 +301,25 @@ input[type=number] {
     -moz-appearance:textfield;
 }
 
-/*NON-ESP*/
+/*@[if_not_target:esp]*/
 /* ====================================================================== */
 /* ================================ PROJ ================================ */
 /* ====================================================================== */
-#projects_cont {
-  width: 100%;
-  height: 100%;
-  display: none;
-}
 
-.projects_inn {
-  max-width: 750px;
-  margin: auto;
-  padding: 0px 5px;
-  padding-top: 65px;
-}
-
-.projects {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+body[data-screen=projects] .screen-projects {
+  display: block;
 }
 
 .proj {
-  align-items: center;
-  width: 50%;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  padding: 5px;
-  width: 100%;
-}
-
-.proj_inn {
   background: var(--tab);
   border-radius: 5px;
   box-shadow: 0 0 10px 0px #00000020;
   width: 100%;
   height: 100%;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   padding: 7px;
+  margin: 5px auto 10px;
+  max-width: 740px;
 }
 
 .proj_name {
@@ -267,15 +346,12 @@ input[type=number] {
 /* ================================ TEST ================================ */
 /* ====================================================================== */
 
-#test_cont {
-  width: 100%;
-  height: 100%;
-  display: none;
+body[data-screen=test] .screen-test {
+  display: block;
 }
 
 .test_text {
-  padding-top: 75px;
   color: var(--font);
 }
 
-/*/NON-ESP*/
+/*@/[if_not_target:esp]*/

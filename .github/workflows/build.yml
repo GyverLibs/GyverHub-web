@@ -1,0 +1,53 @@
+name: publish
+
+on:
+  push:
+    paths:
+      - 'version.txt'
+
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Target version'
+        required: false
+        type: string
+      release_notes:
+        description: 'Release notes'
+        required: false
+        type: string
+
+
+jobs:
+  build:
+    permissions:
+      contents: write
+        
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip
+
+      - run: pip install -r dev-requirements.txt
+
+      - run: python ./build.py ci --version="${{ inputs.version }}" --release-notes="${{ inputs.release_notes }}" >> $GITHUB_OUTPUT
+        id: version
+
+      - run: python ./build.py build --version="${{ steps.version.outputs.version }}" --release-notes="${{ steps.version.outputs.release_notes }}"
+
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: dist/*
+          body: "${{ steps.version.outputs.release_notes }}"
+          draft: true
+          makeLatest: true
+          name: "GyverHub web ${{ steps.version.outputs.version }}"
+          tag: "v${{ steps.version.outputs.version }}"

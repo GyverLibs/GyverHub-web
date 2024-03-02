@@ -1,141 +1,128 @@
+let cfg_changed = false;
+let cfg = {
+  serial_offset: 2000,
+  use_pin: false,
+  pin: '',
+  theme: 'auto',
+  maincolor: 'GREEN',
+  font: 'monospace',
+  check_upd: true,
+  ui_width: 450,
+  wide_mode: false,
+  lang: userLang(),
+  app_plugin_css: '',
+  app_plugin_js: '',
+  api_ver: 1,
+};
+
+if (localStorage.hasOwnProperty('app_config')) {
+  const cfg_r = JSON.parse(localStorage.getItem('app_config'));
+  if (cfg.api_ver === cfg_r.api_ver) {
+    cfg = cfg_r;
+  }
+}
+localStorage.setItem('app_config', JSON.stringify(cfg));
+
+let lang = langBase[cfg.lang];
+
 function update_cfg(el) {
   if (el.type == 'text') el.value = el.value.trim();
-  let val = (el.type == 'checkbox') ? el.checked : el.value;
+  const val = (el.type == 'checkbox') ? el.checked : el.value;
   if (el.id in cfg) cfg[el.id] = val;
-  else if (el.id in hub.cfg) hub.cfg[el.id] = val;
+  else if (el.dataset.hubConfig) {
+    if (el.dataset.hubConfig === 'connections.HTTP.local_ip' && !checkIP(val)) {
+      asyncAlert(lang.wrong_ip);
+      return;
+    }
+    hub.config.set(...el.dataset.hubConfig.split('.'), val);
+  }
   cfg_changed = true;
   update_theme();
 }
 function save_cfg() {
   if (cfg.pin.length < 4) cfg.use_pin = false;
   localStorage.setItem('app_config', JSON.stringify(cfg));
-  localStorage.setItem('hub_config', JSON.stringify(hub.cfg));
-}
-function load_cfg() {
-  if (localStorage.hasOwnProperty('app_config')) {
-    let cfg_r = JSON.parse(localStorage.getItem('app_config'));
-    if (cfg.api_ver === cfg_r.api_ver) {
-      cfg = cfg_r;
-      return;
-    }
-  }
-  localStorage.setItem('app_config', JSON.stringify(cfg));
-}
-function load_cfg_hub() {
-  if (localStorage.hasOwnProperty('hub_config')) {
-    let cfg_r = JSON.parse(localStorage.getItem('hub_config'));
-    if (hub.cfg.api_ver === cfg_r.api_ver) {
-      hub.cfg = cfg_r;
-      return;
-    } else {
-      localStorage.setItem('devices', '[]');
-    }
-  }
-  localStorage.setItem('hub_config', JSON.stringify(hub.cfg));
-}
-function apply_cfg() {
-  if (cfg.pin.length < 4) cfg.use_pin = false;
-  for (let key in cfg) {
-    let el = EL(key);
-    if (el == undefined) continue;
-    if (el.type == 'checkbox') el.checked = cfg[key];
-    else el.value = cfg[key];
-  }
-  for (let key in hub.cfg) {
-    let el = EL(key);
-    if (el == undefined) continue;
-    if (el.type == 'checkbox') el.checked = hub.cfg[key];
-    else el.value = hub.cfg[key];
-  }
-}
-async function cfg_export() {
-  await copyClip(btoa(JSON.stringify(cfg)) + ';' + btoa(JSON.stringify(hub.cfg)) + ';' + btoa(encodeURIComponent(hub.export())));
-}
-async function cfg_import() {
-  try {
-    let text = await navigator.clipboard.readText();
-    text = text.split(';');
-    try {
-      cfg = JSON.parse(atob(text[0]));
-    } catch (e) { }
-    try {
-      hub.cfg = JSON.parse(atob(text[1]));
-    } catch (e) { }
-    try {
-      hub.import(decodeURIComponent(atob(text[2])));
-    } catch (e) { }
-
-    save_cfg();
-    save_devices();
-    showPopup(lang.import_ok);
-    setTimeout(() => location.reload(), 500);
-  } catch (e) {
-    showPopupError(lang.import_err);
-  }
-}
-async function cfg_reset() {
-  if (await asyncConfirm(lang.cfg_reset_conf)) {
-    localStorage.removeItem("app_config");
-    localStorage.removeItem("hub_config");
-    localStorage.removeItem("devices");
-    setTimeout(() => location.reload(), 500);
-  }
+  localStorage.setItem('hub_config', hub.config.toJson());
 }
 
 function update_theme() {
-  let v = themes[cfg.theme];
-  let r = document.querySelector(':root');
-  r.style.setProperty('--back', theme_cols[v][0]);
-  r.style.setProperty('--tab', theme_cols[v][1]);
-  r.style.setProperty('--font', theme_cols[v][2]);
-  r.style.setProperty('--font2', theme_cols[v][3]);
-  r.style.setProperty('--dark', theme_cols[v][4]);
-  r.style.setProperty('--thumb', theme_cols[v][5]);
-  r.style.setProperty('--black', theme_cols[v][6]);
-  r.style.setProperty('--scheme', theme_cols[v][7]);
-  r.style.setProperty('--font_inv', theme_cols[v][8]);
-  r.style.setProperty('--shad', theme_cols[v][9]);
+  document.body.classList.remove('theme-dark', 'theme-light', 'theme-auto');
+  document.body.classList.add('theme-' + cfg.theme.toLowerCase());
+
+  const r = document.querySelector(':root');
   r.style.setProperty('--ui_width', cfg.ui_width + 'px');
   r.style.setProperty('--prim', intToCol(colors[cfg.maincolor]));
   r.style.setProperty('--font_f', cfg.font);
 
-  EL('app_plugins').innerHTML = '';
+  EL('app_plugins').replaceChildren();
   addDOM('app_css', 'style', cfg.app_plugin_css, EL('app_plugins'));
   addDOM('app_js', 'script', cfg.app_plugin_js, EL('app_plugins'));
 
-  let b = 'block';
-  let n = 'none';
-  let f = 'var(--font)';
-  let f3 = 'var(--font3)';
+  display('local_block', hub.config.get('connections', 'HTTP', 'enabled') ? 'block' : 'none');
+  EL('local_label').style.color = hub.config.get('connections', 'HTTP', 'enabled') ? 'var(--font)' : 'var(--font3)';
 
-  display('local_block', hub.cfg.use_local ? b : n);
-  EL('local_label').style.color = hub.cfg.use_local ? f : f3;
-  display('pin_block', cfg.use_pin ? b : n);
-  EL('pin_label').style.color = cfg.use_pin ? f : f3;
+  display('pin_block', cfg.use_pin ? 'block' : 'none');
+  EL('pin_label').style.color = cfg.use_pin ? 'var(--font)' : 'var(--font3)';
 
-  updateLang();
+/*@[if_not_target:esp]*/
+  display('mq_block', hub.config.get('connections', 'MQTT', 'enabled') ? 'block' : 'none');
+  EL('mqtt_label').style.color = hub.config.get('connections', 'MQTT', 'enabled') ? 'var(--font)' : 'var(--font3)';
 
-  /*NON-ESP*/
-  display('mq_block', hub.cfg.use_mqtt ? b : n);
-  EL('mqtt_label').style.color = hub.cfg.use_mqtt ? f : f3;
+  display('tg_block', hub.config.get('connections', 'TG', 'enabled') ? 'block' : 'none');
+  EL('tg_label').style.color = hub.config.get('connections', 'TG', 'enabled') ? 'var(--font)' : 'var(--font3)';
 
-  display('tg_block', hub.cfg.use_tg ? b : n);
-  EL('tg_label').style.color = hub.cfg.use_tg ? f : f3;
+  const bt = hub.config.get('connections', 'BLE', 'enabled');
+  display('bt_block', bt ? 'block' : 'none');
+  EL('bt_label').style.color = bt ? 'var(--font)' : 'var(--font3)';
 
-  let bt = hub.cfg.use_bt && hasBT();
-  display('bt_block', bt ? b : n);
-  EL('bt_label').style.color = bt ? f : f3;
-
-  let ser = hub.cfg.use_serial && hasSerial();
-  display('serial_block', ser ? b : n);
-  EL('serial_label').style.color = ser ? f : f3;
-  /*/NON-ESP*/
+  const ser = hub.config.get('connections', 'SERIAL', 'enabled');
+  display('serial_block', ser ? 'block' : 'none');
+  EL('serial_label').style.color = ser ? 'var(--font)' : 'var(--font3)';
+/*@/[if_not_target:esp]*/
 }
-function save_devices() {
-  localStorage.setItem('devices', hub.export());
+
+function cfg_export() {
+  const config = {
+    app_config: cfg,
+    hub_config: hub.config.toJson(),
+  };
+  const $a = document.createElement('a');
+  $a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config));
+  $a.download = "GyverHub-config-export.json";
+  document.body.appendChild($a);
+  $a.click();
+  $a.remove();
 }
-function load_devices() {
-  if (localStorage.hasOwnProperty('devices')) {
-    hub.import(localStorage.getItem('devices'));
+
+function cfg_import() {
+  const $in = document.createElement('input');
+  $in.type = 'file';
+  $in.accept = ".json,application/json";
+  $in.addEventListener("change", async () => {
+    const file = $in.files[0];
+
+    try {
+      const ab = await readFileAsArrayBuffer(file);
+      const text = new TextDecoder().decode(ab);
+      const data = JSON.parse(text);
+      cfg = data.app_config;
+      hub.config.fromJson(data.hub_config);
+    } catch (e) {
+      console.log(e);
+      showPopupError(lang.import_err);
+      return;
+    }
+
+    save_cfg();
+    showPopup(lang.import_ok);
+    setTimeout(() => location.reload(), 500);
+  });
+  $in.click();
+}
+
+async function cfg_reset() {
+  if (await asyncConfirm(lang.cfg_reset_conf)) {
+    localStorage.clear();
+    setTimeout(() => location.reload(), 500);
   }
 }
