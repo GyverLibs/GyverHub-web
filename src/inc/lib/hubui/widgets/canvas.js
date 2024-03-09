@@ -35,7 +35,7 @@ class CanvasWidget extends BaseWidget {
 
     update(data) {
         super.update(data);
-        
+
         if ('active' in data) this.$el.style.cursor = data.active ? 'pointer' : '';
         if ('data' in data) {
             this.#data = this.#data.concat(data.data);
@@ -93,24 +93,27 @@ class CanvasWidget extends BaseWidget {
             const cmd = parseInt(cmdName, 10);
 
             args = args.map(v => {
-                const i = parseFloat(v);
-                return isNaN(i) ? v : i;
+                if (v.match(/^-?\d+$/)) return parseInt(v);
+                else if (v.match(/^\d+\.\d+$/)) return parseFloat(v);
+                else return v;
             })
 
             if (!isNaN(cmd) && cmd <= cmd_list.length) {
                 cmdName = cmd_list[cmd];
-                
+
                 if (cmd <= 2) args[0] = intToColA(args[0]);   // shadowColor
                 else if (cmd <= 7) args[0] *= this.#scale; // miterLimit
+                else if (cmd <= 8) args[0] = Number(args[0].split('px')[0]) * this.#scale + 'px' + args[0].split('px')[1];  // font
                 else if (cmd <= 13) args[0] = const_list[args[0]];  // globalCompositeOperation
-                else if (cmd <= 14) ;  // globalAlpha
-                else if (cmd <= 16) ; // rotate
+                else if (cmd <= 14);  // globalAlpha
+                else if (cmd <= 16); // rotate
                 else if (cmd <= 26) {   // arcTo
                     args = args.map((v, i) => cv_map(v, i % 2))
                 } else if (cmd == 27) { // arc
-                    args = [cv_map(args[0],0),cv_map(args[1],1),cv_map(args[2],0),args[3],args[4],args[5]];
+                    args = [cv_map(args[0], 0), cv_map(args[1], 1), cv_map(args[2], 0), args[3], args[4], args[5]];
                 } else if (cmd <= 29) { // strokeText
-                    args = [args[0],cv_map(args[1],0),cv_map(args[2],1),args[3]];
+                    if (args[3]) args = [args[0], cv_map(args[1], 0), cv_map(args[2], 1), args[3]];
+                    else args = [args[0], cv_map(args[1], 0), cv_map(args[2], 1)];
                 } else if (cmd == 30) { // drawImage
                     let img = new Image();
                     for (let i in args) {
@@ -144,8 +147,7 @@ class CanvasWidget extends BaseWidget {
                     cx[cmdName].call(cx);
                 } else {
                     const fn = cx[cmdName];
-                    if (typeof fn === 'function')
-                        fn.apply(cx, args);
+                    if (typeof fn === 'function') fn.apply(cx, args);
                     else cx[cmdName] = args[0];
                 }
             } catch (e) {

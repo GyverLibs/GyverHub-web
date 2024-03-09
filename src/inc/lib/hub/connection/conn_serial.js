@@ -13,6 +13,7 @@ class SerialConnection extends Connection {
     this.#writeLock = new AsyncLock();
     this.options.enabled = false;
     this.options.baudrate = 115200;
+    this.options.offset = 2000;
 
     this.#packet_buffer = new PacketBufferScanAll(data => {
       this.hub._parsePacket(this, data);

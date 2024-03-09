@@ -104,7 +104,7 @@ function showInfo(info) {
       let title = used;
       if (total) {
         mem += ' [' + (used / total * 100).toFixed(0) + '%]';
-        title += ' of ' + total; 
+        title += ' of ' + total;
       }
       addInfo('info_memory', i, mem, `Used ${title} bytes`);
     } else {
@@ -373,7 +373,7 @@ function renderBody() {
               <span style="color:#c60000">Works only on <strong class="span_btn" onclick="window.location.href = window.location.href.replace('https', 'http')">HTTP</strong>!</span>
             </div>
   
-            <div id="http_settings">
+            <div id="http_settings">            
               <div class="ui_row">
                 <label class="ui_label"><slot name="lang.wifi_ip"></slot></label>
                 <div class="ui_inp_row">
@@ -396,7 +396,14 @@ function renderBody() {
                 <div class="ui_inp_row"><input class="ui_inp" type="text" id="http_port" data-hub-config="connections.HTTP.port" onchange="update_cfg(this)">
                 </div>
               </div>
-  
+    
+              <!--@[if_target:host,esp]-->
+              <span class="notice_block">Disable:
+                <u><slot name="browser"></slot>://flags/#block-insecure-private-network-requests</u></span>
+              <!--@/[if_target:host,esp]-->
+
+              <hr>
+
               <div class="ui_row">
                 <label class="ui_label"><slot name="lang.wifi_add"></slot></label>
                 <div class="ui_inp_row">
@@ -405,12 +412,7 @@ function renderBody() {
                     <button class="icon icon_btn" onclick="manual_ip_h(local_add_ip.value)"></button>
                   </div>
                 </div>
-              </div>
-  
-              <!--@[if_target:host,esp]-->
-              <span class="notice_block">Disable:
-                <u><slot name="browser"></slot>://flags/#block-insecure-private-network-requests</u></span>
-              <!--@/[if_target:host,esp]-->
+              </div>              
             </div>
           </div>
         </div>

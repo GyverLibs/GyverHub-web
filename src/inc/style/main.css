@@ -13,6 +13,10 @@
 /*@[if_not_target:host,esp]*/
   src: url(data:font/woff2;charset=utf-8;base64,/*@![include:inc/style/fonts/fa-solid-900.woff2,base64]*/) format("woff2");
   /*@/[if_not_target:host,esp]*/
+
+  /*@[if_target:none]*/
+  src: url(fonts/fa-solid-900.woff2) format("woff2");
+  /*@/[if_target:none]*/
 }
 
 :root {
@@ -101,6 +105,10 @@ body::-webkit-scrollbar-thumb {
   font-weight: 400;
 }
 
+hr {
+  border-top: 1px solid var(--back);
+}
+
 /* HEADER */
 
 .header-row {
@@ -110,6 +118,8 @@ body::-webkit-scrollbar-thumb {
   position: fixed;
   z-index: 4;
   box-shadow: 0px 0px 7px 0px var(--shad);
+  padding: 0 7px;
+  box-sizing: border-box;
 }
 body.connection-error .header-row {
   background: var(--err);
@@ -135,7 +145,7 @@ body.connection-error .header-row {
 .header-back {
   cursor: pointer;
   font-size: 22px !important;
-  width: 10px;
+  width: 12px;
   display: block;
 }
 .header-back:hover {
@@ -145,7 +155,7 @@ body.connection-error .header-row {
   filter: brightness(0.8);
 }
 body[data-screen=main] .header-back {
-  visibility: hidden;
+  display: none;
 }
 
 .header-title {
@@ -161,6 +171,7 @@ body[data-screen=main] .header-title {
   font-size: 13px;
   font-weight: 400;
   display: none;
+  margin-left: -5px;
 }
 body[data-screen=ota] .header-connection,
 body[data-screen=dev_config] .header-connection,
@@ -176,6 +187,7 @@ body[data-screen=ui] .header-connection {
   padding-top: 8px;
   font-size: 12px !important;
   display: none;
+  margin-left: -5px;
 }
 body[data-screen=ota] .header-connection-icon,
 body[data-screen=dev_config] .header-connection-icon,
