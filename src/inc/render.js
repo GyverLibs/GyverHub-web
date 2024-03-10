@@ -689,11 +689,23 @@ function renderBody() {
         </div>
   
         <!--@[if_target:host]-->
+        <div class="ui_col">
+          <div class="ui_row ui_head">
+            <label class="ui_label"><span class="icon icon_ui"></span>App</label>
+            <div class="ui_btn_row">
+              <button class="ui_btn ui_btn_mini" onclick="openURL('https://github.com/neko-neko-nyan/gyverhub-desktop/releases/latest')">PC</button>
+              <button class="ui_btn ui_btn_mini" onclick="openURL('https://apps.apple.com/kz/app/gyverhub/id6474273925')">iOS</button>
+              <button class="ui_btn ui_btn_mini" onclick="openURL('https://play.google.com/store/apps/details?id=ru.alexgyver.GyverHub')">Android</button>
+              <button class="ui_btn ui_btn_mini" onclick="openURL('https://github.com/GyverLibs/GyverHub-app/releases/latest/download/app-release.apk')">.apk</button>
+            </div>
+          </div>
+        </div>
+        
         <div class="ui_col" id="pwa_block" style="display: none;">
           <div class="ui_row ui_head">
             <label class="ui_label"><span class="icon icon_ui"></span>Web App</label>
             <div class="ui_btn_row">
-              <button class="ui_btn ui_btn_mini" id="btn_pwa">Install</button>
+              <button class="ui_btn ui_btn_mini" id="btn_pwa"><slot name="lang.p_install"></slot></button>
             </div>
           </div>
           <span class="notice_block" id="pwa_unsafe">Enable <u><slot name="browser"></slot>://flags/#unsafely-treat-insecure-origin-as-secure</u> and add <u><slot name="location"></slot></u> to list</span>
@@ -701,7 +713,7 @@ function renderBody() {
 
         <div class="ui_col">
           <div class="ui_row ui_head">
-            <label class="ui_label"><span class="icon icon_ui"></span>Switch HTTP/HTTPS</label>
+            <label class="ui_label"><span class="icon icon_ui"></span>HTTP/HTTPS</label>
             <div class="ui_btn_row">
               <button class="ui_btn ui_btn_mini" id="btn_pwa_http" onclick="switch_ssl(false)">HTTP</button>
               <button class="ui_btn ui_btn_mini" id="btn_pwa_https" onclick="switch_ssl(true)">HTTPS</button>
@@ -709,15 +721,6 @@ function renderBody() {
           </div>
         </div>
 
-        <div class="ui_col">
-          <div class="ui_row ui_head">
-            <label class="ui_label"><span class="icon icon_ui"></span>App</label>
-            <div class="ui_btn_row">
-              <button class="ui_btn ui_btn_mini" onclick="openURL('https://play.google.com/store/apps/details?id=ru.alexgyver.GyverHub')">Android</button>
-              <button class="ui_btn ui_btn_mini" onclick="openURL('https://github.com/GyverLibs/GyverHub-app/releases/download/0.1/app-release.apk')">.apk</button>
-            </div>
-          </div>
-        </div>
         <!--@/[if_target:host]-->
   
         <div class="ui_col">
