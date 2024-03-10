@@ -12,7 +12,7 @@ let cfg = {
   lang: userLang(),
   app_plugin_css: '',
   app_plugin_js: '',
-  api_ver: 1,
+  api_ver: 2,
 };
 
 if (localStorage.hasOwnProperty('app_config')) {

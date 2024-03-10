@@ -106,7 +106,8 @@ body::-webkit-scrollbar-thumb {
 }
 
 hr {
-  border-top: 1px solid var(--back);
+  border: none;
+  border-top: 2px solid var(--back) !important;
 }
 
 /* HEADER */
@@ -187,7 +188,7 @@ body[data-screen=ui] .header-connection {
   padding-top: 8px;
   font-size: 12px !important;
   display: none;
-  margin-left: -5px;
+  margin-left: -4px;
 }
 body[data-screen=ota] .header-connection-icon,
 body[data-screen=dev_config] .header-connection-icon,
