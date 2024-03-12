@@ -17,6 +17,9 @@ function load_cfg() {
     if (cfg.api_ver === cfg_r.api_ver) {
       cfg = cfg_r;
       return;
+    } else {
+      localStorage.clear();
+      location.reload();
     }
   }
   localStorage.setItem('app_config', JSON.stringify(cfg));
