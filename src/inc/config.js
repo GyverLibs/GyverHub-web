@@ -19,6 +19,9 @@ if (localStorage.hasOwnProperty('app_config')) {
   const cfg_r = JSON.parse(localStorage.getItem('app_config'));
   if (cfg.api_ver === cfg_r.api_ver) {
     cfg = cfg_r;
+  } else {
+    localStorage.clear();
+    location.reload();
   }
 }
 localStorage.setItem('app_config', JSON.stringify(cfg));

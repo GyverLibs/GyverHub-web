@@ -45,14 +45,12 @@ class Renderer extends EventEmitter {
     }
 
     #updateWWidth(type, data) {
-        let prevWidth = 1;
         switch (type) {
             case 'row':
                 let sumw = 0;
                 for (const ctrl of data) {
                     if (!ctrl.type || Renderer.#VIRTUAL_WIDGETS.has(ctrl.type)) continue;
-                    if (!ctrl.wwidth) ctrl.wwidth = prevWidth;
-                    else prevWidth = ctrl.wwidth;
+                    if (!ctrl.wwidth) ctrl.wwidth = 1;
                     sumw += ctrl.wwidth;
                 }
                 for (const ctrl of data) {
