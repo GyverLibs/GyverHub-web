@@ -7,7 +7,7 @@ let cfg = {
   maincolor: 'GREEN',
   font: 'monospace',
   check_upd: true,
-  ui_width: 450,
+  ui_width: 480,
   wide_mode: false,
   lang: userLang(),
   app_plugin_css: '',

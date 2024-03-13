@@ -85,6 +85,7 @@
   height: 12px;
   line-height: 12px;
   text-align: center;
+  margin-right: 3px;
 }
 
 .disable {
@@ -134,11 +135,10 @@
   margin-top: -7px;
 }
 
-
 /* BUTTON */
 .w_btn {
   cursor: pointer;
-  margin: -5px;
+  margin: -3px;
 }
 
 .w_btn:hover {
@@ -445,6 +445,7 @@ select option {
   font-size: 18px;
   color: var(--font);
   user-select: none;
+  --checked-color: var(--prim);
 }
 
 .w_flags_cont:not(.disable) .w_flags {
@@ -473,7 +474,6 @@ select option {
   height: 100%;
   overflow: hidden;
   margin-bottom: -5px;
-  --checked-color: var(--prim);
 }
 
 /* ICON */

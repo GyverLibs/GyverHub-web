@@ -16,7 +16,7 @@ class MenuWidget extends Widget {
 
     update(data) {
         super.update(data);
-    
+
         if (!data.text || !this.$el) return;
 
         this.$el.replaceChildren();
@@ -31,6 +31,7 @@ class MenuWidget extends Widget {
                 }
             }));
         }
+        this.$el.append(createElement(null, { type: 'hr' }));
         this.renderer.dispatchEvent(new Event('menuchanged'));
     }
 

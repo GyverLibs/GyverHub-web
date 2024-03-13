@@ -91,8 +91,6 @@ function show_cfg() {
   EL('main_width').value = dev.info.main_width;
   EL('info_cli_sw').checked = document.body.classList.contains('show-cli');
   EL('info_trust').checked = dev.info.trust;
-  EL('plugin_css').value = dev.info.plugin_css;
-  EL('plugin_js').value = dev.info.plugin_js;
 }
 async function show_info() {
   const dev = hub.dev(focused);
@@ -224,13 +222,19 @@ function devLink() {
 function ui_width_h(el) {
   hub.dev(focused).info.main_width = el.value;
 }
-function ui_plugin_css_h(el) {
-  hub.dev(focused).info.plugin_css = el.value;
-  addDOM('device_css', 'style', el.value, EL('plugins'));
+async function ui_plugin_css_h() {
+  const res = await asyncPromptArea(lang.i_css, hub.dev(focused).info.plugin_css);
+  if (res !== null) {
+    hub.dev(focused).info.plugin_css = res;
+    addDOM('device_css', 'style', res, EL('plugins'));
+  }
 }
-function ui_plugin_js_h(el) {
-  hub.dev(focused).info.plugin_js = el.value;
-  addDOM('device_js', 'script', el.value, EL('plugins'));
+async function ui_plugin_js_h() {
+  const res = await asyncPromptArea(lang.i_js, hub.dev(focused).info.plugin_js);
+  if (res !== null) {
+    hub.dev(focused).info.plugin_js = res;
+    addDOM('device_js', 'script', res, EL('plugins'));
+  }
 }
 
 // ============== MENU =============

@@ -1,4 +1,4 @@
-class DpadWidget extends BaseWidget  {
+class DpadWidget extends BaseWidget {
     $el;
     #posX = 0;
     #posY = 0;
@@ -19,7 +19,7 @@ class DpadWidget extends BaseWidget  {
 
         if (!this.data.color)
             this.data.color = colToInt(window.getComputedStyle(document.body).getPropertyValue('--prim'));
-        
+
         if ("ontouchstart" in document.documentElement) {
             this.#_onTouchStart = this.#onTouchStart.bind(this);
             this.#_onTouchEnd = this.#onTouchEnd.bind(this);
@@ -92,7 +92,7 @@ class DpadWidget extends BaseWidget  {
         cx.beginPath();
         cx.arc(center, center, size * 0.44, 0, 2 * Math.PI, false);
         cx.lineWidth = size * 0.02;
-        cx.strokeStyle = intToCol(this.#pressed ? adjustColor(this.data.color,  1.3) : this.data.color);
+        cx.strokeStyle = intToCol(this.#pressed ? adjustColor(this.data.color, 1.3) : this.data.color);
         cx.stroke();
 
         cx.lineWidth = size * 0.045;
@@ -109,7 +109,7 @@ class DpadWidget extends BaseWidget  {
             cx.stroke();
         }
 
-        if (send) this.set((x + 255) << 16) | (y + 255);
+        if (send) this.set(((x + 255) << 16) | (y + 255));
     }
 
     #onTouchStart(event) {

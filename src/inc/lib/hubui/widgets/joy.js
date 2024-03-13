@@ -1,4 +1,4 @@
-class JoyWidget extends BaseWidget  {
+class JoyWidget extends BaseWidget {
     $el;
     #center = 0;
     #posX = null;
@@ -43,7 +43,7 @@ class JoyWidget extends BaseWidget  {
             this.#reset();
             this.#redraw();
         })
-        
+
         this.update(data);
         this.disable(this.$el, data.disable);
         waitFrame().then(() => {
@@ -113,7 +113,7 @@ class JoyWidget extends BaseWidget  {
             y = ((y * y + 255) >> 8) * (y > 0 ? 1 : -1);
         }
         if (send) {
-            this.set((x + 255) << 16) | (y + 255);
+            this.set(((x + 255) << 16) | (y + 255));
             this.setSuffix('[' + x + ',' + y + ']');
         }
     }
@@ -126,7 +126,7 @@ class JoyWidget extends BaseWidget  {
 
     #onTouchMove(event) {
         if (!this.#pressed) return;
-        
+
         event.preventDefault();
         let target = null;
         for (const t of event.changedTouches) {
@@ -208,5 +208,5 @@ class JoyWidget extends BaseWidget  {
 Renderer.register('joy', JoyWidget);
 
 function constrain(val, min, max) {
-  return val < min ? min : (val > max ? max : val);
+    return val < min ? min : (val > max ? max : val);
 }

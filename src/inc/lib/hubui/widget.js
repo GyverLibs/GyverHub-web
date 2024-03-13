@@ -11,6 +11,10 @@ class Widget {
     /** @type {object} */
     data;
 
+    set_delay = 50;
+    set_buf = null;
+    set_timer = null;
+
     /**
      * @param {object} data 
      * @param {Renderer} renderer 
@@ -48,21 +52,21 @@ class Widget {
      * 
      * Should be overriden.
      */
-    _handleSetError(err) {}
+    _handleSetError(err) { }
 
     /**
      * Handle ack for previous set.
      * 
      * Should be overriden.
      */
-    _handleAck() {}
+    _handleAck() { }
 
     /**
      * Handle renderer closing. 
      * 
      * Should be overriden to stop timers (if any).
      */
-    close() {}
+    close() { }
 
     /**
      * Set widget value.
@@ -73,7 +77,17 @@ class Widget {
      * @returns {Promise<undefined>}
      */
     set(value, ack = true) {
-        this.renderer._set(this, value, ack);
+        if (this.set_timer) {
+            this.set_buf = value;
+        } else {
+            this.set_timer = setTimeout(() => {
+                this.set_timer = null;
+                if (this.set_buf) this.renderer._set(this, this.set_buf, ack);
+                this.set_buf = null;
+            }, this.set_delay);
+
+            this.renderer._set(this, value, ack);
+        }
     }
 
     /**
@@ -88,9 +102,9 @@ class Widget {
         this.renderer._addFile(this, path, type, callback);
     }
 
-    _handleFileProgress(perc) {}
-    _handleFileError(err) {}
-    _handleFileLoaded(res) {}
+    _handleFileProgress(perc) { }
+    _handleFileError(err) { }
+    _handleFileLoaded(res) { }
 }
 
 /**
@@ -252,14 +266,14 @@ class BaseWidget extends Widget {
     }
 
     setPlabel(text = null) {
-        this.#plabel.textContent = text ?? '';
+        this.#plabel.textContent = ' ' + (text ?? '');
     }
 
     setSuffix(text = null) {
         this.#suffix.textContent = text ?? '';
     }
 
-    _handleSetError(err){
+    _handleSetError(err) {
         this.setPlabel("[ERR]");
         showPopupError(`Widget ${this.id}: ` + getError(err));
     }

@@ -24,7 +24,7 @@ async function loadProj(rep) {
     const installButton = `
       <esp-web-install-button manifest="${manifest}">
         <button title="${lang.p_install}" class="icon icon_btn_big" style="font-size:15px" slot="activate"></button>
-        <span slot="unsupported">${lang.p_not_support}</span>
+        <!--<span slot="unsupported">${lang.p_not_support}</span>-->
         <span slot="not-allowed">${lang.p_use_https}</span>
       </esp-web-install-button>
     `;

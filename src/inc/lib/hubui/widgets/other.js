@@ -10,8 +10,7 @@ class SpaceWidget extends BaseWidget {
         super.update(data);
     }
 }
-
-Renderer.register('space', BaseWidget);
+Renderer.register('space', SpaceWidget);
 
 Renderer.register('dummy', Widget, true);
 

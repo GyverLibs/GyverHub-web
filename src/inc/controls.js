@@ -1,6 +1,6 @@
 // ================== POST ==================
 async function reboot_h() {
-  if (await asyncConfirm(lang.i_reboot)) {
+  if (await asyncConfirm(lang.i_reboot + '?')) {
     await hub.dev(focused).reboot();
   }
 }

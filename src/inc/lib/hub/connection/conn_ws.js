@@ -13,7 +13,7 @@ class WebSocketConnection extends Connection {
     this.options.enabled = false;
     this.options.ip = false;
     this.options.port = false;
-    this.options.connect_timeout = 3000;
+    this.options.connect_timeout = 3300;
 
     this.#packet_buffer = new PacketBufferScanFirst(data => {
       this.hub._parsePacket(this, data);

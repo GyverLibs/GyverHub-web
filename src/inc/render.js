@@ -193,20 +193,20 @@ function renderBody() {
               <input class="ui_inp" type="text" id="main_width" onchange="ui_width_h(this)">
             </div>
           </div>
+
+          <hr>
   
           <div class="ui_row">
             <label class="ui_label"><slot name="lang.i_css"></slot></label>
-            <div class="ui_inp_row">
-              <textarea class="w_area" id="plugin_css" onchange="ui_plugin_css_h(this)"></textarea>
-            </div>
+            <button class="icon icon_btn_big" onclick="ui_plugin_css_h()"></button>
           </div>
   
           <div class="ui_row">
             <label class="ui_label"><slot name="lang.i_js"></slot></label>
-            <div class="ui_inp_row">
-              <textarea class="w_area" id="plugin_js" onchange="ui_plugin_js_h(this)"></textarea>
-            </div>
+            <button class="icon icon_btn_big" onclick="ui_plugin_js_h()"></button>
           </div>
+
+          <hr>
   
           <div class="ui_btn_row">
             <button id="reboot_btn" class="ui_btn ui_btn_mini" onclick="reboot_h()"><span class="icon icon_inline"></span><slot name="lang.i_reboot"></slot></button>
@@ -249,30 +249,27 @@ function renderBody() {
   
         <div class="ui_col">
           <div class="ui_row ui_head">
-            <label><span class="icon icon_ui"></span><slot name="lang.i_version"></slot></label>
+            <label><span class="icon icon_ui"></span><slot name="lang.i_system"></slot></label>
           </div>
-          <div id="info_version"></div>
+          <div id="info_system"></div>
         </div>
-  
         <div class="ui_col">
           <div class="ui_row ui_head">
             <label><span class="icon icon_ui"></span><slot name="lang.i_net"></slot></label>
           </div>
           <div id="info_net"></div>
         </div>
-  
         <div class="ui_col">
           <div class="ui_row ui_head">
             <label><span class="icon icon_ui"></span><slot name="lang.i_memory"></slot></label>
           </div>
           <div id="info_memory"></div>
         </div>
-  
         <div class="ui_col">
           <div class="ui_row ui_head">
-            <label><span class="icon icon_ui"></span><slot name="lang.i_system"></slot></label>
+            <label><span class="icon icon_ui"></span><slot name="lang.i_version"></slot></label>
           </div>
-          <div id="info_system"></div>
+          <div id="info_version"></div>
         </div>
       </div>
   
@@ -446,13 +443,10 @@ function renderBody() {
               <div class="ui_inp_row"><input class="ui_inp" type="password" id="mq_pass" data-hub-config="connections.MQTT.password" onchange="update_cfg(this);hub.mqtt.disconnect()">
               </div>
             </div>
-  
-            <div class="ui_row">
-              <div></div>
-              <div class="ui_btn_row">
-                <button class="ui_btn ui_btn_mini" onclick="hub.mqtt.connect()" id="mq_start"><slot name="lang.connect"></slot></button>
-                <button class="ui_btn ui_btn_mini" onclick="hub.mqtt.disconnect()" id="mq_stop" style="display:none"><slot name="lang.disconnect"></slot></button>
-              </div>
+            <hr>
+            <div class="ui_btn_row">
+              <button class="ui_btn ui_btn_mini" onclick="hub.mqtt.connect()" id="mq_start"><slot name="lang.connect"></slot></button>
+              <button class="ui_btn ui_btn_mini" onclick="hub.mqtt.disconnect()" id="mq_stop" style="display:none"><slot name="lang.disconnect"></slot></button>
             </div>
   
           </div>
@@ -479,13 +473,10 @@ function renderBody() {
                 <input class="ui_inp" type="text" id="tg_chat" data-hub-config="connections.TG.chat" onchange="update_cfg(this)">
               </div>
             </div>
-  
-            <div class="ui_row">
-              <div></div>
-              <div class="ui_btn_row">
-                <button class="ui_btn ui_btn_mini" onclick="hub.tg.connect()" id="tg_start"><slot name="lang.connect"></slot></button>
-                <button class="ui_btn ui_btn_mini" onclick="hub.tg.disconnect()" id="tg_stop" style="display:none"><slot name="lang.disconnect"></slot></button>
-              </div>
+            <hr>
+            <div class="ui_btn_row">
+              <button class="ui_btn ui_btn_mini" onclick="hub.tg.connect()" id="tg_start"><slot name="lang.connect"></slot></button>
+              <button class="ui_btn ui_btn_mini" onclick="hub.tg.disconnect()" id="tg_stop" style="display:none"><slot name="lang.disconnect"></slot></button>
             </div>
           </div>
         </div>
@@ -522,7 +513,7 @@ function renderBody() {
               <div class="ui_inp_row"><input class="ui_inp" type="text" id="serial_offset" data-hub-config="connections.SERIAL.offset" onchange="update_cfg(this)">
               </div>
             </div>
-  
+            <hr>
             <div class="ui_row">
               <div><label class="ui_label" id="serial_device"><slot name="lang.not_conn"></slot></label> <label class="ui_label" id="port_name"></label></div>
               <div class="ui_btn_row">
@@ -576,6 +567,8 @@ function renderBody() {
               </div>
             </div>
           </div>
+
+          <hr>
 
           <div class="ui_btn_row">
             <button class="ui_btn ui_btn_mini" onclick="search()"><slot name="lang.cfg_find_dev"></slot></button>
@@ -654,11 +647,19 @@ function renderBody() {
               <input class="ui_inp" type="text" id="ui_width" onchange="update_cfg(this)">
             </div>
           </div>
+
+          <hr>
   
           <div class="ui_row">
             <label><slot name="lang.cfg_wide_mode"></slot></label>
             <label class="switch"><input type="checkbox" id="wide_mode" onchange="update_cfg(this)"><span class="slider"></span></label>
           </div>
+          <div class="ui_row">
+            <label><slot name="lang.cfg_updates"></slot></label>
+            <label class="switch"><input type="checkbox" id="check_upd" onchange="update_cfg(this)"><span class="slider"></span></label>
+          </div>
+
+          <hr>
 
           <div class="ui_row">
             <label class="ui_label"><slot name="lang.cfg_css"></slot></label>
@@ -676,11 +677,8 @@ function renderBody() {
             <label class="ui_label"><slot name="lang.cfg_plugin"></slot></label>
             <button class="icon icon_btn_big" onclick="plugin_links()"></button>
           </div>
-  
-          <div class="ui_row">
-            <label><slot name="lang.cfg_updates"></slot></label>
-            <label class="switch"><input type="checkbox" id="check_upd" onchange="update_cfg(this)"><span class="slider"></span></label>
-          </div>
+
+          <hr>
   
           <div class="ui_btn_row">
             <button class="ui_btn ui_btn_mini" onclick="cfg_export()"><slot name="lang.cfg_export"></slot></button>
@@ -743,8 +741,10 @@ function renderBody() {
   
         <div class="ui_col">
           <div class="cfg_info" id="hub_stat">GyverHub v<!--@![:version]--> <!--@![:target]--></div>
+
+          <hr>
+
           <div class="cfg_info">
-            Contribution:
             <a href="https://github.com/Simonwep/pickr" target="_blank">Pickr</a>
             <a href="https://github.com/mqttjs/MQTT.js" target="_blank">MQTT.js</a>
             <a href="https://github.com/ghornich/sort-paths" target="_blank">sort-paths</a>
