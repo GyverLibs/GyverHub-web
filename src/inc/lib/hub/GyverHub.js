@@ -137,6 +137,14 @@ class GyverHub extends EventEmitter {
     this._checkDiscoverEnd();
   }
 
+  async add(id) {
+    for (const connection of this.#connections) {
+      connection.add(id);
+    }
+
+    this._checkDiscoverEnd();
+  }
+
   /**
    * Check if hub currently allows discover.
    * @returns {boolean}

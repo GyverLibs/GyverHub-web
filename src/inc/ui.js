@@ -194,6 +194,10 @@ async function manual_ip_h(ip) {
   show_screen('main');
   if (device) device_h(device.info.id);
 }
+async function manual_id_h(id) {
+  show_screen('main');
+  await hub.add(id);
+}
 function update_ip_h() {
   getLocalIP(false);
 }

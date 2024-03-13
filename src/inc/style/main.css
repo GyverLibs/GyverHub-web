@@ -3,14 +3,14 @@
   font-style: normal;
   font-weight: 900;
   font-display: block;
-/*@[if_target:host]*/
+  /*@[if_target:host]*/
   /*@![add_file_to:inc/style/fonts/fa-solid-900.woff2, @fonts/fa-solid-900.woff2]*/
   src: url(fonts/fa-solid-900.woff2) format("woff2");
-/*@/[if_target:host]*/
-/*@[if_target:esp]*/
+  /*@/[if_target:host]*/
+  /*@[if_target:esp]*/
   src: url(data:font/woff2;charset=utf-8;base64,/*@![include:inc/style/fonts/fa-solid-900.min.woff2,base64]*/) format("woff2");
-/*@/[if_target:esp]*/
-/*@[if_not_target:host,esp]*/
+  /*@/[if_target:esp]*/
+  /*@[if_not_target:host,esp]*/
   src: url(data:font/woff2;charset=utf-8;base64,/*@![include:inc/style/fonts/fa-solid-900.woff2,base64]*/) format("woff2");
   /*@/[if_not_target:host,esp]*/
 
@@ -110,6 +110,10 @@ hr {
   border-top: 2px solid var(--back) !important;
 }
 
+textarea {
+  padding: 5px 5px !important;
+}
+
 /* HEADER */
 
 .header-row {
@@ -122,13 +126,14 @@ hr {
   padding: 0 7px;
   box-sizing: border-box;
 }
+
 body.connection-error .header-row {
   background: var(--err);
 }
 
 .header {
   max-width: var(--ui_width);
-  
+
   width: 100%;
   height: 100%;
   margin: 0 auto;
@@ -149,12 +154,15 @@ body.connection-error .header-row {
   width: 12px;
   display: block;
 }
+
 .header-back:hover {
   filter: brightness(0.9);
 }
+
 .header-back:active {
   filter: brightness(0.8);
 }
+
 body[data-screen=main] .header-back {
   display: none;
 }
@@ -162,6 +170,7 @@ body[data-screen=main] .header-back {
 .header-title {
   cursor: pointer;
 }
+
 body[data-screen=main] .header-title {
   cursor: unset;
 }
@@ -174,6 +183,7 @@ body[data-screen=main] .header-title {
   display: none;
   margin-left: -5px;
 }
+
 body[data-screen=ota] .header-connection,
 body[data-screen=dev_config] .header-connection,
 body[data-screen=fsbr_edit] .header-connection,
@@ -190,13 +200,13 @@ body[data-screen=ui] .header-connection {
   display: none;
   margin-left: -4px;
 }
+
 body[data-screen=ota] .header-connection-icon,
 body[data-screen=dev_config] .header-connection-icon,
 body[data-screen=fsbr_edit] .header-connection-icon,
 body[data-screen=files] .header-connection-icon,
 body[data-screen=info] .header-connection-icon,
-body[data-screen=ui] .header-connection-icon
-{
+body[data-screen=ui] .header-connection-icon {
   display: none !important;
 }
 
@@ -209,9 +219,11 @@ body[data-screen=ui] .header-connection-icon
   width: 27px;
   display: none;
 }
+
 .header-icon:hover {
   filter: brightness(0.9);
 }
+
 .header-icon:active {
   filter: brightness(0.8);
 }
@@ -230,8 +242,7 @@ body[data-screen=files] .icon_refresh,
 body[data-screen=fsbr_edit] .icon_refresh,
 
 body[data-screen=config] .icon_cfg,
-body[data-screen=main] .icon_cfg
-{
+body[data-screen=main] .icon_cfg {
   display: block;
 }
 
@@ -306,12 +317,12 @@ body[data-screen=main] .footer {
 /* MOZ */
 input[type=number]::-webkit-outer-spin-button,
 input[type=number]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 input[type=number] {
-    -moz-appearance:textfield;
+  -moz-appearance: textfield;
 }
 
 /*@[if_not_target:esp]*/

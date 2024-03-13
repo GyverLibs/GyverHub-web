@@ -110,11 +110,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!("serial" in navigator)) EL('serial_col').style.display = 'none';
     if (!("bluetooth" in navigator)) EL('bt_col').style.display = 'none';
     /*@/[if_not_target:esp]*/
-
-    let masks = getMaskList();
-    for (let mask in masks) {
-      EL('netmask').innerHTML += `<option value="${mask}">${masks[mask]}</option>`;
-    }
   }
   function register_SW() {
     /*@[if_target:host]*/

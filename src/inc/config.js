@@ -12,6 +12,8 @@ let cfg = {
   lang: userLang(),
   app_plugin_css: '',
   app_plugin_js: '',
+  project_links: '',
+  plugin_links: '',
   api_ver: 2,
 };
 
@@ -48,6 +50,37 @@ function save_cfg() {
   localStorage.setItem('hub_config', hub.config.toJson());
 }
 
+async function app_plugin_css() {
+  const res = await asyncPromptArea(lang.cfg_css, cfg.app_plugin_css);
+  if (res !== null) {
+    cfg.app_plugin_css = res;
+    save_cfg();
+    update_theme();
+  }
+}
+async function app_plugin_js() {
+  const res = await asyncPromptArea(lang.cfg_js, cfg.app_plugin_js);
+  if (res !== null) {
+    cfg.app_plugin_js = res;
+    save_cfg();
+    update_theme();
+  }
+}
+async function project_links() {
+  const res = await asyncPromptArea(lang.cfg_proj, cfg.project_links);
+  if (res !== null) {
+    cfg.project_links = res;
+    save_cfg();
+  }
+}
+async function plugin_links() {
+  const res = await asyncPromptArea(lang.cfg_plugin, cfg.plugin_links);
+  if (res !== null) {
+    cfg.plugin_links = res;
+    save_cfg();
+  }
+}
+
 function update_theme() {
   document.body.classList.remove('theme-dark', 'theme-light', 'theme-auto');
   document.body.classList.add('theme-' + cfg.theme.toLowerCase());
@@ -67,7 +100,7 @@ function update_theme() {
   display('pin_block', cfg.use_pin ? 'block' : 'none');
   EL('pin_label').style.color = cfg.use_pin ? 'var(--font)' : 'var(--font3)';
 
-/*@[if_not_target:esp]*/
+  /*@[if_not_target:esp]*/
   display('mq_block', hub.config.get('connections', 'MQTT', 'enabled') ? 'block' : 'none');
   EL('mqtt_label').style.color = hub.config.get('connections', 'MQTT', 'enabled') ? 'var(--font)' : 'var(--font3)';
 
@@ -81,7 +114,7 @@ function update_theme() {
   const ser = hub.config.get('connections', 'SERIAL', 'enabled');
   display('serial_block', ser ? 'block' : 'none');
   EL('serial_label').style.color = ser ? 'var(--font)' : 'var(--font3)';
-/*@/[if_not_target:esp]*/
+  /*@/[if_not_target:esp]*/
 }
 
 function cfg_export() {

@@ -3,6 +3,7 @@ async function loadProjects() {
 
   const resp = await fetch("https://raw.githubusercontent.com/GyverLibs/GyverHub-projects/main/projects.txt", { cache: "no-store" });
   let projects = await resp.text();
+  projects += '\n' + cfg.project_links;
   projects = projects.split('\n');
   for (const proj of projects) {
     if (!proj) continue;

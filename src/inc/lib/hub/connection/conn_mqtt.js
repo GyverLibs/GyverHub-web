@@ -32,6 +32,12 @@ class MQTTConnection extends Connection {
     }
   }
 
+  async add(id) {
+    if (this.isDiscovering() || !this.isConnected()) return;
+    this._discoverTimer();
+    await this.send(this.hub.prefix + '/' + id + '=' + this.hub.clientId);
+  }
+
   async search() {
     if (this.isDiscovering() || !this.isConnected()) return;
     await this.#upd_prefix(this.hub.prefix);

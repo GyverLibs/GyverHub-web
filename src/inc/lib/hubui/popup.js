@@ -84,14 +84,14 @@ function asyncConfirm(text, title = null) {
     const $box = makeDialog(title, text, [
       {
         text: lang.pop_yes,
-        click:() => {
+        click: () => {
           document.body.removeChild($box);
           resolve(true);
         }
       },
       {
         text: lang.pop_no,
-        click:() => {
+        click: () => {
           document.body.removeChild($box);
           resolve(false);
         }
@@ -110,7 +110,7 @@ function asyncPrompt(text, placeh = '', title = null) {
     const $box = makeDialog(title, text, [
       {
         text: 'OK',
-        click:() => {
+        click: () => {
           const res = $input.value;
           document.body.removeChild($box);
           resolve(res);
@@ -118,12 +118,40 @@ function asyncPrompt(text, placeh = '', title = null) {
       },
       {
         text: lang.cancel,
-        click:() => {
+        click: () => {
           document.body.removeChild($box);
           resolve(null);
         }
       }
     ], $input);
+  });
+}
+
+function asyncPromptArea(text, placeh = '', title = null) {
+  return new Promise(resolve => {
+    const $input = document.createElement('textarea');
+    $input.rows = 5;
+    $input.value = placeh;
+    $input.className = 'ui_inp';
+
+    const $box = makeDialog(title, text, [
+      {
+        text: 'OK',
+        click: () => {
+          const res = $input.value;
+          document.body.removeChild($box);
+          resolve(res);
+        }
+      },
+      {
+        text: lang.cancel,
+        click: () => {
+          document.body.removeChild($box);
+          resolve(null);
+        }
+      }
+    ], $input);
+    $box.firstElementChild.style.maxWidth = "700px";
   });
 }
 
@@ -143,7 +171,7 @@ function makePinDialog(title, canCancel, inputHandler) {
   const $inpRow = document.createElement('div');
   $d.append($inpRow);
   $inpRow.className = 'ui_row pass_inp_inner';
-  
+
   const $input = document.createElement('input');
   $inpRow.append($input);
   $input.className = 'ui_inp pass_inp';
@@ -223,6 +251,9 @@ function asyncAskPin(title, targetPin, canCancel = false) {
 }
 
 function showPopup(text, color = '#37a93c') {
+  // document.querySelectorAll('.notice').forEach(notice => {
+  //   notice.style.boxShadow = "none";
+  // });
   const $e = document.createElement('div');
   $e.className = 'notice';
   $e.textContent = text;

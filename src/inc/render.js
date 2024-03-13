@@ -307,7 +307,7 @@ function renderBody() {
         </div>
       </div>
   
-      <div  class="main_col screen-files">
+      <div class="main_col screen-files">
   
         <div class="ui_col">
           <div class="ui_row ui_head">
@@ -412,7 +412,7 @@ function renderBody() {
                     <button class="icon icon_btn" onclick="manual_ip_h(local_add_ip.value)"></button>
                   </div>
                 </div>
-              </div>              
+              </div>
             </div>
           </div>
         </div>
@@ -557,19 +557,34 @@ function renderBody() {
   
         <div class="ui_col">
           <div class="ui_row ui_head">
-            <label class="ui_label"><span class="icon icon_ui"></span><slot name="lang.cfg_sett"></slot></label>
+            <label class="ui_label"><span class="icon icon_ui"></span><slot name="lang.cfg_search"></slot></label>
           </div>
-  
-          <div class="ui_row">
-            <label class="ui_label"><slot name="lang.cfg_search"></slot></label>
-            <button class="icon icon_btn_big" onclick="search()" title="Find new devices"></button>
-          </div>
-  
+
           <div class="ui_row">
             <label class="ui_label"><slot name="lang.cfg_prefix"></slot></label>
             <div class="ui_inp_row">
               <input class="ui_inp" type="text" id="prefix" data-hub-config="hub.prefix" onchange="update_cfg(this)">
             </div>
+          </div>
+
+          <div class="ui_row">
+            <label class="ui_label"><slot name="lang.cfg_add"></slot></label>
+            <div class="ui_inp_row">
+              <input class="ui_inp" type="text" value="device_id" id="add_by_id">
+              <div class="btn_inp_block">
+                <button class="icon icon_btn" onclick="manual_id_h(add_by_id.value)"></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="ui_btn_row">
+            <button class="ui_btn ui_btn_mini" onclick="search()"><slot name="lang.cfg_find_dev"></slot></button>
+          </div>
+        </div>
+
+        <div class="ui_col">
+          <div class="ui_row ui_head">
+            <label class="ui_label"><span class="icon icon_ui"></span><slot name="lang.cfg_sett"></slot></label>
           </div>
   
           <div class="ui_row">
@@ -644,19 +659,22 @@ function renderBody() {
             <label><slot name="lang.cfg_wide_mode"></slot></label>
             <label class="switch"><input type="checkbox" id="wide_mode" onchange="update_cfg(this)"><span class="slider"></span></label>
           </div>
-  
+
           <div class="ui_row">
             <label class="ui_label"><slot name="lang.cfg_css"></slot></label>
-            <div class="ui_inp_row">
-              <textarea class="w_area" id="app_plugin_css" onchange="update_cfg(this)"></textarea>
-            </div>
+            <button class="icon icon_btn_big" onclick="app_plugin_css()"></button>
           </div>
-  
           <div class="ui_row">
             <label class="ui_label"><slot name="lang.cfg_js"></slot></label>
-            <div class="ui_inp_row">
-              <textarea class="w_area" id="app_plugin_js" onchange="update_cfg(this)"></textarea>
-            </div>
+            <button class="icon icon_btn_big" onclick="app_plugin_js()"></button>
+          </div>
+          <div class="ui_row">
+            <label class="ui_label"><slot name="lang.cfg_proj"></slot></label>
+            <button class="icon icon_btn_big" onclick="project_links()"></button>
+          </div>
+          <div class="ui_row">
+            <label class="ui_label"><slot name="lang.cfg_plugin"></slot></label>
+            <button class="icon icon_btn_big" onclick="plugin_links()"></button>
           </div>
   
           <div class="ui_row">
@@ -759,4 +777,10 @@ function renderBody() {
     <a href="https://github.com/GyverLibs/GyverHub/wiki" target="_blank"><span class="icon icon_inline i_footer"></span> Wiki</a>
   </div>
   `;
+
+  // render netmask
+  let masks = getMaskList();
+  for (let mask in masks) {
+    EL('netmask').innerHTML += `<option value="${mask}">${masks[mask]}</option>`;
+  }
 }

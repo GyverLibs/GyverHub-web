@@ -37,6 +37,8 @@ class HTTPConnection extends Connection {
     }
   }
 
+  async add(id) {}
+
   async discover_ip(ip='', port = undefined) {
     if (this.isDiscovering() || !this.isConnected()) return;
     this._discoverTimer();

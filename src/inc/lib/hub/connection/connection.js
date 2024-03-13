@@ -129,6 +129,12 @@ class Connection extends EventEmitter {
     await this.send(this.hub.prefix);
   }
 
+  async add(id) {
+    if (this.discovering || !this.isConnected()) return;
+    this._discoverTimer();
+    await this.send(this.hub.prefix + '/' + id);
+  }
+
   /**
    * Initialize device connection (ex. autoconnect)
    */

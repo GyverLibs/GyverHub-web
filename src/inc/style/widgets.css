@@ -159,7 +159,7 @@
   font-size: 15px;
   color: var(--font2);
   background: var(--back);
-  padding: 3px 7px;
+  /* padding: 3px 7px; */
   /* margin-bottom: 3px; */
 }
 

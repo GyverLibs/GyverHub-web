@@ -1,6 +1,8 @@
 // ================== POST ==================
 async function reboot_h() {
-  await hub.dev(focused).reboot();
+  if (await asyncConfirm(lang.i_reboot)) {
+    await hub.dev(focused).reboot();
+  }
 }
 
 // ================== SHOW ==================
@@ -9,14 +11,14 @@ let renderer;
 function showControls(device, controls) {
   if (!renderer) {
     renderer = new Renderer(device);
-  
+
     renderer.addEventListener('menuchanged', () => {
       updateSystemMenu();
     });
-  
+
     renderer.addEventListener('menuopen', () => {
       try {
-          device.fsStop();
+        device.fsStop();
       } catch (e) { }
       enterMenu();
       if (screen != 'ui') show_screen('ui');
