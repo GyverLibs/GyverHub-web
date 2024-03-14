@@ -132,20 +132,20 @@ class Device extends EventEmitter {
     this.dispatchEvent(new DeviceCommandEvent("command." + type, this, type, data));
 
     switch (type) {
-    case 'ui':
-      await this.#postAndWait('unix', ['OK'], Math.floor(new Date().getTime() / 1000));
-      break;
+      case 'ui':
+        await this.#postAndWait('unix', ['OK'], Math.floor(new Date().getTime() / 1000));
+        break;
 
-    case 'refresh':
-      await this.updateUi();
-      break;
+      case 'refresh':
+        await this.updateUi();
+        break;
 
-    case 'update':
-      this._checkUpdates(data.updates);
-      break;
+      case 'update':
+        this._checkUpdates(data.updates);
+        break;
 
-    case 'error':
-      this.dispatchEvent(new DeviceErrorEvent(this, new DeviceError(data.code)));
+      case 'error':
+        this.dispatchEvent(new DeviceErrorEvent(this, new DeviceError(data.code)));
     }
   }
 
@@ -219,11 +219,11 @@ class Device extends EventEmitter {
 
   //#region Interraction > UI
 
-  async updateUi(){
+  async updateUi() {
     return (await this.#postAndWait('ui', ['ui']))[1];
   }
 
-  async set(name, value){
+  async set(name, value) {
     const [cmd, data] = await this.#postAndWait('set', ['ui', 'ack'], name, value);
     if (cmd === 'ui') return data;
     if (data.name !== name) throw new HubError("set / ack check failed!");
@@ -304,7 +304,7 @@ class Device extends EventEmitter {
   }
 
   async upload(file, path, progress = undefined) {
-    if (!this.isModuleEnabled(Modules.UPLOAD)) 
+    if (!this.isModuleEnabled(Modules.UPLOAD))
       throw new DeviceError(HubErrors.Disabled);
 
     const data = await readFileAsArrayBuffer(file);
@@ -317,7 +317,7 @@ class Device extends EventEmitter {
       formData.append('upload', file, "upload");
       await http_post(`http://${this.info.ip}:${this.info.http_port}/hub/upload?path=${path}&crc32=${crc}&client_id=${this._hub.clientId}&size=${buffer.length}`, formData)
     } else {
-      if (!progress) progress = () => {};
+      if (!progress) progress = () => { };
 
       const upl_bytes = Array.from(buffer);
       const upl_size = upl_bytes.length;
@@ -348,11 +348,11 @@ class Device extends EventEmitter {
     if (!this.isModuleEnabled(Modules.FETCH))
       throw new DeviceError(HubErrors.Disabled);
 
-    if (!progress) progress = () => {};
+    if (!progress) progress = () => { };
 
     if (this.isHttpAccessable() && this.info.http_t) {
-      return await http_fetch_blob(`http://${this.info.ip}:${this.info.http_port}/hub/fetch?path=${path}&client_id=${this._hub.clientId}`, 
-          type, progress, this._hub.config.get('connections', 'HTTP', 'request_timeout'));
+      return await http_fetch_blob(`http://${this.info.ip}:${this.info.http_port}/hub/fetch?path=${path}&client_id=${this._hub.clientId}`,
+        type, progress, this._hub.config.get('connections', 'HTTP', 'request_timeout'));
 
     } else {
       let [cmd, data] = await this.#postAndWait('fetch', ['fetch_start', 'fetch_err'], path);
@@ -367,10 +367,10 @@ class Device extends EventEmitter {
       while (cmd === 'fetch_chunk') {
         fet_buf += atob(data.data);
 
-        if (data.last) { 
+        if (data.last) {
           if (fet_buf.length != fet_len)
             throw new DeviceError(HubErrors.SizeMiss);
-  
+
           const crc = crc32(fet_buf);
           if (crc != data.crc32)
             throw new DeviceError(HubErrors.CrcMiss);
@@ -390,7 +390,7 @@ class Device extends EventEmitter {
         throw new DeviceError(data.code);
     }
   }
-  
+
   //#endregion
 
   //#region Interraction > OTA
@@ -402,7 +402,7 @@ class Device extends EventEmitter {
   }
 
   async uploadOta(file, type, progress = undefined) {
-    if (!this.isModuleEnabled(Modules.OTA)) 
+    if (!this.isModuleEnabled(Modules.OTA))
       throw new DeviceError(HubErrors.Disabled);
 
     if (this.isHttpAccessable() && this.info.http_t) {
@@ -410,7 +410,7 @@ class Device extends EventEmitter {
       formData.append(type, file, "ota");
       await http_post(`http://${this.info.ip}:${this.info.http_port}/hub/ota?type=${type}&client_id=${this._hub.clientId}`, formData)
     } else {
-      if (!progress) progress = () => {};
+      if (!progress) progress = () => { };
 
       const fdata = await readFileAsArrayBuffer(file);
       const buffer = new Uint8Array(fdata);

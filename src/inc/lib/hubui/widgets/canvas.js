@@ -55,7 +55,7 @@ class CanvasWidget extends BaseWidget {
         if (x < 0) x = 0;
         let y = Math.round((e.clientY - rect.top) / this.#scale * ratio);
         if (y < 0) y = 0;
-        this.set((x << 16) | y);
+        this.set(x + ',' +  y);
         this.setSuffix('[' + x + ',' + y + ']');
     }
 

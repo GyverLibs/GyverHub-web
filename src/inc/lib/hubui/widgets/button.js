@@ -4,7 +4,6 @@ class ButtonWidget extends BaseWidget {
     #fontSize = '45px';
     #inline = true;
     #pressed = false;
-    #touch = false;
 
     constructor(data, renderer) {
         super(data, renderer);
@@ -21,29 +20,25 @@ class ButtonWidget extends BaseWidget {
                 width: 'unset',
             },
             events: {
-                click: () => this.set(2),
+                click: () => {
+                },
                 mousedown: () => {
-                    if(this.#touch) return;
                     this.#pressed = true;
-                    this.set(1);
+                    if (!isTouchDevice()) this.set(1);
                 },
                 mouseup: () => {
-                    if(this.#touch || !this.#pressed) return;
+                    if (!isTouchDevice() && this.#pressed) this.set(0);
                     this.#pressed = false;
-                    this.set(0);
                 },
                 mouseleave: () => {
-                    if(this.#touch || !this.#pressed) return;
+                    if (!isTouchDevice() && this.#pressed) this.set(0);
                     this.#pressed = false;
-                    this.set(0);
                 },
                 touchstart: () => {
-                    this.#touch = true;
                     this.#pressed = true;
                     this.set(1);
                 },
                 touchend: () => {
-                    this.#touch = false;
                     this.#pressed = false;
                     this.set(0);
                 },

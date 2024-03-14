@@ -1,14 +1,13 @@
 /*@[if_not_target:esp]*/
 /*@![include:inc/lib/qrcode.min.js, raw]*/
+/*@![include:inc/lib/leaflet.min.js, raw]*/
 /*@/[if_not_target:esp]*/
 
 /*@![include:inc/lib/sort-paths.min.js, raw]*/
 /*@![include:inc/lib/pickr.min.js, raw]*/
 
-
 /*@![include:inc/lib/hub/index.js, compile, raw]*/
 /*@![include:inc/lib/hubui/index.js, compile, raw]*/
-
 
 /*@![include:inc/lang.js, compile]*/
 

@@ -299,7 +299,7 @@ class GyverHub extends EventEmitter {
     const type = data.type;
     delete data.type;
 
-    console.log('[IN]', type, data);
+    // console.log('[IN]', type, data);
 
     if (type == 'discover') {
       if (!this.#isDiscovering()) {
@@ -316,6 +316,7 @@ class GyverHub extends EventEmitter {
 
     const device = this.dev(data.id);
     if (device) {
+      console.log('[IN]', type, data);
       device.addConnection(conn);
       await device._parse(type, data);
     }

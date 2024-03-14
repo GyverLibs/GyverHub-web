@@ -15,29 +15,31 @@ class ColorWidget extends BaseWidget {
             }
         });
 
-        this.#pickr = Pickr.create({
-            el: this.$el,
-            theme: 'nano',
-            default: intToCol(data.value) ?? '#000',
-            defaultRepresentation: 'HEXA',
-            useAsButton: true,
-            components: {
-                preview: true,
-                hue: true,
-                interaction: {
-                    hex: false,
-                    input: true,
-                    save: true
+        waitRender(this.$el).then(() => {
+            this.#pickr = Pickr.create({
+                el: this.$el,
+                theme: 'nano',
+                default: intToCol(data.value) ?? '#000',
+                defaultRepresentation: 'HEXA',
+                useAsButton: true,
+                components: {
+                    preview: true,
+                    hue: true,
+                    interaction: {
+                        hex: false,
+                        input: true,
+                        save: true
+                    }
                 }
-            }
-        }).on('save', (color) => {
-            const col = color.toHEXA().toString();
-            this.$el.style.color = col;
-            this.set(colToInt(col));
-            this.#pickr.hide();
+            }).on('save', (color) => {
+                const col = color.toHEXA().toString();
+                this.$el.style.color = col;
+                this.set(colToInt(col));
+                this.#pickr.hide();
+            });
+
+            this.update(data);
         });
-        
-        this.update(data);
     }
 
     update(data) {

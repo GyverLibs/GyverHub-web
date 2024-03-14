@@ -33,13 +33,13 @@ function http_fetch_blob(url, type, onprogress, tout) {
   return new Promise((res, rej) => {
     async function handle(e) {
       if (xhr.response === null) throw new HubError("Network error");
-  
+
       if (e.loaded !== e.total || xhr.status !== 200) {
         const ab = type === 'url' ? await readFileAsArrayBuffer(xhr.response) : xhr.response;
         const text = new TextDecoder().decode(ab);
         throw new HubError(text);
       }
-  
+
       if (type === 'url') return await readFileAsDataUrl(xhr.response);
       if (type === 'text') return new TextDecoder().decode(xhr.response);
     }
@@ -168,11 +168,17 @@ function Array_maxBy(arr, fn) {
   return arr.reduce((best, next) => {
     const value = fn(next);
     if (best && Math.max(best[0], value) == best[0]) return best;
-    return [ value, next ];
+    return [value, next];
   }, null)[1];
 }
 
 function Array_remove(arr, value) {
   let index;
   while ((index = arr.indexOf(value)) !== -1) arr.splice(index, 1);
+}
+
+function isTouchDevice() {
+  return (('ontouchstart' in window) ||
+    (navigator.maxTouchPoints > 0) ||
+    (navigator.msMaxTouchPoints > 0));
 }

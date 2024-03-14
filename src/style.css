@@ -1,3 +1,7 @@
+/*@[if_not_target:esp]*/
+/*@![include:inc/lib/leaflet.css, compile]*/
+/*@/[if_not_target:esp]*/
+
 /*@![include:inc/lib/nano.min.css, compile]*/
 /*@![include:inc/style/main.css, compile]*/
 /*@![include:inc/style/ui.css, compile]*/

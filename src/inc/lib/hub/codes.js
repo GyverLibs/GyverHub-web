@@ -126,4 +126,7 @@ const HubCodes = [
     'col',
     'space',
     'platform',
+    'map',
+    'lat',
+    'lon',
 ];

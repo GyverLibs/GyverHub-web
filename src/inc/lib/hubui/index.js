@@ -17,6 +17,7 @@
 /*@![include:inc/lib/hubui/widgets/joy.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/label.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/led.js, compile]*/
+/*@![include:inc/lib/hubui/widgets/map.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/menu.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/other.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/plot.js, compile]*/

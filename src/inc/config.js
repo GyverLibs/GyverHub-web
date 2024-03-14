@@ -17,6 +17,7 @@ let cfg = {
   api_ver: 2,
 };
 
+// app_config
 if (localStorage.hasOwnProperty('app_config')) {
   const cfg_r = JSON.parse(localStorage.getItem('app_config'));
   if (cfg.api_ver === cfg_r.api_ver) {

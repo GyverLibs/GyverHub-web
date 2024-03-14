@@ -2,7 +2,6 @@
 /*@![include:inc/lib/hub/connection/mqtt.min.js, raw]*/
 /*@/[if_not_target:esp]*/
 
-
 /*@![include:inc/lib/hub/errors.js, compile]*/
 
 /*@![include:inc/lib/hub/utils/async_timer.js, compile]*/

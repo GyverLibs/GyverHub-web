@@ -634,7 +634,7 @@ function renderBody() {
           <div class="ui_row">
             <label class="ui_label">Language</label>
             <div class="ui_inp_row">
-              <select class="ui_inp ui_sel" id='lang' onchange="update_cfg(this)">
+              <select class="ui_inp ui_sel" id='lang' onchange="update_cfg(this);save_cfg();location.reload()">
                 <option value="English">English</option>
                 <option value="Russian">Russian</option>
               </select>

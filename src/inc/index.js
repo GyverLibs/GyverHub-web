@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', async () => {
+  // hub_config
+  if (!localStorage.hasOwnProperty('hub_config')) {
+    localStorage.setItem('hub_config', hub.config.toJson());
+  }
+
   renderBody();
   apply_cfg();
   render_main();
@@ -10,23 +15,23 @@ document.addEventListener('DOMContentLoaded', async () => {
       case "show_screen":
         show_screen($t.dataset.screen);
         break;
-        case "back":
-          back_h();
-          break;
-        case "refresh":
-          refresh_h();
-          break;
-        case "config":
-          config_h();
-          break;
-        case "menu":
-          menu_h();
-          break;
+      case "back":
+        back_h();
+        break;
+      case "refresh":
+        refresh_h();
+        break;
+      case "config":
+        config_h();
+        break;
+      case "menu":
+        menu_h();
+        break;
     }
   });
 
   /*@[if_target:esp]*/
-    hub.config.set('connections', 'HTTP', 'enabled', true);  // force local on esp
+  hub.config.set('connections', 'HTTP', 'enabled', true);  // force local on esp
   /*@/[if_target:esp]*/
 
   update_theme();
@@ -47,16 +52,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   /*@[if_target:host]*/
-    if (isSSL()) {
-      display('http_only_http', 'block');
-      display('http_settings', 'none');
-      display('pwa_unsafe', 'none');
-    }
-    if (isSSL()) {
-      EL('btn_pwa_http').classList.add('ui_btn_dis');
-    } else {
-      EL('btn_pwa_https').classList.add('ui_btn_dis');
-    }
+  if (isSSL()) {
+    display('http_only_http', 'block');
+    display('http_settings', 'none');
+    display('pwa_unsafe', 'none');
+  }
+  if (isSSL()) {
+    EL('btn_pwa_http').classList.add('ui_btn_dis');
+  } else {
+    EL('btn_pwa_https').classList.add('ui_btn_dis');
+  }
   /*@/[if_target:host]*/
 
   if (cfg.use_pin && cfg.pin.length) await asyncAskPin(lang.hub_pin, cfg.pin, false);
@@ -84,9 +89,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     while (slots.length) {
       const i = slots[0];
       const p = i.name.split('.');
-      const n =  p.shift();
+      const n = p.shift();
       let v = '';
-      if (n === 'lang'){
+      if (n === 'lang') {
         v = lang;
         for (const i of p)
           v = v[i] ?? "";
@@ -98,11 +103,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       i.replaceWith(v);
     }
 
-    for (const i of EL('maincolor').children){
+    for (const i of EL('maincolor').children) {
       i.text = lang.colors[i.value];
     }
 
-    for (const i of EL('theme').children){
+    for (const i of EL('theme').children) {
       i.text = lang.themes[i.value];
     }
 
@@ -122,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       EL('btn_pwa').addEventListener('click', async () => {
         e.prompt();
         const { outcome } = await e.userChoice;
-        if (outcome === 'accepted') 
+        if (outcome === 'accepted')
           display('pwa_block', 'none');
       })
     });
@@ -212,17 +217,17 @@ async function discover() {
   }
 
   /*@[if_target:esp]*/
-    let device;
-    try {
-      device = await hub.http.discover_ip(window.location.hostname, window.location.port.length ? window.location.port : 80);
-    } catch (e) {
-      showPopupError(getError(e));
-      return;
-    }
-    if (device) device_h(device.info.id);
+  let device;
+  try {
+    device = await hub.http.discover_ip(window.location.hostname, window.location.port.length ? window.location.port : 80);
+  } catch (e) {
+    showPopupError(getError(e));
+    return;
+  }
+  if (device) device_h(device.info.id);
   /*@/[if_target:esp]*/
   /*@[if_not_target:esp]*/
-    await hub.discover();
+  await hub.discover();
   /*@/[if_not_target:esp]*/
 }
 function search() {

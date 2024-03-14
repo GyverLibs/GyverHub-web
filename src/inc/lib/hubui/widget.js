@@ -77,12 +77,13 @@ class Widget {
      * @returns {Promise<undefined>}
      */
     set(value, ack = true) {
+        value = value.toString();
         if (this.set_timer) {
             this.set_buf = value;
         } else {
             this.set_timer = setTimeout(() => {
                 this.set_timer = null;
-                if (this.set_buf) this.renderer._set(this, this.set_buf, ack);
+                if (this.set_buf !== null) this.renderer._set(this, this.set_buf, ack);
                 this.set_buf = null;
             }, this.set_delay);
 
@@ -174,6 +175,7 @@ class BaseWidget extends Widget {
         this.#label = createElement(this, {
             type: 'span',
             text: data.type.toUpperCase(),
+            title: this.id,
         });
         this.#cont.append(this.#label);
 
@@ -259,6 +261,10 @@ class BaseWidget extends Widget {
             el.removeAttribute('disabled');
             el.classList.remove('disable');
         }
+    }
+
+    disabled() {
+        return this.#container.classList.contains('widget_dsbl');
     }
 
     align(align) {

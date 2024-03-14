@@ -1,41 +1,46 @@
 function createElement(self, obj) {
-    if (typeof obj === 'string' || obj instanceof Node)
-        return obj;
+  if (typeof obj === 'string' || obj instanceof Node)
+    return obj;
 
-    const $el = document.createElement(obj.type);
-    if (obj.class) $el.className = obj.class;
-    if (obj.id) $el.id = obj.id;
-    if (obj.text) $el.textContent = obj.text;
-    if (obj.html) $el.innerHTML = obj.html;
-    if (obj.style)
-        for (const [prop, value] of Object.entries(obj.style))
-            $el.style[prop] = value;
-    if (obj.also) obj.also.call(self, $el);
-    if (obj.name) self['$' + obj.name] = $el;
-    if (obj.events)
-        for (const [ev, handler] of Object.entries(obj.events))
-            $el.addEventListener(ev, handler.bind(self));
-    if (obj.children)
-        for (const i of obj.children)
-            $el.append(createElement(self, i));
-    return $el;
+  const $el = document.createElement(obj.type);
+  if (obj.class) $el.className = obj.class;
+  if (obj.id) $el.id = obj.id;
+  if (obj.text) $el.textContent = obj.text;
+  if (obj.html) $el.innerHTML = obj.html;
+  if (obj.title) $el.title = obj.title;
+  if (obj.style)
+    for (const [prop, value] of Object.entries(obj.style))
+      $el.style[prop] = value;
+  if (obj.also) obj.also.call(self, $el);
+  if (obj.name) self['$' + obj.name] = $el;
+  if (obj.events)
+    for (const [ev, handler] of Object.entries(obj.events))
+      $el.addEventListener(ev, handler.bind(self));
+  if (obj.children)
+    for (const i of obj.children)
+      $el.append(createElement(self, i));
+  return $el;
 }
 
 
 // ===================== RENDER =====================
 
 function waitFrame() {
-    return new Promise(requestAnimationFrame);
+  return new Promise(requestAnimationFrame);
 }
 
 async function wait2Frame() {
-    await waitFrame();
-    await waitFrame();
+  await waitFrame();
+  await waitFrame();
+}
+
+async function waitRender(el) {
+  while (el === undefined) await waitFrame();
 }
 
 function getIcon(icon) {
-    if (!icon) return '';
-    return icon.length == 1 ? icon : String.fromCharCode(Number('0x' + icon));
+  if (!icon) return '';
+  return icon.length == 1 ? icon : String.fromCharCode(Number('0x' + icon));
 }
 
 function intToCol(val) {
@@ -62,15 +67,15 @@ function colToInt(val) {
 }
 
 function dataTotext(data) {
-    return b64ToText(data.split('base64,')[1]);
+  return b64ToText(data.split('base64,')[1]);
 }
 function b64ToText(base64) {
-    const binString = atob(base64);
-    return new TextDecoder().decode(Uint8Array.from(binString, (m) => m.codePointAt(0)));
+  const binString = atob(base64);
+  return new TextDecoder().decode(Uint8Array.from(binString, (m) => m.codePointAt(0)));
 }
 
 function waiter(size = 50, col = 'var(--prim)', block = true) {
-    return `<div class="waiter ${block ? 'waiter_b' : ''}"><span style="font-size:${size}px;color:${col}" class="icon spinning"></span></div>`;
+  return `<div class="waiter ${block ? 'waiter_b' : ''}"><span style="font-size:${size}px;color:${col}" class="icon spinning"></span></div>`;
 }
 
 function adjustColor(col, ratio) {

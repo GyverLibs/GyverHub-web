@@ -10,6 +10,11 @@
   user-select: none;
 }
 
+.icon_map {
+  font-size: 35px;
+  color: #e70017;
+}
+
 .icon_min {
   font-size: 23px;
 }
@@ -96,16 +101,19 @@
   animation: notif-anim 3.5s forwards;
 }
 
-@keyframes notif-anim { 
+@keyframes notif-anim {
   from {
     opacity: 0%;
   }
+
   14.28571428571429% {
     opacity: 100%;
   }
+
   85.71428571428571% {
     opacity: 100%;
   }
+
   to {
     opacity: 0%;
   }
@@ -351,9 +359,11 @@
   border: 5px solid transparent;
   border-width: 0 0 0 5px;
 }
+
 .menu_item:first-child {
   margin-top: 8px;
 }
+
 .menu_item:last-child {
   margin-bottom: 8px;
 }
@@ -783,8 +793,7 @@ body[data-screen=ui] .screen-ui.wide-mode {
 body[data-screen=ota] .screen-ota,
 body[data-screen=dev_config] .screen-dev_config,
 body[data-screen=files] .screen-files,
-body[data-screen=fsbr_edit] .screen-fsbr_edit 
-{
+body[data-screen=fsbr_edit] .screen-fsbr_edit {
   display: block;
 }
 
