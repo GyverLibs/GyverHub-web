@@ -14,12 +14,12 @@ class PacketBufferScanFirst {
     if (this.#tout) clearTimeout(this.#tout);
     this.#tout = setTimeout(() => this.#buf.length = 0, this.#timeout);
 
-    if (!this.#buf && !(data.startsWith('\n{') || data.startsWith('#{')))
+    if (!this.#buf && !data.startsWith('#{'))
       return;
 
     this.#buf.push(data);
 
-    if ((data.endsWith('}\n') || data.endsWith('}#')) && this.#buf[0][0] === data[data.length - 1]) {
+    if (data.endsWith('}#') && this.#buf[0][0] === data[data.length - 1]) {
       this.#callback(this.#buf.join(''));
       this.#buf.length = 0;
 
@@ -74,17 +74,8 @@ class PacketBufferScanAll {
     const decoder = new TextDecoder();
 
     while (true) {
-      const startIndex1 = this.#indexOfSeq('\n{', index);
-      const startIndex2 = this.#indexOfSeq('#{', index);
-      let startIndex;
-      let endIndex;
-      if (startIndex1 < startIndex2) {
-        startIndex = startIndex1;
-        endIndex = this.#indexOfSeq('}\n', startIndex1);
-      } else {
-        startIndex = startIndex2;
-        endIndex = this.#indexOfSeq('}#', startIndex2);
-      }
+      let startIndex = this.#indexOfSeq('#{', index);
+      let endIndex = this.#indexOfSeq('}#', startIndex);
   
       if (startIndex === this.#buf.length || endIndex === this.#buf.length)
         break;

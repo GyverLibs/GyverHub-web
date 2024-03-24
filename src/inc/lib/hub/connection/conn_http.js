@@ -37,9 +37,9 @@ class HTTPConnection extends Connection {
     }
   }
 
-  async add(id) {}
+  async add(id) { }
 
-  async discover_ip(ip='', port = undefined) {
+  async discover_ip(ip = '', port = undefined) {
     if (this.isDiscovering() || !this.isConnected()) return;
     this._discoverTimer();
     return await this.send(ip, port, this.hub.prefix);
@@ -82,7 +82,13 @@ class HTTPConnection extends Connection {
 
   async send(ip, port, uri) {
     if (!port) port = this.options.port;
-    const res = await http_get(`http://${ip}:${port}/hub/${uri}`, this.options.request_timeout);
-    if (res.length) return await this.hub._parsePacket(this, res, ip, port);
+    let res = await http_get(`http://${ip}:${port}/hub/${uri}`, this.options.request_timeout);
+    if (res.length && res.startsWith('#{') && res.endsWith('}#')) {
+      res = res.slice(2, -2);
+      let chunks = res.split('}##{'); // возможны склеенные пакеты
+      for (let ch of chunks) {
+        await this.hub._parsePacket(this, '{' + ch + '}', ip, port);
+      }
+    }
   }
 };

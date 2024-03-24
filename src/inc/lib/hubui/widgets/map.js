@@ -6,10 +6,36 @@ const markIcon = L.divIcon({
     className: 'icon icon_map',
 });
 
+const mapZeroPos = [55.754994, 37.623288];
+
+const mapLayers = [
+    {
+        attribution: "OpenStreetMap",
+        tiles: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        subdomains: 'abc'
+    },
+    {
+        attribution: "Google",
+        tiles: "https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",    // street
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    },
+    {
+        attribution: "Google",
+        tiles: "https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",    // satellite
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    },
+    {
+        attribution: "Google",
+        tiles: "https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}",  // hybrid
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    }
+];
+
 class MapWidget extends BaseWidget {
     $el;
     map;
     marker;
+    data = [];
 
     constructor(data, renderer) {
         super(data, renderer);
@@ -25,42 +51,63 @@ class MapWidget extends BaseWidget {
 
         waitRender(this.$el).then(() => {
             this.map = L.map(this.$el);
+            // L.control.scale().addTo(this.map);
+            let layer = mapLayers[data.layer ?? 0];
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            L.tileLayer(layer.tiles, {
                 minZoom: 3,
-                maxZoom: 18
+                maxZoom: 20,
+                attribution: layer.attribution,
+                subdomains: layer.subdomains,
             }).addTo(this.map);
 
-            this.map.on('click', (e) => {
-                if (this.disabled()) return;
-                this.marker.setLatLng(e.latlng, { draggable: 'true' });
-                this.map.panTo(e.latlng);
-                this.set(e.latlng.lat.toFixed(6) + ',' + e.latlng.lng.toFixed(6));
+            this.map.on('click', async (e) => {
+                if (this.disabled() || !data.active) return;
+                this._send(e.latlng);
             });
 
+            L.canvasLayer().delegate(this).addTo(this.map);
+            this.map.setView(('latlon' in data) ? data.latlon : mapZeroPos, 10);
             this.update(data);
         });
     }
 
     update(data) {
         super.update(data);
-        let latlon = [0, 0];
-        if ('lat' in data) latlon[0] = data.lat;
-        if ('lon' in data) latlon[1] = data.lon;
+        if ('latlon' in data) {
+            this.map.panTo(data.latlon);
+            this._setMarker(data.latlon);
+        }
+        if ('data' in data) this.data = this.data.concat(data.data); console.log(data);
+    }
 
+    onDrawLayer(info) {
+        let cx = info.canvas.getContext('2d');
+        cx.clearRect(0, 0, info.canvas.width, info.canvas.height);
+        showCanvasAPI(
+            info.canvas,
+            this.data,
+            L.scale(info),
+            (x, y) => {
+                let point = L.toPoint(info, [x / 1000000.0, y / 1000000.0]);
+                return [point.x, point.y];
+            }
+        );
+    }
+
+    _setMarker(latlon) {
         if (this.marker) {
-            this.marker.setLatLng(latlon, { draggable: 'true' });
-            this.map.panTo(latlon);
+            this.marker.setLatLng(latlon);
         } else {
-            this.map.setView(latlon, 5);
             this.marker = L.marker(latlon, { icon: markIcon, draggable: 'true' })
                 .addTo(this.map)
-                .on('dragend', (e) => {
-                    let pos = e.target.getLatLng();
-                    e.target.setLatLng(pos, { draggable: 'true' });
-                    this.map.panTo(pos);
-                });
+                .on('dragend', (e) => this._send(e.target.getLatLng()));
         }
+    }
+
+    _send(pos) {
+        this.set(pos.lat.toFixed(6) + ',' + pos.lng.toFixed(6)).then(() => this._setMarker(pos));
+        // this.setSuffix('[' + e.latlng.lat.toFixed(3) + ',' + e.latlng.lng.toFixed(3) + ']');
     }
 }
 

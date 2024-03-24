@@ -55,7 +55,7 @@ class CanvasWidget extends BaseWidget {
         if (x < 0) x = 0;
         let y = Math.round((e.clientY - rect.top) / this.#scale * ratio);
         if (y < 0) y = 0;
-        this.set(x + ',' +  y);
+        this.set(x + ';' + y);
         this.setSuffix('[' + x + ',' + y + ']');
     }
 
@@ -73,93 +73,28 @@ class CanvasWidget extends BaseWidget {
         this.#show(this.#data);
     }
 
-    #show(data = null) {
+    #show(data) {
         if (!this.$el.parentNode.clientWidth) return;
-
-        if (!data) data = this.#data;
         const cv = this.$el;
-        const cx = cv.getContext("2d");
-        const cmd_list = ['fillStyle', 'strokeStyle', 'shadowColor', 'shadowBlur', 'shadowOffsetX', 'shadowOffsetY', 'lineWidth', 'miterLimit', 'font', 'textAlign', 'textBaseline', 'lineCap', 'lineJoin', 'globalCompositeOperation', 'globalAlpha', 'scale', 'rotate', 'rect', 'fillRect', 'strokeRect', 'clearRect', 'moveTo', 'lineTo', 'quadraticCurveTo', 'bezierCurveTo', 'translate', 'arcTo', 'arc', 'fillText', 'strokeText', 'drawImage', 'roundRect', 'fill', 'stroke', 'beginPath', 'closePath', 'clip', 'save', 'restore'];
-        const const_list = ['butt', 'round', 'square', 'square', 'bevel', 'miter', 'start', 'end', 'center', 'left', 'right', 'alphabetic', 'top', 'hanging', 'middle', 'ideographic', 'bottom', 'source-over', 'source-atop', 'source-in', 'source-out', 'destination-over', 'destination-atop', 'destination-in', 'destination-out', 'lighter', 'copy', 'xor', 'top', 'bottom', 'middle', 'alphabetic'];
 
-        const cv_map = (v, h) => {
-            v *= this.#scale;
-            return v >= 0 ? v : (h ? cv.height : cv.width) - v;
-        }
-
-        for (const item of data) {
-            let [cmdName, ...args] = ("" + item).split(':');
-            if (args.length === 1) args.push(...args.pop().split(','));
-            const cmd = parseInt(cmdName, 10);
-
-            args = args.map(v => {
-                if (v.match(/^-?\d+$/)) return parseInt(v);
-                else if (v.match(/^\d+\.\d+$/)) return parseFloat(v);
-                else return v;
-            })
-
-            if (!isNaN(cmd) && cmd <= cmd_list.length) {
-                cmdName = cmd_list[cmd];
-
-                if (cmd <= 2) args[0] = intToColA(args[0]);   // shadowColor
-                else if (cmd <= 7) args[0] *= this.#scale; // miterLimit
-                else if (cmd <= 8) args[0] = Number(args[0].split('px')[0]) * this.#scale + 'px' + args[0].split('px')[1];  // font
-                else if (cmd <= 13) args[0] = const_list[args[0]];  // globalCompositeOperation
-                else if (cmd <= 14);  // globalAlpha
-                else if (cmd <= 16); // rotate
-                else if (cmd <= 26) {   // arcTo
-                    args = args.map((v, i) => cv_map(v, i % 2))
-                } else if (cmd == 27) { // arc
-                    args = [cv_map(args[0], 0), cv_map(args[1], 1), cv_map(args[2], 0), args[3], args[4], args[5]];
-                } else if (cmd <= 29) { // strokeText
-                    if (args[3]) args = [args[0], cv_map(args[1], 0), cv_map(args[2], 1), args[3]];
-                    else args = [args[0], cv_map(args[1], 0), cv_map(args[2], 1)];
-                } else if (cmd == 30) { // drawImage
-                    let img = new Image();
-                    for (let i in args) {
-                        if (i > 0) args[i] = cv_map(args[i], !(i % 2));
-                    }
-                    if (args[0].startsWith('http://') || args[0].startsWith('https://')) {
-                        img.src = args[0];
-                    } else {
-                        this.addFile(args[0], 'url', (file) => {
-                            img.src = file;
-                        });
-                    }
-
-                    img.onload = function () {
-                        args[0] = img;
-                        cx.drawImage(...args);
-                    }
-                    continue;
-
-                } else if (cmd == 31) { // roundRect
-                    for (let i = 0; i < 4; i++) {
-                        args[i] = cv_map(args[i], i % 2);
-                    }
-                    if (args.length == 5) args[4] *= this.#scale;
-                    else args.push(args.slice());
-                }
+        showCanvasAPI(
+            cv,
+            data,
+            this.#scale,
+            (x, y) => {
+                x *= this.#scale;
+                y *= this.#scale;
+                if (x < 0) x = cv.width - x;
+                if (y < 0) y = cv.height - y;
+                return [x, y];
+            },
+            (path, img) => {
+                this.addFile(path, 'url', (file) => {
+                    img.src = file;
+                });
             }
-
-            try {
-                if (!args.length) {
-                    cx[cmdName].call(cx);
-                } else {
-                    const fn = cx[cmdName];
-                    if (typeof fn === 'function') fn.apply(cx, args);
-                    else cx[cmdName] = args[0];
-                }
-            } catch (e) {
-                console.log(e);
-            }
-        }
+        );
     }
 }
 
 Renderer.register('canvas', CanvasWidget);
-
-function intToColA(val) {
-    if (val === null || val === undefined) return null;
-    return "#" + Number(val).toString(16).padStart(8, '0');
-}

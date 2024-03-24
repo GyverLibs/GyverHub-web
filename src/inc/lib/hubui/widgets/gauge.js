@@ -220,7 +220,7 @@ class GaugeWidget extends BaseWidget {
         let wid = cv.width - sw - off * 2;
 
         cx.clearRect(0, 0, cv.width, cv.height);
-        cx.fillStyle = this.#cstyle.getPropertyValue('--back');
+        cx.fillStyle = this.#cstyle.getPropertyValue('--dark');
         cx.beginPath();
         cx.roundRect(off + sw / 2, sw / 2, wid, cv.height - sw, 5 * r);
         cx.fill();

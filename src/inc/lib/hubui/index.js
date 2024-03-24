@@ -4,6 +4,7 @@
 /*@![include:inc/lib/hubui/popup.js, compile]*/
 
 /*@![include:inc/lib/hubui/widgets/button.js, compile]*/
+/*@![include:inc/lib/hubui/widgets/canvasAPI.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/canvas.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/color.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/datetime.js, compile]*/

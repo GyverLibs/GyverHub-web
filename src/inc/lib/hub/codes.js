@@ -127,6 +127,9 @@ const HubCodes = [
     'space',
     'platform',
     'map',
-    'lat',
-    'lon',
+    'latlon',
+    'location',
+    'highacc',
+    'layer',
+    'udp_port',
 ];

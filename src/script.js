@@ -1,6 +1,7 @@
 /*@[if_not_target:esp]*/
 /*@![include:inc/lib/qrcode.min.js, raw]*/
 /*@![include:inc/lib/leaflet.min.js, raw]*/
+/*@![include:inc/lib/leaflet.canvas.js, raw]*/
 /*@/[if_not_target:esp]*/
 
 /*@![include:inc/lib/sort-paths.min.js, raw]*/
@@ -13,7 +14,6 @@
 
 /*@![include:inc/utils.js, compile]*/
 
-/*@![include:inc/controls.js, compile]*/
 /*@![include:inc/render.js, compile]*/
 /*@![include:inc/config.js, compile]*/
 

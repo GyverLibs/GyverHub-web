@@ -113,7 +113,7 @@ class JoyWidget extends BaseWidget {
             y = ((y * y + 255) >> 8) * (y > 0 ? 1 : -1);
         }
         if (send) {
-            this.set(x + ',' +  y);
+            this.set(x + ';' +  y);
             this.setSuffix('[' + x + ',' + y + ']');
         }
     }

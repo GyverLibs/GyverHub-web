@@ -109,7 +109,7 @@ class DpadWidget extends BaseWidget {
             cx.stroke();
         }
 
-        if (send) this.set(x + ',' +  y);
+        if (send) this.set(x + ';' +  y);
     }
 
     #onTouchStart(event) {

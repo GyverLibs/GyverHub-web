@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="../inc/lib/leaflet.css" rel="stylesheet">
+    <script src="../inc/lib/leaflet.min.js"></script>
+    <script src="../inc/lib/leaflet.canvas.js"></script>
+</head>
+
+<body>
+    <div id="map" style="width:500px;height:500px"></div>
+
+    <script>
+        const markIcon = L.divIcon({
+            html: '',
+            iconSize: [26, 36],
+            iconAnchor: [26 / 2, 43],
+            className: 'icon icon_map',
+        });
+
+        let map = L.map('map', { preferCanvas: true }).setView([55.7, 37.6], 15);
+
+        let layers = {
+            osm: {
+                tiles: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                subdomains: 'abc'
+            },
+            g_street: {
+                tiles: "https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+            },
+            g_satellite: {
+                tiles: "https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+            },
+            g_hybrid: {
+                tiles: "https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}",
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+            },
+        };
+
+        let layer = layers.osm;
+
+        L.tileLayer(layer.tiles, {
+            minZoom: 3,
+            maxZoom: 20,
+            subdomains: layer.subdomains
+        }).addTo(map);
+
+        map.on('click', (e) => {
+            console.log(e.latlng);
+        });
+
+
+        L.canvasLayer()
+            .delegate(this)
+            .addTo(map);
+
+
+        let data = [];
+        for (let i = 0; i < 1; i++) {
+            let pos = [55.712266, 37.883384];
+            pos = pos.map(p => {
+                let d = 0.005;
+                let off = Math.random() * d - d / 2;
+                return p + off;
+            });
+            data.push([pos[0], pos[1]]);
+        }
+
+        function onDrawLayer(info) {
+            let ctx = info.canvas.getContext('2d');
+            ctx.clearRect(0, 0, info.canvas.width, info.canvas.height);
+            ctx.fillStyle = "rgb(255,0,0)";
+            for (let i = 0; i < data.length; i++) {
+                let d = data[i];
+                if (info.bounds.contains([d[0], d[1]])) {
+                    dot = L.toPoint(info, d);
+                    ctx.beginPath();
+                    ctx.arc(dot.x, dot.y, L.mToPix(info, 50) / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            }
+        };
+
+        // if (this.marker) {
+        //     this.marker.setLatLng(latlon, { draggable: 'true' });
+        //     this.map.panTo(latlon);
+        // } else {
+        //     this.map.setView(latlon, 5);
+        //     this.marker = L.marker(latlon, { icon: markIcon, draggable: 'true' })
+        //         .addTo(this.map)
+        //         .on('dragend', (e) => {
+        //             let pos = e.target.getLatLng();
+        //             e.target.setLatLng(pos, { draggable: 'true' });
+        //             this.map.panTo(pos);
+        //             this.set(e.latlng.lat.toFixed(6) + ',' + e.latlng.lng.toFixed(6));
+        //         });
+        // }
+
+        // geolocation
+        if (navigator.geolocation) {
+            // +watchPosition
+            navigator.geolocation.getCurrentPosition((p) => {
+                let pos = [p.coords.latitude, p.coords.longitude];
+                console.log(p);
+                L.circle(pos, p.accuracy).addTo(map);
+                map.panTo(pos);
+            }, undefined, { enableHighAccuracy: true });
+        }
+
+        // my coords
+        // map.locate({ setView: true, maxZoom: 16 });
+        L.control.scale().addTo(map);
+
+        map.on('locationfound', (e) => {
+            L.circle(e.latlng, e.accuracy).addTo(map);
+        });
+        map.on('locationerror', (e) => {
+            console.log('err');
+        });
+    </script>
+</body>
+
+</html>

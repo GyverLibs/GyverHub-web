@@ -76,18 +76,18 @@ class Widget {
      * @param {boolean} ack 
      * @returns {Promise<undefined>}
      */
-    set(value, ack = true) {
+    async set(value, ack = true) {
         value = value.toString();
         if (this.set_timer) {
             this.set_buf = value;
         } else {
             this.set_timer = setTimeout(() => {
                 this.set_timer = null;
-                if (this.set_buf !== null) this.renderer._set(this, this.set_buf, ack);
+                if (this.set_buf !== null) return this.renderer._set(this, this.set_buf, ack);
                 this.set_buf = null;
             }, this.set_delay);
 
-            this.renderer._set(this, value, ack);
+            return this.renderer._set(this, value, ack);
         }
     }
 

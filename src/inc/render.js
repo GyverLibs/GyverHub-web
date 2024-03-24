@@ -285,7 +285,7 @@ function renderBody() {
           </div>
   
           <div class="ui_row">
-            <label>Wrap text</label>
+            <label><slot name="lang.fs_wrap"></slot></label>
             <label class="switch">
               <input type="checkbox" id="editor_wrap" onchange="this.checked?editor_area.classList.remove('w_area_wrap'):editor_area.classList.add('w_area_wrap')">
               <span class="slider"></span>
@@ -297,8 +297,8 @@ function renderBody() {
           </div>
   
           <div class="ui_row">
-            <button id="editor_save" onclick="editor_save()" class="ui_btn ui_btn_mini">Save & Upload</button>
-            <button onclick="editor_cancel()" class="ui_btn ui_btn_mini">Cancel</button>
+            <button id="editor_save" onclick="editor_save()" class="ui_btn ui_btn_mini"><slot name="lang.fs_save"></slot></button>
+            <button onclick="editor_cancel()" class="ui_btn ui_btn_mini"><slot name="lang.cancel"></slot></button>
           </div>
   
         </div>
@@ -745,13 +745,14 @@ function renderBody() {
           <hr>
 
           <div class="cfg_info">
+            <a href="https://fontawesome.com/v5/search?o=r&m=free&s=solid" target="_blank">Fontawesome</a>
             <a href="https://github.com/Simonwep/pickr" target="_blank">Pickr</a>
             <a href="https://github.com/mqttjs/MQTT.js" target="_blank">MQTT.js</a>
-            <a href="https://github.com/ghornich/sort-paths" target="_blank">sort-paths</a>
-            <a href="https://fontawesome.com/v5/search?o=r&m=free&s=solid" target="_blank">Fontawesome</a>
+            <a href="https://github.com/ghornich/sort-paths" target="_blank">sort-paths.js</a>
             <a href="https://github.com/loginov-rocks/Web-Bluetooth-Terminal" target="_blank">Bluetooth Terminal</a>
             <a href="https://github.com/davidshimjs/qrcodejs" target="_blank">QRCode.js</a>
             <a href="https://esphome.github.io/esp-web-tools/" target="_blank">ESP Web Tools</a>
+            <a href="https://leafletjs.com/" target="_blank">Leaflet.js</a>
           </div>
         </div>
       </div>

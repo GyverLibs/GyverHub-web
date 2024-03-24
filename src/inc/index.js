@@ -30,8 +30,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  let force = 1;  // TODO
+  /*@[if_target:none]*/
+  force = 0;
+  /*@/[if_target:none]*/
+
   /*@[if_target:esp]*/
-  hub.config.set('connections', 'HTTP', 'enabled', true);  // force local on esp
+  if (force) hub.config.set('connections', 'HTTP', 'enabled', true);  // force local on esp
   /*@/[if_target:esp]*/
 
   update_theme();
@@ -216,16 +221,24 @@ async function discover() {
     display(`MQTT#${id}`, 'none');
   }
 
+  let dis_local = 1;  // TODO
+  /*@[if_target:none]*/
+  dis_local = 0;
+  /*@/[if_target:none]*/
+
   /*@[if_target:esp]*/
-  let device;
-  try {
-    device = await hub.http.discover_ip(window.location.hostname, window.location.port.length ? window.location.port : 80);
-  } catch (e) {
-    showPopupError(getError(e));
-    return;
+  if (dis_local) {
+    let device;
+    try {
+      device = await hub.http.discover_ip(window.location.hostname, window.location.port.length ? window.location.port : 80);
+    } catch (e) {
+      showPopupError(getError(e));
+      return;
+    }
+    if (device) device_h(device.info.id);
   }
-  if (device) device_h(device.info.id);
   /*@/[if_target:esp]*/
+
   /*@[if_not_target:esp]*/
   await hub.discover();
   /*@/[if_not_target:esp]*/

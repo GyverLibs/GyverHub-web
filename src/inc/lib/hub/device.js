@@ -66,13 +66,13 @@ class Device extends EventEmitter {
     this.#pingTimer = new AsyncTimer(3000, async () => {
       try {
         await this.#postAndWait('ping', ['OK']);
-        this.dispatchEvent(new DeviceConnectionStatusEvent(this, true));
+        this.dispatchEvent(new DeviceConnectionStatusEvent(this, true)); // TODO
       } catch (e) {
         console.log('[PING]', e);
-        this.dispatchEvent(new DeviceConnectionStatusEvent(this, false));
+        this.dispatchEvent(new DeviceConnectionStatusEvent(this, false)); // TODO
       }
       this.#pingTimer.restart();
-    })
+    });
   }
 
   /**
@@ -119,10 +119,13 @@ class Device extends EventEmitter {
     } catch (e) {
       this.dispatchEvent(new DeviceEvent("transfererror", this));
       this.dispatchEvent(new DeviceEvent("transferend", this));
+      // this.dispatchEvent(new DeviceConnectionStatusEvent(this, false));
       throw e;
     }
     this.dispatchEvent(new DeviceEvent("transfersuccess", this));
     this.dispatchEvent(new DeviceEvent("transferend", this));
+    // this.dispatchEvent(new DeviceConnectionStatusEvent(this, true));
+    // if (this.#pingTimer.running) this.#pingTimer.restart();
     return res;
   }
 
@@ -134,6 +137,12 @@ class Device extends EventEmitter {
     switch (type) {
       case 'ui':
         await this.#postAndWait('unix', ['OK'], Math.floor(new Date().getTime() / 1000));
+        break;
+
+      case 'location':
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition((p) => this.sendLocation(p), undefined, { enableHighAccuracy: data.highacc });
+        }
         break;
 
       case 'refresh':
@@ -213,6 +222,22 @@ class Device extends EventEmitter {
 
   async sendCli(command) {
     await this.#postAndWait('cli', ['OK'], 'cli', command);
+  }
+
+  sendLocation(p) {
+    try {
+      let stamp = Math.round(p.timestamp / 1000);
+      let value = '';
+      [
+        p.coords.latitude ? p.coords.latitude.toFixed(6) : 0,
+        p.coords.longitude ? p.coords.longitude.toFixed(6) : 0,
+        p.coords.altitude ? p.coords.altitude.toFixed(6) : 0,
+        p.coords.speed ? p.coords.speed : 0,
+        p.coords.heading ? p.coords.heading : 0,
+        p.coords.accuracy ? p.coords.accuracy : 0,
+      ].map(v => value += v + ';');
+      this.#post('location', stamp, value.slice(0, -1));
+    } catch (e) { }
   }
 
   //#endregion
