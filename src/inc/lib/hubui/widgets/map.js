@@ -11,22 +11,22 @@ const mapZeroPos = [55.754994, 37.623288];
 const mapLayers = [
     {
         attribution: "OpenStreetMap",
-        tiles: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        tiles: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",    // osm street
         subdomains: 'abc'
     },
     {
         attribution: "Google",
-        tiles: "https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",    // street
+        tiles: "https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",    // google street
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
     },
     {
         attribution: "Google",
-        tiles: "https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",    // satellite
+        tiles: "https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",    // google satellite
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
     },
     {
         attribution: "Google",
-        tiles: "https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}",  // hybrid
+        tiles: "https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}",  // google hybrid
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
     }
 ];
