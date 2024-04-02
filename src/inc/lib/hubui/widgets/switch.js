@@ -18,7 +18,7 @@ class SwitchWidget extends BaseWidget {
                             name: 'el',
                             events: {
                                 change: () => {
-                                    this.$slider.style.backgroundColor = this.$el.checked ? intToCol(this.data.color) ?? 'var(--prim)' : '';
+                                    this.$slider.style.backgroundColor = this.$el.checked ? hexToCol(this.data.color) : '';
                                     this.set(this.$el.checked ? 1 : 0)
                                 }
                             }
@@ -39,17 +39,14 @@ class SwitchWidget extends BaseWidget {
 
     update(data) {
         super.update(data);
-        if ('color' in data && this.$el.checked) this.$slider.style.backgroundColor = intToCol(data.color);
+        if ('color' in data && this.$el.checked) this.$slider.style.backgroundColor = hexToCol(data.color);
         if ('value' in data) {
             this.$el.checked = (Number(data.value) == 1);
-            this.$slider.style.backgroundColor = this.$el.checked ? intToCol(this.data.color) ?? 'var(--prim)' : '';
+            this.$slider.style.backgroundColor = this.$el.checked ? hexToCol(this.data.color) : '';
         }
         if ('disable' in data) this.disable(this.$el, data.disable);
     }
 }
-
-Renderer.register('switch_t', SwitchWidget);
-
 
 class SwitchIconWidget extends BaseWidget {
     $el;
@@ -90,9 +87,28 @@ class SwitchIconWidget extends BaseWidget {
             this.$el.style.width = data.fsize * 1.7 + 'px';
         }
         if ('icon' in data) this.$el.innerHTML = getIcon(data.icon);
-        if ('color' in data) this.$el.style.setProperty('--on-color', intToCol(data.color));
+        if ('color' in data) this.$el.style.setProperty('--on-color', hexToCol(data.color));
         if ('disable' in data) this.disable(this.$el, data.disable);
     }
-}
 
-Renderer.register('switch_i', SwitchIconWidget);
+    static style() {
+        return `
+        .w_swicon {
+            --on-color: var(--prim);
+            border-radius: 50%;
+            aspect-ratio: 1;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            color: var(--on-color);
+            border: 2px solid var(--on-color);
+          }
+          
+          .w_swicon_on {
+            color: var(--tab);
+            background: var(--on-color);
+          }`;
+    }
+}

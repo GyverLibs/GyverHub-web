@@ -55,7 +55,7 @@ class ButtonWidget extends BaseWidget {
             this.#setIcon(data.icon);
         }
         if ('color' in data) {
-            this.#color = intToCol(data.color);
+            this.#color = hexToCol(data.color);
 
             this.$el.style.color = this.#color;
             this.$el.style.fill = this.#color;
@@ -91,6 +91,20 @@ class ButtonWidget extends BaseWidget {
         this.$el.innerHTML = icon;
         this.#inline = true;
     }
-}
 
-Renderer.register('button', ButtonWidget);
+    static style() {
+        return `
+        .w_btn {
+            cursor: pointer;
+            margin: -3px;
+          }
+          
+          .w_btn:hover {
+            filter: brightness(1.15);
+          }
+          
+          .w_btn:active {
+            filter: brightness(0.7);
+          }`;
+    }
+}

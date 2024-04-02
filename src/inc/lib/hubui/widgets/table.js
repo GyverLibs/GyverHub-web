@@ -66,6 +66,21 @@ class TableWidget extends BaseWidget {
         }
         this.$el.replaceChildren(...items);
     }
+
+    static style() {
+        return `
+        .w_table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 4px;
+          }
+          
+          .w_table td,
+          .w_table th {
+            border: 1px solid var(--font3);
+            padding: 4px 8px;
+          }`;
+    }
 }
 
 function parseCSV(str) {
@@ -86,5 +101,3 @@ function parseCSV(str) {
   }
   return arr;
 }
-
-Renderer.register('table', TableWidget);

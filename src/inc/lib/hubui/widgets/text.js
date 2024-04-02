@@ -6,12 +6,12 @@ class TextWidget extends BaseWidget {
 
         this.makeLayout({
             type: 'textarea',
-            class: 'w_area w_area_passive',
+            class: 'ui_area ui_area_passive',
             name: 'el'
         });
         this.$el.readOnly = true;
         this.$el.rows = 5;
-        
+
         this.update(data);
     }
 
@@ -23,9 +23,6 @@ class TextWidget extends BaseWidget {
     }
 }
 
-Renderer.register('text', TextWidget);
-
-
 class LogWidget extends BaseWidget {
     $el;
 
@@ -34,7 +31,7 @@ class LogWidget extends BaseWidget {
 
         this.makeLayout({
             type: 'textarea',
-            class: 'w_area w_area_passive',
+            class: 'ui_area ui_area_passive',
             name: 'el',
             style: {
                 color: 'var(--prim)'
@@ -42,7 +39,7 @@ class LogWidget extends BaseWidget {
         });
         this.$el.readOnly = true;
         this.$el.rows = 5;
-        
+
         this.update(data);
     }
 
@@ -57,9 +54,6 @@ class LogWidget extends BaseWidget {
     }
 }
 
-Renderer.register('log', LogWidget);
-
-
 class TextFileWidget extends BaseWidget {
     $el;
     #path;
@@ -69,11 +63,11 @@ class TextFileWidget extends BaseWidget {
 
         this.makeLayout({
             type: 'textarea',
-            class: 'w_area w_area_passive',
+            class: 'ui_area ui_area_passive',
             name: 'el'
         });
         this.$el.readOnly = true;
-        
+
         this.update(data);
     }
 
@@ -89,9 +83,6 @@ class TextFileWidget extends BaseWidget {
         if ('disable' in data) this.disable(this.$el, data.disable);
     }
 }
-
-Renderer.register('text_f', TextFileWidget);
-
 
 class Display extends BaseWidget {
     $el;
@@ -123,15 +114,46 @@ class Display extends BaseWidget {
     update(data) {
         super.update(data);
         if ('value' in data) this.$el.value = data.value;
-        if ('color' in data) this.$el.style.background = intToCol(data.color);
+        if ('color' in data) this.$el.style.background = hexToCol(data.color);
         if ('fsize' in data) this.$el.style.fontSize = data.fsize + 'px';
         if ('rows' in data) this.$el.rows = data.rows;
         if ('disable' in data) this.disable(this.$el, data.disable);
     }
+
+    static style() {
+        return `
+        .w_disp {
+            border: none;
+            outline: none;
+            font-family: var(--font_f);
+            width: 100%;
+            color: white;
+            resize: none;
+            cursor: default;
+            padding: 3px 7px;
+            border-radius: 5px;
+            margin-bottom: 3px;
+            /* overflow: hidden; */
+            text-wrap: nowrap;
+          }
+          
+          .w_disp::-webkit-resizer {
+            display: none;
+          }
+          
+          .w_disp::-webkit-scrollbar {
+            display: none;
+          }
+          
+          .w_disp::-webkit-scrollbar-track {
+            display: none;
+          }
+          
+          .w_disp::-webkit-scrollbar-thumb {
+            display: none;
+          }`;
+    }
 }
-
-Renderer.register('display', Display);
-
 
 class Area extends BaseWidget {
     $el;
@@ -143,7 +165,7 @@ class Area extends BaseWidget {
 
         this.makeLayout({
             type: 'textarea',
-            class: 'w_area',
+            class: 'ui_area',
             name: 'el',
             events: {
                 keydown: e => {
@@ -157,14 +179,14 @@ class Area extends BaseWidget {
                 }
             },
         });
-        
+
         this.update(data);
     }
 
     update(data) {
         super.update(data);
         if ('regex' in data) this.#regex = data.regex;
-        if ('color' in data) this.$el.style.boxShadow = '0px 2px 0px 0px ' + intToCol(data.color);
+        if ('color' in data) this.$el.style.boxShadow = '0px 2px 0px 0px ' + hexToCol(data.color);
         if ('value' in data) this.$el.value = data.value;
         if ('maxlen' in data) this.$el.maxlength = Math.ceil(data.maxlen);
         if ('rows' in data) this.$el.rows = data.rows;
@@ -185,6 +207,3 @@ class Area extends BaseWidget {
         }
     }
 }
-
-Renderer.register('area', Area);
-

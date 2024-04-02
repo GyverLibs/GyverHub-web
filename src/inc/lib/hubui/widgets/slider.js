@@ -36,7 +36,7 @@ class SliderWidget extends BaseWidget {
         this.$el.step = 1;
         this.$el.dec = 0;
         this.$el.value = 0;
-        
+
         this.update(data);
 
         waitFrame().then(() => this.#move(false));
@@ -45,7 +45,7 @@ class SliderWidget extends BaseWidget {
     update(data) {
         super.update(data);
         if ('value' in data) this.$el.value = data.value;
-        if ('color' in data)  this.$el.style.backgroundImage = `linear-gradient(${intToCol(data.color)}, ${intToCol(data.color)})`;
+        if ('color' in data) this.$el.style.backgroundImage = `linear-gradient(${hexToCol(data.color)}, ${hexToCol(data.color)})`;
         if ('min' in data) this.$el.min = data.min;
         if ('max' in data) this.$el.max = data.max;
         if ('step' in data) this.$el.step = data.step;
@@ -58,6 +58,54 @@ class SliderWidget extends BaseWidget {
         this.$out.textContent = Number(this.$el.value).toFixed(Number(this.data.dec ?? 0)) + (this.data.unit ?? '');
         if (send) this.set(this.$el.value);
     }
-}
 
-Renderer.register('slider', SliderWidget);
+    static style() {
+        return `
+        .w_slider {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 100%;
+            height: 35px;
+            padding: 0;
+            margin: 0;
+            background: var(--dark);
+            background-repeat: no-repeat;
+            background-image: linear-gradient(var(--prim), var(--prim));
+            border-radius: 5px;
+            cursor: pointer;
+            touch-action: none;
+          }
+          
+          .w_slider:hover {
+            filter: brightness(1.1);
+          }
+          
+          .w_slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 1px;
+            width: 1px;
+          }
+          
+          .w_slider::-webkit-slider-thumb:hover {
+            filter: brightness(1.1);
+          }
+          
+          .w_slider::-moz-range-thumb {
+            -moz-appearance: none;
+            outline: none;
+            border: none;
+            background: none;
+            height: 1px;
+            width: 1px;
+          }
+          
+          .w_slider_out {
+            margin-left: -110px;
+            pointer-events: none;
+            text-align: right;
+            z-index: 1;
+            width: 100px;
+            padding-right: 10px;
+          }`;
+    }
+}

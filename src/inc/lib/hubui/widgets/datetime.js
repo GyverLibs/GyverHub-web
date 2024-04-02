@@ -28,7 +28,7 @@ class DateWidget extends BaseWidget {
     update(data) {
         super.update(data);
         if ('value' in data) this.$el.value = new Date(data.value * 1000).toISOString().split('T')[0];
-        if ('color' in data) this.$el.style.color = intToCol(data.color);
+        if ('color' in data) this.$el.style.color = hexToCol(data.color);
     }
 }
 
@@ -63,7 +63,7 @@ class TimeWidget extends BaseWidget {
     update(data) {
         super.update(data);
         if ('value' in data) this.$el.value = new Date(data.value * 1000).toISOString().split('T')[1].split('.')[0];
-        if ('color' in data) this.$el.style.color = intToCol(data.color);
+        if ('color' in data) this.$el.style.color = hexToCol(data.color);
     }
 }
 
@@ -98,14 +98,28 @@ class DateTimeWidget extends BaseWidget {
     update(data) {
         super.update(data);
         if ('value' in data) this.$el.value = new Date(data.value * 1000).toISOString().split('.')[0];
-        if ('color' in data) this.$el.style.color = intToCol(data.color);
+        if ('color' in data) this.$el.style.color = hexToCol(data.color);
+    }
+
+    static style() {
+        return `
+        .w_date {
+            border: none;
+            outline: none;
+            font-family: var(--font_f);
+            cursor: pointer;
+            background: none;
+            font-size: 20px;
+            padding: 0;
+          }
+          
+          .w_date::-webkit-calendar-picker-indicator {
+            display: none;
+            -webkit-appearance: none;
+          }`;
     }
 }
 
 function getUnix(arg) {
     return Math.floor(arg.valueAsNumber / 1000);
 }
-
-Renderer.register('date', DateWidget);
-Renderer.register('time', TimeWidget);
-Renderer.register('datetime', DateTimeWidget);

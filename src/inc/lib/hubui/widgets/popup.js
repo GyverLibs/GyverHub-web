@@ -11,9 +11,6 @@ class ConfirmWidget extends Widget {
     }
 }
 
-Renderer.register('confirm', ConfirmWidget, true);
-
-
 class PromptWidget extends Widget {
     constructor(data, renderer) {
         super(data, renderer);
@@ -31,5 +28,3 @@ class PromptWidget extends Widget {
         });
     }
 }
-
-Renderer.register('prompt', PromptWidget, true);

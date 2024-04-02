@@ -22,5 +22,3 @@ class StreamWidget extends BaseWidget {
             this.$el.src = `http://${this.renderer.device.info.ip}:${data.port}/${data.path ?? ''}`;
     }
 }
-
-Renderer.register('stream', StreamWidget);

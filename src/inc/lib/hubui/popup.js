@@ -132,7 +132,7 @@ function asyncPromptArea(text, placeh = '', title = null) {
     const $input = document.createElement('textarea');
     $input.rows = 5;
     $input.value = placeh;
-    $input.className = 'ui_inp';
+    $input.className = 'ui_inp ui_area ui_area_wrap';
 
     const $box = makeDialog(title, text, [
       {
@@ -151,7 +151,7 @@ function asyncPromptArea(text, placeh = '', title = null) {
         }
       }
     ], $input);
-    $box.firstElementChild.style.maxWidth = "700px";
+    $box.firstElementChild.style.maxWidth = "900px";
   });
 }
 

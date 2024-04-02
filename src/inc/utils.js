@@ -1,16 +1,15 @@
 // ====================== CONST ======================
 
 const colors = {
-  ORANGE: 0xd55f30,
-  YELLOW: 0xd69d27,
-  GREEN: 0x37A93C,
-  MINT: 0x25b18f,
-  AQUA: 0x2ba1cd,
-  BLUE: 0x297bcd,
-  VIOLET: 0x825ae7,
-  PINK: 0xc8589a,
+  ORANGE: "d55f30",
+  YELLOW: "d69d27",
+  GREEN: "37A93C",
+  MINT: "25b18f",
+  AQUA: "2ba1cd",
+  BLUE: "297bcd",
+  VIOLET: "825ae7",
+  PINK: "c8589a",
 };
-
 
 function getError(err) {
   if (err instanceof DeviceError)
@@ -44,14 +43,6 @@ async function switch_ssl(ssl) {
   }
 }
 
-function addDOM(el_id, tag, text, target) {
-  if (EL(el_id)) EL(el_id).remove();
-  const el = document.createElement(tag);
-  el.textContent = text;
-  el.id = el_id;
-  target.appendChild(el);
-  return el;
-}
 String.prototype.hashCode = function () {
   if (!this.length) return 0;
   let hash = new Uint32Array(1);
@@ -82,12 +73,7 @@ function browser() {
   else if ((navigator.userAgent.includes("MSIE")) || (!!document.documentMode == true)) return 'IE';
   else return 'unknown';
 }
-function EL(id) {
-  return document.getElementById(id);
-}
-function display(id, value) {
-  EL(id).style.display = value;
-}
+
 function showNotif(name, text) {
   if (!("Notification" in window) || Notification.permission != 'granted') return;
   const descr = name + ' (' + new Date(Date.now()).toLocaleString() + ')';

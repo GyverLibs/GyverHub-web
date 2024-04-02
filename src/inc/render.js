@@ -129,6 +129,8 @@ function renderBody() {
   document.body.innerHTML += `
   <div id="plugins"></div>
   <div id="app_plugins"></div>
+  <div id="test_plugins"></div>
+  <div id="widget_styles"></div>
 
   <div class="header-row">
     <div class="header">
@@ -154,7 +156,25 @@ function renderBody() {
   
     <div class="main_inn">
       <div class="main_col screen-test">
-        <div class="test_text">А тут пока ничего нет. Но будет онлайн-тест интерфейса, в котором можно будет поиграться и проверить свой билд без загрузки прошивки</div>
+        <div id="test_container" class=""></div>
+        <br>
+        <div class="ui_col">
+          <div class="ui_inpbtn_row">
+            <input id="test_controls" class="ui_inp ui_inp_wbtn" type="text" value="" placeholder='{"value":50}'>
+            <button onclick="testbuild_h()" class="ui_btn upl_btn">Build</button>
+          </div>
+          <div class="ui_inpbtn_row">
+            <input id="test_updates" class="ui_inp ui_inp_wbtn" type="text" value="" placeholder='{"value":50}'>
+            <button onclick="testupdate_h()" class="ui_btn upl_btn">Update</button>
+          </div>
+          <div class="ui_btn_row">
+            <label>Out:&nbsp</label><label id="test_out"></label>
+          </div>
+        </div>
+        <div class="ui_col">
+          <div class="ui_row test-tabs"><label>JS</label></div>
+          <div class="ui_row"><textarea id="test_js" rows="40" class="ui_inp ui_area ui_area_wrap"></textarea></div>
+        </div>
       </div>
 
       <div id="projects_cont" class="main_col screen-projects">
@@ -287,13 +307,13 @@ function renderBody() {
           <div class="ui_row">
             <label><slot name="lang.fs_wrap"></slot></label>
             <label class="switch">
-              <input type="checkbox" id="editor_wrap" onchange="this.checked?editor_area.classList.remove('w_area_wrap'):editor_area.classList.add('w_area_wrap')">
+              <input type="checkbox" id="editor_wrap" onchange="this.checked?editor_area.classList.remove('ui_area_wrap'):editor_area.classList.add('ui_area_wrap')">
               <span class="slider"></span>
             </label>
           </div>
   
           <div class="ui_row">
-            <textarea rows=20 id="editor_area" class="ui_inp w_area w_area_wrap"></textarea>
+            <textarea rows=20 id="editor_area" class="ui_inp ui_area ui_area_wrap"></textarea>
           </div>
   
           <div class="ui_row">
@@ -345,11 +365,11 @@ function renderBody() {
             <label><span class="icon icon_ui"></span>OTA URL</label>
           </div>
           <div id="fs_otaurl">
-            <div class="upl_row">
+            <div class="ui_inpbtn_row">
               <input class="ui_inp ui_inp_wbtn" type="text" id="ota_url_f">
               <button id="ota_url_btn" onclick="otaUrl(ota_url_f.value,'flash')" class="ui_btn upl_btn">Flash</button>
             </div>
-            <div class="upl_row">
+            <div class="ui_inpbtn_row">
               <input class="ui_inp ui_inp_wbtn" type="text" id="ota_url_fs">
               <button id="ota_url_btn" onclick="otaUrl(ota_url_fs.value,'fs')" class="ui_btn upl_btn">FS</button>
             </div>

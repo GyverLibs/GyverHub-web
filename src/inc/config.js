@@ -88,7 +88,7 @@ function update_theme() {
 
   const r = document.querySelector(':root');
   r.style.setProperty('--ui_width', cfg.ui_width + 'px');
-  r.style.setProperty('--prim', intToCol(colors[cfg.maincolor]));
+  r.style.setProperty('--prim', hexToCol(colors[cfg.maincolor]));
   r.style.setProperty('--font_f', cfg.font);
 
   EL('app_plugins').replaceChildren();

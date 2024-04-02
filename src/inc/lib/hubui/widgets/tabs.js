@@ -55,7 +55,7 @@ class TabsWidget  extends BaseWidget {
             this.$ul.replaceChildren(...tabs);
         }
         if ('value' in data) this.#change(Number(data.value));
-        if ('color' in data) this.$ul.style.setProperty('--active-item-color', intToCol(data.color));
+        if ('color' in data) this.$ul.style.setProperty('--active-item-color', hexToCol(data.color));
     }
 
     #change(num, move = true) {
@@ -66,6 +66,53 @@ class TabsWidget  extends BaseWidget {
         }
         if (move) this.$ul.scrollLeft = this.$ul.scrollWidth * num / list.length;
     }
-}
 
-Renderer.register('tabs', TabsWidget);
+    static style() {
+        return `
+        .w_tabs {
+            width: 100%;
+          }
+          
+          .w_tabs>ul {
+            --active-item-color: var(--prim);
+            padding: 0;
+            display: flex;
+            list-style-type: none;
+            font-size: 19px;
+            flex-direction: row;
+            overflow-x: scroll;
+            white-space: nowrap;
+            scrollbar-width: none;
+            user-select: none;
+            margin: 0;
+          }
+          
+          .w_tabs ul::-webkit-scrollbar {
+            display: none;
+          }
+          
+          .w_tabs>ul>li {
+            display: flex;
+            align-items: center;
+            color: var(--font);
+            border-radius: 5px;
+            padding: 5px;
+            margin: 2px;
+          }
+          
+          .w_tabs:not(.disable)>ul {
+            cursor: pointer;
+          }
+          
+          .w_tabs:not(.disable)>ul>li:hover {
+            /*filter: brightness(0.8);*/
+            background: var(--back);
+          }
+          
+          .w_tab_act {
+            background: var(--active-item-color) !important;
+            color: var(--tab) !important;
+            font-weight: 600;
+          }`;
+    }
+}

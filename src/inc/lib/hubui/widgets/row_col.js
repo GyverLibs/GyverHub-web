@@ -21,6 +21,3 @@ class RowColWidget extends Widget {
         return $root;
     }
 }
-
-Renderer.register('row', RowColWidget);
-Renderer.register('col', RowColWidget);

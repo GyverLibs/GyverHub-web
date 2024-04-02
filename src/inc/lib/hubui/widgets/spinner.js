@@ -94,6 +94,35 @@ class SpinnerWidget extends BaseWidget {
         e.preventDefault();
         this.#spin(-e.deltaY);
     }
-}
 
-Renderer.register('spinner', SpinnerWidget);
+    static style() {
+        return `
+        .w_spinner_row {
+            display: flex;
+            align-items: center;
+          }
+          
+          .w_spinner_block {
+            margin: 0px 10px;
+            display: flex;
+          }
+          
+          .w_spinner {
+            outline: none;
+            border: none;
+            background: none;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font_f);
+            color: var(--font2);
+            font-size: 20px;
+          }
+          
+          .w_spinner_unit {
+            font-family: var(--font_f);
+            color: var(--font2);
+            font-size: 20px;
+          }`;
+    }
+}

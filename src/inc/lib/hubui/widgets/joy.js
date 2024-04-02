@@ -20,8 +20,7 @@ class JoyWidget extends BaseWidget {
             name: 'el'
         });
 
-        if (!this.data.color)
-            this.data.color = colToInt(window.getComputedStyle(document.body).getPropertyValue('--prim'));
+        this.data.color = colToInt(hexToCol(this.data.color));
 
         if ("ontouchstart" in document.documentElement) {
             this.#_onTouchStart = this.#onTouchStart.bind(this);
@@ -113,7 +112,7 @@ class JoyWidget extends BaseWidget {
             y = ((y * y + 255) >> 8) * (y > 0 ? 1 : -1);
         }
         if (send) {
-            this.set(x + ';' +  y);
+            this.set(x + ';' + y);
             this.setSuffix('[' + x + ',' + y + ']');
         }
     }
@@ -204,8 +203,6 @@ class JoyWidget extends BaseWidget {
         document.body.style.userSelect = '';
     }
 }
-
-Renderer.register('joy', JoyWidget);
 
 function constrain(val, min, max) {
     return val < min ? min : (val > max ? max : val);

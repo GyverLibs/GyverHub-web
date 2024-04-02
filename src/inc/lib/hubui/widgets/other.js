@@ -10,12 +10,3 @@ class SpaceWidget extends BaseWidget {
         super.update(data);
     }
 }
-Renderer.register('space', SpaceWidget);
-
-Renderer.register('dummy', Widget, true);
-
-// TODO: remove on new version
-Renderer.register('css', Widget, true);
-Renderer.register('js', Widget, true);
-Renderer.register('hook', Widget, true);
-Renderer.register('func', Widget, true);

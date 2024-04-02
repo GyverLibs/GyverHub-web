@@ -52,7 +52,7 @@ class GaugeWidget extends BaseWidget {
     }
 
     #redrawGauge() {
-        this.color = intToCol(this.data.color) ?? this.#cstyle.getPropertyValue('--prim');
+        this.color = hexToCol(this.data.color);
         let cv = this.$el;
         let rw = cv.parentNode.clientWidth;
         if (!rw) return;
@@ -125,7 +125,7 @@ class GaugeWidget extends BaseWidget {
     }
 
     #redrawGaugeR() {
-        this.color = intToCol(this.data.color) ?? this.#cstyle.getPropertyValue('--prim');
+        this.color = hexToCol(this.data.color);
         let cv = this.$el;
         let rw = cv.parentNode.clientWidth;
         if (!rw) return;
@@ -190,7 +190,7 @@ class GaugeWidget extends BaseWidget {
     }
 
     #redrawGaugeL() {
-        this.color = intToCol(this.data.color) ?? this.#cstyle.getPropertyValue('--prim');
+        this.color = hexToCol(this.data.color);
         let cv = this.$el;
         let rw = cv.parentNode.clientWidth;
         if (!rw) return;
@@ -258,7 +258,3 @@ class GaugeWidget extends BaseWidget {
         cx.fillText(this.max.toFixed(this.dec), cv.width - (off + sw / 2 + off), cv.height * 0.52);
     }
 }
-
-Renderer.register('gauge', GaugeWidget);
-Renderer.register('gauge_l', GaugeWidget);
-Renderer.register('gauge_r', GaugeWidget);

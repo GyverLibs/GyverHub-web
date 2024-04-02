@@ -372,10 +372,11 @@ body[data-screen=projects] .screen-projects {
 
 body[data-screen=test] .screen-test {
   display: block;
+  max-width: 900px;
 }
-
-.test_text {
-  color: var(--font);
+.test-tabs {
+  padding: 0 10px !important;
+  min-height: 0 !important;
 }
 
 /*@/[if_not_target:esp]*/

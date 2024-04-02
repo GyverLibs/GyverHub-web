@@ -7,6 +7,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderBody();
   apply_cfg();
   render_main();
+  registerWidgets();
+
+  // read test
+  if (localStorage.hasOwnProperty('test_config')) {
+    let data = JSON.parse(localStorage.getItem('test_config'));
+    EL('test_controls').value = data.controls;
+    EL('test_updates').value = data.updates;
+    EL('test_js').value = localStorage.getItem('test_js');
+  }
 
   document.addEventListener('click', e => {
     const $t = e.composedPath().find(e => e.dataset && e.dataset.action);
@@ -174,8 +183,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           break;
 
         case 192: // open cli on `
-          break;  // TODO console
-          if (focused) {
+          if (e.ctrlKey && focused) {
             e.preventDefault();
             toggleCLI();
           }

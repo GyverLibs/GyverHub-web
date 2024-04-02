@@ -28,9 +28,6 @@ class PluginWidget extends Widget {
     }
 }
 
-Renderer.register('plugin', PluginWidget);
-
-
 class CustomWidget extends Widget {
     $el;
     #widget;
@@ -87,5 +84,3 @@ class CustomWidget extends Widget {
         if (this.#widget) this.#widget.handleAck();
     }
 }
-
-Renderer.register('custom', CustomWidget);

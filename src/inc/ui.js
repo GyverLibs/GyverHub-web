@@ -68,7 +68,7 @@ async function show_screen(nscreen) {
     case 'ota':
       $title.textContent = dev.info.name + '/ota';
       enterMenu('menu_ota');
-    
+
       const ota_t = '.' + dev.info.ota_t;
       EL('ota_upload').accept = ota_t;
       EL('ota_upload_fs').accept = ota_t;
@@ -161,8 +161,9 @@ async function back_h() {
     case 'config':
       config_h();
       break;
-    case 'projects':
-    case 'test':
+    // case 'projects':
+    // case 'test':
+    default:
       show_screen('main');
       break;
   }
@@ -288,10 +289,10 @@ function updateSystemMenu() {
 }
 function enterMenu(sel = null) {
   menu_show(false);
-  for (const $i of document.getElementById('menu').children)
-      $i.classList.remove('menu_act');
+  for (const $i of EL('menu').children)
+    $i.classList.remove('menu_act');
   if (sel !== null)
-      document.querySelector('.menu_item.' + sel).classList.add('menu_act');
+    document.querySelector('.menu_item.' + sel).classList.add('menu_act');
 }
 // ============== DEVICE =============
 async function device_h(id) {
@@ -305,7 +306,7 @@ async function device_h(id) {
     }
     dev.granted = true;
   }
-  
+
   /*@[if_not_target:esp]*/
   await checkUpdates(dev);
   /*@/[if_not_target:esp]*/
@@ -322,7 +323,7 @@ async function device_h(id) {
 function close_device() {
   if (renderer) renderer.close();
   renderer = null;
-  const $root = document.getElementById('controls');
+  const $root = EL('controls');
   $root.replaceChildren();
   EL('plugins').replaceChildren();
   EL('ota_label').replaceChildren();
@@ -366,8 +367,7 @@ function showCLI(v) {
 function printCLI(text, color) {
   if (document.body.classList.contains('show-cli')) {
     if (EL('cli').innerHTML) EL('cli').innerHTML += '\n';
-    let st = color ? `style="color:${intToCol(color)}"` : '';
-    EL('cli').innerHTML += `<span ${st}>${text}</span>`;
+    EL('cli').innerHTML += `<span style="color:${hexToCol(color, 'var(--font2)')}">${text}</span>`;
     EL('cli').scrollTop = EL('cli').scrollHeight;
   }
 }
@@ -427,10 +427,66 @@ function showControls(device, controls) {
 
   renderer.update(controls);
 
-  const $root = document.getElementById('controls');
+  const $root = EL('controls');
   $root.style.setProperty('--device-width', device.info.main_width + 'px');
   if (cfg.wide_mode) $root.classList.add('wide-mode');
   else $root.classList.remove('wide-mode');
 
   $root.replaceChildren(...renderer.build());
+}
+
+// ============ TEST ============
+class TestDevice {
+  async set(name, value) {
+    EL('test_out').innerHTML = value;
+  }
+};
+let testDevice = new TestDevice();
+let testRenderer = new Renderer(testDevice);
+
+async function testbuild_h() {
+  let rndName = 'TestWidget_';
+  for (let i = 0; i < 6; i++) rndName += Math.floor(Math.random() * 16).toString(16);
+
+  EL('test_plugins').replaceChildren();
+  let js = EL('test_js').value.replaceAll('TestWidget', rndName);
+  addDOM('test_script', 'script', js, EL('test_plugins'));
+  Renderer.register('_test_widget', eval(rndName));
+
+  let controls = {
+    id: 'test',
+    type: '_test_widget',
+  };
+  let json;
+  try {
+    json = JSON.parse(EL('test_controls').value);
+  } catch (e) {
+    return;
+  }
+  controls = Object.assign(controls, json);
+  testRenderer.update([controls]);
+  let cont = EL('test_container');
+  cont.replaceChildren(...testRenderer.build());
+
+  // save
+  let config = {
+    controls: EL('test_controls').value,
+    updates: EL('test_updates').value
+  };
+  localStorage.setItem('test_config', JSON.stringify(config));
+  localStorage.setItem('test_js', EL('test_js').value);
+}
+function testupdate_h() {
+  let updates;
+  try {
+    updates = JSON.parse(EL('test_updates').value);
+  } catch (e) {
+    return;
+  }
+
+  for (let upd in updates) {
+    let obj = {};
+    obj[upd] = updates[upd];
+    testRenderer.handleUpdate('test', obj);
+  }
 }

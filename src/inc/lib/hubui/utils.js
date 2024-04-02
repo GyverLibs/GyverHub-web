@@ -24,6 +24,22 @@ function createElement(self, obj) {
 
 
 // ===================== RENDER =====================
+function EL(id) {
+  return document.getElementById(id);
+}
+
+function display(id, value) {
+  EL(id).style.display = value;
+}
+
+function addDOM(el_id, tag, text, target) {
+  if (EL(el_id)) EL(el_id).remove();
+  const el = document.createElement(tag);
+  el.textContent = text;
+  el.id = el_id;
+  target.appendChild(el);
+  return el;
+}
 
 function waitFrame() {
   return new Promise(requestAnimationFrame);
@@ -43,9 +59,18 @@ function getIcon(icon) {
   return icon.length == 1 ? icon : String.fromCharCode(Number('0x' + icon));
 }
 
+function hexToCol(val, def = null) {
+  if (val === null || val === undefined || val == "ffffffff") return def ? def : getPrimColor();
+  return "#" + val.padStart(6, '0');
+}
+
 function intToCol(val) {
   if (val === null || val === undefined) return null;
   return "#" + Number(val).toString(16).padStart(6, '0');
+}
+
+function getPrimColor() {
+  return window.getComputedStyle(document.body).getPropertyValue('--prim');
 }
 
 function colToInt(val) {

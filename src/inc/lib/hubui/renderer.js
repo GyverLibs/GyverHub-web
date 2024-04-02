@@ -11,6 +11,9 @@ class Renderer extends EventEmitter {
     static register(name, cls, virtual = false) {
         Renderer.#WIDGETS.set(name, cls);
         if (virtual) Renderer.#VIRTUAL_WIDGETS.add(name);
+        if (typeof eval(cls).style === 'function') {
+            addDOM(name + '_style', 'style', eval(cls).style(), EL('widget_styles'));
+        }
     }
 
     /** @type {Device} */
@@ -76,7 +79,7 @@ class Renderer extends EventEmitter {
      */
     _makeWidgets(cont, type, data, isExt = false) {
         this.#updateWWidth(type, data);
-        
+
         const idMap = isExt ? this.#idMapExt : this.#idMap;
         for (const ctrl of data) {
             if (!ctrl.type) continue;
@@ -107,7 +110,7 @@ class Renderer extends EventEmitter {
      * Build HTML tree from widgets.
      * @returns {HTMLElement}
      */
-    build(){
+    build() {
         const res = [];
         for (const w of this.#widgets) {
             const $w = w.build();
@@ -156,7 +159,7 @@ class Renderer extends EventEmitter {
 
         while (this.#files.length) {
             const file = this.#files.shift();
-        
+
             let res;
             try {
                 res = await this.device.fetch(file.path, file.type, file.widget._handleFileProgress.bind(file.widget));
@@ -175,4 +178,58 @@ class Renderer extends EventEmitter {
         if (!widget || !(widget instanceof PluginWidget)) return undefined;
         return widget.widgetClass;
     }
+}
+
+function registerWidgets() {
+    Renderer.register('button', ButtonWidget);
+    Renderer.register('canvas', CanvasWidget);
+    Renderer.register('color', ColorWidget);
+    Renderer.register('date', DateWidget);
+    Renderer.register('time', TimeWidget);
+    Renderer.register('datetime', DateTimeWidget);
+    Renderer.register('dpad', DpadWidget);
+    Renderer.register('flags', FlagsWidget);
+    Renderer.register('gauge', GaugeWidget);
+    Renderer.register('gauge_l', GaugeWidget);
+    Renderer.register('gauge_r', GaugeWidget);
+    Renderer.register('html', HTMLWidget);
+    Renderer.register('image', ImageWidget);
+    Renderer.register('icon', IconWidget);
+    Renderer.register('input', InputWidget);
+    Renderer.register('pass', PassWidget);
+    Renderer.register('joy', JoyWidget);
+    Renderer.register('label', Label);
+    Renderer.register('led', LedWidget);
+    Renderer.register('map', MapWidget);
+    Renderer.register('menu', MenuWidget);
+    Renderer.register('plot', PlotWidget);
+    Renderer.register('plugin', PluginWidget);
+    Renderer.register('custom', CustomWidget);
+    Renderer.register('confirm', ConfirmWidget, true);
+    Renderer.register('prompt', PromptWidget, true);
+    Renderer.register('row', RowColWidget);
+    Renderer.register('col', RowColWidget);
+    Renderer.register('select', SelectWidget);
+    Renderer.register('slider', SliderWidget);
+    Renderer.register('spinner', SpinnerWidget);
+    Renderer.register('stream', StreamWidget);
+    Renderer.register('switch_t', SwitchWidget);
+    Renderer.register('switch_i', SwitchIconWidget);
+    Renderer.register('table', TableWidget);
+    Renderer.register('tabs', TabsWidget);
+    Renderer.register('text', TextWidget);
+    Renderer.register('log', LogWidget);
+    Renderer.register('text_f', TextFileWidget);
+    Renderer.register('display', Display);
+    Renderer.register('area', Area);
+    Renderer.register('title', Title);
+    Renderer.register('ui_file', UiFileWidget);
+    Renderer.register('space', SpaceWidget);
+    Renderer.register('dummy', Widget, true);
+
+    // TODO: remove on new version
+    Renderer.register('css', Widget, true);
+    Renderer.register('js', Widget, true);
+    Renderer.register('hook', Widget, true);
+    Renderer.register('func', Widget, true);
 }

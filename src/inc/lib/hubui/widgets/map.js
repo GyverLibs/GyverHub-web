@@ -1,4 +1,3 @@
-/*@[if_not_target:esp]*/
 const markIcon = L.divIcon({
     html: '',
     iconSize: [26, 36],
@@ -109,7 +108,12 @@ class MapWidget extends BaseWidget {
         this.set(pos.lat.toFixed(6) + ',' + pos.lng.toFixed(6)).then(() => this._setMarker(pos));
         // this.setSuffix('[' + e.latlng.lat.toFixed(3) + ',' + e.latlng.lng.toFixed(3) + ']');
     }
-}
 
-Renderer.register('map', MapWidget);
-/*@/[if_not_target:esp]*/
+    static style() {
+        return `
+        .icon_map {
+            font-size: 35px;
+            color: #e70017;
+          }`;
+    }
+}

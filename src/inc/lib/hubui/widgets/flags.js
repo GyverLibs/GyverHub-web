@@ -32,7 +32,7 @@ class FlagsWidget extends BaseWidget {
         super.update(data);
         if ('value' in data) this.#value = Number(data.value);
         if ('text' in data) this.#items = data.text.split(/[,;]/);
-        if ('color' in data) this.$el.style.setProperty('--checked-color', intToCol(data.color));
+        if ('color' in data) this.$el.style.setProperty('--checked-color', hexToCol(data.color));
         if ('disable' in data) this.disable(this.$el, data.disable);
         this.#render();
     }
@@ -52,6 +52,37 @@ class FlagsWidget extends BaseWidget {
         }
         this.$el.replaceChildren(...labels);
     }
-}
 
-Renderer.register('flags', FlagsWidget);
+    static style() {
+        return `
+        .w_flags {
+            padding: 4px 13px;
+            margin: 3px;
+            border-radius: 35px;
+            background: var(--dark);
+            font-size: 18px;
+            color: var(--font);
+            user-select: none;
+            --checked-color: var(--prim);
+          }
+          
+          .w_flags_cont:not(.disable) .w_flags {
+            cursor: pointer;
+          }
+          
+          .w_flags_cont:not(.disable) .w_flags:hover {
+            background: var(--black);
+          }
+          
+          .w_flags.checked {
+            background: var(--checked-color) !important;
+            color: white;
+          }
+          
+          .w_flags_cont {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+          }`;
+    }
+}

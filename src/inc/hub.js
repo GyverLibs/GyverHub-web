@@ -95,7 +95,7 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
   });
 
   ev.device.addEventListener('command.notice', e => {
-    showPopup(e.device.info.name + ': ' + e.data.text, intToCol(e.data.color));
+    showPopup(e.device.info.name + ': ' + e.data.text, hexToCol(e.data.color));
   });
 
   let push_timer = 0;

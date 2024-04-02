@@ -39,5 +39,3 @@ class HTMLWidget extends BaseWidget {
         this.#root.innerHTML = text;
     }
 }
-
-Renderer.register('html', HTMLWidget);

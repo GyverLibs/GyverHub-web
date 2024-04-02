@@ -19,7 +19,7 @@ class ColorWidget extends BaseWidget {
             this.#pickr = Pickr.create({
                 el: this.$el,
                 theme: 'nano',
-                default: intToCol(data.value) ?? '#000',
+                default: data.value ? intToCol(data.value) : '#000',
                 defaultRepresentation: 'HEXA',
                 useAsButton: true,
                 components: {
@@ -46,8 +46,7 @@ class ColorWidget extends BaseWidget {
         super.update(data);
 
         let col = null;
-        if ('value' in data) col = intToCol(data.value);
-        if ('color' in data) col = intToCol(data.color);
+        if ('value' in data) col = intToCol(data.value) ?? '#000';
         if ('disable' in data) this.disable(this.$el, data.disable);
 
         if (col) {
@@ -63,7 +62,6 @@ class ColorWidget extends BaseWidget {
     }
 }
 
-Renderer.register('color', ColorWidget);
 
 function colToInt(str) {
     return parseInt(str.substr(1), 16);

@@ -95,6 +95,15 @@ class CanvasWidget extends BaseWidget {
             }
         );
     }
-}
 
-Renderer.register('canvas', CanvasWidget);
+    static style() {
+        return `
+        .w_canvas {
+            border-radius: 4px;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin-bottom: -5px;
+          }`
+    }
+}

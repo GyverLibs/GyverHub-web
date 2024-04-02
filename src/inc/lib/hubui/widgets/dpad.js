@@ -17,8 +17,7 @@ class DpadWidget extends BaseWidget {
             name: 'el'
         });
 
-        if (!this.data.color)
-            this.data.color = colToInt(window.getComputedStyle(document.body).getPropertyValue('--prim'));
+        this.data.color = colToInt(hexToCol(this.data.color));
 
         if ("ontouchstart" in document.documentElement) {
             this.#_onTouchStart = this.#onTouchStart.bind(this);
@@ -145,5 +144,3 @@ class DpadWidget extends BaseWidget {
         }
     }
 }
-
-Renderer.register('dpad', DpadWidget);

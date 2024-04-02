@@ -10,11 +10,6 @@
   user-select: none;
 }
 
-.icon_map {
-  font-size: 35px;
-  color: #e70017;
-}
-
 .icon_min {
   font-size: 23px;
 }
@@ -289,8 +284,8 @@
 }
 
 .cli_inp {
-  background: var(--dark);
-  font-size: 17px;
+  background: var(--dark) !important;
+  font-size: 17px !important;
 }
 
 .cli_block {
@@ -316,65 +311,7 @@
   }
 }
 
-#menu_overlay {
-  cursor: pointer;
-  position: fixed;
-  left: 0;
-  top: 0;
-  display: none;
-  width: 100%;
-  height: 100%;
-  background-color: #0008;
-  z-index: 2;
-  animation: opac .1s;
-  backdrop-filter: blur(4px);
-}
 
-.menu {
-  display: block;
-  max-height: 0;
-  transition: max-height .1s ease-out;
-  overflow: hidden;
-  position: fixed;
-  top: 50px;
-  background: var(--tab);
-  z-index: 3;
-  border-radius: 0px 0px 4px 4px;
-  max-width: var(--ui_width);
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.menu_show {
-  max-height: 100%;
-  transition: max-height .1s ease-in;
-}
-
-.menu_item {
-  cursor: pointer;
-  height: 35px;
-  line-height: 35px;
-  font-size: 20px;
-  padding-left: 10px;
-  border: 5px solid transparent;
-  border-width: 0 0 0 5px;
-}
-
-.menu_item:first-child {
-  margin-top: 8px;
-}
-
-.menu_item:last-child {
-  margin-bottom: 8px;
-}
-
-.menu_item:hover {
-  background: var(--back);
-}
-
-.menu_act {
-  border-color: var(--prim);
-}
 
 /* ====================================================================== */
 /* ================================= FS ================================= */
@@ -445,7 +382,7 @@
   /* box-shadow: 0px 0px 0px 2px var(--back);*/
 }
 
-.upl_row {
+.ui_inpbtn_row {
   display: flex;
   margin: 5px 0px;
   padding: 0px 10px;
@@ -741,9 +678,46 @@ input:checked+.slider:before {
 }
 
 /* ====================================================================== */
+/* ================================= AREA =============================== */
+/* ====================================================================== */
+.ui_area {
+  border: none;
+  outline: none;
+  font-family: var(--font_f);
+  border-radius: 5px;
+  width: 100% !important;
+  font-size: 15px;
+  color: var(--font2);
+  background: var(--back);
+  /* padding: 3px 7px; */
+  /* margin-bottom: 3px; */
+}
+
+.ui_area_passive {
+  cursor: default;
+}
+
+.ui_area_wrap {
+  white-space: pre;
+}
+
+.ui_area::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.ui_area::-webkit-scrollbar-track {
+  background: #0000;
+}
+
+.ui_area::-webkit-scrollbar-thumb {
+  background: var(--thumb);
+  border-radius: 3px;
+}
+
+/* ====================================================================== */
 /* ================================= POPUP ============================== */
 /* ====================================================================== */
-
 .dialog_box {
   display: flex;
   align-items: center;

@@ -36,8 +36,26 @@ class SelectWidget extends BaseWidget {
             }
             this.$el.replaceChildren(...options);
         }
-        if ('color' in data) this.$el.style.color = intToCol(data.color);
+        if ('color' in data) this.$el.style.color = hexToCol(data.color);
+    }
+
+    static style() {
+        return `
+        .w_select {
+            border: none;
+            outline: none;
+            cursor: pointer;
+            font-size: 18px;
+            font-family: var(--font_f);
+            width: 100%;
+            border-radius: 4px;
+            background: none;
+            padding-left: 7px;
+            min-height: 30px;
+          }
+          
+          select option {
+            background: var(--back);
+          }`;
     }
 }
-
-Renderer.register('select', SelectWidget);

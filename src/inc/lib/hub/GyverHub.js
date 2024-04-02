@@ -7,7 +7,7 @@ class GyverHub extends EventEmitter {
   #devices = [];
   _ws;
 
-  static api_v = 1; // TODO v2
+  static api_v = 2;
 
   constructor() {
     super();

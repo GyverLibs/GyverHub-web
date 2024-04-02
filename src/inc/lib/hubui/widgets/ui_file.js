@@ -41,5 +41,3 @@ class UiFileWidget extends Widget {
         return this.$el;
     }
 }
-
-Renderer.register('ui_file', UiFileWidget);

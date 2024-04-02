@@ -43,9 +43,6 @@ class PlotWidget extends BaseWidget {
     }
 }
 
-Renderer.register('plot', PlotWidget);
-
-
 class Plot {
     constructor(id, cv, height, labels, type, dark) {
         this.id = id;
