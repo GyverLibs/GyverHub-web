@@ -1,4 +1,5 @@
 class JoyWidget extends BaseWidget {
+    static name = 'joy';
     $el;
     #center = 0;
     #posX = null;

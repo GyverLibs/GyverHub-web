@@ -8,12 +8,10 @@ class Renderer extends EventEmitter {
      * @param {typeof Widget} cls 
      * @param {boolean} virtual 
      */
-    static register(name, cls, virtual = false) {
-        Renderer.#WIDGETS.set(name, cls);
-        if (virtual) Renderer.#VIRTUAL_WIDGETS.add(name);
-        if (typeof eval(cls).style === 'function') {
-            addDOM(name + '_style', 'style', eval(cls).style(), EL('widget_styles'));
-        }
+    static register(cls) {
+        Renderer.#WIDGETS.set(cls.name, cls);
+        if (cls.virtual) Renderer.#VIRTUAL_WIDGETS.add(cls.name);
+        if (cls.style) addDOM(cls.name + '_style', 'style', cls.style, EL('widget_styles'));
     }
 
     /** @type {Device} */
@@ -181,55 +179,57 @@ class Renderer extends EventEmitter {
 }
 
 function registerWidgets() {
-    Renderer.register('button', ButtonWidget);
-    Renderer.register('canvas', CanvasWidget);
-    Renderer.register('color', ColorWidget);
-    Renderer.register('date', DateWidget);
-    Renderer.register('time', TimeWidget);
-    Renderer.register('datetime', DateTimeWidget);
-    Renderer.register('dpad', DpadWidget);
-    Renderer.register('flags', FlagsWidget);
-    Renderer.register('gauge', GaugeWidget);
-    Renderer.register('gauge_l', GaugeWidget);
-    Renderer.register('gauge_r', GaugeWidget);
-    Renderer.register('html', HTMLWidget);
-    Renderer.register('image', ImageWidget);
-    Renderer.register('icon', IconWidget);
-    Renderer.register('input', InputWidget);
-    Renderer.register('pass', PassWidget);
-    Renderer.register('joy', JoyWidget);
-    Renderer.register('label', Label);
-    Renderer.register('led', LedWidget);
-    Renderer.register('map', MapWidget);
-    Renderer.register('menu', MenuWidget);
-    Renderer.register('plot', PlotWidget);
-    Renderer.register('plugin', PluginWidget);
-    Renderer.register('custom', CustomWidget);
-    Renderer.register('confirm', ConfirmWidget, true);
-    Renderer.register('prompt', PromptWidget, true);
-    Renderer.register('row', RowColWidget);
-    Renderer.register('col', RowColWidget);
-    Renderer.register('select', SelectWidget);
-    Renderer.register('slider', SliderWidget);
-    Renderer.register('spinner', SpinnerWidget);
-    Renderer.register('stream', StreamWidget);
-    Renderer.register('switch_t', SwitchWidget);
-    Renderer.register('switch_i', SwitchIconWidget);
-    Renderer.register('table', TableWidget);
-    Renderer.register('tabs', TabsWidget);
-    Renderer.register('text', TextWidget);
-    Renderer.register('log', LogWidget);
-    Renderer.register('text_f', TextFileWidget);
-    Renderer.register('display', Display);
-    Renderer.register('area', Area);
-    Renderer.register('title', Title);
-    Renderer.register('ui_file', UiFileWidget);
-    Renderer.register('space', SpaceWidget);
-    Renderer.register('dummy', Widget, true);
+    [
+        ButtonWidget,
+        CanvasWidget,
+        ColorWidget,
+        DateWidget,
+        TimeWidget,
+        DateTimeWidget,
+        DpadWidget,
+        FlagsWidget,
+        GaugeWidget,
+        GaugeRWidget,
+        GaugeLWidget,
+        HTMLWidget,
+        ImageWidget,
+        IconWidget,
+        InputWidget,
+        PassWidget,
+        JoyWidget,
+        LabelWidget,
+        LedWidget,
+        MapWidget,
+        MenuWidget,
+        PlotWidget,
+        PluginWidget,
+        CustomWidget,
+        ConfirmWidget,
+        PromptWidget,
+        RowWidget,
+        ColWidget,
+        SelectWidget,
+        SliderWidget,
+        SpinnerWidget,
+        StreamWidget,
+        SwitchWidget,
+        SwitchIconWidget,
+        TableWidget,
+        TabsWidget,
+        TextWidget,
+        LogWidget,
+        TextFileWidget,
+        DisplayWidget,
+        AreaWidget,
+        TitleWidget,
+        UiFileWidget,
+        SpaceWidget,
+        DummyWidget,
 
-    // TODO: remove on new version
-    Renderer.register('css', Widget, true);
-    Renderer.register('js', Widget, true);
-    Renderer.register('hook', Widget, true);
-    Renderer.register('func', Widget, true);
+        // TODO: remove on new version
+        HookWidget,
+        FuncWidget,
+        CssWidget,
+        JsWidget,
+    ].forEach(cls => Renderer.register(cls));
 }

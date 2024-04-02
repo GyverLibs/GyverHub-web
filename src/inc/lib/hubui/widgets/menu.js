@@ -6,6 +6,7 @@ class MenuOpenEvent extends Event {
 }
 
 class MenuWidget extends Widget {
+    static name = 'menu';
     $el;
 
     constructor(data, renderer) {
@@ -44,8 +45,7 @@ class MenuWidget extends Widget {
         if (this.$el) this.$el.replaceChildren();
     }
 
-    static style() {
-        return `
+    static style = `
         #menu_overlay {
             cursor: pointer;
             position: fixed;
@@ -105,5 +105,4 @@ class MenuWidget extends Widget {
           .menu_act {
             border-color: var(--prim);
           }`;
-    }
 }

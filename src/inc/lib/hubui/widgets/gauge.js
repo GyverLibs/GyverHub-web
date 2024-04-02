@@ -1,4 +1,4 @@
-class GaugeWidget extends BaseWidget {
+class GaugeBaseWidget extends BaseWidget {
     static OUT_OF_RANGE_COLOR = '#8e1414';
 
     $el;
@@ -30,7 +30,7 @@ class GaugeWidget extends BaseWidget {
             }
         });
         this.#cstyle = window.getComputedStyle(this.$el);
-        
+
         this.update(data);
         wait2Frame().then(() => this.#redraw());
     }
@@ -108,7 +108,7 @@ class GaugeWidget extends BaseWidget {
             cx.measureText(this.max.toFixed(this.dec) + text).width
         );
 
-        if (this.value > this.max || this.value < this.min) cx.fillStyle = GaugeWidget.OUT_OF_RANGE_COLOR;
+        if (this.value > this.max || this.value < this.min) cx.fillStyle = GaugeBaseWidget.OUT_OF_RANGE_COLOR;
         else cx.fillStyle = this.#cstyle.getPropertyValue('--font2');
         cx.font = cv.width * 0.43 * 10 / w + 'px ' + font;
         cx.fillText(this.value.toFixed(this.dec) + this.unit, cv.width / 2, cv.height * 0.93);
@@ -155,7 +155,7 @@ class GaugeWidget extends BaseWidget {
         cx.beginPath();
         cx.arc(cv.width / 2, cv.height / 2, cv.width / 2 - cx.lineWidth, joint, Math.PI * 2.5);
         cx.stroke();
-        
+
         cx.strokeStyle = this.color;
         cx.beginPath();
         cx.arc(cv.width / 2, cv.height / 2, cv.width / 2 - cx.lineWidth, Math.PI / 2, joint);
@@ -183,7 +183,7 @@ class GaugeWidget extends BaseWidget {
             cx.measureText(this.max.toFixed(this.dec) + text).width
         );
 
-        if (this.value > this.max || this.value < this.min) cx.fillStyle = GaugeWidget.OUT_OF_RANGE_COLOR;
+        if (this.value > this.max || this.value < this.min) cx.fillStyle = GaugeBaseWidget.OUT_OF_RANGE_COLOR;
         else cx.fillStyle = this.#cstyle.getPropertyValue('--font2');
         cx.font = cv.width * 0.5 * 10 / w + 'px ' + font;
         cx.fillText(this.value.toFixed(this.dec) + this.unit, cv.width / 2, cv.height * 0.52);
@@ -230,7 +230,7 @@ class GaugeWidget extends BaseWidget {
         cx.roundRect(off + sw / 2, sw / 2, wid * this.perc / 100, cv.height - sw, 5 * r);
         cx.fill();
 
-        if (this.value > this.max || this.value < this.min) cx.fillStyle = GaugeWidget.OUT_OF_RANGE_COLOR;
+        if (this.value > this.max || this.value < this.min) cx.fillStyle = GaugeBaseWidget.OUT_OF_RANGE_COLOR;
         else cx.fillStyle = this.#cstyle.getPropertyValue('--font');
 
         let font = this.#cstyle.fontFamily;
@@ -256,5 +256,27 @@ class GaugeWidget extends BaseWidget {
 
         cx.textAlign = "right";
         cx.fillText(this.max.toFixed(this.dec), cv.width - (off + sw / 2 + off), cv.height * 0.52);
+    }
+}
+
+class GaugeWidget extends GaugeBaseWidget {
+    static name = 'gauge';
+
+    constructor(data, renderer) {
+        super(data, renderer);
+    }
+}
+class GaugeRWidget extends GaugeBaseWidget {
+    static name = 'gauge_r';
+
+    constructor(data, renderer) {
+        super(data, renderer);
+    }
+}
+class GaugeLWidget extends GaugeBaseWidget {
+    static name = 'gauge_l';
+
+    constructor(data, renderer) {
+        super(data, renderer);
     }
 }

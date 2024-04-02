@@ -1,4 +1,5 @@
 class ImageWidget extends BaseWidget {
+    static name = 'image';
     $el;
     #path;
 

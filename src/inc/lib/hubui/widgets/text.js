@@ -1,4 +1,5 @@
 class TextWidget extends BaseWidget {
+    static name = 'text';
     $el;
 
     constructor(data, renderer) {
@@ -24,6 +25,7 @@ class TextWidget extends BaseWidget {
 }
 
 class LogWidget extends BaseWidget {
+    static name = 'log';
     $el;
 
     constructor(data, renderer) {
@@ -55,6 +57,7 @@ class LogWidget extends BaseWidget {
 }
 
 class TextFileWidget extends BaseWidget {
+    static name = 'text_f';
     $el;
     #path;
 
@@ -84,7 +87,8 @@ class TextFileWidget extends BaseWidget {
     }
 }
 
-class Display extends BaseWidget {
+class DisplayWidget extends BaseWidget {
+    static name = 'display';
     $el;
 
     constructor(data, renderer) {
@@ -120,8 +124,7 @@ class Display extends BaseWidget {
         if ('disable' in data) this.disable(this.$el, data.disable);
     }
 
-    static style() {
-        return `
+    static style = `
         .w_disp {
             border: none;
             outline: none;
@@ -152,10 +155,10 @@ class Display extends BaseWidget {
           .w_disp::-webkit-scrollbar-thumb {
             display: none;
           }`;
-    }
 }
 
-class Area extends BaseWidget {
+class AreaWidget extends BaseWidget {
+    static name = 'area';
     $el;
     #changed;
     #regex;

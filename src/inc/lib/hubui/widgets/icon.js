@@ -1,4 +1,5 @@
 class IconWidget extends BaseWidget {
+    static name = 'icon';
     $el;
 
     constructor(data, renderer) {
@@ -28,8 +29,7 @@ class IconWidget extends BaseWidget {
         }
     }
 
-    static style() {
-        return `
+    static style = `
         .w_icon {
             font-weight: bold;
             font-family: 'FA5';
@@ -45,5 +45,4 @@ class IconWidget extends BaseWidget {
             color: var(--on-color);
             text-shadow: 0 0 10px var(--on-color);
           }`;
-    }
 }

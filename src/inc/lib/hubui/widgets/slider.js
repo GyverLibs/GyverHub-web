@@ -1,4 +1,5 @@
 class SliderWidget extends BaseWidget {
+    static name = 'slider';
     $el;
     $out;
 
@@ -59,8 +60,7 @@ class SliderWidget extends BaseWidget {
         if (send) this.set(this.$el.value);
     }
 
-    static style() {
-        return `
+    static style = `
         .w_slider {
             -webkit-appearance: none;
             -moz-appearance: none;
@@ -107,5 +107,4 @@ class SliderWidget extends BaseWidget {
             width: 100px;
             padding-right: 10px;
           }`;
-    }
 }

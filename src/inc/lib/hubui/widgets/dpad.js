@@ -1,4 +1,5 @@
 class DpadWidget extends BaseWidget {
+    static name = 'dpad';
     $el;
     #posX = 0;
     #posY = 0;

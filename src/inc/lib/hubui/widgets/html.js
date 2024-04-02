@@ -1,4 +1,5 @@
 class HTMLWidget extends BaseWidget {
+    static name = 'html';
     $el;
     #root;
 

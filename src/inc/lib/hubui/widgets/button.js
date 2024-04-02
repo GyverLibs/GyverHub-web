@@ -1,4 +1,6 @@
 class ButtonWidget extends BaseWidget {
+    static name = 'button';
+
     $el;
     #color = 'var(--prim)';
     #fontSize = '45px';
@@ -92,8 +94,7 @@ class ButtonWidget extends BaseWidget {
         this.#inline = true;
     }
 
-    static style() {
-        return `
+    static style = `
         .w_btn {
             cursor: pointer;
             margin: -3px;
@@ -106,5 +107,4 @@ class ButtonWidget extends BaseWidget {
           .w_btn:active {
             filter: brightness(0.7);
           }`;
-    }
 }

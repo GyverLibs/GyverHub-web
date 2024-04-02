@@ -1,4 +1,5 @@
-class Label extends BaseWidget {
+class LabelWidget extends BaseWidget {
+    static name = 'label';
     $lbl_cont;
     $lbl_icon;
     $lbl;
@@ -39,11 +40,9 @@ class Label extends BaseWidget {
         if ('icon' in data) this.$lbl_icon.innerHTML = data.icon ? (getIcon(data.icon) + ' ') : '';
     }
 
-    static style() {
-        return `
+    static style = `
         .w_label {
             padding: 0px 10px;
             text-wrap: nowrap;
           }`;
-    }
 }

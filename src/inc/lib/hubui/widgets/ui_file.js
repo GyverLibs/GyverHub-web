@@ -1,4 +1,5 @@
 class UiFileWidget extends Widget {
+    static name = 'ui_file';
     $el;
 
     constructor(data, renderer) {

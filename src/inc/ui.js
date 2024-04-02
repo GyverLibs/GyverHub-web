@@ -451,12 +451,13 @@ async function testbuild_h() {
   EL('test_plugins').replaceChildren();
   let js = EL('test_js').value.replaceAll('TestWidget', rndName);
   addDOM('test_script', 'script', js, EL('test_plugins'));
-  Renderer.register('_test_widget', eval(rndName));
+  Renderer.register(eval(rndName));
 
   let controls = {
     id: 'test',
-    type: '_test_widget',
+    type: eval(rndName).name,
   };
+  
   let json;
   try {
     json = JSON.parse(EL('test_controls').value);

@@ -1,4 +1,5 @@
 class LedWidget extends BaseWidget {
+    static name = 'led';
     $el;
 
     constructor(data, renderer) {
@@ -24,8 +25,7 @@ class LedWidget extends BaseWidget {
         }
     }
 
-    static style() {
-        return `
+    static style = `
         .w_led {
             --on-color: var(--prim);
             margin: 0 auto;
@@ -40,5 +40,4 @@ class LedWidget extends BaseWidget {
             background: var(--on-color);
             box-shadow: var(--on-color) 0 0 9px 1px, inset 2px 3px 0px 0px #fff3;
           }`;
-    }
 }

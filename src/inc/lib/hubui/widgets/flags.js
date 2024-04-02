@@ -1,4 +1,5 @@
 class FlagsWidget extends BaseWidget {
+    static name = 'flags';
     $el;
     #value = 0;
     #items = [];
@@ -53,8 +54,7 @@ class FlagsWidget extends BaseWidget {
         this.$el.replaceChildren(...labels);
     }
 
-    static style() {
-        return `
+    static style = `
         .w_flags {
             padding: 4px 13px;
             margin: 3px;
@@ -84,5 +84,4 @@ class FlagsWidget extends BaseWidget {
             flex-wrap: wrap;
             justify-content: center;
           }`;
-    }
 }

@@ -1,4 +1,5 @@
-class RowColWidget extends Widget {
+class RowWidget extends Widget {
+    static name = 'row';
     #children;
 
     constructor(data, renderer) {
@@ -19,5 +20,13 @@ class RowColWidget extends Widget {
         }
 
         return $root;
+    }
+}
+
+class ColWidget extends RowWidget {
+    static name = 'col';
+    
+    constructor(data, renderer) {
+        super(data, renderer);
     }
 }

@@ -1,4 +1,5 @@
 class TableWidget extends BaseWidget {
+    static name = 'table';
     $el;
     #align = '';
     #width = '';
@@ -67,8 +68,7 @@ class TableWidget extends BaseWidget {
         this.$el.replaceChildren(...items);
     }
 
-    static style() {
-        return `
+    static style = `
         .w_table {
             border-collapse: collapse;
             width: 100%;
@@ -80,7 +80,6 @@ class TableWidget extends BaseWidget {
             border: 1px solid var(--font3);
             padding: 4px 8px;
           }`;
-    }
 }
 
 function parseCSV(str) {

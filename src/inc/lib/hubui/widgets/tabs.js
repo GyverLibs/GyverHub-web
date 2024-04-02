@@ -1,4 +1,5 @@
-class TabsWidget  extends BaseWidget {
+class TabsWidget extends BaseWidget {
+    static name = 'tabs';
     $el;
     $ul;
 
@@ -29,7 +30,7 @@ class TabsWidget  extends BaseWidget {
                 }
             ]
         });
-        
+
 
         this.disable(this.$el, data.disable);
         this.update(data);
@@ -67,8 +68,7 @@ class TabsWidget  extends BaseWidget {
         if (move) this.$ul.scrollLeft = this.$ul.scrollWidth * num / list.length;
     }
 
-    static style() {
-        return `
+    static style = `
         .w_tabs {
             width: 100%;
           }
@@ -114,5 +114,4 @@ class TabsWidget  extends BaseWidget {
             color: var(--tab) !important;
             font-weight: 600;
           }`;
-    }
 }

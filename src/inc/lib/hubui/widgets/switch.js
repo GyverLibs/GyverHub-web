@@ -1,4 +1,5 @@
 class SwitchWidget extends BaseWidget {
+    static name = 'switch_t';
     $el;
     $slider;
 
@@ -49,6 +50,7 @@ class SwitchWidget extends BaseWidget {
 }
 
 class SwitchIconWidget extends BaseWidget {
+    static name = 'switch_i';
     $el;
     $slider;
 
@@ -91,8 +93,7 @@ class SwitchIconWidget extends BaseWidget {
         if ('disable' in data) this.disable(this.$el, data.disable);
     }
 
-    static style() {
-        return `
+    static style = `
         .w_swicon {
             --on-color: var(--prim);
             border-radius: 50%;
@@ -110,5 +111,4 @@ class SwitchIconWidget extends BaseWidget {
             color: var(--tab);
             background: var(--on-color);
           }`;
-    }
 }

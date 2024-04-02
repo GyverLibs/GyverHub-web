@@ -1,4 +1,5 @@
 class InputWidget extends BaseWidget {
+    static name = 'input';
     $el;
     #changed;
     #regex;
@@ -56,8 +57,7 @@ class InputWidget extends BaseWidget {
         }
     }
 
-    static style() {
-        return `
+    static style = `
         .w_inp {
             font-size: 17px;
             border: none;
@@ -79,10 +79,10 @@ class InputWidget extends BaseWidget {
             display: flex;
             width: 100%;
           }`;
-    }
 }
 
 class PassWidget extends BaseWidget {
+    static name = 'pass';
     $el;
     #changed;
     #regex;
@@ -156,13 +156,11 @@ class PassWidget extends BaseWidget {
         }
     }
 
-    static style() {
-        return `
+    static style = `
         .w_eye {
             font-size: 18px;
             cursor: pointer;
             color: var(--font2);
             margin-top: -7px;
           }`;
-    }
 }

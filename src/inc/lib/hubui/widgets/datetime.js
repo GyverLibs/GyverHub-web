@@ -1,4 +1,5 @@
 class DateWidget extends BaseWidget {
+    static name = 'date';
     $el;
 
     constructor(data, renderer) {
@@ -33,6 +34,7 @@ class DateWidget extends BaseWidget {
 }
 
 class TimeWidget extends BaseWidget {
+    static name = 'time';
     $el;
 
     constructor(data, renderer) {
@@ -68,6 +70,7 @@ class TimeWidget extends BaseWidget {
 }
 
 class DateTimeWidget extends BaseWidget {
+    static name = 'datetime';
     $el;
 
     constructor(data, renderer) {
@@ -101,8 +104,7 @@ class DateTimeWidget extends BaseWidget {
         if ('color' in data) this.$el.style.color = hexToCol(data.color);
     }
 
-    static style() {
-        return `
+    static style = `
         .w_date {
             border: none;
             outline: none;
@@ -117,7 +119,6 @@ class DateTimeWidget extends BaseWidget {
             display: none;
             -webkit-appearance: none;
           }`;
-    }
 }
 
 function getUnix(arg) {

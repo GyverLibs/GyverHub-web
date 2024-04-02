@@ -1,6 +1,8 @@
 class CanvasWidget extends BaseWidget {
+    static name = 'canvas';
+
     $el;
-    #data = [];
+    cvdata = [];
     #scale = 1;
     #resize_h;
 
@@ -38,7 +40,7 @@ class CanvasWidget extends BaseWidget {
 
         if ('active' in data) this.$el.style.cursor = data.active ? 'pointer' : '';
         if ('data' in data) {
-            this.#data = this.#data.concat(data.data);
+            this.cvdata = this.cvdata.concat(data.data);
             this.#show(data.data);
         }
     }
@@ -70,7 +72,7 @@ class CanvasWidget extends BaseWidget {
         this.$el.style.height = rh + 'px';
         this.$el.width = Math.floor(rw * ratio);
         this.$el.height = Math.floor(rh * ratio);
-        this.#show(this.#data);
+        this.#show(this.cvdata);
     }
 
     #show(data) {
@@ -96,14 +98,12 @@ class CanvasWidget extends BaseWidget {
         );
     }
 
-    static style() {
-        return `
+    static style = `
         .w_canvas {
             border-radius: 4px;
             width: 100%;
             height: 100%;
             overflow: hidden;
             margin-bottom: -5px;
-          }`
-    }
+          }`;
 }

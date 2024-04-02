@@ -1,4 +1,5 @@
 class SelectWidget extends BaseWidget {
+    static name = 'select';
     $el;
 
     constructor(data, renderer) {
@@ -39,8 +40,7 @@ class SelectWidget extends BaseWidget {
         if ('color' in data) this.$el.style.color = hexToCol(data.color);
     }
 
-    static style() {
-        return `
+    static style = `
         .w_select {
             border: none;
             outline: none;
@@ -57,5 +57,4 @@ class SelectWidget extends BaseWidget {
           select option {
             background: var(--back);
           }`;
-    }
 }

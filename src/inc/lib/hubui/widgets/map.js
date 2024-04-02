@@ -31,10 +31,11 @@ const mapLayers = [
 ];
 
 class MapWidget extends BaseWidget {
+    static name = 'map';
     $el;
     map;
     marker;
-    data = [];
+    cvdata = [];
 
     constructor(data, renderer) {
         super(data, renderer);
@@ -77,7 +78,7 @@ class MapWidget extends BaseWidget {
             this.map.panTo(data.latlon);
             this._setMarker(data.latlon);
         }
-        if ('data' in data) this.data = this.data.concat(data.data); console.log(data);
+        if ('data' in data) this.cvdata = this.cvdata.concat(data.data);
     }
 
     onDrawLayer(info) {
@@ -85,7 +86,7 @@ class MapWidget extends BaseWidget {
         cx.clearRect(0, 0, info.canvas.width, info.canvas.height);
         showCanvasAPI(
             info.canvas,
-            this.data,
+            this.cvdata,
             L_scale(info),
             (x, y) => {
                 let point = L_toPoint(info, [x / 1000000.0, y / 1000000.0]);
@@ -109,11 +110,9 @@ class MapWidget extends BaseWidget {
         // this.setSuffix('[' + e.latlng.lat.toFixed(3) + ',' + e.latlng.lng.toFixed(3) + ']');
     }
 
-    static style() {
-        return `
+    static style = `
         .icon_map {
             font-size: 35px;
             color: #e70017;
           }`;
-    }
 }

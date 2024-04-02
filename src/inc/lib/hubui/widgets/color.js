@@ -1,4 +1,5 @@
 class ColorWidget extends BaseWidget {
+    static name = 'color';
     $el;
     #pickr;
 

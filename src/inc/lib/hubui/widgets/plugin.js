@@ -1,4 +1,5 @@
 class PluginWidget extends Widget {
+    static name = 'plugin';
     widgetClass;
 
     constructor(data, renderer) {
@@ -29,6 +30,7 @@ class PluginWidget extends Widget {
 }
 
 class CustomWidget extends Widget {
+    static name = 'custom';
     $el;
     #widget;
 

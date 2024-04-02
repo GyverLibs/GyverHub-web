@@ -1,4 +1,5 @@
 class SpinnerWidget extends BaseWidget {
+    static name = 'spinner';
     $el;
     $unit;
     #dec = 0;
@@ -95,8 +96,7 @@ class SpinnerWidget extends BaseWidget {
         this.#spin(-e.deltaY);
     }
 
-    static style() {
-        return `
+    static style = `
         .w_spinner_row {
             display: flex;
             align-items: center;
@@ -124,5 +124,4 @@ class SpinnerWidget extends BaseWidget {
             color: var(--font2);
             font-size: 20px;
           }`;
-    }
 }
