@@ -65,7 +65,7 @@ class MapWidget extends BaseWidget {
                 this._send(e.latlng);
             });
 
-            L.canvasLayer().delegate(this).addTo(this.map);
+            L_canvasLayer().delegate(this).addTo(this.map);
             this.map.setView(('latlon' in data) ? data.latlon : mapZeroPos, 10);
             this.update(data);
         });
@@ -86,9 +86,9 @@ class MapWidget extends BaseWidget {
         showCanvasAPI(
             info.canvas,
             this.data,
-            L.scale(info),
+            L_scale(info),
             (x, y) => {
-                let point = L.toPoint(info, [x / 1000000.0, y / 1000000.0]);
+                let point = L_toPoint(info, [x / 1000000.0, y / 1000000.0]);
                 return [point.x, point.y];
             }
         );

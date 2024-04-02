@@ -55,7 +55,7 @@
         });
 
 
-        L.canvasLayer()
+        L_canvasLayer()
             .delegate(this)
             .addTo(map);
 
@@ -78,7 +78,7 @@
             for (let i = 0; i < data.length; i++) {
                 let d = data[i];
                 if (info.bounds.contains([d[0], d[1]])) {
-                    dot = L.toPoint(info, d);
+                    dot = L_toPoint(info, d);
                     ctx.beginPath();
                     ctx.arc(dot.x, dot.y, L.mToPix(info, 50) / 2, 0, Math.PI * 2);
                     ctx.fill();

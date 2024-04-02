@@ -171,14 +171,14 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
     }
 });
 
-L.canvasLayer = function () {
+function L_canvasLayer() {
     return new L.CanvasLayer();
 };
 
-L.toPoint = function (info, latlon) {
+function L_toPoint(info, latlon) {
     return info.layer._map.latLngToContainerPoint([latlon[0], latlon[1]]);
 }
-L.dist = function (pos1, pos2) {
+function L_dist(pos1, pos2) {
     let R = 6378.137;
     let dLat = (pos2.lat - pos1.lat) * Math.PI / 180;
     let dLon = (pos2.lng - pos1.lng) * Math.PI / 180;
@@ -189,8 +189,8 @@ L.dist = function (pos1, pos2) {
     let d = R * c;
     return d * 1000;
 }
-L.scale = function (info) {
-    let dm = L.dist(info.bounds._northEast, info.bounds._southWest);
+function L_scale(info) {
+    let dm = L_dist(info.bounds._northEast, info.bounds._southWest);
     let dxy = Math.sqrt(info.size.x * info.size.x + info.size.y * info.size.y);
     return dxy / dm;
 }

@@ -42,12 +42,15 @@ function showCanvasAPI(cv, data, scale, mapxy, fileHandler) {
         apply();
     }
 
-    for (const item of data) {
+    for (let i in data) {
+        i = Number(i);
+        const item = data[i];
+
         if (item.match(/^\d+$/)) {  // cmd only
             let cmd = canvas_cmd[Number(item)];
 
             switch (cmd) {
-                case 'clear': data = []; cx.clearRect(0, 0, cv.width, cv.height); break;
+                case 'clear': cx.clearRect(0, 0, cv.width, cv.height); break;
                 case 'noFill': _fillF = 0; break;
                 case 'noStroke': _strokeF = 0; break;
                 case 'beginShape': _shapeF = 1; cx.beginPath(); break;
@@ -150,8 +153,9 @@ function showCanvasAPI(cv, data, scale, mapxy, fileHandler) {
                             }
                             cx.drawImage(img, ...pos);
                         }
+                        if (i + 1 < data.length) showCanvasAPI(cv, data.slice(i + 1), scale, mapxy, fileHandler);
                     }
-                    break;
+                    return;
                 case 'textFont':
                     cx.font = cx.font.split('px ')[0] + 'px ' + args[0];
                     break;

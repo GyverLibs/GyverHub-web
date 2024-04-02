@@ -66,7 +66,9 @@ class Compiler:
 
         if "raw" not in options:
             if "js" in options:
-                data = rjsmin.jsmin(data.decode('utf-8')).encode('utf-8')
+                data = data.decode('utf-8')
+                data = re.compile(r"^\s+", re.MULTILINE).sub("", data)
+                data = rjsmin.jsmin(data).encode('utf-8')
 
             if "css" in options:
                 data = rcssmin.cssmin(data.decode('utf-8')).encode('utf-8')
