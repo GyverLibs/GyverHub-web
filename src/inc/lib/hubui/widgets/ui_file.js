@@ -1,5 +1,6 @@
+/*@[if_target:none]*/
 class UiFileWidget extends Widget {
-    static name = 'ui_file';
+    static wtype = 'ui_file';
     $el;
 
     constructor(data, renderer) {
@@ -42,3 +43,4 @@ class UiFileWidget extends Widget {
         return this.$el;
     }
 }
+/*@/[if_target:none]*/

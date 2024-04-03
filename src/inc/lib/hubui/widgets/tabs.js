@@ -1,5 +1,5 @@
 class TabsWidget extends BaseWidget {
-    static name = 'tabs';
+    static wtype = 'tabs';
     $el;
     $ul;
 

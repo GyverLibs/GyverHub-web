@@ -1,5 +1,5 @@
 class HTMLWidget extends BaseWidget {
-    static name = 'html';
+    static wtype = 'html';
     $el;
     #root;
 
@@ -14,7 +14,7 @@ class HTMLWidget extends BaseWidget {
             mode: 'closed'
         });
         this.#root.innerHTML = waiter();
-        
+
         this.update(data);
     }
 
@@ -34,7 +34,8 @@ class HTMLWidget extends BaseWidget {
     #apply(text) {
         if (!this.renderer.device.info.trust) {
             this.#root.replaceChildren();
-            this.setPlabel('[BLOCKED]');
+            // this.setPlabel('[BLOCKED]');
+            this.#root.innerHTML = noTrust();
             return;
         }
         this.#root.innerHTML = text;

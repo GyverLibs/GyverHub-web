@@ -1,5 +1,5 @@
 class InputWidget extends BaseWidget {
-    static name = 'input';
+    static wtype = 'input';
     $el;
     #changed;
     #regex;
@@ -15,6 +15,7 @@ class InputWidget extends BaseWidget {
                     type: 'input',
                     class: 'w_inp',
                     name: 'el',
+                    inputType: 'text',
                     events: {
                         keydown: e => {
                             if (e.key == 'Enter') this.#send(true);
@@ -29,7 +30,6 @@ class InputWidget extends BaseWidget {
                 }
             ]
         });
-        this.$el.type = 'text';
 
         this.update(data);
     }
@@ -82,7 +82,7 @@ class InputWidget extends BaseWidget {
 }
 
 class PassWidget extends BaseWidget {
-    static name = 'pass';
+    static wtype = 'pass';
     $el;
     #changed;
     #regex;
@@ -98,6 +98,7 @@ class PassWidget extends BaseWidget {
                     type: 'input',
                     class: 'w_inp',
                     name: 'el',
+                    inputType: 'password',
                     events: {
                         keydown: e => {
                             if (e.key == 'Enter') this.#send(true);
@@ -128,7 +129,6 @@ class PassWidget extends BaseWidget {
                 }
             ]
         });
-        this.$el.type = 'password';
 
         this.update(data);
     }

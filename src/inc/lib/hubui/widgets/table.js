@@ -1,5 +1,5 @@
 class TableWidget extends BaseWidget {
-    static name = 'table';
+    static wtype = 'table';
     $el;
     #align = '';
     #width = '';

@@ -1,5 +1,5 @@
 class TextWidget extends BaseWidget {
-    static name = 'text';
+    static wtype = 'text';
     $el;
 
     constructor(data, renderer) {
@@ -8,10 +8,12 @@ class TextWidget extends BaseWidget {
         this.makeLayout({
             type: 'textarea',
             class: 'ui_area ui_area_passive',
-            name: 'el'
+            name: 'el',
+            params: {
+                readOnly: true,
+                rows: 5,
+            }
         });
-        this.$el.readOnly = true;
-        this.$el.rows = 5;
 
         this.update(data);
     }
@@ -25,7 +27,7 @@ class TextWidget extends BaseWidget {
 }
 
 class LogWidget extends BaseWidget {
-    static name = 'log';
+    static wtype = 'log';
     $el;
 
     constructor(data, renderer) {
@@ -35,12 +37,14 @@ class LogWidget extends BaseWidget {
             type: 'textarea',
             class: 'ui_area ui_area_passive',
             name: 'el',
+            params: {
+                readOnly: true,
+                rows: 5
+            },
             style: {
                 color: 'var(--prim)'
             },
         });
-        this.$el.readOnly = true;
-        this.$el.rows = 5;
 
         this.update(data);
     }
@@ -57,7 +61,7 @@ class LogWidget extends BaseWidget {
 }
 
 class TextFileWidget extends BaseWidget {
-    static name = 'text_f';
+    static wtype = 'text_f';
     $el;
     #path;
 
@@ -67,9 +71,11 @@ class TextFileWidget extends BaseWidget {
         this.makeLayout({
             type: 'textarea',
             class: 'ui_area ui_area_passive',
-            name: 'el'
+            name: 'el',
+            params: {
+                readOnly: true
+            }
         });
-        this.$el.readOnly = true;
 
         this.update(data);
     }
@@ -88,7 +94,7 @@ class TextFileWidget extends BaseWidget {
 }
 
 class DisplayWidget extends BaseWidget {
-    static name = 'display';
+    static wtype = 'display';
     $el;
 
     constructor(data, renderer) {
@@ -98,6 +104,10 @@ class DisplayWidget extends BaseWidget {
             type: 'textarea',
             class: 'w_disp',
             name: 'el',
+            params: {
+                readOnly: true,
+                rows: 2
+            },
             style: {
                 fontSize: '20px',
                 background: 'var(--prim)'
@@ -109,8 +119,6 @@ class DisplayWidget extends BaseWidget {
                 }
             }
         });
-        this.$el.readOnly = true;
-        this.$el.rows = 2;
 
         this.update(data);
     }
@@ -158,7 +166,7 @@ class DisplayWidget extends BaseWidget {
 }
 
 class AreaWidget extends BaseWidget {
-    static name = 'area';
+    static wtype = 'area';
     $el;
     #changed;
     #regex;

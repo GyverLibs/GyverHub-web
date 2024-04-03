@@ -1,5 +1,5 @@
 class FlagsWidget extends BaseWidget {
-    static name = 'flags';
+    static wtype = 'flags';
     $el;
     #value = 0;
     #items = [];

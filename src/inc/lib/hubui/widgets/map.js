@@ -31,7 +31,7 @@ const mapLayers = [
 ];
 
 class MapWidget extends BaseWidget {
-    static name = 'map';
+    static wtype = 'map';
     $el;
     map;
     marker;

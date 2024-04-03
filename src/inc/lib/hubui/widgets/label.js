@@ -1,5 +1,5 @@
 class LabelWidget extends BaseWidget {
-    static name = 'label';
+    static wtype = 'label';
     $lbl_cont;
     $lbl_icon;
     $lbl;

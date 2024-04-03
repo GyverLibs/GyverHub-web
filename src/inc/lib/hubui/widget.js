@@ -195,7 +195,8 @@ class BaseWidget extends Widget {
             type: 'div',
             class: 'widget_body',
             style: {
-                minHeight: data.wheight && data.wheight > 25 ? data.wheight + 'px' : '',
+                // minHeight: data.wheight && data.wheight > 25 ? data.wheight + 'px' : '',
+                minHeight: (data.wheight ?? 25) + 'px',
             }
         });
         this.#inner.append(this.#container);

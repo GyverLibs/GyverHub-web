@@ -1,5 +1,5 @@
 class StreamWidget extends BaseWidget {
-    static name = 'stream';
+    static wtype = 'stream';
     $el;
 
     constructor(data, renderer) {

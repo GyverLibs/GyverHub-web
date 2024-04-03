@@ -1,5 +1,5 @@
 class ConfirmWidget extends Widget {
-    static name = 'confirm';
+    static wtype = 'confirm';
     static virtual = true;
 
     constructor(data, renderer) {
@@ -15,7 +15,7 @@ class ConfirmWidget extends Widget {
 }
 
 class PromptWidget extends Widget {
-    static name = 'prompt';
+    static wtype = 'prompt';
     static virtual = true;
     
     constructor(data, renderer) {

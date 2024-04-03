@@ -1,5 +1,5 @@
 class SwitchWidget extends BaseWidget {
-    static name = 'switch_t';
+    static wtype = 'switch_t';
     $el;
     $slider;
 
@@ -16,6 +16,7 @@ class SwitchWidget extends BaseWidget {
                     children: [
                         {
                             type: 'input',
+                            inputType: 'checkbox',
                             name: 'el',
                             events: {
                                 change: () => {
@@ -33,7 +34,6 @@ class SwitchWidget extends BaseWidget {
                 }
             ]
         });
-        this.$el.type = 'checkbox';
         
         this.update(data);
     }
@@ -50,7 +50,7 @@ class SwitchWidget extends BaseWidget {
 }
 
 class SwitchIconWidget extends BaseWidget {
-    static name = 'switch_i';
+    static wtype = 'switch_i';
     $el;
     $slider;
 

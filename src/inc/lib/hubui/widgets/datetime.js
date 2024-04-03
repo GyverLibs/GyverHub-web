@@ -1,5 +1,5 @@
 class DateWidget extends BaseWidget {
-    static name = 'date';
+    static wtype = 'date';
     $el;
 
     constructor(data, renderer) {
@@ -9,6 +9,7 @@ class DateWidget extends BaseWidget {
             type: 'input',
             class: 'w_date',
             name: 'el',
+            inputType: 'date',
             style: {
                 color: 'var(--prim)'
             },
@@ -21,7 +22,6 @@ class DateWidget extends BaseWidget {
                 },
             },
         });
-        this.$el.type = 'date';
         
         this.update(data);
     }
@@ -34,7 +34,7 @@ class DateWidget extends BaseWidget {
 }
 
 class TimeWidget extends BaseWidget {
-    static name = 'time';
+    static wtype = 'time';
     $el;
 
     constructor(data, renderer) {
@@ -44,8 +44,12 @@ class TimeWidget extends BaseWidget {
             type: 'input',
             class: 'w_date',
             name: 'el',
+            inputType: 'time',
             style: {
                 color: 'var(--prim)'
+            },
+            params: {
+                step: 1
             },
             events: {
                 click: () => {
@@ -56,8 +60,6 @@ class TimeWidget extends BaseWidget {
                 },
             },
         });
-        this.$el.type = 'time';
-        this.$el.step = 1;
         
         this.update(data);
     }
@@ -70,7 +72,7 @@ class TimeWidget extends BaseWidget {
 }
 
 class DateTimeWidget extends BaseWidget {
-    static name = 'datetime';
+    static wtype = 'datetime';
     $el;
 
     constructor(data, renderer) {
@@ -80,8 +82,12 @@ class DateTimeWidget extends BaseWidget {
             type: 'input',
             class: 'w_date',
             name: 'el',
+            inputType: 'datetime-local',
             style: {
                 color: 'var(--prim)'
+            },
+            params: {
+                step: 1
             },
             events: {
                 click: () => {
@@ -92,8 +98,6 @@ class DateTimeWidget extends BaseWidget {
                 },
             },
         });
-        this.$el.type = 'datetime-local';
-        this.$el.step = 1;
         
         this.update(data);
     }

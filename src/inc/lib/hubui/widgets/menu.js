@@ -6,7 +6,7 @@ class MenuOpenEvent extends Event {
 }
 
 class MenuWidget extends Widget {
-    static name = 'menu';
+    static wtype = 'menu';
     $el;
 
     constructor(data, renderer) {

@@ -1,5 +1,5 @@
 class IconWidget extends BaseWidget {
-    static name = 'icon';
+    static wtype = 'icon';
     $el;
 
     constructor(data, renderer) {

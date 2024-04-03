@@ -4,14 +4,26 @@ class Renderer extends EventEmitter {
 
     /**
      * Register widget class
-     * @param {string} name 
      * @param {typeof Widget} cls 
-     * @param {boolean} virtual 
      */
     static register(cls) {
-        Renderer.#WIDGETS.set(cls.name, cls);
-        if (cls.virtual) Renderer.#VIRTUAL_WIDGETS.add(cls.name);
-        if (cls.style) addDOM(cls.name + '_style', 'style', cls.style, EL('widget_styles'));
+        Renderer.#WIDGETS.set(cls.wtype, cls);
+        if (cls.virtual) Renderer.#VIRTUAL_WIDGETS.add(cls.wtype);
+        if (cls.style) addDOM(cls.wtype + '_style', 'style', cls.style, EL('widget_styles'));
+    }
+
+    static registerPlugin(js) {
+        let cls = js.match(/class\s+(\w+)\s+extends/);
+        if (!cls || cls.length < 2) return null;
+        cls = cls[1];
+
+        let wtype = js.match(/static wtype\s+=\s+'(\w+)'/);
+        if (!wtype || wtype.length < 2) return null;
+        wtype = wtype[1];
+
+        const f = new Function('return (' + js + ');');
+        Renderer.register(f());
+        return wtype;
     }
 
     /** @type {Device} */
@@ -77,15 +89,16 @@ class Renderer extends EventEmitter {
      */
     _makeWidgets(cont, type, data, isExt = false) {
         this.#updateWWidth(type, data);
-
         const idMap = isExt ? this.#idMapExt : this.#idMap;
+
         for (const ctrl of data) {
             if (!ctrl.type) continue;
 
-            const cls = Renderer.#WIDGETS.get(ctrl.type);
+            let cls = Renderer.#WIDGETS.get(ctrl.type);
             if (cls === undefined) {
                 console.log('W: Missing widget:', ctrl);
-                continue;
+                // continue;
+                cls = Renderer.#WIDGETS.get('load');
             }
 
             const obj = new cls(ctrl, this);
@@ -171,10 +184,11 @@ class Renderer extends EventEmitter {
         }
     }
 
-    _getPlugin(name) {
-        const widget = this.#idMap.get(name);
-        if (!widget || !(widget instanceof PluginWidget)) return undefined;
-        return widget.widgetClass;
+    _getPlugin(type) {
+        return Renderer.#WIDGETS.get(type);
+        // const widget = this.#idMap.get(type);
+        // if (!widget || !(widget instanceof PluginWidget)) return undefined;
+        // return widget.widgetClass;
     }
 }
 
@@ -202,8 +216,11 @@ function registerWidgets() {
         MapWidget,
         MenuWidget,
         PlotWidget,
-        PluginWidget,
-        CustomWidget,
+        PluginLoader,
+        LoadWidget,
+        // CustomWidget,
+        // PluginWidget,
+        // CustomWidget,
         ConfirmWidget,
         PromptWidget,
         RowWidget,
@@ -222,14 +239,8 @@ function registerWidgets() {
         DisplayWidget,
         AreaWidget,
         TitleWidget,
-        UiFileWidget,
+        // UiFileWidget,
         SpaceWidget,
         DummyWidget,
-
-        // TODO: remove on new version
-        HookWidget,
-        FuncWidget,
-        CssWidget,
-        JsWidget,
     ].forEach(cls => Renderer.register(cls));
 }

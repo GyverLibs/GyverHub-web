@@ -1,8 +1,17 @@
+
+// ===================== RENDER =====================
 function createElement(self, obj) {
   if (typeof obj === 'string' || obj instanceof Node)
     return obj;
 
   const $el = document.createElement(obj.type);
+  if (obj.params) {
+    for (const [key, value] of Object.entries(obj.params)) {
+      $el[key] = value;
+    }
+  }
+  if (obj.value) $el.value = obj.value;
+  if (obj.inputType) $el.type = obj.inputType;
   if (obj.class) $el.className = obj.class;
   if (obj.id) $el.id = obj.id;
   if (obj.text) $el.textContent = obj.text;
@@ -22,8 +31,6 @@ function createElement(self, obj) {
   return $el;
 }
 
-
-// ===================== RENDER =====================
 function EL(id) {
   return document.getElementById(id);
 }
@@ -99,8 +106,18 @@ function b64ToText(base64) {
   return new TextDecoder().decode(Uint8Array.from(binString, (m) => m.codePointAt(0)));
 }
 
-function waiter(size = 50, col = 'var(--prim)', block = true) {
+function waiter(size = 45, col = 'var(--prim)', block = true) {
   return `<div class="waiter ${block ? 'waiter_b' : ''}"><span style="font-size:${size}px;color:${col}" class="icon spinning"></span></div>`;
+}
+function noTrust() {
+  return `<div class="blocked_cont"><a href="javascript:void(0)" onclick="notrust_h()" class="blocked">${lang.blocked}</a></div>`;
+}
+async function notrust_h() {
+  if (await asyncConfirm(lang.unblock)) {
+    hub.dev(focused).info.trust = 1;
+    refresh_h();
+    
+  }
 }
 
 function adjustColor(col, ratio) {

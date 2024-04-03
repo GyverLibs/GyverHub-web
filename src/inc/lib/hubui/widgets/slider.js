@@ -1,5 +1,5 @@
 class SliderWidget extends BaseWidget {
-    static name = 'slider';
+    static wtype = 'slider';
     $el;
     $out;
 
@@ -10,6 +10,14 @@ class SliderWidget extends BaseWidget {
             type: 'input',
             class: 'w_slider',
             name: 'el',
+            inputType: 'range',
+            params: {
+                min: 0,
+                max: 100,
+                step: 1,
+                dec: 0,
+                value: 0,
+            },
             events: {
                 input: () => {
                     this.#move()
@@ -31,12 +39,6 @@ class SliderWidget extends BaseWidget {
                 }
             ]
         });
-        this.$el.type = 'range';
-        this.$el.min = 0;
-        this.$el.max = 100;
-        this.$el.step = 1;
-        this.$el.dec = 0;
-        this.$el.value = 0;
 
         this.update(data);
 

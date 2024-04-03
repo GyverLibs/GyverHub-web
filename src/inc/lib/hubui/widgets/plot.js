@@ -1,5 +1,5 @@
 class PlotWidget extends BaseWidget {
-    static name = 'plot';
+    static wtype = 'plot';
     $el;
     #cv;
 

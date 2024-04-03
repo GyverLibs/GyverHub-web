@@ -106,6 +106,7 @@ const langBase = {
     delete: "Delete",
     fetch: "Fetch",
     download: "Download",
+    open: "Open",
     edit: "Edit",
     wrong_ota: "Wrong file! Use",
 
@@ -123,6 +124,8 @@ const langBase = {
     redirect: "Redirect to",
     hub_pin: "Enter PIN",
     dev_pin: "Enter PIN for device ",
+    blocked: "Blocked. Trust?",
+    unblock: "Trust this device and it's custom code?",
   },
   
   Russian: {
@@ -232,6 +235,7 @@ const langBase = {
     delete: "Удалить",
     fetch: "Скачать",
     download: "Скачать",
+    open: "Открыть",
     edit: "Редактировать",
     wrong_ota: "Некорректный файл! Используй",
 
@@ -249,5 +253,7 @@ const langBase = {
     redirect: "Перейти на",
     hub_pin: "Введите ПИН",
     dev_pin: "Введите пин устройства ",
+    blocked: "Заблокировано. Доверять?",
+    unblock: "Доверять этому устройству и разрешить выполнение скриптов?",
   }
 };

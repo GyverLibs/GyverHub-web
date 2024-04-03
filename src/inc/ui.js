@@ -445,19 +445,14 @@ let testDevice = new TestDevice();
 let testRenderer = new Renderer(testDevice);
 
 async function testbuild_h() {
-  let rndName = 'TestWidget_';
-  for (let i = 0; i < 6; i++) rndName += Math.floor(Math.random() * 16).toString(16);
-
-  EL('test_plugins').replaceChildren();
-  let js = EL('test_js').value.replaceAll('TestWidget', rndName);
-  addDOM('test_script', 'script', js, EL('test_plugins'));
-  Renderer.register(eval(rndName));
+  let wtype = Renderer.registerPlugin(EL('test_js').value);
+  if (!wtype) return;
 
   let controls = {
     id: 'test',
-    type: eval(rndName).name,
+    type: wtype,
   };
-  
+
   let json;
   try {
     json = JSON.parse(EL('test_controls').value);

@@ -1,5 +1,5 @@
 class SpinnerWidget extends BaseWidget {
-    static name = 'spinner';
+    static wtype = 'spinner';
     $el;
     $unit;
     #dec = 0;
@@ -27,6 +27,13 @@ class SpinnerWidget extends BaseWidget {
                             type: 'input',
                             class: 'w_spinner',
                             name: 'el',
+                            inputType: 'number',
+                            params: {
+                                min: 0,
+                                max: 100,
+                                step: 1,
+                                value: 0,
+                            },
                             events: {
                                 input: () => this.#spin(0),
                                 keydown: e => {
@@ -58,11 +65,6 @@ class SpinnerWidget extends BaseWidget {
                 }
             ]
         });
-        this.$el.type = 'number';
-        this.$el.value = 0;
-        this.$el.min = 0;
-        this.$el.max = 100;
-        this.$el.step = 1;
         
         this.disable(this.$el, data.disable);
         this.update(data);

@@ -73,7 +73,7 @@ const HubCodes = [
     'wwidth',
     'wheight',
     'data',
-    'func',
+    'wtype',
     'keep',
     'exp',
 

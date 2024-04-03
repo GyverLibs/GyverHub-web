@@ -19,6 +19,7 @@ function showFsbr(device, fs, total, used) {
           <button ${device.isModuleEnabled(Modules.FETCH) ? '' : none} title="${lang.fetch}" class="icon icon_btn_big" onclick="fetchFile(${i},'${fs_arr[i]}')"></button>
           <label id="process#${i}"></label>
           <a id="download#${i}" title="${lang.download}" class="icon icon_btn_big" href="" download="" style="display:none"></a>
+          <button id="open#${i}" title="${lang.open}" class="icon icon_btn_big" onclick="openFile(EL('download#${i}').href)" style="display:none"></button>
           <button ${device.isModuleEnabled(Modules.UPLOAD) ? '' : none} id="edit#${i}" title="${lang.edit}" class="icon icon_btn_big" onclick="editFile(EL('download#${i}').href,${i})" style="display:none"></button>
         </div>`;
     }
@@ -38,7 +39,7 @@ function openFSctrl(i) {
 
 
 // ============ TRANSFER ============
-function upload_h(dirname='/') {
+function upload_h(dirname = '/') {
   const $in = document.createElement('input');
   $in.type = 'file';
   $in.addEventListener('change', async () => {
@@ -53,9 +54,13 @@ async function upload_file(file, dirname = '/') {
   if (!path) return;
   uploadFile(file, path);
 }
+function openFile(src) {
+  let w = window.open();
+  src = w.document.write('<iframe src="' + src + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>');
+}
 async function uploadFile(file, path) {
   if (!path.startsWith('/')) path = '/' + path;
-  
+
   EL('fs_upload').innerHTML = waiter(22, 'var(--font_inv)', false);
 
   try {
@@ -94,6 +99,7 @@ async function fetchFile(index, path) {
   EL('download#' + index).href = data;
   EL('download#' + index).download = name;
   display('edit#' + index, 'inline-block');
+  if (platform() != 'mobile') display('open#' + index, 'inline-block');
   display('process#' + index, 'none');
 }
 

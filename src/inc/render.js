@@ -332,7 +332,7 @@ function renderBody() {
           </div>
           <div id="fs_browser">
             <div id="fsbr_inner"></div>
-            <div class="ui_row" style="justify-content: flex-start;">
+            <div class="ui_btn_row">
               <button id="fs_format" onclick="format_h()" class="ui_btn ui_btn_mini"><slot name="lang.fs_format"></slot></button>
               <button id="fs_create" onclick="create_h()" class="ui_btn ui_btn_mini"><slot name="lang.fs_create"></slot></button>
               <button id="fs_upload" onclick="upload_h()" class="ui_btn ui_btn_mini"><slot name="lang.fs_upload"></slot></button>
@@ -791,11 +791,10 @@ function renderBody() {
   </div>
 
   <div class="footer">
-    <!-- <a href="https://alexgyver.ru/support_alex/" target="_blank"><span class="icon icon_inline i_footer"></span> Support</a> -->
-    <a style="cursor:pointer" data-action="show_screen" data-screen="projects"><span class="icon icon_inline i_footer"></span> <slot name="lang.p_proj"></slot></a>
-    <a style="cursor:pointer" data-action="show_screen" data-screen="test"><span class="icon icon_inline i_footer"></span> Test</a>
-    <!-- <a href="https://hub.gyver.ru/old/" target="_blank"><span class="icon icon_inline i_footer"></span> Old</a> -->
-    <a href="https://github.com/GyverLibs/GyverHub/wiki" target="_blank"><span class="icon icon_inline i_footer"></span> Wiki</a>
+    <a href="https://alexgyver.ru/support_alex/" target="_blank"><span class="icon i_footer" title="Support"></span></a>
+    <a style="cursor:pointer" data-action="show_screen" data-screen="projects"><span class="icon i_footer" title="Projects"></span></a>
+    <a style="cursor:pointer" data-action="show_screen" data-screen="test"><span class="icon i_footer" title="Test plugin"></span></a>
+    <a href="https://github.com/GyverLibs/GyverHub/wiki" target="_blank"><span class="icon i_footer" title="Wiki"></span></a>
   </div>
   `;
 

@@ -1,5 +1,5 @@
 class SelectWidget extends BaseWidget {
-    static name = 'select';
+    static wtype = 'select';
     $el;
 
     constructor(data, renderer) {

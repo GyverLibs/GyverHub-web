@@ -1,6 +1,5 @@
 class ButtonWidget extends BaseWidget {
-    static name = 'button';
-
+    static wtype = 'button';
     $el;
     #color = 'var(--prim)';
     #fontSize = '45px';

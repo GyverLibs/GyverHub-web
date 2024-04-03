@@ -1,5 +1,5 @@
 class RowWidget extends Widget {
-    static name = 'row';
+    static wtype = 'row';
     #children;
 
     constructor(data, renderer) {
@@ -24,7 +24,7 @@ class RowWidget extends Widget {
 }
 
 class ColWidget extends RowWidget {
-    static name = 'col';
+    static wtype = 'col';
     
     constructor(data, renderer) {
         super(data, renderer);

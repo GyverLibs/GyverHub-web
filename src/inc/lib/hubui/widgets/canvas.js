@@ -1,6 +1,5 @@
 class CanvasWidget extends BaseWidget {
-    static name = 'canvas';
-
+    static wtype = 'canvas';
     $el;
     cvdata = [];
     #scale = 1;

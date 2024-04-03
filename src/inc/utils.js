@@ -82,6 +82,15 @@ function showNotif(name, text) {
   }).catch(e => console.log(e));
 }
 
+function platform() {
+  //if ((window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || document.referrer.includes('android-app://')) return 'pwa';
+  // if (!non_host) return 'host';
+  // if (!non_esp) return 'esp';
+  if ('GyverHubDesktop' in window) return 'desktop';
+  if ('flutter_inappwebview' in window) return 'mobile';
+  return 'local';
+}
+
 // ====================== NET ======================
 function getMaskList() {
   const list = [];

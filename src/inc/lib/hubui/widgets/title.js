@@ -1,5 +1,5 @@
 class TitleWidget extends BaseWidget {
-    static name = 'title';
+    static wtype = 'title';
     $cont;
     $icon;
     $label;

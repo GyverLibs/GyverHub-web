@@ -260,21 +260,21 @@ class GaugeBaseWidget extends BaseWidget {
 }
 
 class GaugeWidget extends GaugeBaseWidget {
-    static name = 'gauge';
+    static wtype = 'gauge';
 
     constructor(data, renderer) {
         super(data, renderer);
     }
 }
 class GaugeRWidget extends GaugeBaseWidget {
-    static name = 'gauge_r';
+    static wtype = 'gauge_r';
 
     constructor(data, renderer) {
         super(data, renderer);
     }
 }
 class GaugeLWidget extends GaugeBaseWidget {
-    static name = 'gauge_l';
+    static wtype = 'gauge_l';
 
     constructor(data, renderer) {
         super(data, renderer);

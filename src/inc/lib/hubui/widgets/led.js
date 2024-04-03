@@ -1,5 +1,5 @@
 class LedWidget extends BaseWidget {
-    static name = 'led';
+    static wtype = 'led';
     $el;
 
     constructor(data, renderer) {
