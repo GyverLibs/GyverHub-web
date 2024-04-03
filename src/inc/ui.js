@@ -440,23 +440,19 @@ function showControls(device, controls) {
   $root.replaceChildren(...renderer.build());
 }
 
-// ============ TEST ============
+// ============ TEST ============ 
 class TestDevice {
   async set(name, value) {
     EL('test_out').innerHTML = value;
   }
 };
+let testWidgets = new Map();
 let testDevice = new TestDevice();
-let testRenderer = new Renderer(testDevice);
+let testRenderer = new Renderer(testDevice, testWidgets);
 
 async function testbuild_h() {
-  let wtype = Renderer.registerPlugin(EL('test_js').value);
+  let wtype = Renderer.registerPlugin(EL('test_js').value, testWidgets);
   if (!wtype) return;
-
-  let controls = {
-    id: 'test',
-    type: wtype,
-  };
 
   let json;
   try {
@@ -464,7 +460,7 @@ async function testbuild_h() {
   } catch (e) {
     return;
   }
-  controls = Object.assign(controls, json);
+  let controls = Object.assign({ id: 'test', type: wtype }, json);
   testRenderer.update([controls]);
   let cont = EL('test_container');
   cont.replaceChildren(...testRenderer.build());
@@ -472,10 +468,10 @@ async function testbuild_h() {
   // save
   let config = {
     controls: EL('test_controls').value,
-    updates: EL('test_updates').value
+    updates: EL('test_updates').value,
+    plugin: EL('test_js').value,
   };
   localStorage.setItem('test_config', JSON.stringify(config));
-  localStorage.setItem('test_js', EL('test_js').value);
 }
 function testupdate_h() {
   let updates;

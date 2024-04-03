@@ -156,12 +156,9 @@ function renderBody() {
   
     <div class="main_inn">
 
-      <div id="plugins_cont" class="main_col screen-plugins">
-        <div class="widget_main">  
-          <div class="widget_inner plugin_inner">
-            <a href="https://github.com/GyverLibs/GyverHub-plugins" target="_blank">+ <slot name="lang.add_plugin"></slot></a>
-          </div>
-        </div>  
+      <div class="main_col screen-plugins">
+        <div id="my_plugins"></div>
+        <div id="plugins_cont"></div>
       </div>
 
       <div class="main_col screen-test">

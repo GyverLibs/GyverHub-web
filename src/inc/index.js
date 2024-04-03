@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let data = JSON.parse(localStorage.getItem('test_config'));
     EL('test_controls').value = data.controls;
     EL('test_updates').value = data.updates;
-    EL('test_js').value = localStorage.getItem('test_js');
+    EL('test_js').value = data.plugin;
   }
 
   document.addEventListener('click', e => {

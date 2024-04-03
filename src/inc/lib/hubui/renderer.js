@@ -1,18 +1,22 @@
+let GlobalWidgets = new Map();
+
 class Renderer extends EventEmitter {
-  static #WIDGETS = new Map();
+  // static #WIDGETS = new Map();
+  #WIDGETS;
   static #VIRTUAL_WIDGETS = new Set();
 
   /**
    * Register widget class
    * @param {typeof Widget} cls 
    */
-  static register(cls) {
-    Renderer.#WIDGETS.set(cls.wtype, cls);
+  static register(cls, widgets = GlobalWidgets) {
+    // Renderer.#WIDGETS.set(cls.wtype, cls);
+    widgets.set(cls.wtype, cls);
     if (cls.virtual) Renderer.#VIRTUAL_WIDGETS.add(cls.wtype);
     if (cls.style) addDOM(cls.wtype + '_style', 'style', cls.style, EL('widget_styles'));
   }
 
-  static registerPlugin(js) {
+  static registerPlugin(js, widgets = GlobalWidgets) {
     let cls = js.match(/class\s+(\w+)\s+extends/);
     if (!cls || cls.length < 2) return null;
     cls = cls[1];
@@ -23,7 +27,7 @@ class Renderer extends EventEmitter {
 
     try {
       const f = new Function('return (' + js + ');');
-      Renderer.register(f());
+      Renderer.register(f(), widgets);
     } catch (e) {
       return null;
     }
@@ -38,8 +42,9 @@ class Renderer extends EventEmitter {
   #files;
   #filesLoaded;
 
-  constructor(device) {
+  constructor(device, widgets = GlobalWidgets) {
     super();
+    this.#WIDGETS = widgets;
     this.device = device;
     this.#widgets = [];
     this.#idMap = new Map();
@@ -98,11 +103,11 @@ class Renderer extends EventEmitter {
     for (const ctrl of data) {
       if (!ctrl.type) continue;
 
-      let cls = Renderer.#WIDGETS.get(ctrl.type);
+      let cls = this.#WIDGETS.get(ctrl.type);
       if (cls === undefined) {
         console.log('W: Missing widget:', ctrl);
         // continue;
-        cls = Renderer.#WIDGETS.get('load');
+        cls = this.#WIDGETS.get('load');
       }
 
       const obj = new cls(ctrl, this);
@@ -189,7 +194,7 @@ class Renderer extends EventEmitter {
   }
 
   _getPlugin(type) {
-    return Renderer.#WIDGETS.get(type);
+    return this.#WIDGETS.get(type);
     // const widget = this.#idMap.get(type);
     // if (!widget || !(widget instanceof PluginWidget)) return undefined;
     // return widget.widgetClass;
@@ -197,6 +202,7 @@ class Renderer extends EventEmitter {
 }
 
 function registerWidgets() {
+  GlobalWidgets = new Map();
   [
     ButtonWidget,
     CanvasWidget,
@@ -246,5 +252,11 @@ function registerWidgets() {
     // UiFileWidget,
     SpaceWidget,
     DummyWidget,
-  ].forEach(cls => Renderer.register(cls));
+  ].forEach(cls => Renderer.register(cls, GlobalWidgets));
+
+  if (localStorage.hasOwnProperty('plugins')) {
+    let plugins = JSON.parse(localStorage.getItem('plugins'));
+    for (let plug in plugins)
+      Renderer.registerPlugin(plugins[plug], GlobalWidgets);
+  }
 }

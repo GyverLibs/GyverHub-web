@@ -130,8 +130,10 @@ const langBase = {
     plugin_test: "Plugin Test",
     add_plugin: "Add your plugin",
     plugins: "Plugins",
-    plug_add: "Add plugin",
+    plug_add: "Add plugin by name",
     plug_link: "Go to plugin",
+    delete_plugin: "Delete plugin?",
+    my_plugins: "MY PLUGINS",
   },
   
   Russian: {
@@ -265,7 +267,9 @@ const langBase = {
     plugin_test: "Тест плагинов",
     add_plugin: "Добавить свой плагин",
     plugins: "Плагины",
-    plug_add: "Добавить плагин",
+    plug_add: "Добавить плагин по имени",
     plug_link: "Перейти",
+    delete_plugin: "Удалить плагин?",
+    my_plugins: "МОИ ПЛАГИНЫ",
   }
 };

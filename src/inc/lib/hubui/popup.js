@@ -1,4 +1,4 @@
-function makeDialog(title, text, buttons, additional) {
+function makeDialog(title, text, buttons, additional = []) {
   const $box = document.createElement('div');
   $box.className = 'dialog_box';
 
@@ -24,11 +24,11 @@ function makeDialog(title, text, buttons, additional) {
     $label.textContent = text;
   }
 
-  if (additional) {
-    const $text = document.createElement('div');
-    $d.append($text);
-    $text.className = 'ui_row';
-    $text.append(additional);
+  for (add of additional) {
+    const $add = document.createElement('div');
+    $d.append($add);
+    $add.className = 'ui_row';
+    $add.append(add);
   }
 
   if (buttons) {
@@ -63,7 +63,7 @@ function asyncShowQr($qr, title = null) {
         document.body.removeChild($box);
         resolve(true);
       }
-    }], $qr);
+    }], [$qr]);
   });
 }
 
@@ -123,7 +123,7 @@ function asyncPrompt(text, placeh = '', title = null) {
           resolve(null);
         }
       }
-    ], $input);
+    ], [$input]);
   });
 }
 
@@ -150,7 +150,7 @@ function asyncPromptArea(text, placeh = '', title = null) {
           resolve(null);
         }
       }
-    ], $input);
+    ], [$input]);
     $box.firstElementChild.style.maxWidth = "900px";
   });
 }
