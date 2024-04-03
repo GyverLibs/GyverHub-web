@@ -23,12 +23,17 @@ async function show_screen(nscreen) {
       break;
 
     case 'test':
-      $title.textContent = 'UI Test';
+      $title.textContent = lang.plugin_test;
       break;
 
     case 'projects':
-      $title.textContent = lang.p_proj;
+      $title.textContent = lang.p_projects;
       loadProjects();
+      break;
+
+    case 'plugins':
+      $title.textContent = lang.plugins;
+      loadPlugins();
       break;
 
     case 'ui':

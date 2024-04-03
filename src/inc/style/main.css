@@ -334,6 +334,10 @@ body[data-screen=projects] .screen-projects {
   display: block;
 }
 
+body[data-screen=projects] .footer {
+  display: flex;
+}
+
 .proj {
   background: var(--tab);
   border-radius: 5px;
@@ -374,9 +378,72 @@ body[data-screen=test] .screen-test {
   display: block;
   max-width: 900px;
 }
+
+body[data-screen=test] .footer {
+  display: flex;
+}
+
+body[data-screen=test] .header {
+  max-width: 900px;
+}
+
 .test-tabs {
   padding: 0 10px !important;
   min-height: 0 !important;
+}
+
+/* ====================================================================== */
+/* =============================== PLUGINS ============================== */
+/* ====================================================================== */
+body[data-screen=plugins] .screen-plugins {
+  display: block;
+  max-width: var(--ui_width);
+  /* display: grid; */
+  /* max-width: 900px; */
+  /* grid-gap: 0px; */
+  /* grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); */
+}
+
+body[data-screen=plugins] .footer {
+  display: flex;
+}
+
+.plugin_inner {
+  height: 40px !important;
+  display: flex !important;
+  align-items: flex-start;
+  justify-content: center;
+  padding-left: 10px;
+  box-sizing: border-box;
+}
+
+.plugin_inner a {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--prim);
+  text-decoration: none;
+}
+
+.plugin_row {
+  display: flex;
+}
+
+.plugin_actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  padding-left: 5px;
+}
+
+.icon_plugin {
+  font-size: 23px !important;
+  cursor: pointer;
+  color: var(--prim);
+}
+
+.icon_plugin:hover {
+  filter: brightness(1.15);
 }
 
 /*@/[if_not_target:esp]*/

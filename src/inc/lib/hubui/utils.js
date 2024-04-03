@@ -10,6 +10,7 @@ function createElement(self, obj) {
       $el[key] = value;
     }
   }
+  if (obj.content) $el.replaceChildren(obj.content);
   if (obj.value) $el.value = obj.value;
   if (obj.inputType) $el.type = obj.inputType;
   if (obj.class) $el.className = obj.class;

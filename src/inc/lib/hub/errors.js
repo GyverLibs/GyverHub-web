@@ -21,9 +21,10 @@ const HubErrors = {
     Disabled: 14,   // модуль отключен
     WrongType: 15,  // некорректный тип
     PacketDamage: 16,// пакет повреждён
+    CantAlloc: 17,
 
-    FsBusy: 17,     // fs занята
-    Cancelled: 18,  // отменено пользователем
+    FsBusy: 18,     // fs занята
+    Cancelled: 19,  // отменено пользователем
 };
 
 class DeviceError extends HubError {

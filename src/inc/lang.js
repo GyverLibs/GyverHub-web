@@ -1,6 +1,6 @@
 const langBase = {
   English: {
-    errors: ["not an error", "open file error", "not enough space", "checksum error", "size error", "start error", "write error", "end error", "aborted", "timeout", "busy", "memory error", "wrong client", "forbidden", "module disabled", "incorret type", "damaged packet", "FS busy", "cancelled"],
+    errors: ["not an error", "open file error", "not enough space", "checksum error", "size error", "start error", "write error", "end error", "aborted", "timeout", "busy", "memory error", "wrong client", "forbidden", "module disabled", "incorret type", "damaged packet", "can't allocate", "FS busy", "cancelled"],
     themes: {
       auto: "System",
       dark: "Dark",
@@ -110,8 +110,8 @@ const langBase = {
     edit: "Edit",
     wrong_ota: "Wrong file! Use",
 
-    p_add: "Add project",
-    p_proj: "Projects",
+    p_add_project: "Add your project",
+    p_projects: "Projects",
     p_not_support: "Browser in not supported",
     p_use_https: "Use https version of website",
     p_has_upd: "Update available",
@@ -126,10 +126,16 @@ const langBase = {
     dev_pin: "Enter PIN for device ",
     blocked: "Blocked. Trust?",
     unblock: "Trust this device and it's custom code?",
+
+    plugin_test: "Plugin Test",
+    add_plugin: "Add your plugin",
+    plugins: "Plugins",
+    plug_add: "Add plugin",
+    plug_link: "Go to plugin",
   },
   
   Russian: {
-    errors: ["не ошибка", "невозможно открыть файл", "недостаточно места", "ошибка контрольной суммы", "ошибка размера", "ошибка старта", "ошибка записи", "ошибка завершения", "прервано", "тайм-аут", "занят", "ошибка памяти", "не тот клиент", "запрещено", "модуль отключен", "некорректный тип", "пакет повреждён", "файловая система занята", "отменено"],
+    errors: ["не ошибка", "невозможно открыть файл", "недостаточно места", "ошибка контрольной суммы", "ошибка размера", "ошибка старта", "ошибка записи", "ошибка завершения", "прервано", "тайм-аут", "занят", "ошибка памяти", "не тот клиент", "запрещено", "модуль отключен", "некорректный тип", "пакет повреждён", "невозможно выделить память", "файловая система занята", "отменено"],
     themes: {
       auto: "Системная",
       dark: "Тёмная",
@@ -239,8 +245,8 @@ const langBase = {
     edit: "Редактировать",
     wrong_ota: "Некорректный файл! Используй",
 
-    p_add: "Добавить проект",
-    p_proj: "Проекты",
+    p_add_project: "Добавить свой проект",
+    p_projects: "Проекты",
     p_not_support: "Браузер не поддерживается",
     p_use_https: "Используйте https версию сайта",
     p_has_upd: "Доступно обновление",
@@ -255,5 +261,11 @@ const langBase = {
     dev_pin: "Введите пин устройства ",
     blocked: "Заблокировано. Доверять?",
     unblock: "Доверять этому устройству и разрешить выполнение скриптов?",
+
+    plugin_test: "Тест плагинов",
+    add_plugin: "Добавить свой плагин",
+    plugins: "Плагины",
+    plug_add: "Добавить плагин",
+    plug_link: "Перейти",
   }
 };

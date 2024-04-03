@@ -19,6 +19,7 @@
 
 /*@[if_not_target:esp]*/
 /*@![include:inc/projects.js, compile]*/
+/*@![include:inc/plugins.js, compile]*/
 /*@/[if_not_target:esp]*/
 
 /*@![include:inc/ui.js, compile]*/

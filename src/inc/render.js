@@ -155,6 +155,15 @@ function renderBody() {
     <div id="menu" class="main_col menu"></div>
   
     <div class="main_inn">
+
+      <div id="plugins_cont" class="main_col screen-plugins">
+        <div class="widget_main">  
+          <div class="widget_inner plugin_inner">
+            <a href="https://github.com/GyverLibs/GyverHub-plugins" target="_blank">+ <slot name="lang.add_plugin"></slot></a>
+          </div>
+        </div>  
+      </div>
+
       <div class="main_col screen-test">
         <div id="test_container" class=""></div>
         <br>
@@ -180,7 +189,7 @@ function renderBody() {
       <div id="projects_cont" class="main_col screen-projects">
         <div class="proj">
           <div class="proj_name">
-            <a href="https://github.com/GyverLibs/GyverHub-projects" target="_blank">+ <slot name="lang.p_add"></slot></a>
+            <a href="https://github.com/GyverLibs/GyverHub-projects" target="_blank">+ <slot name="lang.p_add_project"></slot></a>
           </div>
         </div>
       </div>
@@ -792,8 +801,9 @@ function renderBody() {
 
   <div class="footer">
     <a href="https://alexgyver.ru/support_alex/" target="_blank"><span class="icon i_footer" title="Support"></span></a>
-    <a style="cursor:pointer" data-action="show_screen" data-screen="projects"><span class="icon i_footer" title="Projects"></span></a>
-    <a style="cursor:pointer" data-action="show_screen" data-screen="test"><span class="icon i_footer" title="Test plugin"></span></a>
+    <a style="cursor:pointer" data-action="show_screen" data-screen="projects"><span class="icon i_footer" title="Projects"></span></a>
+    <a style="cursor:pointer" data-action="show_screen" data-screen="plugins"><span class="icon i_footer" title="Plugins"></span></a>
+    <a style="cursor:pointer" data-action="show_screen" data-screen="test"><span class="icon i_footer" title="Plugin Test"></span></a>
     <a href="https://github.com/GyverLibs/GyverHub/wiki" target="_blank"><span class="icon i_footer" title="Wiki"></span></a>
   </div>
   `;
