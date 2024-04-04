@@ -7,12 +7,12 @@ class TabsWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'div',
+            tag: 'div',
             class: 'w_tabs',
             name: 'el',
             children: [
                 {
-                    type: 'ul',
+                    tag: 'ul',
                     name: 'ul',
                     events: {
                         wheel: e => {
@@ -45,8 +45,8 @@ class TabsWidget extends BaseWidget {
             if (data.text) {
                 const labels = data.text.split(/[,;]/);
                 for (const i in labels) {
-                    const $i = createElement(null, {
-                        type: 'li',
+                    const $i = makeDOM(null, {
+                        tag: 'li',
                         text: labels[i].trim(),
                     });
                     $i.dataset.tabId = i;

@@ -23,7 +23,7 @@ class GaugeBaseWidget extends BaseWidget {
         }
 
         this.makeLayout({
-            type: 'canvas',
+            tag: 'canvas',
             name: 'el',
             events: {
                 resize: () => this.#redraw()

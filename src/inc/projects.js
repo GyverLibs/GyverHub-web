@@ -1,8 +1,13 @@
 async function loadProjects() {
   EL('projects_cont').replaceChildren(EL('projects_cont').lastElementChild);
-
-  const resp = await fetch("https://raw.githubusercontent.com/GyverLibs/GyverHub-projects/main/projects.txt", { cache: "no-store" });
-  let projects = await resp.text();
+  
+  let projects;
+  try {
+    projects = await fetch("https://raw.githubusercontent.com/GyverLibs/GyverHub-projects/main/projects.txt", { cache: "no-store" });
+    projects = await projects.text();
+  } catch (e) {
+    return;
+  }
   projects += '\n' + cfg.project_links;
   projects = projects.split('\n');
   for (const proj of projects) {

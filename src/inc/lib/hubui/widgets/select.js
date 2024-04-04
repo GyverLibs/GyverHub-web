@@ -6,7 +6,7 @@ class SelectWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout( {
-            type: 'select',
+            tag: 'select',
             class: 'w_select',
             name: 'el',
             style: {

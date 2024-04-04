@@ -139,28 +139,28 @@ class BaseWidget extends Widget {
     constructor(data, renderer) {
         super(data, renderer);
 
-        this.#root = createElement(this, {
-            type: 'div',
+        this.#root = makeDOM(this, {
+            tag: 'div',
             class: 'widget_main',
             style: {
                 width: data.wwidth_t + '%',
             }
         });
 
-        this.#inner = createElement(this, {
-            type: 'div',
+        this.#inner = makeDOM(this, {
+            tag: 'div',
             class: 'widget_inner'
         });
         this.#root.append(this.#inner);
 
-        this.#cont = createElement(this, {
-            type: 'div',
+        this.#cont = makeDOM(this, {
+            tag: 'div',
             class: 'widget_label'
         });
         this.#inner.append(this.#cont);
 
-        this.#hint = createElement(this, {
-            type: 'span',
+        this.#hint = makeDOM(this, {
+            tag: 'span',
             class: 'whint',
             text: '?',
             style: {
@@ -172,27 +172,27 @@ class BaseWidget extends Widget {
         });
         this.#cont.append(this.#hint);
 
-        this.#label = createElement(this, {
-            type: 'span',
+        this.#label = makeDOM(this, {
+            tag: 'span',
             text: data.type.toUpperCase(),
             title: this.id,
         });
         this.#cont.append(this.#label);
 
-        this.#plabel = createElement(this, {
-            type: 'span',
+        this.#plabel = makeDOM(this, {
+            tag: 'span',
         });
         this.#cont.append(this.#plabel);
 
-        this.#suffix = createElement(this, {
-            type: 'span',
+        this.#suffix = makeDOM(this, {
+            tag: 'span',
             class: 'wsuffix',
         });
         this.#cont.append(this.#suffix);
 
 
-        this.#container = createElement(this, {
-            type: 'div',
+        this.#container = makeDOM(this, {
+            tag: 'div',
             class: 'widget_body',
             style: {
                 // minHeight: data.wheight && data.wheight > 25 ? data.wheight + 'px' : '',
@@ -213,7 +213,7 @@ class BaseWidget extends Widget {
      * @param {object[]} obj 
      */
     makeLayout(...obj) {
-        this.#container.replaceChildren(...obj.map(o => createElement(this, o)));
+        this.#container.replaceChildren(...obj.map(o => makeDOM(this, o)));
     }
 
     /**

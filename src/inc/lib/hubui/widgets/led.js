@@ -6,7 +6,7 @@ class LedWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'div',
+            tag: 'div',
             class: 'w_led',
             name: 'el',
         });

@@ -7,16 +7,16 @@ class SwitchWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'div',
+            tag: 'div',
             class: 'switch_cont',
             children: [
                 {
-                    type: 'label',
+                    tag: 'label',
                     class: 'switch',
                     children: [
                         {
-                            type: 'input',
-                            inputType: 'checkbox',
+                            tag: 'input',
+                            type: 'checkbox',
                             name: 'el',
                             events: {
                                 change: () => {
@@ -26,7 +26,7 @@ class SwitchWidget extends BaseWidget {
                             }
                         },
                         {
-                            type: 'span',
+                            tag: 'span',
                             class: 'slider',
                             name: 'slider',
                         }
@@ -58,7 +58,7 @@ class SwitchIconWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'div',
+            tag: 'div',
             class: 'icon icon_btn_big w_swicon',
             name: 'el',
             style: {

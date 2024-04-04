@@ -6,13 +6,11 @@ class TextWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'textarea',
+            tag: 'textarea',
             class: 'ui_area ui_area_passive',
             name: 'el',
-            params: {
-                readOnly: true,
-                rows: 5,
-            }
+            readOnly: true,
+            rows: 5,
         });
 
         this.update(data);
@@ -34,13 +32,11 @@ class LogWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'textarea',
+            tag: 'textarea',
             class: 'ui_area ui_area_passive',
             name: 'el',
-            params: {
-                readOnly: true,
-                rows: 5
-            },
+            readOnly: true,
+            rows: 5,
             style: {
                 color: 'var(--prim)'
             },
@@ -69,12 +65,10 @@ class TextFileWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'textarea',
+            tag: 'textarea',
             class: 'ui_area ui_area_passive',
             name: 'el',
-            params: {
-                readOnly: true
-            }
+            readOnly: true,
         });
 
         this.update(data);
@@ -101,13 +95,11 @@ class DisplayWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'textarea',
+            tag: 'textarea',
             class: 'w_disp',
             name: 'el',
-            params: {
-                readOnly: true,
-                rows: 2
-            },
+            readOnly: true,
+            rows: 2,
             style: {
                 fontSize: '20px',
                 background: 'var(--prim)'
@@ -175,7 +167,7 @@ class AreaWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'textarea',
+            tag: 'textarea',
             class: 'ui_area',
             name: 'el',
             events: {

@@ -17,7 +17,7 @@ class JoyWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'canvas',
+            tag: 'canvas',
             name: 'el'
         });
 

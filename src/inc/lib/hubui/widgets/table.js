@@ -10,7 +10,7 @@ class TableWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'table',
+            tag: 'table',
             class: 'w_table',
             name: 'el',
         });

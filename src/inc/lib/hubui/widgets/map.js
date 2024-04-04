@@ -41,7 +41,7 @@ class MapWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'div',
+            tag: 'div',
             name: 'el',
             style: {
                 width: '100%',

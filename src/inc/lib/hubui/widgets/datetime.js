@@ -6,10 +6,10 @@ class DateWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'input',
+            tag: 'input',
             class: 'w_date',
             name: 'el',
-            inputType: 'date',
+            type: 'date',
             style: {
                 color: 'var(--prim)'
             },
@@ -41,15 +41,13 @@ class TimeWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'input',
+            tag: 'input',
             class: 'w_date',
             name: 'el',
-            inputType: 'time',
+            type: 'time',
+            step: 1,
             style: {
                 color: 'var(--prim)'
-            },
-            params: {
-                step: 1
             },
             events: {
                 click: () => {
@@ -79,15 +77,13 @@ class DateTimeWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'input',
+            tag: 'input',
             class: 'w_date',
             name: 'el',
-            inputType: 'datetime-local',
+            type: 'datetime-local',
+            step: 1,
             style: {
                 color: 'var(--prim)'
-            },
-            params: {
-                step: 1
             },
             events: {
                 click: () => {

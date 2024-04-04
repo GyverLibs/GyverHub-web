@@ -55,9 +55,7 @@ class LoadWidget extends Widget {
     }
 
     #apply(w) {
-        console.log("apply");
         if (!this.renderer.device.info.trust) {
-            console.log("nononn");
             this.$el.innerHTML = noTrust();
             return;
         }

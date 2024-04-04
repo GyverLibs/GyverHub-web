@@ -8,7 +8,7 @@ class FlagsWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'div',
+            tag: 'div',
             class: 'w_flags_cont',
             name: 'el',
             events: {
@@ -42,8 +42,8 @@ class FlagsWidget extends BaseWidget {
         const labels = [];
         let val = this.#value;
         for (const i in this.#items) {
-            const $i = createElement(null, {
-                type: 'label',
+            const $i = makeDOM(null, {
+                tag: 'label',
                 class: 'w_flags' + (val & 1 ? ' checked' : ''),
                 text: this.#items[i],
             });

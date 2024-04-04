@@ -8,11 +8,11 @@ class SpinnerWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'div',
+            tag: 'div',
             class: 'w_spinner_row',
             children: [
                 {
-                    type: 'button',
+                    tag: 'button',
                     class: 'icon icon_btn btn_no_pad',
                     text: '',
                     events: {
@@ -20,20 +20,18 @@ class SpinnerWidget extends BaseWidget {
                     }
                 },
                 {
-                    type: 'div',
+                    tag: 'div',
                     class: 'w_spinner_block',
                     children: [
                         {
-                            type: 'input',
+                            tag: 'input',
                             class: 'w_spinner',
                             name: 'el',
-                            inputType: 'number',
-                            params: {
-                                min: 0,
-                                max: 100,
-                                step: 1,
-                                value: 0,
-                            },
+                            type: 'number',
+                            min: 0,
+                            max: 100,
+                            step: 1,
+                            value: 0,
                             events: {
                                 input: () => this.#spin(0),
                                 keydown: e => {
@@ -46,7 +44,7 @@ class SpinnerWidget extends BaseWidget {
                             }
                         },
                         {
-                            type: 'label',
+                            tag: 'label',
                             class: 'w_spinner_unit',
                             name: 'unit',
                             events: {
@@ -56,7 +54,7 @@ class SpinnerWidget extends BaseWidget {
                     ]
                 },
                 {
-                    type: 'button',
+                    tag: 'button',
                     class: 'icon icon_btn btn_no_pad',
                     text: '',
                     events: {
@@ -65,7 +63,7 @@ class SpinnerWidget extends BaseWidget {
                 }
             ]
         });
-        
+
         this.disable(this.$el, data.disable);
         this.update(data);
         waitFrame().then(() => this.#spin(0, false));

@@ -10,7 +10,7 @@ class ButtonWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'button',
+            tag: 'button',
             class: 'icon w_btn',
             name: 'el',
             text: "",

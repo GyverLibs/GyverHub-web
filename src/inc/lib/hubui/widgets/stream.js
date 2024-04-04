@@ -6,7 +6,7 @@ class StreamWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'img',
+            tag: 'img',
             name: 'el',
             style: {
                 width: '100%',

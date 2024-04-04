@@ -8,7 +8,7 @@ class LabelWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'div',
+            tag: 'div',
             class: 'w_label',
             name: 'lbl_cont',
             style: {
@@ -16,12 +16,12 @@ class LabelWidget extends BaseWidget {
             },
             children: [
                 {
-                    type: 'span',
+                    tag: 'span',
                     class: 'w_icon',
                     name: 'lbl_icon',
                 },
                 {
-                    type: 'label',
+                    tag: 'label',
                     name: 'lbl',
                 }
             ]

@@ -7,11 +7,11 @@ class PlotWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'div',
+            tag: 'div',
             class: '',
             children: [
                 {
-                    type: 'canvas',
+                    tag: 'canvas',
                     name: 'el',
                 }
             ]

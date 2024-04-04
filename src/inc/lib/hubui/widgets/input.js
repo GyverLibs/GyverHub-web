@@ -8,14 +8,14 @@ class InputWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'div',
+            tag: 'div',
             class: 'w_inp_cont',
             children: [
                 {
-                    type: 'input',
+                    tag: 'input',
                     class: 'w_inp',
                     name: 'el',
-                    inputType: 'text',
+                    type: 'text',
                     events: {
                         keydown: e => {
                             if (e.key == 'Enter') this.#send(true);
@@ -91,14 +91,14 @@ class PassWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'div',
+            tag: 'div',
             class: 'w_inp_cont',
             children: [
                 {
-                    type: 'input',
+                    tag: 'input',
                     class: 'w_inp',
                     name: 'el',
-                    inputType: 'password',
+                    type: 'password',
                     events: {
                         keydown: e => {
                             if (e.key == 'Enter') this.#send(true);
@@ -112,11 +112,11 @@ class PassWidget extends BaseWidget {
                     }
                 },
                 {
-                    type: 'div',
+                    tag: 'div',
                     class: 'btn_inp_block',
                     children: [
                         {
-                            type: 'button',
+                            tag: 'button',
                             class: 'icon w_eye',
                             text: '',
                             events: {

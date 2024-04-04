@@ -6,7 +6,7 @@ class IconWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'span',
+            tag: 'span',
             class: 'w_icon w_icon_led',
             text: "",
             name: 'el',

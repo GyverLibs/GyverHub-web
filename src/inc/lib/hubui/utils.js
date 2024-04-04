@@ -1,34 +1,24 @@
 
 // ===================== RENDER =====================
-function createElement(self, obj) {
-  if (typeof obj === 'string' || obj instanceof Node)
-    return obj;
+function makeDOM(self, obj) {
+  if (typeof obj === 'string' || obj instanceof Node || !obj.tag) return obj;
+  const $el = document.createElement(obj.tag);
 
-  const $el = document.createElement(obj.type);
-  if (obj.params) {
-    for (const [key, value] of Object.entries(obj.params)) {
-      $el[key] = value;
+  for (let [key, value] of Object.entries(obj)) {
+    switch (key) {
+      case 'tag': continue;
+      case 'content': $el.replaceChildren(value); break;
+      case 'text': $el.textContent = value; break;
+      case 'html': $el.innerHTML = value; break;
+      case 'class': $el.className = value; break;
+      case 'also': value.call(self, $el); break;
+      case 'name': self['$' + value] = $el; break;
+      case 'style': for (const [skey, sval] of Object.entries(value)) $el.style[skey] = sval; break;
+      case 'events': for (const [ev, handler] of Object.entries(value)) $el.addEventListener(ev, handler.bind(self)); break;
+      case 'children': for (const i of value) $el.append(makeDOM(self, i)); break;
+      default: $el[key] = value; break;
     }
   }
-  if (obj.content) $el.replaceChildren(obj.content);
-  if (obj.value) $el.value = obj.value;
-  if (obj.inputType) $el.type = obj.inputType;
-  if (obj.class) $el.className = obj.class;
-  if (obj.id) $el.id = obj.id;
-  if (obj.text) $el.textContent = obj.text;
-  if (obj.html) $el.innerHTML = obj.html;
-  if (obj.title) $el.title = obj.title;
-  if (obj.style)
-    for (const [prop, value] of Object.entries(obj.style))
-      $el.style[prop] = value;
-  if (obj.also) obj.also.call(self, $el);
-  if (obj.name) self['$' + obj.name] = $el;
-  if (obj.events)
-    for (const [ev, handler] of Object.entries(obj.events))
-      $el.addEventListener(ev, handler.bind(self));
-  if (obj.children)
-    for (const i of obj.children)
-      $el.append(createElement(self, i));
   return $el;
 }
 
@@ -117,7 +107,7 @@ async function notrust_h() {
   if (await asyncConfirm(lang.unblock)) {
     hub.dev(focused).info.trust = 1;
     refresh_h();
-    
+
   }
 }
 

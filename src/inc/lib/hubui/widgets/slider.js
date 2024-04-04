@@ -7,17 +7,15 @@ class SliderWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'input',
+            tag: 'input',
             class: 'w_slider',
             name: 'el',
-            inputType: 'range',
-            params: {
-                min: 0,
-                max: 100,
-                step: 1,
-                dec: 0,
-                value: 0,
-            },
+            type: 'range',
+            min: 0,
+            max: 100,
+            step: 1,
+            dec: 0,
+            value: 0,
             events: {
                 input: () => {
                     this.#move()
@@ -30,11 +28,11 @@ class SliderWidget extends BaseWidget {
                 },
             },
         }, {
-            type: 'div',
+            tag: 'div',
             class: 'w_slider_out',
             children: [
                 {
-                    type: 'output',
+                    tag: 'output',
                     name: 'out'
                 }
             ]

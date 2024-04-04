@@ -23,8 +23,8 @@ class MenuWidget extends Widget {
         this.$el.replaceChildren();
         const labels = data.text.split(';');
         for (const i in labels) {
-            this.$el.append(createElement(null, {
-                type: 'div',
+            this.$el.append(makeDOM(null, {
+                tag: 'div',
                 class: i == data.value ? "menu_item menu_act" : "menu_item",
                 text: labels[i].trim(),
                 events: {
@@ -32,7 +32,7 @@ class MenuWidget extends Widget {
                 }
             }));
         }
-        this.$el.append(createElement(null, { type: 'hr' }));
+        this.$el.append(makeDOM(null, { tag: 'hr' }));
         this.renderer.dispatchEvent(new Event('menuchanged'));
     }
 

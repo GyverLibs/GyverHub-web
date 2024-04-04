@@ -4,25 +4,25 @@ function myPlugins() {
   if (localStorage.hasOwnProperty('plugins')) {
     let plugins = JSON.parse(localStorage.getItem('plugins'));
     for (let wtype in plugins) {
-      let plugin = createElement(this, {
-        type: 'div',
+      let plugin = makeDOM(this, {
+        tag: 'div',
         class: 'myplugin',
         name: 'el',
         children: [
           {
-            type: 'div',
+            tag: 'div',
             class: 'myplugin_inner',
             children: [
               {
-                type: 'span',
+                tag: 'span',
                 text: wtype,
               },
               {
-                type: 'span',
+                tag: 'span',
                 class: 'icon icon_my_plugin',
                 text: '',
                 events: {
-                  click: async() => {
+                  click: async () => {
                     if (!await asyncConfirm(lang.delete_plugin)) return;
                     delete plugins[wtype];
                     localStorage.setItem('plugins', JSON.stringify(plugins));
@@ -39,24 +39,24 @@ function myPlugins() {
     }
   }
 
-  let myplugins = createElement(this, {
-    type: 'div',
+  let myplugins = makeDOM(this, {
+    tag: 'div',
     class: 'widget_main',
     style: {
       paddingBottom: '15px',
     },
     children: [
       {
-        type: 'div',
+        tag: 'div',
         class: 'widget_inner',
         children: [
           {
-            type: 'div',
+            tag: 'div',
             class: 'widget_label',
             text: lang.my_plugins,
           },
           {
-            type: 'div',
+            tag: 'div',
             class: 'widget_body',
             style: {
               display: 'block',
@@ -76,21 +76,19 @@ async function loadPlugins() {
   let cont = EL('plugins_cont');
   cont.replaceChildren();
 
-  let addplugin = createElement(this, {
-    type: 'div',
+  let addplugin = makeDOM(this, {
+    tag: 'div',
     class: 'widget_main',
     children: [
       {
-        type: 'div',
+        tag: 'div',
         class: 'widget_inner plugin_inner',
         children: [
           {
-            type: 'a',
+            tag: 'a',
             text: '+ ' + lang.add_plugin,
-            params: {
-              target: '_blank',
-              href: 'https://github.com/GyverLibs/GyverHub-plugins'
-            }
+            target: '_blank',
+            href: 'https://github.com/GyverLibs/GyverHub-plugins',
           }
         ]
       }
@@ -98,8 +96,14 @@ async function loadPlugins() {
   });
   cont.appendChild(addplugin);
 
-  const resp = await fetch("https://raw.githubusercontent.com/GyverLibs/GyverHub-plugins/main/plugins.txt", { cache: "no-store" });
-  let plugins = await resp.text();
+  let plugins;
+  try {
+    const resp = await fetch("https://raw.githubusercontent.com/GyverLibs/GyverHub-plugins/main/plugins.txt", { cache: "no-store" });
+    plugins = await resp.text();
+  } catch (e) {
+    return;
+  }
+
   plugins += '\n' + cfg.plugin_links;
   plugins = plugins.split('\n');
   for (const plug of plugins) {
@@ -152,11 +156,16 @@ function pluginEditor(js, wtype) {
   $box.firstElementChild.style.maxWidth = "900px";
 }
 
-async function loadPlugin(link) {
-  let rep = 'https://raw.githubusercontent.com/' + link.split('https://github.com/')[1].replace('/blob/', '/');
-  const resp = await fetch(rep, { cache: "no-store" });
-  const js = await resp.text();
+async function loadPlugin(rep) {
+  let js;
+  try {
+    js = await fetch('https://raw.githubusercontent.com/' + rep.split('https://github.com/')[1].replace('/blob/', '/'), { cache: "no-store" });
+    js = await js.text();
+  } catch (e) {
+    return;
+  }
 
+  // TODO
   class PlugDevice {
     async set(name, value) {
       console.log(value);
@@ -170,17 +179,17 @@ async function loadPlugin(link) {
 
   plugRenderer.update([{ type: wtype }]);
 
-  let wid = createElement(this, {
-    type: 'div',
+  let wid = makeDOM(this, {
+    tag: 'div',
     class: 'plugin_row',
     content: plugRenderer.build()[0],
     children: [
       {
-        type: 'div',
+        tag: 'div',
         class: 'plugin_actions',
         children: [
           {
-            type: 'span',
+            tag: 'span',
             class: 'icon icon_plugin',
             text: '',
             title: lang.plug_add,
@@ -189,7 +198,7 @@ async function loadPlugin(link) {
             }
           },
           {
-            type: 'span',
+            tag: 'span',
             class: 'icon icon_plugin',
             text: '',
             title: lang.plug_link,

@@ -9,11 +9,11 @@ class CanvasWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'div',
+            tag: 'div',
             class: 'w_canvas',
             children: [
                 {
-                    type: 'canvas',
+                    tag: 'canvas',
                     name: 'el',
                     events: {
                         click: e => this.#click(e)

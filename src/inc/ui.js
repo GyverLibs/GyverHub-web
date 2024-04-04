@@ -254,16 +254,16 @@ function menu_show(state) {
 }
 function updateSystemMenu() {
   const dev = hub.dev(focused);
-  EL('menu').append(createElement(null, {
-    type: 'div',
+  EL('menu').append(makeDOM(null, {
+    tag: 'div',
     class: "menu_item menu_cfg",
     text: lang.m_config,
     events: {
       click: () => show_screen('dev_config')
     }
   }));
-  EL('menu').append(createElement(null, {
-    type: 'div',
+  EL('menu').append(makeDOM(null, {
+    tag: 'div',
     class: "menu_item menu_info",
     text: lang.m_info,
     events: {
@@ -272,8 +272,8 @@ function updateSystemMenu() {
   }));
 
   if (dev.isModuleEnabled(Modules.FILES)) {
-    EL('menu').append(createElement(null, {
-      type: 'div',
+    EL('menu').append(makeDOM(null, {
+      tag: 'div',
       class: "menu_item menu_fsbr",
       text: lang.m_files,
       events: {
@@ -282,8 +282,8 @@ function updateSystemMenu() {
     }));
   }
   if (dev.isModuleEnabled(Modules.OTA) || dev.isModuleEnabled(Modules.OTA_URL)) {
-    EL('menu').append(createElement(null, {
-      type: 'div',
+    EL('menu').append(makeDOM(null, {
+      tag: 'div',
       class: "menu_item menu_ota",
       text: lang.m_ota,
       events: {
@@ -441,6 +441,7 @@ function showControls(device, controls) {
 }
 
 // ============ TEST ============ 
+// TODO
 class TestDevice {
   async set(name, value) {
     EL('test_out').innerHTML = value;

@@ -8,7 +8,7 @@ class TitleWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'div', 
+            tag: 'div', 
             class: 'w_label',
             name: 'cont',
             style: {
@@ -16,12 +16,12 @@ class TitleWidget extends BaseWidget {
             },
             children: [
                 {
-                    type: 'span',
+                    tag: 'span',
                     class: 'w_icon',
                     name: 'icon',
                 },
                 {
-                    type: 'label',
+                    tag: 'label',
                     name: 'label',
                 }
             ]

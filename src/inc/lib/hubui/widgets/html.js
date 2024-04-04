@@ -7,7 +7,7 @@ class HTMLWidget extends BaseWidget {
         super(data, renderer);
 
         this.makeLayout({
-            type: 'div',
+            tag: 'div',
             name: 'el',
         });
         this.#root = this.$el.attachShadow({
