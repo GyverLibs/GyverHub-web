@@ -10,8 +10,8 @@ let cfg = {
   ui_width: 480,
   wide_mode: false,
   lang: userLang(),
-  app_plugin_css: '',
-  app_plugin_js: '',
+  app_custom_css: '',
+  app_custom_js: '',
   project_links: '',
   plugin_links: '',
   api_ver: 2,
@@ -51,18 +51,18 @@ function save_cfg() {
   localStorage.setItem('hub_config', hub.config.toJson());
 }
 
-async function app_plugin_css() {
-  const res = await asyncPromptArea(lang.cfg_css, cfg.app_plugin_css);
+async function app_custom_css() {
+  const res = await asyncPromptArea(lang.cfg_css, cfg.app_custom_css);
   if (res !== null) {
-    cfg.app_plugin_css = res;
+    cfg.app_custom_css = res;
     save_cfg();
     update_theme();
   }
 }
-async function app_plugin_js() {
-  const res = await asyncPromptArea(lang.cfg_js, cfg.app_plugin_js);
+async function app_custom_js() {
+  const res = await asyncPromptArea(lang.cfg_js, cfg.app_custom_js);
   if (res !== null) {
-    cfg.app_plugin_js = res;
+    cfg.app_custom_js = res;
     save_cfg();
     update_theme();
   }
@@ -92,8 +92,8 @@ function update_theme() {
   r.style.setProperty('--font_f', cfg.font);
 
   EL('app_plugins').replaceChildren();
-  addDOM('app_css', 'style', cfg.app_plugin_css, EL('app_plugins'));
-  addDOM('app_js', 'script', cfg.app_plugin_js, EL('app_plugins'));
+  addDOM('app_css', 'style', cfg.app_custom_css, EL('app_plugins'));
+  addDOM('app_js', 'script', cfg.app_custom_js, EL('app_plugins'));
 
   display('local_block', hub.config.get('connections', 'HTTP', 'enabled') ? 'block' : 'none');
   EL('local_label').style.color = hub.config.get('connections', 'HTTP', 'enabled') ? 'var(--font)' : 'var(--font3)';

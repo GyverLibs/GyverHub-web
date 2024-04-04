@@ -61,8 +61,9 @@ hub.config.addEventListener('changed.devices', () => {
 hub.addEventListener('deviceadded', (ev) => {  // found new device (search)
   const dev = ev.device.info;
   dev.main_width = 450;
-  dev.plugin_css = '';
-  dev.plugin_js = '';
+  dev.custom_css = '';
+  dev.custom_js = '';
+  dev.plugins = {};
   add_device(ev.device, dev);
 });
 hub.addEventListener('devicecreated', ev => {  // found new device OR requested saved device

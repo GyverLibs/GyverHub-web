@@ -133,7 +133,7 @@ function getLocalIP(silent = true) {
 
     if (ip.endsWith('.local')) {
       if (!silent)
-        asyncAlert(`Disable WEB RTC anonymizer: ${browser()}:/`+`/flags/#enable-webrtc-hide-local-ips-with-mdns`);
+        asyncAlert(`Disable WEB RTC anonymizer: ${browser()}:/` + `/flags/#enable-webrtc-hide-local-ips-with-mdns`);
       return;
     }
 

@@ -132,7 +132,7 @@ const langBase = {
     plugins: "Plugins",
     plug_add: "Add plugin by name",
     plug_link: "Go to plugin",
-    delete_plugin: "Delete plugin?",
+    delete_plugin: "Delete plugin",
     my_plugins: "MY PLUGINS",
   },
   
@@ -269,7 +269,7 @@ const langBase = {
     plugins: "Плагины",
     plug_add: "Добавить плагин по имени",
     plug_link: "Перейти",
-    delete_plugin: "Удалить плагин?",
+    delete_plugin: "Удалить плагин",
     my_plugins: "МОИ ПЛАГИНЫ",
   }
 };

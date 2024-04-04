@@ -96,6 +96,16 @@ function show_cfg() {
   EL('main_width').value = dev.info.main_width;
   EL('info_cli_sw').checked = document.body.classList.contains('show-cli');
   EL('info_trust').checked = dev.info.trust;
+
+  let plugins = getPlugins(focused);
+  let list = getMyPlugins(plugins, (wtype) => {
+    delete plugins[wtype];
+    savePlugins(plugins, focused);
+    show_cfg();
+  });
+  let cont = EL('device_plugins');
+  cont.replaceChildren();
+  list.forEach(p => cont.appendChild(p));
 }
 async function show_info() {
   const dev = hub.dev(focused);
@@ -228,17 +238,17 @@ function devLink() {
 function ui_width_h(el) {
   hub.dev(focused).info.main_width = el.value;
 }
-async function ui_plugin_css_h() {
-  const res = await asyncPromptArea(lang.i_css, hub.dev(focused).info.plugin_css);
+async function ui_custom_css_h() {
+  const res = await asyncPromptArea(lang.i_css, hub.dev(focused).info.custom_css);
   if (res !== null) {
-    hub.dev(focused).info.plugin_css = res;
+    hub.dev(focused).info.custom_css = res;
     addDOM('device_css', 'style', res, EL('plugins'));
   }
 }
-async function ui_plugin_js_h() {
-  const res = await asyncPromptArea(lang.i_js, hub.dev(focused).info.plugin_js);
+async function ui_custom_js_h() {
+  const res = await asyncPromptArea(lang.i_js, hub.dev(focused).info.custom_js);
   if (res !== null) {
-    hub.dev(focused).info.plugin_js = res;
+    hub.dev(focused).info.custom_js = res;
     addDOM('device_js', 'script', res, EL('plugins'));
   }
 }
@@ -320,8 +330,8 @@ async function device_h(id) {
   EL('menu').replaceChildren();
   updateSystemMenu();
   EL('conn').textContent = dev.getConnection().name;
-  addDOM('device_css', 'style', dev.info.plugin_css, EL('plugins'));
-  addDOM('device_js', 'script', dev.info.plugin_js, EL('plugins'));
+  addDOM('device_css', 'style', dev.info.custom_css, EL('plugins'));
+  addDOM('device_js', 'script', dev.info.custom_js, EL('plugins'));
   show_screen('ui');
   dev.focus();
 }
@@ -415,7 +425,11 @@ let renderer;
 
 function showControls(device, controls) {
   if (!renderer) {
-    renderer = new Renderer(device);
+    renderer = new Renderer(device, GlobalWidgets);
+    let devplugins = getPlugins(device.info.id);
+    for (let p in devplugins) {
+      renderer.widgetBase.registerText(devplugins[p]);
+    }
 
     renderer.addEventListener('menuchanged', () => {
       updateSystemMenu();
@@ -438,53 +452,4 @@ function showControls(device, controls) {
   else $root.classList.remove('wide-mode');
 
   $root.replaceChildren(...renderer.build());
-}
-
-// ============ TEST ============ 
-// TODO
-class TestDevice {
-  async set(name, value) {
-    EL('test_out').innerHTML = value;
-  }
-};
-let testWidgets = new Map();
-let testDevice = new TestDevice();
-let testRenderer = new Renderer(testDevice, testWidgets);
-
-async function testbuild_h() {
-  let wtype = Renderer.registerPlugin(EL('test_js').value, testWidgets);
-  if (!wtype) return;
-
-  let json;
-  try {
-    json = JSON.parse(EL('test_controls').value);
-  } catch (e) {
-    return;
-  }
-  let controls = Object.assign({ id: 'test', type: wtype }, json);
-  testRenderer.update([controls]);
-  let cont = EL('test_container');
-  cont.replaceChildren(...testRenderer.build());
-
-  // save
-  let config = {
-    controls: EL('test_controls').value,
-    updates: EL('test_updates').value,
-    plugin: EL('test_js').value,
-  };
-  localStorage.setItem('test_config', JSON.stringify(config));
-}
-function testupdate_h() {
-  let updates;
-  try {
-    updates = JSON.parse(EL('test_updates').value);
-  } catch (e) {
-    return;
-  }
-
-  for (let upd in updates) {
-    let obj = {};
-    obj[upd] = updates[upd];
-    testRenderer.handleUpdate('test', obj);
-  }
 }

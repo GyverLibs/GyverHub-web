@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderBody();
   apply_cfg();
   render_main();
-  registerWidgets();
+  registerPlugins();
 
   // read test
   if (localStorage.hasOwnProperty('test_config')) {

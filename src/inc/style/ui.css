@@ -771,6 +771,9 @@ body[data-screen=files] .screen-files,
 body[data-screen=fsbr_edit] .screen-fsbr_edit {
   display: block;
 }
+body[data-screen=fsbr_edit] .screen-fsbr_edit {
+  max-width: 900px !important;
+}
 
 body[data-screen=main] .screen-main {
   display: grid;

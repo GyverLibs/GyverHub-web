@@ -112,6 +112,9 @@ class Widget {
  * Widget with container.
  */
 class BaseWidget extends Widget {
+    nolabel = false;
+    notab = false;
+
     /** @type {HTMLDivElement} */
     #root;
     /** @type {HTMLDivElement} */
@@ -239,12 +242,12 @@ class BaseWidget extends Widget {
             else this.#root.classList.remove('wsquare');
         }
         if ('notab' in data) {
-            if (data.notab) this.#inner.classList.add('widget_notab');
-            else this.#inner.classList.remove('widget_notab');
+            if (data.notab) this.#inner.classList.add('wnotab');
+            else this.#inner.classList.remove('wnotab');
         }
         if ('disable' in data) {
-            if (data.disable) this.#container.classList.add('widget_dsbl');
-            else this.#container.classList.remove('widget_dsbl');
+            if (data.disable) this.#container.classList.add('wdisabled');
+            else this.#container.classList.remove('wdisabled');
         }
         if ('hint' in data) {
             const htext = 'name: ' + this.id + '\n' + (data.hint ?? '');
@@ -252,6 +255,9 @@ class BaseWidget extends Widget {
             this.#hint.title = htext;
             this.#hint.style.display = (data.hint && data.hint.length) ? 'inline-block' : 'none';
         }
+        
+        if (this.nolabel) this.#cont.classList.add('wnolabel');
+        if (this.notab) this.#inner.classList.add('wnotab');
     }
 
     disable(el, disable) {
@@ -265,7 +271,7 @@ class BaseWidget extends Widget {
     }
 
     disabled() {
-        return this.#container.classList.contains('widget_dsbl');
+        return this.#container.classList.contains('wdisabled');
     }
 
     align(align) {

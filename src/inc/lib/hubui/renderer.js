@@ -1,38 +1,33 @@
-let GlobalWidgets = new Map();
+class WidgetBase {
+  classes = new Map();
+  virtual = new Set();
 
-class Renderer extends EventEmitter {
-  // static #WIDGETS = new Map();
-  #WIDGETS;
-  static #VIRTUAL_WIDGETS = new Set();
-
-  /**
-   * Register widget class
-   * @param {typeof Widget} cls 
-   */
-  static register(cls, widgets = GlobalWidgets) {
-    // Renderer.#WIDGETS.set(cls.wtype, cls);
-    widgets.set(cls.wtype, cls);
-    if (cls.virtual) Renderer.#VIRTUAL_WIDGETS.add(cls.wtype);
+  registerClass(cls) {
+    this.classes.set(cls.wtype, cls);
+    if (cls.virtual) this.virtual.add(cls.wtype);
     if (cls.style) addDOM(cls.wtype + '_style', 'style', cls.style, EL('widget_styles'));
   }
 
-  static registerPlugin(js, widgets = GlobalWidgets) {
-    let cls = js.match(/class\s+(\w+)\s+extends/);
-    if (!cls || cls.length < 2) return null;
-    cls = cls[1];
-
-    let wtype = js.match(/static wtype\s+=\s+'(\w+)'/);
+  registerText(text, replacewtype = null) {
+    text = text.trim();
+    if (text.endsWith(';')) text = text.slice(0, -1);
+    let wtype = text.match(/static wtype\s?=\s?'(\w+)'/);
     if (!wtype || wtype.length < 2) return null;
     wtype = wtype[1];
+    if (replacewtype) text = text.replace(wtype, replacewtype);
 
     try {
-      const f = new Function('return (' + js + ');');
-      Renderer.register(f(), widgets);
+      const f = new Function('return (' + text + ');');
+      this.registerClass(f());
     } catch (e) {
       return null;
     }
     return wtype;
   }
+};
+let GlobalWidgets = new WidgetBase();
+
+class Renderer extends EventEmitter {
 
   /** @type {Device} */
   device;
@@ -41,10 +36,11 @@ class Renderer extends EventEmitter {
   #idMapExt;
   #files;
   #filesLoaded;
+  widgetBase;
 
-  constructor(device, widgets = GlobalWidgets) {
+  constructor(device, widgetBase) {
     super();
-    this.#WIDGETS = widgets;
+    this.widgetBase = widgetBase;
     this.device = device;
     this.#widgets = [];
     this.#idMap = new Map();
@@ -71,19 +67,19 @@ class Renderer extends EventEmitter {
       case 'row':
         let sumw = 0;
         for (const ctrl of data) {
-          if (!ctrl.type || Renderer.#VIRTUAL_WIDGETS.has(ctrl.type)) continue;
+          if (!ctrl.type || this.widgetBase.virtual.has(ctrl.type)) continue;
           if (!ctrl.wwidth) ctrl.wwidth = 1;
           sumw += ctrl.wwidth;
         }
         for (const ctrl of data) {
-          if (!ctrl.type || Renderer.#VIRTUAL_WIDGETS.has(ctrl.type)) continue;
+          if (!ctrl.type || this.widgetBase.virtual.has(ctrl.type)) continue;
           ctrl.wwidth_t = ctrl.wwidth * 100 / sumw;
         }
         break;
 
       case 'col':
         for (const ctrl of data) {
-          if (!ctrl.type || Renderer.#VIRTUAL_WIDGETS.has(ctrl.type)) continue;
+          if (!ctrl.type || this.widgetBase.virtual.has(ctrl.type)) continue;
           ctrl.wwidth_t = 100;
         }
         break;
@@ -103,11 +99,11 @@ class Renderer extends EventEmitter {
     for (const ctrl of data) {
       if (!ctrl.type) continue;
 
-      let cls = this.#WIDGETS.get(ctrl.type);
+      let cls = this.widgetBase.classes.get(ctrl.type);
       if (cls === undefined) {
         console.log('W: Missing widget:', ctrl);
         // continue;
-        cls = this.#WIDGETS.get('load');
+        cls = this.widgetBase.classes.get('load');
       }
 
       const obj = new cls(ctrl, this);
@@ -168,10 +164,17 @@ class Renderer extends EventEmitter {
    */
   _addFile(widget, path, type, callback) {
     let has = this.#files.some(f => f.widget.id == widget.id);
-    if (!has) this.#files.push({
-      widget, path, type, callback
-    });
-    this.#loadFiles();
+    if (path.startsWith('http')) {
+      downloadFile(checkGitLink(path))
+        .then(res => res.text())
+        .then(res => callback(res))
+        .catch(e => widget._handleFileError(e));
+    } else {
+      if (!has) this.#files.push({
+        widget, path, type, callback
+      });
+      this.#loadFiles();
+    }
   }
 
   async #loadFiles() {
@@ -193,16 +196,16 @@ class Renderer extends EventEmitter {
     }
   }
 
-  _getPlugin(type) {
-    return this.#WIDGETS.get(type);
+  _getPlugin(wtype) {
+    return this.widgetBase.classes.get(wtype);
     // const widget = this.#idMap.get(type);
     // if (!widget || !(widget instanceof PluginWidget)) return undefined;
     // return widget.widgetClass;
   }
 }
 
-function registerWidgets() {
-  GlobalWidgets = new Map();
+function registerPlugins() {
+  GlobalWidgets = new WidgetBase();
   [
     ButtonWidget,
     CanvasWidget,
@@ -252,11 +255,11 @@ function registerWidgets() {
     // UiFileWidget,
     SpaceWidget,
     DummyWidget,
-  ].forEach(cls => Renderer.register(cls, GlobalWidgets));
+  ].forEach(cls => GlobalWidgets.registerClass(cls));
 
   if (localStorage.hasOwnProperty('plugins')) {
     let plugins = JSON.parse(localStorage.getItem('plugins'));
     for (let plug in plugins)
-      Renderer.registerPlugin(plugins[plug], GlobalWidgets);
+      GlobalWidgets.registerText(plugins[plug]);
   }
 }

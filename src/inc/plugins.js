@@ -1,49 +1,53 @@
-function myPlugins() {
+function getMyPlugins(plugins, ondelete) {
   let list = [];
-
-  if (localStorage.hasOwnProperty('plugins')) {
-    let plugins = JSON.parse(localStorage.getItem('plugins'));
-    for (let wtype in plugins) {
-      let plugin = makeDOM(this, {
-        tag: 'div',
-        class: 'myplugin',
-        name: 'el',
-        children: [
-          {
-            tag: 'div',
-            class: 'myplugin_inner',
-            children: [
-              {
-                tag: 'span',
-                class: 'my_plugin_wtype',
-                text: wtype,
-                events: {
-                  click: async() => {
-                    asyncPromptArea(wtype, plugins[wtype], null, true);
-                  }
-                }
-              },
-              {
-                tag: 'span',
-                class: 'icon icon_my_plugin',
-                text: '',
-                events: {
-                  click: async () => {
-                    if (!await asyncConfirm(lang.delete_plugin)) return;
-                    delete plugins[wtype];
-                    localStorage.setItem('plugins', JSON.stringify(plugins));
-                    registerWidgets();
-                    myPlugins();
-                  }
+  for (let wtype in plugins) {
+    let plugin = makeDOM(this, {
+      tag: 'div',
+      class: 'myplugin',
+      name: 'el',
+      children: [
+        {
+          tag: 'div',
+          class: 'myplugin_inner',
+          children: [
+            {
+              tag: 'span',
+              class: 'my_plugin_wtype',
+              text: wtype,
+              events: {
+                click: async () => {
+                  asyncPromptArea(wtype, plugins[wtype], null, true);
                 }
               }
-            ]
-          }
-        ],
-      });
-      list.push(plugin);
-    }
+            },
+            {
+              tag: 'span',
+              class: 'icon icon_my_plugin',
+              text: '',
+              events: {
+                click: async () => {
+                  if (!await asyncConfirm(lang.delete_plugin + ' ' + wtype + '?')) return;
+                  await ondelete(wtype);
+                }
+              }
+            }
+          ]
+        }
+      ],
+    });
+    list.push(plugin);
   }
+  return list;
+}
+
+function showMyPlugins() {
+  let plugins = getPlugins();
+  let list = getMyPlugins(plugins, (wtype) => {
+    delete plugins[wtype];
+    savePlugins(plugins);
+    registerPlugins();
+    showMyPlugins();
+  });
 
   let myplugins = makeDOM(this, {
     tag: 'div',
@@ -77,7 +81,7 @@ function myPlugins() {
 }
 
 async function loadPlugins() {
-  myPlugins();
+  showMyPlugins();
 
   let cont = EL('plugins_cont');
   cont.replaceChildren();
@@ -104,7 +108,7 @@ async function loadPlugins() {
 
   let plugins;
   try {
-    const resp = await fetch("https://raw.githubusercontent.com/GyverLibs/GyverHub-plugins/main/plugins.txt", { cache: "no-store" });
+    const resp = await downloadFile(checkGitLink('https://github.com/GyverLibs/GyverHub-plugins/blob/main/plugins.txt'));
     plugins = await resp.text();
   } catch (e) {
     return;
@@ -119,16 +123,20 @@ async function loadPlugins() {
 }
 
 function pluginEditor(js, wtype) {
-  const $area = document.createElement('textarea');
-  $area.rows = 30;
-  $area.value = js;
-  $area.readOnly = 1;
-  $area.className = 'ui_inp ui_area ui_area_wrap';
+  const $area = makeDOM(this, {
+    tag: 'textarea',
+    value: js,
+    readOnly: 1,
+    className: 'ui_inp ui_area ui_area_wrap',
+    rows: 30,
+  });
 
-  const $input = document.createElement('input');
-  $input.type = 'text';
-  $input.className = 'ui_inp';
-  $input.value = wtype;
+  const $input = makeDOM(this, {
+    tag: 'input',
+    type: 'text',
+    class: 'ui_inp',
+    value: wtype,
+  });
 
   const $box = makeDialog(lang.plug_add, null, [
     {
@@ -138,15 +146,11 @@ function pluginEditor(js, wtype) {
           js = js.replace(wtype, $input.value);
           wtype = $input.value;
 
-          if (!localStorage.hasOwnProperty('plugins')) {
-            localStorage.setItem('plugins', JSON.stringify({ [wtype]: js }));
-          } else {
-            let plugins = JSON.parse(localStorage.getItem('plugins'));
-            plugins[wtype] = js;
-            localStorage.setItem('plugins', JSON.stringify(plugins));
-            registerWidgets();
-            myPlugins();
-          }
+          let plugins = getPlugins();
+          plugins[wtype] = js;
+          savePlugins(plugins);
+          registerPlugins();
+          showMyPlugins();
         }
         document.body.removeChild($box);
       }
@@ -165,7 +169,7 @@ function pluginEditor(js, wtype) {
 async function loadPlugin(rep) {
   let js;
   try {
-    js = await fetch('https://raw.githubusercontent.com/' + rep.split('https://github.com/')[1].replace('/blob/', '/'), { cache: "no-store" });
+    js = await downloadFile(checkGitLink(rep));
     js = await js.text();
   } catch (e) {
     return;
@@ -177,10 +181,10 @@ async function loadPlugin(rep) {
       console.log(value);
     }
   };
-  let widgets = new Map();
+  let widgets = new WidgetBase();
   let plugDevice = new PlugDevice();
   let plugRenderer = new Renderer(plugDevice, widgets);
-  let wtype = Renderer.registerPlugin(js, widgets);
+  let wtype = widgets.registerText(js);
   if (!wtype) return;
 
   plugRenderer.update([{ type: wtype }]);

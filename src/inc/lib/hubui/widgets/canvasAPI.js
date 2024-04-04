@@ -116,7 +116,7 @@ function showCanvasAPI(cv, data, scale, mapxy, fileHandler) {
                     let path = args.shift();
 
                     if (path.startsWith('http://') || path.startsWith('https://')) {
-                        img.src = path;
+                        img.src = checkGitLink(path);
                     } else {
                         if (fileHandler) fileHandler(path, img);
                     }

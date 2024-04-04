@@ -102,10 +102,12 @@ function asyncConfirm(text, title = null) {
 
 function asyncPrompt(text, placeh = '', title = null) {
   return new Promise(resolve => {
-    const $input = document.createElement('input');
-    $input.type = 'text';
-    $input.value = placeh;
-    $input.className = 'ui_inp';
+    const $input = makeDOM(this, {
+      tag: 'input',
+      type: 'text',
+      value: placeh,
+      class: 'ui_inp',
+    });
 
     const $box = makeDialog(title, text, [
       {
@@ -129,11 +131,13 @@ function asyncPrompt(text, placeh = '', title = null) {
 
 function asyncPromptArea(text, placeh = '', title = null, readonly = false) {
   return new Promise(resolve => {
-    const $input = document.createElement('textarea');
-    $input.rows = 20;
-    $input.value = placeh;
-    $input.readOnly = readonly;
-    $input.className = 'ui_inp ui_area ui_area_wrap';
+    const $input = makeDOM(this, {
+      tag: 'textarea',
+      value: placeh,
+      readOnly: readonly,
+      className: 'ui_inp ui_area ui_area_wrap',
+      rows: 20,
+    });
 
     const $box = makeDialog(title, text, [
       {

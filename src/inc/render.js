@@ -224,12 +224,12 @@ function renderBody() {
   
           <div class="ui_row">
             <label class="ui_label"><slot name="lang.i_css"></slot></label>
-            <button class="icon icon_btn_big" onclick="ui_plugin_css_h()"></button>
+            <button class="icon icon_btn_big" onclick="ui_custom_css_h()"></button>
           </div>
   
           <div class="ui_row">
             <label class="ui_label"><slot name="lang.i_js"></slot></label>
-            <button class="icon icon_btn_big" onclick="ui_plugin_js_h()"></button>
+            <button class="icon icon_btn_big" onclick="ui_custom_js_h()"></button>
           </div>
 
           <hr>
@@ -242,6 +242,16 @@ function renderBody() {
             <!--@/[if_not_target:esp]-->
           </div>
   
+        </div>
+
+        <div class="ui_col">
+          <div class="ui_row ui_head">
+            <label><span class="icon icon_ui"></span><slot name="lang.plugins"></slot></label>
+          </div>
+
+          <div class="ui_row">
+            <div id="device_plugins"></div>
+          </div>
         </div>
       </div>
   
@@ -689,11 +699,11 @@ function renderBody() {
 
           <div class="ui_row">
             <label class="ui_label"><slot name="lang.cfg_css"></slot></label>
-            <button class="icon icon_btn_big" onclick="app_plugin_css()"></button>
+            <button class="icon icon_btn_big" onclick="app_custom_css()"></button>
           </div>
           <div class="ui_row">
             <label class="ui_label"><slot name="lang.cfg_js"></slot></label>
-            <button class="icon icon_btn_big" onclick="app_plugin_js()"></button>
+            <button class="icon icon_btn_big" onclick="app_custom_js()"></button>
           </div>
           <div class="ui_row">
             <label class="ui_label"><slot name="lang.cfg_proj"></slot></label>

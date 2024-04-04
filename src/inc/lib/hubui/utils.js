@@ -22,6 +22,21 @@ function makeDOM(self, obj) {
   return $el;
 }
 
+function checkGitLink(link) {
+  if (link.startsWith('https://github.com/')) {
+    link = 'https://raw.githubusercontent.com/' + link.split('https://github.com/')[1].replace('/blob/', '/');
+  }
+  return link;
+}
+
+function downloadFile(url) {
+  return new Promise((res, rej) => {
+    fetch(url, { cache: "no-store" })
+      .then(r => res(r))
+      .catch(e => rej());
+  });
+}
+
 function EL(id) {
   return document.getElementById(id);
 }
@@ -107,7 +122,33 @@ async function notrust_h() {
   if (await asyncConfirm(lang.unblock)) {
     hub.dev(focused).info.trust = 1;
     refresh_h();
+  }
+}
 
+function getPlugins(deviceID = null) {
+  if (deviceID) {
+    if (localStorage.hasOwnProperty('device_plugins')) {
+      let devplugins = JSON.parse(localStorage.getItem('device_plugins'));
+      if (deviceID in devplugins) return devplugins[deviceID];
+    }
+  } else {
+    if (localStorage.hasOwnProperty('plugins')) {
+      return JSON.parse(localStorage.getItem('plugins'));
+    }
+  }
+  return {};
+}
+
+function savePlugins(plugins, deviceID = null) {
+  if (deviceID) {
+    let devplugins = {};
+    if (localStorage.hasOwnProperty('device_plugins')) {
+      devplugins = JSON.parse(localStorage.getItem('device_plugins'));
+    }
+    devplugins[deviceID] = plugins;
+    localStorage.setItem('device_plugins', JSON.stringify(devplugins));
+  } else {
+    localStorage.setItem('plugins', JSON.stringify(plugins));
   }
 }
 

@@ -1,9 +1,9 @@
 async function loadProjects() {
   EL('projects_cont').replaceChildren(EL('projects_cont').lastElementChild);
-  
+
   let projects;
   try {
-    projects = await fetch("https://raw.githubusercontent.com/GyverLibs/GyverHub-projects/main/projects.txt", { cache: "no-store" });
+    projects = await downloadFile(checkGitLink('https://github.com/GyverLibs/GyverHub-projects/blob/main/projects.txt'));
     projects = await projects.text();
   } catch (e) {
     return;
@@ -20,7 +20,7 @@ async function loadProjects() {
 async function loadProj(rep) {
   try {
     const manifest = `https://raw.githubusercontent.com/${rep}/main/project.json`;
-    const resp = await fetch(manifest, { cache: "no-store" });
+    const resp = await downloadFile(manifest);
     const proj = await resp.json();
     if (!('name' in proj) || !('version' in proj) || !('about' in proj)) return;
     let name = proj.name;
