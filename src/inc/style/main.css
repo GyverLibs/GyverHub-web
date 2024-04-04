@@ -467,4 +467,12 @@ body[data-screen=plugins] .footer {
   cursor: pointer;
 }
 
+.my_plugin_wtype {
+  cursor: pointer;
+}
+
+.my_plugin_wtype:hover {
+  text-decoration: underline;
+}
+
 /*@/[if_not_target:esp]*/

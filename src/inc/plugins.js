@@ -15,7 +15,13 @@ function myPlugins() {
             children: [
               {
                 tag: 'span',
+                class: 'my_plugin_wtype',
                 text: wtype,
+                events: {
+                  click: async() => {
+                    asyncPromptArea(wtype, plugins[wtype], null, true);
+                  }
+                }
               },
               {
                 tag: 'span',

@@ -127,11 +127,12 @@ function asyncPrompt(text, placeh = '', title = null) {
   });
 }
 
-function asyncPromptArea(text, placeh = '', title = null) {
+function asyncPromptArea(text, placeh = '', title = null, readonly = false) {
   return new Promise(resolve => {
     const $input = document.createElement('textarea');
-    $input.rows = 5;
+    $input.rows = 20;
     $input.value = placeh;
+    $input.readOnly = readonly;
     $input.className = 'ui_inp ui_area ui_area_wrap';
 
     const $box = makeDialog(title, text, [

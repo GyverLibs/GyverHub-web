@@ -216,7 +216,7 @@ function qr_h() {
   const $qr = document.createElement('div');
   new QRCode($qr, devLink());
   $qr.style.margin = '0 auto';
-  asyncShowQr($qr);
+  asyncShowQr($qr, 'QR code');
   /*@/[if_not_target:esp]*/
 }
 function devLink() {
