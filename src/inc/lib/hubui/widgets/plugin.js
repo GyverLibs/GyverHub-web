@@ -10,10 +10,9 @@ class PluginLoader extends Widget {
     async update(data) {
         super.update(data);
         if (!this.renderer.device.info.trust) {
-            if (await asyncConfirm(lang.unblock)) {
-                this.renderer.device.info.trust = 1;
-                refresh_h();
-            }
+            let res = await asyncConfirm(lang.unblock);
+            if (res) this.renderer.device.info.trust = 1;
+            setTimeout(() => location.reload(), 200);
             return;
         }
 
@@ -61,7 +60,7 @@ class LoadWidget extends Widget {
             html: waiter(),
             class: 'widget_main',
             style: {
-                width: this.data.wwidth_t + '%'
+                width: this.data.wwidth_perc + '%'
             }
         });
 

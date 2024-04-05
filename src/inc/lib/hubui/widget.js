@@ -14,6 +14,7 @@ class Widget {
     set_delay = 50;
     set_buf = null;
     set_timer = null;
+    wcontainer = null;
 
     /**
      * @param {object} data 
@@ -146,7 +147,7 @@ class BaseWidget extends Widget {
             tag: 'div',
             class: 'widget_main',
             style: {
-                width: data.wwidth_t + '%',
+                width: data.wwidth_perc + '%',
             }
         });
 

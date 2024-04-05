@@ -73,14 +73,14 @@ class Renderer extends EventEmitter {
         }
         for (const ctrl of data) {
           if (!ctrl.type || this.widgetBase.virtual.has(ctrl.type)) continue;
-          ctrl.wwidth_t = ctrl.wwidth * 100 / sumw;
+          ctrl.wwidth_perc = ctrl.wwidth * 100 / sumw;
         }
         break;
 
       case 'col':
         for (const ctrl of data) {
           if (!ctrl.type || this.widgetBase.virtual.has(ctrl.type)) continue;
-          ctrl.wwidth_t = 100;
+          ctrl.wwidth_perc = 100;
         }
         break;
     }
@@ -198,9 +198,6 @@ class Renderer extends EventEmitter {
 
   _getPlugin(wtype) {
     return this.widgetBase.classes.get(wtype);
-    // const widget = this.#idMap.get(type);
-    // if (!widget || !(widget instanceof PluginWidget)) return undefined;
-    // return widget.widgetClass;
   }
 }
 
@@ -231,13 +228,10 @@ function registerPlugins() {
     PlotWidget,
     PluginLoader,
     LoadWidget,
-    // CustomWidget,
-    // PluginWidget,
-    // CustomWidget,
     ConfirmWidget,
     PromptWidget,
-    RowWidget,
-    ColWidget,
+    ContainerWidget,
+    SpoilerWidget,
     SelectWidget,
     SliderWidget,
     SpinnerWidget,

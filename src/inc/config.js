@@ -152,7 +152,7 @@ function cfg_import() {
 
     save_cfg();
     showPopup(lang.import_ok);
-    setTimeout(() => location.reload(), 500);
+    setTimeout(() => location.reload(), 200);
   });
   $in.click();
 }
@@ -160,6 +160,6 @@ function cfg_import() {
 async function cfg_reset() {
   if (await asyncConfirm(lang.cfg_reset_conf)) {
     localStorage.clear();
-    setTimeout(() => location.reload(), 500);
+    setTimeout(() => location.reload(), 200);
   }
 }

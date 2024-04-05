@@ -24,7 +24,7 @@
 /*@![include:inc/lib/hubui/widgets/plot.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/plugin.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/popup.js, compile]*/
-/*@![include:inc/lib/hubui/widgets/row_col.js, compile]*/
+/*@![include:inc/lib/hubui/widgets/container.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/select.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/slider.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/spinner.js, compile]*/

@@ -1,6 +1,11 @@
 .widget_row {
   display: flex;
   min-height: 50px;
+  box-sizing: border-box;
+}
+
+.widget_col {
+  box-sizing: border-box;
 }
 
 .widget_main {
@@ -95,4 +100,16 @@
 
 .disable:active {
   filter: brightness(1) !important;
+}
+
+.cont_title {
+  text-align: center;
+  font-size: 28px;
+  padding-top: 6px;
+  padding-bottom: 3px;
+}
+
+.spoiler_title {
+  font-size: 28px;
+
 }

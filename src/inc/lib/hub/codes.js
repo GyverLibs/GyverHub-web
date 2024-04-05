@@ -132,4 +132,7 @@ const HubCodes = [
     'highacc',
     'layer',
     'udp_port',
+    'container',
+    'rowcol',
+    'spoiler',
 ];
