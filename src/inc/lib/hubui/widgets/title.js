@@ -9,7 +9,7 @@ class TitleWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'div', 
-            class: 'w_label',
+            class: 'w-label',
             name: 'cont',
             style: {
                 fontSize: '35px'
@@ -17,7 +17,7 @@ class TitleWidget extends BaseWidget {
             children: [
                 {
                     tag: 'span',
-                    class: 'w_icon',
+                    class: 'w-icon',
                     name: 'icon',
                 },
                 {

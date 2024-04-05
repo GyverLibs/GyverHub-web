@@ -9,11 +9,11 @@ class InputWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'div',
-            class: 'w_inp_cont',
+            class: 'w-inp-cont',
             children: [
                 {
                     tag: 'input',
-                    class: 'w_inp',
+                    class: 'w-inp',
                     name: 'el',
                     type: 'text',
                     events: {
@@ -58,7 +58,7 @@ class InputWidget extends BaseWidget {
     }
 
     static style = `
-        .w_inp {
+        .w-inp {
             font-size: 17px;
             border: none;
             font-family: var(--font_f);
@@ -70,12 +70,12 @@ class InputWidget extends BaseWidget {
             box-shadow: 0px 2px 0px 0px var(--prim);
           }
           
-          .w_inp:focus {
+          .w-inp:focus {
             filter: brightness(1.3);
             outline: none;
           }
           
-          .w_inp_cont {
+          .w-inp-cont {
             display: flex;
             width: 100%;
           }`;
@@ -92,11 +92,11 @@ class PassWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'div',
-            class: 'w_inp_cont',
+            class: 'w-inp-cont',
             children: [
                 {
                     tag: 'input',
-                    class: 'w_inp',
+                    class: 'w-inp',
                     name: 'el',
                     type: 'password',
                     events: {
@@ -113,11 +113,11 @@ class PassWidget extends BaseWidget {
                 },
                 {
                     tag: 'div',
-                    class: 'btn_inp_block',
+                    class: 'btn-inp-block',
                     children: [
                         {
                             tag: 'button',
-                            class: 'icon w_eye',
+                            class: 'icon w-eye',
                             text: '',
                             events: {
                                 click: () => {
@@ -157,7 +157,7 @@ class PassWidget extends BaseWidget {
     }
 
     static style = `
-        .w_eye {
+        .w-eye {
             font-size: 18px;
             cursor: pointer;
             color: var(--font2);

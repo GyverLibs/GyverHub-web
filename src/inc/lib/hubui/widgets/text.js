@@ -7,7 +7,7 @@ class TextWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'textarea',
-            class: 'ui_area ui_area_passive',
+            class: 'ui-area ui-area-passive',
             name: 'el',
             readOnly: true,
             rows: 5,
@@ -33,7 +33,7 @@ class LogWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'textarea',
-            class: 'ui_area ui_area_passive',
+            class: 'ui-area ui-area-passive',
             name: 'el',
             readOnly: true,
             rows: 5,
@@ -66,7 +66,7 @@ class TextFileWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'textarea',
-            class: 'ui_area ui_area_passive',
+            class: 'ui-area ui-area-passive',
             name: 'el',
             readOnly: true,
         });
@@ -96,7 +96,7 @@ class DisplayWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'textarea',
-            class: 'w_disp',
+            class: 'w-disp',
             name: 'el',
             readOnly: true,
             rows: 2,
@@ -125,7 +125,7 @@ class DisplayWidget extends BaseWidget {
     }
 
     static style = `
-        .w_disp {
+        .w-disp {
             border: none;
             outline: none;
             font-family: var(--font_f);
@@ -140,19 +140,19 @@ class DisplayWidget extends BaseWidget {
             text-wrap: nowrap;
           }
           
-          .w_disp::-webkit-resizer {
+          .w-disp::-webkit-resizer {
             display: none;
           }
           
-          .w_disp::-webkit-scrollbar {
+          .w-disp::-webkit-scrollbar {
             display: none;
           }
           
-          .w_disp::-webkit-scrollbar-track {
+          .w-disp::-webkit-scrollbar-track {
             display: none;
           }
           
-          .w_disp::-webkit-scrollbar-thumb {
+          .w-disp::-webkit-scrollbar-thumb {
             display: none;
           }`;
 }
@@ -168,7 +168,7 @@ class AreaWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'textarea',
-            class: 'ui_area',
+            class: 'ui-area',
             name: 'el',
             events: {
                 keydown: e => {

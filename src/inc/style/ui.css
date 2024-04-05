@@ -10,35 +10,35 @@
   user-select: none;
 }
 
-.icon_min {
+.icon-min {
   font-size: 23px;
 }
 
-.icon_btn {
+.icon-btn {
   font-size: 20px;
   cursor: pointer;
   color: var(--font2);
 }
 
-.icon_btn:hover {
+.icon-btn:hover {
   color: var(--font);
 }
 
-.icon_btn_big {
+.icon-btn-big {
   cursor: pointer;
   color: var(--prim);
   padding: 0px 6px;
 }
 
-.icon_btn_big:hover {
+.icon-btn-big:hover {
   filter: brightness(1.15);
 }
 
-.icon_btn_big:active {
+.icon-btn-big:active {
   filter: brightness(0.8);
 }
 
-.icon_ui {
+.icon-ui {
   font-size: 18px;
   width: 25px;
   display: inline-block;
@@ -71,7 +71,7 @@
   }
 }
 
-.icon_inline {
+.i-inline {
   user-select: none !important;
   font-size: 18px !important;
   padding-right: 5px;
@@ -115,7 +115,7 @@
 }
 
 
-.notice_block {
+.notice-block {
   display: block;
   background: var(--back);
   padding: 5px;
@@ -130,13 +130,13 @@
 /* ============================== BUTTONS =============================== */
 /* ====================================================================== */
 
-.span_btn {
+.span-btn {
   cursor: pointer;
   color: #c60000;
   text-decoration: underline;
 }
 
-.ui_btn {
+.ui-btn {
   background: var(--prim);
   border: none;
   border-radius: 5px;
@@ -151,37 +151,33 @@
   user-select: none;
 }
 
-.ui_btn:hover {
+.ui-btn:hover {
   filter: brightness(1.15);
 }
 
-.ui_btn:active {
+.ui-btn:active {
   filter: brightness(0.8);
 }
 
-.ui_btn_mini {
+.ui-btn-mini {
   font-size: 19px !important;
   padding: 7px;
   margin: 3px;
   padding: 4px 8px;
 }
 
-.ui_btn_dis {
+.ui-btn-dis {
   background: var(--font3);
 }
 
-.btn_inp_block {
+.btn-inp-block {
   display: flex;
   margin-left: -32px;
   width: 32px;
   z-index: 1;
 }
 
-.btn_no_pad {
-  padding: 0;
-}
-
-.ui_btn_row {
+.ui-row-btn {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -191,14 +187,14 @@
 /* ====================================================================== */
 /* ============================== PASSWORD ============================== */
 /* ====================================================================== */
-.pin_inner {
+.pin-inner {
   padding: 0;
   margin: 0;
   height: 70px;
   margin: 10px 5px;
 }
 
-.pin_btn {
+.pin-btn {
   width: 100%;
   height: 100%;
   font-size: 40px;
@@ -206,7 +202,7 @@
   cursor: pointer;
 }
 
-.pass_inp {
+.pin-input {
   background: var(--thumb);
   width: 100%;
   margin: 10px 5px;
@@ -216,22 +212,22 @@
   text-align: center;
 }
 
-.pass_inp_inner {
+.pin-input-inner {
   display: flex;
   justify-content: center;
   padding: 0px 5px;
 }
 
-.pin_no_btn {
+.pin-no-btn {
   background: none;
   cursor: unset;
 }
 
-.pin_red_btn {
+.pin-red-btn {
   background: #ce1d1d;
 }
 
-.pin_cancel {
+.pin-cancel {
   font-size: 20px;
   background: #cbce1d;
 }
@@ -250,7 +246,7 @@
   z-index: 2;
 }
 
-.cli_area {
+.cli-area {
   width: 100%;
   color: var(--font2);
   height: 100px;
@@ -259,12 +255,16 @@
   font-size: 16px;
 }
 
-.cli_icon {
+.cli-area::-webkit-scrollbar {
+  display: none;
+}
+
+.cli-icon {
   color: var(--prim);
   font-size: 22px;
 }
 
-.cli_enter {
+.cli-enter {
   transform: rotate(90deg);
   -webkit-transform: rotate(90deg);
   -moz-transform: rotate(90deg);
@@ -272,30 +272,26 @@
   -o-transform: rotate(90deg);
 }
 
-.cli_enter:hover {
+.cli-enter:hover {
   color: var(--prim);
   filter: brightness(1.15);
 }
 
-.cli_row {
+.cli-row {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-.cli_inp {
+.cli-input {
   background: var(--dark) !important;
   font-size: 17px !important;
 }
 
-.cli_block {
+.cli-block {
   margin: auto;
   max-width: var(--ui_width);
   padding: 5px 10px 5px 10px;
-}
-
-.cli_area::-webkit-scrollbar {
-  display: none;
 }
 
 /* ====================================================================== */
@@ -311,8 +307,6 @@
   }
 }
 
-
-
 /* ====================================================================== */
 /* ================================= FS ================================= */
 /* ====================================================================== */
@@ -323,7 +317,7 @@
   justify-content: center;
 }
 
-.waiter_b {
+.waiter-block {
   width: 100%;
   height: 50px;
   padding: 5px 0;
@@ -333,14 +327,14 @@
   margin: 10px 0px;
 }
 
-.fs_err {
+.fs-error {
   text-align: center;
   font-weight: 600;
   font-size: 22px;
   color: var(--prim);
 }
 
-.fs_file {
+.fs-file {
   cursor: pointer;
   padding: 6px 10px;
   font-size: 15px;
@@ -349,11 +343,11 @@
   background: var(--tab);
 }
 
-.fs_file:hover {
+.fs-file:hover {
   filter: brightness(0.9);
 }
 
-.fs_folder {
+.fs-folder {
   background: var(--prim);
   font-weight: 600;
   color: var(--tab);
@@ -361,12 +355,12 @@
   padding: 4px 8px;
 }
 
-.fs_weight {
+.fs-weight {
   display: inline-block;
   float: right;
 }
 
-.fs_controls {
+.fs-controls {
   display: none;
   align-items: center;
   /*padding: 2px 10px 10px 10px;*/
@@ -374,7 +368,7 @@
   background: var(--back);
 }
 
-.fs_info {
+.fs-info {
   padding: 5px;
   margin-top: 15px;
   background: var(--back);
@@ -383,13 +377,13 @@
   /* box-shadow: 0px 0px 0px 2px var(--back);*/
 }
 
-.ui_inpbtn_row {
+.ui-inpbtn-row {
   display: flex;
   margin: 5px 0px;
   padding: 0px 10px;
 }
 
-.upl_btn {
+.upl-btn {
   font-size: 18px;
   padding: 5px;
   margin: 0;
@@ -397,9 +391,9 @@
   border-radius: 0px 5px 5px 0px;
 }
 
-.drop_area {}
+.drop-area {}
 
-.drop_area.active {
+.drop-area.active {
   border: 2px dashed var(--prim);
   background: var(--back);
   color: var(--prim);
@@ -413,7 +407,7 @@ body[data-screen=info] .screen-info {
   display: block;
 }
 
-.info_label {
+.info-label {
   user-select: text;
   cursor: text;
   overflow-wrap: break-word;
@@ -422,7 +416,7 @@ body[data-screen=info] .screen-info {
   text-align: right;
 }
 
-.info_label_small {
+.info-label-small {
   font-size: 13px;
   user-select: all;
   cursor: pointer;
@@ -470,18 +464,18 @@ body[data-screen=info] .screen-info {
   width: 100%;
 }
 
-.d_title {
+.dev-title {
   align-self: center;
   overflow: hidden;
 }
 
-.d_name {
+.dev-name {
   font-size: 16px;
   font-weight: 600;
   line-height: 25px;
 }
 
-.d_icon {
+.dev-icon {
   width: 43px;
   display: flex;
   justify-content: center;
@@ -489,40 +483,40 @@ body[data-screen=info] .screen-info {
   margin: 0;
 }
 
-.conn_dev {
+.dev-conn {
   font-size: 10px;
   margin-left: 1px;
   display: none;
 }
 
-.d_btn_cont {
+.dev-btn-cont {
   display: none;
   justify-content: space-evenly;
 }
 
-.d_btn_red {
+.dev-btn-red {
   color: rgba(255, 0, 0, 0.6);
 }
 
-.d_btn_red:hover {
+.dev-btn-red:hover {
   color: rgba(255, 0, 0, 1);
 }
 
-.d_btn_green {
+.dev-btn-green {
   color: rgba(0, 255, 0, 0.6);
 }
 
-.d_btn_green:hover {
+.dev-btn-green:hover {
   color: rgba(0, 255, 0, 1);
 }
 
-.d_btn_cfg {
+.dev-btn-cfg {
   align-self: flex-start;
   color: var(--back);
   font-size: 17px;
 }
 
-.d_btn_cfg:hover {
+.dev-btn-cfg:hover {
   color: var(--dark);
 }
 
@@ -541,22 +535,22 @@ body[data-screen=config] .screen-config {
   color: var(--font2);
 }
 
-.cfg_info {
+.cfg-info {
   margin: 10px 15px;
 }
 
-.cfg_info a {
+.cfg-info a {
   color: var(--prim);
 }
 
 /* ====================================================================== */
 /* ================================== UI ================================ */
 /* ====================================================================== */
-.ui_label {
+.ui-label {
   white-space: nowrap;
 }
 
-.ui_col {
+.ui-col {
   margin-bottom: 12px;
   padding: 5px 0px 5px 0px;
   border-radius: 10px;
@@ -564,7 +558,7 @@ body[data-screen=config] .screen-config {
   box-shadow: 0 0 10px 0px #00000030;
 }
 
-.ui_row {
+.ui-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -572,7 +566,7 @@ body[data-screen=config] .screen-config {
   min-height: 30px;
 }
 
-.ui_inp_row {
+.ui-inp-row {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -581,23 +575,23 @@ body[data-screen=config] .screen-config {
   width: 100%;
 }
 
-.ui_sel {
+.ui-select {
   cursor: pointer;
   padding-left: 5px !important;
 }
 
-.ui_head {
+.ui-head {
   font-size: 20px;
   font-weight: 600;
   color: var(--font);
   padding: 0 10px;
 }
 
-.ui_tab {
+.ui-tab {
   cursor: pointer;
 }
 
-.ui_inp {
+.ui-inp {
   font-size: 17px;
   border: none;
   outline: none;
@@ -611,11 +605,11 @@ body[data-screen=config] .screen-config {
   min-height: 30px;
 }
 
-.ui_inp:focus {
+.ui-inp:focus {
   outline: none;
 }
 
-.ui_inp_wbtn {
+.ui-inp-w-btn {
   border-radius: 4px 0 0 4px;
 }
 
@@ -628,7 +622,7 @@ body[data-screen=config] .screen-config {
   height: 30px
 }
 
-.switch_cont {
+.switch-cont {
   height: 32px;
   display: flex;
   align-items: center;
@@ -681,7 +675,7 @@ input:checked+.slider:before {
 /* ====================================================================== */
 /* ================================= AREA =============================== */
 /* ====================================================================== */
-.ui_area {
+.ui-area {
   border: none;
   outline: none;
   font-family: var(--font_f);
@@ -694,24 +688,24 @@ input:checked+.slider:before {
   /* margin-bottom: 3px; */
 }
 
-.ui_area_passive {
+.ui-area-passive {
   cursor: default;
 }
 
-.ui_area_wrap {
+.ui-area-wrap {
   white-space: pre;
 }
 
-.ui_area::-webkit-scrollbar {
+.ui-area::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
-.ui_area::-webkit-scrollbar-track {
+.ui-area::-webkit-scrollbar-track {
   background: #0000;
 }
 
-.ui_area::-webkit-scrollbar-thumb {
+.ui-area::-webkit-scrollbar-thumb {
   background: var(--thumb);
   border-radius: 3px;
 }
@@ -719,7 +713,7 @@ input:checked+.slider:before {
 /* ====================================================================== */
 /* ================================= POPUP ============================== */
 /* ====================================================================== */
-.dialog_box {
+.dialog-box {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -734,14 +728,14 @@ input:checked+.slider:before {
   color: var(--font);
 }
 
-.ui_dialog {
+.ui-dialog {
   max-width: 400px;
   width: 100%;
   margin: 10px;
   padding: 0;
 }
 
-.dialog_row {
+.dialog-row {
   white-space: pre-wrap;
 }
 
@@ -784,7 +778,7 @@ body[data-screen=main] .screen-main {
   color: #a93737;
 }
 
-.blocked_cont {
+.blocked-cont {
   height: 40px;
   display: flex;
   align-content: center;

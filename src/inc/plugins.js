@@ -8,11 +8,11 @@ function getMyPlugins(plugins, ondelete) {
       children: [
         {
           tag: 'div',
-          class: 'myplugin_inner',
+          class: 'myplugin-inner',
           children: [
             {
               tag: 'span',
-              class: 'my_plugin_wtype',
+              class: 'myplugin-wtype',
               text: wtype,
               events: {
                 click: async () => {
@@ -22,7 +22,7 @@ function getMyPlugins(plugins, ondelete) {
             },
             {
               tag: 'span',
-              class: 'icon icon_my_plugin',
+              class: 'icon i-myplugin',
               text: '',
               events: {
                 click: async () => {
@@ -51,23 +51,23 @@ function showMyPlugins() {
 
   let myplugins = makeDOM(this, {
     tag: 'div',
-    class: 'widget_main',
+    class: 'widget-main',
     style: {
       paddingBottom: '15px',
     },
     children: [
       {
         tag: 'div',
-        class: 'widget_inner',
+        class: 'widget-inner',
         children: [
           {
             tag: 'div',
-            class: 'widget_label',
+            class: 'widget-label',
             text: lang.my_plugins,
           },
           {
             tag: 'div',
-            class: 'widget_body',
+            class: 'widget-body',
             style: {
               display: 'block',
             },
@@ -88,11 +88,11 @@ async function loadPlugins() {
 
   let addplugin = makeDOM(this, {
     tag: 'div',
-    class: 'widget_main',
+    class: 'widget-main',
     children: [
       {
         tag: 'div',
-        class: 'widget_inner plugin_inner',
+        class: 'widget-inner plugin-inner',
         children: [
           {
             tag: 'a',
@@ -127,14 +127,14 @@ function pluginEditor(js, wtype) {
     tag: 'textarea',
     value: js,
     readOnly: 1,
-    className: 'ui_inp ui_area ui_area_wrap',
+    className: 'ui-inp ui-area ui-area-wrap',
     rows: 30,
   });
 
   const $input = makeDOM(this, {
     tag: 'input',
     type: 'text',
-    class: 'ui_inp',
+    class: 'ui-inp',
     value: wtype,
   });
 
@@ -191,16 +191,16 @@ async function loadPlugin(rep) {
 
   let wid = makeDOM(this, {
     tag: 'div',
-    class: 'plugin_row',
+    class: 'plugin-row',
     content: plugRenderer.build()[0],
     children: [
       {
         tag: 'div',
-        class: 'plugin_actions',
+        class: 'plugin-actions',
         children: [
           {
             tag: 'span',
-            class: 'icon icon_plugin',
+            class: 'icon i-plugin',
             text: '',
             title: lang.plug_add,
             events: {
@@ -209,7 +209,7 @@ async function loadPlugin(rep) {
           },
           {
             tag: 'span',
-            class: 'icon icon_plugin',
+            class: 'icon i-plugin',
             text: '',
             title: lang.plug_link,
             events: {

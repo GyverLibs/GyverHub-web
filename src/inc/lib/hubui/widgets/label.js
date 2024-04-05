@@ -9,7 +9,7 @@ class LabelWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'div',
-            class: 'w_label',
+            class: 'w-label',
             name: 'lbl_cont',
             style: {
                 fontSize: '33px'
@@ -17,7 +17,7 @@ class LabelWidget extends BaseWidget {
             children: [
                 {
                     tag: 'span',
-                    class: 'w_icon',
+                    class: 'w-icon',
                     name: 'lbl_icon',
                 },
                 {
@@ -41,7 +41,7 @@ class LabelWidget extends BaseWidget {
     }
 
     static style = `
-        .w_label {
+        .w-label {
             padding: 0px 10px;
             text-wrap: nowrap;
           }`;

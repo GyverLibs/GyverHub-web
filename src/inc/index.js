@@ -72,9 +72,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     display('pwa_unsafe', 'none');
   }
   if (isSSL()) {
-    EL('btn_pwa_http').classList.add('ui_btn_dis');
+    EL('btn_pwa_http').classList.add('ui-btn-dis');
   } else {
-    EL('btn_pwa_https').classList.add('ui_btn_dis');
+    EL('btn_pwa_https').classList.add('ui-btn-dis');
   }
   /*@/[if_target:host]*/
 
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     ['dragenter', 'dragover'].forEach(e => {
       document.body.addEventListener(e, function () {
-        document.querySelectorAll('.drop_area').forEach((el) => {
+        document.querySelectorAll('.drop-area').forEach((el) => {
           el.classList.add('active');
         });
       }, false);
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     ['dragleave', 'drop'].forEach(e => {
       document.body.addEventListener(e, function () {
-        document.querySelectorAll('.drop_area').forEach((el) => {
+        document.querySelectorAll('.drop-area').forEach((el) => {
           el.classList.remove('active');
         });
       }, false);

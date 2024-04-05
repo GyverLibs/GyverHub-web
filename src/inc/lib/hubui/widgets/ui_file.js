@@ -6,7 +6,7 @@ class UiFileWidget extends Widget {
     constructor(data, renderer) {
         super(data, renderer);
         this.$el = document.createElement('div');
-        this.$el.classList.add('widget_col');
+        this.$el.classList.add('container-col');
         this.$el.style.width = this.data.wwidth_perc + '%';
     
         this.update(data);

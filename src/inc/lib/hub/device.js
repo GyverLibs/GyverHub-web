@@ -65,7 +65,7 @@ class Device extends EventEmitter {
     this.#input_queue = new InputQueue(1000, 1000);  // TODO config
     this.#pingTimer = new AsyncTimer(3000, async () => {
       try {
-        await this.#postAndWait('ping', ['OK']);
+        await this.#postAndWait('ping', ['OK', 'update', 'refresh', 'print']);
         this.dispatchEvent(new DeviceConnectionStatusEvent(this, true)); // TODO
       } catch (e) {
         console.log('[PING]', e);

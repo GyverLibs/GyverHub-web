@@ -25,7 +25,7 @@ class MenuWidget extends Widget {
         for (const i in labels) {
             this.$el.append(makeDOM(null, {
                 tag: 'div',
-                class: i == data.value ? "menu_item menu_act" : "menu_item",
+                class: i == data.value ? "menu-item menu-act" : "menu-item",
                 text: labels[i].trim(),
                 events: {
                     click: () => this.#openMenu(i)
@@ -75,12 +75,12 @@ class MenuWidget extends Widget {
             transform: translateX(-50%);
           }
           
-          .menu_show {
+          .menu-show {
             max-height: 100%;
             transition: max-height .1s ease-in;
           }
           
-          .menu_item {
+          .menu-item {
             cursor: pointer;
             height: 35px;
             line-height: 35px;
@@ -90,19 +90,19 @@ class MenuWidget extends Widget {
             border-width: 0 0 0 5px;
           }
           
-          .menu_item:first-child {
+          .menu-item:first-child {
             margin-top: 8px;
           }
           
-          .menu_item:last-child {
+          .menu-item:last-child {
             margin-bottom: 8px;
           }
           
-          .menu_item:hover {
+          .menu-item:hover {
             background: var(--back);
           }
           
-          .menu_act {
+          .menu-act {
             border-color: var(--prim);
           }`;
 }

@@ -7,7 +7,7 @@ class SelectWidget extends BaseWidget {
 
         this.makeLayout( {
             tag: 'select',
-            class: 'w_select',
+            class: 'w-select',
             name: 'el',
             style: {
                 color: 'var(--prim)'
@@ -41,7 +41,7 @@ class SelectWidget extends BaseWidget {
     }
 
     static style = `
-        .w_select {
+        .w-select {
             border: none;
             outline: none;
             cursor: pointer;

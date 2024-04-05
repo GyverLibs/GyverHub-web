@@ -30,14 +30,14 @@ class ContainerWidget extends BaseContainer {
 
         if (this.data.label) children.push({
             tag: 'div',
-            class: 'cont_title',
+            class: 'cont-title',
             text: this.data.label,
         });
 
         children.push({
             tag: 'div',
             name: 'root',
-            class: 'widget_' + this.data.rowcol,
+            class: this.data.rowcol == 'col' ? 'container-col' : 'container-row',
         });
 
         makeDOM(obj, {
@@ -47,36 +47,101 @@ class ContainerWidget extends BaseContainer {
         });
         return super.build(obj.$cont, obj.$root);
     }
+
+    static style = `
+    .cont-title {
+        text-align: center;
+        font-size: 28px;
+        padding-top: 6px;
+        padding-bottom: 3px;
+      }`;
 }
 
 class SpoilerWidget extends BaseContainer {
     static wtype = 'spoiler';
+    $arrow;
+    $cont;
+    $root;
 
     constructor(data, renderer) {
         super(data, renderer);
     }
 
     build() {
-        let obj = {};
         let children = [];
-
+        let right = '';
+        let down = '';
+console.log(this.data);
         children.push({
             tag: 'div',
-            class: 'spoiler_title',
-            text: this.data.label ?? 'Spoiler',
+            class: 'spoiler-inner',
+            style: {
+                background: hexToCol(this.data.color),
+            },
+            events: {
+                click: () => {
+                    this.$root.classList.toggle('spoiler-hidden');
+                    this.$arrow.innerText = this.$root.classList.contains('spoiler-hidden') ? right : down;
+                }
+            },
+            children: [
+                {
+                    tag: 'div',
+                    name: 'arrow',
+                    class: 'icon spoiler-icon',
+                    text: right,
+                },
+                {
+                    tag: 'div',
+                    text: this.data.label ?? 'Spoiler',
+                }
+            ]
         });
 
         children.push({
             tag: 'div',
             name: 'root',
-            class: 'widget_' + this.data.rowcol,
+            class: (this.data.rowcol == 'col' ? 'container-col' : 'container-row') + ' spoiler-hidden',
         });
 
-        makeDOM(obj, {
+        makeDOM(this, {
             tag: 'div',
             name: 'cont',
             children: children,
         });
-        return super.build(obj.$cont, obj.$root);
+
+        return super.build(this.$cont, this.$root);
     }
+
+    static style = `
+    .spoiler-hidden {
+        display: none;
+    }
+    .spoiler-icon {
+        padding-right: 4px;
+        padding-left: 14px;
+        width: 20px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+    }
+    .spoiler-inner {
+        display: flex;
+        padding: 7px 0px;
+        background: var(--prim);
+        color: white;
+        box-shadow: 0px 3px 0px 0px inset #ffffff05, 0 0 10px 0px #00000021, 0px -3px 1px 0px inset #00000010;
+        border-radius: 8px;
+        margin: 2px;
+        margin-top: 6px;
+        cursor: pointer;
+        font-size: 26px;
+        user-select: none;
+      }
+      .spoiler-inner:hover {
+        filter: brightness(1.05);
+      }
+      .spoiler-inner:active {
+        filter: brightness(0.95);
+      }`;
 }

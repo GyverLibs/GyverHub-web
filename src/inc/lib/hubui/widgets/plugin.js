@@ -58,7 +58,7 @@ class LoadWidget extends Widget {
         this.$el = makeDOM(this, {
             tag: 'div',
             html: waiter(),
-            class: 'widget_main',
+            class: 'widget-main',
             style: {
                 width: this.data.wwidth_perc + '%'
             }

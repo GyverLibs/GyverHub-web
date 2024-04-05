@@ -7,7 +7,7 @@ class IconWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'span',
-            class: 'w_icon w_icon_led',
+            class: 'w-icon w-icon-led',
             text: "",
             name: 'el',
             style: {
@@ -24,24 +24,24 @@ class IconWidget extends BaseWidget {
         if ('fsize' in data) this.$el.style.fontSize = data.fsize + 'px';
         if ('color' in data) this.$el.style.setProperty('--on-color', hexToCol(data.color));
         if ('value' in data) {
-            if (Number(data.value)) this.$el.classList.add('w_icon_on');
-            else this.$el.classList.remove('w_icon_on');
+            if (Number(data.value)) this.$el.classList.add('w-icon-on');
+            else this.$el.classList.remove('w-icon-on');
         }
     }
 
     static style = `
-        .w_icon {
+        .w-icon {
             font-weight: bold;
             font-family: 'FA5';
         }
         
-        .w_icon_led {
+        .w-icon-led {
             --on-color: var(--prim);
             color: var(--black);
             text-shadow: 0 0 4px #0003;
           }
           
-          .w_icon_led.w_icon_on {
+          .w-icon-led.w-icon-on {
             color: var(--on-color);
             text-shadow: 0 0 10px var(--on-color);
           }`;

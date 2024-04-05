@@ -113,10 +113,10 @@ function b64ToText(base64) {
 }
 
 function waiter(size = 45, col = 'var(--prim)', block = true) {
-  return `<div class="waiter ${block ? 'waiter_b' : ''}"><span style="font-size:${size}px;color:${col}" class="icon spinning"></span></div>`;
+  return `<div class="waiter ${block ? 'waiter-block' : ''}"><span style="font-size:${size}px;color:${col}" class="icon spinning"></span></div>`;
 }
 function noTrust() {
-  return `<div class="blocked_cont"><a href="javascript:void(0)" onclick="notrust_h()" class="blocked">${lang.blocked}</a></div>`;
+  return `<div class="blocked-cont"><a href="javascript:void(0)" onclick="notrust_h()" class="blocked">${lang.blocked}</a></div>`;
 }
 async function notrust_h() {
   if (await asyncConfirm(lang.unblock)) {

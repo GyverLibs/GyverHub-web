@@ -10,7 +10,7 @@ class CanvasWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'div',
-            class: 'w_canvas',
+            class: 'w-canvas',
             children: [
                 {
                     tag: 'canvas',
@@ -98,7 +98,7 @@ class CanvasWidget extends BaseWidget {
     }
 
     static style = `
-        .w_canvas {
+        .w-canvas {
             border-radius: 4px;
             width: 100%;
             height: 100%;

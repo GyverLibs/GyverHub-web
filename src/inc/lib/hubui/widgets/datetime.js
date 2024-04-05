@@ -7,7 +7,7 @@ class DateWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'input',
-            class: 'w_date',
+            class: 'w-date',
             name: 'el',
             type: 'date',
             style: {
@@ -42,7 +42,7 @@ class TimeWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'input',
-            class: 'w_date',
+            class: 'w-date',
             name: 'el',
             type: 'time',
             step: 1,
@@ -78,7 +78,7 @@ class DateTimeWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'input',
-            class: 'w_date',
+            class: 'w-date',
             name: 'el',
             type: 'datetime-local',
             step: 1,
@@ -105,7 +105,7 @@ class DateTimeWidget extends BaseWidget {
     }
 
     static style = `
-        .w_date {
+        .w-date {
             border: none;
             outline: none;
             font-family: var(--font_f);
@@ -115,7 +115,7 @@ class DateTimeWidget extends BaseWidget {
             padding: 0;
           }
           
-          .w_date::-webkit-calendar-picker-indicator {
+          .w-date::-webkit-calendar-picker-indicator {
             display: none;
             -webkit-appearance: none;
           }`;

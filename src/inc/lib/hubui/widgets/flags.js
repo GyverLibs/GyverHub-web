@@ -9,7 +9,7 @@ class FlagsWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'div',
-            class: 'w_flags_cont',
+            class: 'w-flags-cont',
             name: 'el',
             events: {
                 click: e => {
@@ -44,7 +44,7 @@ class FlagsWidget extends BaseWidget {
         for (const i in this.#items) {
             const $i = makeDOM(null, {
                 tag: 'label',
-                class: 'w_flags' + (val & 1 ? ' checked' : ''),
+                class: 'w-flags' + (val & 1 ? ' checked' : ''),
                 text: this.#items[i],
             });
             $i.dataset.flagIndex = i;
@@ -55,7 +55,7 @@ class FlagsWidget extends BaseWidget {
     }
 
     static style = `
-        .w_flags {
+        .w-flags {
             padding: 4px 13px;
             margin: 3px;
             border-radius: 35px;
@@ -66,20 +66,20 @@ class FlagsWidget extends BaseWidget {
             --checked-color: var(--prim);
           }
           
-          .w_flags_cont:not(.disable) .w_flags {
+          .w-flags-cont:not(.widget-disable) .w-flags {
             cursor: pointer;
           }
           
-          .w_flags_cont:not(.disable) .w_flags:hover {
+          .w-flags-cont:not(.widget-disable) .w-flags:hover {
             background: var(--black);
           }
           
-          .w_flags.checked {
+          .w-flags.checked {
             background: var(--checked-color) !important;
             color: white;
           }
           
-          .w_flags_cont {
+          .w-flags-cont {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;

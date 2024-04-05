@@ -8,7 +8,7 @@ class SliderWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'input',
-            class: 'w_slider',
+            class: 'w-slider',
             name: 'el',
             type: 'range',
             min: 0,
@@ -29,7 +29,7 @@ class SliderWidget extends BaseWidget {
             },
         }, {
             tag: 'div',
-            class: 'w_slider_out',
+            class: 'w-slider-out',
             children: [
                 {
                     tag: 'output',
@@ -61,7 +61,7 @@ class SliderWidget extends BaseWidget {
     }
 
     static style = `
-        .w_slider {
+        .w-slider {
             -webkit-appearance: none;
             -moz-appearance: none;
             width: 100%;
@@ -76,21 +76,21 @@ class SliderWidget extends BaseWidget {
             touch-action: none;
           }
           
-          .w_slider:hover {
+          .w-slider:hover {
             filter: brightness(1.1);
           }
           
-          .w_slider::-webkit-slider-thumb {
+          .w-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             height: 1px;
             width: 1px;
           }
           
-          .w_slider::-webkit-slider-thumb:hover {
+          .w-slider::-webkit-slider-thumb:hover {
             filter: brightness(1.1);
           }
           
-          .w_slider::-moz-range-thumb {
+          .w-slider::-moz-range-thumb {
             -moz-appearance: none;
             outline: none;
             border: none;
@@ -99,7 +99,7 @@ class SliderWidget extends BaseWidget {
             width: 1px;
           }
           
-          .w_slider_out {
+          .w-slider-out {
             margin-left: -110px;
             pointer-events: none;
             text-align: right;

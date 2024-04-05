@@ -257,16 +257,16 @@ async function ui_custom_js_h() {
 function menu_show(state) {
   menu_f = state;
   const cl = EL('menu').classList;
-  if (menu_f) cl.add('menu_show');
-  else cl.remove('menu_show');
-  EL('icon_menu').textContent = menu_f ? '' : '';
+  if (menu_f) cl.add('menu-show');
+  else cl.remove('menu-show');
+  EL('icon-menu').textContent = menu_f ? '' : '';
   display('menu_overlay', menu_f ? 'block' : 'none');
 }
 function updateSystemMenu() {
   const dev = hub.dev(focused);
   EL('menu').append(makeDOM(null, {
     tag: 'div',
-    class: "menu_item menu_cfg",
+    class: "menu-item menu_cfg",
     text: lang.m_config,
     events: {
       click: () => show_screen('dev_config')
@@ -274,7 +274,7 @@ function updateSystemMenu() {
   }));
   EL('menu').append(makeDOM(null, {
     tag: 'div',
-    class: "menu_item menu_info",
+    class: "menu-item menu_info",
     text: lang.m_info,
     events: {
       click: () => show_screen('info')
@@ -284,7 +284,7 @@ function updateSystemMenu() {
   if (dev.isModuleEnabled(Modules.FILES)) {
     EL('menu').append(makeDOM(null, {
       tag: 'div',
-      class: "menu_item menu_fsbr",
+      class: "menu-item menu_fsbr",
       text: lang.m_files,
       events: {
         click: () => show_screen('files')
@@ -294,7 +294,7 @@ function updateSystemMenu() {
   if (dev.isModuleEnabled(Modules.OTA) || dev.isModuleEnabled(Modules.OTA_URL)) {
     EL('menu').append(makeDOM(null, {
       tag: 'div',
-      class: "menu_item menu_ota",
+      class: "menu-item menu_ota",
       text: lang.m_ota,
       events: {
         click: () => show_screen('ota')
@@ -305,9 +305,9 @@ function updateSystemMenu() {
 function enterMenu(sel = null) {
   menu_show(false);
   for (const $i of EL('menu').children)
-    $i.classList.remove('menu_act');
+    $i.classList.remove('menu-act');
   if (sel !== null)
-    document.querySelector('.menu_item.' + sel).classList.add('menu_act');
+    document.querySelector('.menu-item.' + sel).classList.add('menu-act');
 }
 // ============== DEVICE =============
 async function device_h(id) {

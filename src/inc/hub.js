@@ -78,7 +78,7 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
   });
 
   ev.device.addEventListener('connectionchanged', e => {
-    for (const $i of document.querySelectorAll('.conn_dev'))
+    for (const $i of document.querySelectorAll('.dev-conn'))
       $i.style.display = '';
 
     const conn = e.device.getConnection()?.name;
@@ -134,7 +134,7 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
 
   ev.device.addEventListener('command.fs_err', () => {
     if (e.device.info.id == focused)
-      EL('fsbr_inner').innerHTML = `<div class="fs_err">FS ${lang.error}</div>`;
+      EL('fsbr_inner').innerHTML = `<div class="fs-error">FS ${lang.error}</div>`;
   });
 
   ev.device.addEventListener('error', e => {

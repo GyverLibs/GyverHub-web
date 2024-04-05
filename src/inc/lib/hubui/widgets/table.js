@@ -11,7 +11,7 @@ class TableWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'table',
-            class: 'w_table',
+            class: 'w-table',
             name: 'el',
         });
 
@@ -69,14 +69,14 @@ class TableWidget extends BaseWidget {
     }
 
     static style = `
-        .w_table {
+        .w-table {
             border-collapse: collapse;
             width: 100%;
             margin-bottom: 4px;
           }
           
-          .w_table td,
-          .w_table th {
+          .w-table td,
+          .w-table th {
             border: 1px solid var(--font3);
             padding: 4px 8px;
           }`;

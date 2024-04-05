@@ -9,11 +9,12 @@ class SpinnerWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'div',
-            class: 'w_spinner_row',
+            class: 'w-spinner-row',
             children: [
                 {
                     tag: 'button',
-                    class: 'icon icon_btn btn_no_pad',
+                    class: 'icon icon-btn',
+                    style: { padding: 0 },
                     text: '',
                     events: {
                         click: () => this.#spin(-1)
@@ -21,11 +22,11 @@ class SpinnerWidget extends BaseWidget {
                 },
                 {
                     tag: 'div',
-                    class: 'w_spinner_block',
+                    class: 'w-spinner-block',
                     children: [
                         {
                             tag: 'input',
-                            class: 'w_spinner',
+                            class: 'w-spinner',
                             name: 'el',
                             type: 'number',
                             min: 0,
@@ -45,7 +46,7 @@ class SpinnerWidget extends BaseWidget {
                         },
                         {
                             tag: 'label',
-                            class: 'w_spinner_unit',
+                            class: 'w-spinner-unit',
                             name: 'unit',
                             events: {
                                 wheel: e => this.#wheel(e),
@@ -55,7 +56,8 @@ class SpinnerWidget extends BaseWidget {
                 },
                 {
                     tag: 'button',
-                    class: 'icon icon_btn btn_no_pad',
+                    class: 'icon icon-btn',
+                    style: { padding: 0 },
                     text: '',
                     events: {
                         click: () => this.#spin(+1)
@@ -97,17 +99,17 @@ class SpinnerWidget extends BaseWidget {
     }
 
     static style = `
-        .w_spinner_row {
+        .w-spinner-row {
             display: flex;
             align-items: center;
           }
-          
-          .w_spinner_block {
+
+          .w-spinner-block {
             margin: 0px 10px;
             display: flex;
           }
           
-          .w_spinner {
+          .w-spinner {
             outline: none;
             border: none;
             background: none;
@@ -119,7 +121,7 @@ class SpinnerWidget extends BaseWidget {
             font-size: 20px;
           }
           
-          .w_spinner_unit {
+          .w-spinner-unit {
             font-family: var(--font_f);
             color: var(--font2);
             font-size: 20px;

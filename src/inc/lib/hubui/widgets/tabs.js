@@ -8,7 +8,7 @@ class TabsWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'div',
-            class: 'w_tabs',
+            class: 'w-tabs',
             name: 'el',
             children: [
                 {
@@ -62,18 +62,18 @@ class TabsWidget extends BaseWidget {
     #change(num, move = true) {
         const list = this.$ul.children;
         for (let i = 0; i < list.length; i++) {
-            if (i == num) list[i].classList.add('w_tab_act');
-            else list[i].classList.remove('w_tab_act');
+            if (i == num) list[i].classList.add('w-tab-act');
+            else list[i].classList.remove('w-tab-act');
         }
         if (move) this.$ul.scrollLeft = this.$ul.scrollWidth * num / list.length;
     }
 
     static style = `
-        .w_tabs {
+        .w-tabs {
             width: 100%;
           }
           
-          .w_tabs>ul {
+          .w-tabs>ul {
             --active-item-color: var(--prim);
             padding: 0;
             display: flex;
@@ -87,11 +87,11 @@ class TabsWidget extends BaseWidget {
             margin: 0;
           }
           
-          .w_tabs ul::-webkit-scrollbar {
+          .w-tabs ul::-webkit-scrollbar {
             display: none;
           }
           
-          .w_tabs>ul>li {
+          .w-tabs>ul>li {
             display: flex;
             align-items: center;
             color: var(--font);
@@ -100,16 +100,16 @@ class TabsWidget extends BaseWidget {
             margin: 2px;
           }
           
-          .w_tabs:not(.disable)>ul {
+          .w-tabs:not(.widget-disable)>ul {
             cursor: pointer;
           }
           
-          .w_tabs:not(.disable)>ul>li:hover {
+          .w-tabs:not(.widget-disable)>ul>li:hover {
             /*filter: brightness(0.8);*/
             background: var(--back);
           }
           
-          .w_tab_act {
+          .w-tab-act {
             background: var(--active-item-color) !important;
             color: var(--tab) !important;
             font-weight: 600;

@@ -21,7 +21,7 @@
 
 :root {
   --prim: #37a93c;
-  --err: #8e1414;
+  --error: #8e1414;
   --font3: #919191;
   --scheme: light;
   --font_f: monospace;
@@ -128,7 +128,7 @@ textarea {
 }
 
 body.connection-error .header-row {
-  background: var(--err);
+  background: var(--error);
 }
 
 .header {
@@ -228,24 +228,23 @@ body[data-screen=ui] .header-connection-icon {
   filter: brightness(0.8);
 }
 
-body[data-screen=ui] .icon_menu,
-body[data-screen=ota] .icon_menu,
-body[data-screen=dev_config] .icon_menu,
-body[data-screen=fsbr_edit] .icon_menu,
-body[data-screen=files] .icon_menu,
-body[data-screen=info] .icon_menu,
+body[data-screen=ui] .icon-menu,
+body[data-screen=ota] .icon-menu,
+body[data-screen=dev_config] .icon-menu,
+body[data-screen=fsbr_edit] .icon-menu,
+body[data-screen=files] .icon-menu,
+body[data-screen=info] .icon-menu,
 
-body[data-screen=main] .icon_refresh,
-body[data-screen=ui] .icon_refresh,
-body[data-screen=info] .icon_refresh,
-body[data-screen=files] .icon_refresh,
-body[data-screen=fsbr_edit] .icon_refresh,
+body[data-screen=main] .icon-refresh,
+body[data-screen=ui] .icon-refresh,
+body[data-screen=info] .icon-refresh,
+body[data-screen=files] .icon-refresh,
+body[data-screen=fsbr_edit] .icon-refresh,
 
-body[data-screen=config] .icon_cfg,
-body[data-screen=main] .icon_cfg {
+body[data-screen=config] .icon-cfg,
+body[data-screen=main] .icon-cfg {
   display: block;
 }
-
 
 
 /* MAIN */
@@ -255,13 +254,13 @@ body[data-screen=main] .icon_cfg {
   background: var(--back);
 }
 
-.main_inn {
+.main-inner {
   padding-top: 65px;
   padding-bottom: 50px;
   margin: 0px 5px;
 }
 
-body.show-cli .main_inn {
+body.show-cli .main-inner {
   padding-bottom: 170px;
 }
 
@@ -273,7 +272,7 @@ body.show-cli .cli {
   display: block;
 }
 
-.main_col {
+.main-col {
   width: 100%;
   color: var(--font);
   display: none;
@@ -309,7 +308,7 @@ body[data-screen=main] .footer {
   color: var(--font);
 }
 
-.i_footer {
+.i-footer {
   font-size: 22px !important;
   padding-right: 0 !important;
 }
@@ -350,22 +349,22 @@ body[data-screen=projects] .footer {
   max-width: 740px;
 }
 
-.proj_name {
+.proj-name {
   display: flex;
 }
 
-.proj_name a {
+.proj-name a {
   font-size: 16px;
   font-weight: bold;
   color: var(--prim);
   text-decoration: none;
 }
 
-.proj_name a:hover {
+.proj-name a:hover {
   text-decoration: underline;
 }
 
-.proj_about {
+.proj-about {
   color: var(--font2);
   font-size: 15px;
 }
@@ -408,7 +407,7 @@ body[data-screen=plugins] .footer {
   display: flex;
 }
 
-.plugin_inner {
+.plugin-inner {
   height: 40px !important;
   display: flex !important;
   align-items: flex-start;
@@ -417,18 +416,18 @@ body[data-screen=plugins] .footer {
   box-sizing: border-box;
 }
 
-.plugin_inner a {
+.plugin-inner a {
   font-size: 16px;
   font-weight: bold;
   color: var(--prim);
   text-decoration: none;
 }
 
-.plugin_row {
+.plugin-row {
   display: flex;
 }
 
-.plugin_actions {
+.plugin-actions {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -436,13 +435,13 @@ body[data-screen=plugins] .footer {
   padding-left: 5px;
 }
 
-.icon_plugin {
+.i-plugin {
   font-size: 21px !important;
   cursor: pointer;
   color: var(--prim);
 }
 
-.icon_plugin:hover {
+.i-plugin:hover {
   filter: brightness(1.15);
 }
 
@@ -455,23 +454,23 @@ body[data-screen=plugins] .footer {
   color: var(--font_inv);
 }
 
-.myplugin_inner {
+.myplugin-inner {
   display: flex;
   align-items: center;
 }
 
-.icon_my_plugin {
+.i-myplugin {
   color: var(--font_inv);
   font-size: 20px !important;
   padding-left: 7px;
   cursor: pointer;
 }
 
-.my_plugin_wtype {
+.myplugin-wtype {
   cursor: pointer;
 }
 
-.my_plugin_wtype:hover {
+.myplugin-wtype:hover {
   text-decoration: underline;
 }
 

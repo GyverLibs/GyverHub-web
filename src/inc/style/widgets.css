@@ -1,14 +1,16 @@
-.widget_row {
+.container-row {
   display: flex;
   min-height: 50px;
   box-sizing: border-box;
 }
 
-.widget_col {
+.container-col {
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
 }
 
-.widget_main {
+.widget-main {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -16,7 +18,7 @@
   padding: 3px;
 }
 
-.widget_inner {
+.widget-inner {
   background: var(--tab);
   width: 100%;
   height: 100%;
@@ -28,7 +30,7 @@
   /*0px -3px 0px 0px inset #00000030*/
 }
 
-.widget_label {
+.widget-label {
   font-size: 11px;
   color: var(--font3);
   margin: 3px 5px -4px 5px;
@@ -37,20 +39,15 @@
   overflow-x: clip;
 }
 
-.plabel {
+.widget-plabel {
   padding-left: 1px;
 }
 
-.wsuffix {
+.widget-suffix {
   float: right;
 }
 
-.widget_label_name {
-  text-transform: none !important;
-  user-select: text !important;
-}
-
-.widget_body {
+.widget-body {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -59,24 +56,24 @@
   min-height: 25px;
 }
 
-.wdisabled {
+.widget-disabled {
   opacity: 45%;
 }
 
-.wnotab {
+.widget-notab {
   background: none;
   box-shadow: none;
 }
 
-.wsquare {
+.widget-square {
   aspect-ratio: 1;
 }
 
-.wnolabel {
+.widget-nolabel {
   display: none;
 }
 
-.whint {
+.widget-hint {
   display: none;
   color: var(--back);
   background: var(--font3);
@@ -89,27 +86,15 @@
   margin-right: 3px;
 }
 
-.disable {
+.widget-disable {
   cursor: default !important;
   user-select: none;
 }
 
-.disable:hover {
+.widget-disable:hover {
   filter: brightness(1) !important;
 }
 
-.disable:active {
+.widget-disable:active {
   filter: brightness(1) !important;
-}
-
-.cont_title {
-  text-align: center;
-  font-size: 28px;
-  padding-top: 6px;
-  padding-bottom: 3px;
-}
-
-.spoiler_title {
-  font-size: 28px;
-
 }

@@ -9,31 +9,31 @@ function showFsbr(device, fs, total, used) {
   let inner = '';
   for (const i in fs_arr) {
     if (fs_arr[i].endsWith('/')) {
-      inner += `<div class="fs_file fs_folder drop_area" onclick="upload_h('${fs_arr[i]}')" ondrop="upload_file(event.dataTransfer.files[0],'${fs_arr[i]}')">${fs_arr[i]}</div>`;
+      inner += `<div class="fs-file fs-folder drop-area" onclick="upload_h('${fs_arr[i]}')" ondrop="upload_file(event.dataTransfer.files[0],'${fs_arr[i]}')">${fs_arr[i]}</div>`;
     } else {
       const none = "style='display:none'";
-      inner += `<div class="fs_file" onclick="openFSctrl(${i})">${fs_arr[i]}<div class="fs_weight">${(fs[fs_arr[i]] / 1000).toFixed(2)} kB</div></div>
-        <div id="fs#${i}" class="fs_controls">
-          <button ${device.isModuleEnabled(Modules.RENAME) ? '' : none} title="${lang.rename}" class="icon icon_btn_big" onclick="renameFile(${i})"></button>
-          <button ${device.isModuleEnabled(Modules.DELETE) ? '' : none} title="${lang.delete}" class="icon icon_btn_big" onclick="deleteFile(${i})"></button>
-          <button ${device.isModuleEnabled(Modules.FETCH) ? '' : none} title="${lang.fetch}" class="icon icon_btn_big" onclick="fetchFile(${i},'${fs_arr[i]}')"></button>
+      inner += `<div class="fs-file" onclick="openFSctrl(${i})">${fs_arr[i]}<div class="fs-weight">${(fs[fs_arr[i]] / 1000).toFixed(2)} kB</div></div>
+        <div id="fs#${i}" class="fs-controls">
+          <button ${device.isModuleEnabled(Modules.RENAME) ? '' : none} title="${lang.rename}" class="icon icon-btn-big" onclick="renameFile(${i})"></button>
+          <button ${device.isModuleEnabled(Modules.DELETE) ? '' : none} title="${lang.delete}" class="icon icon-btn-big" onclick="deleteFile(${i})"></button>
+          <button ${device.isModuleEnabled(Modules.FETCH) ? '' : none} title="${lang.fetch}" class="icon icon-btn-big" onclick="fetchFile(${i},'${fs_arr[i]}')"></button>
           <label id="process#${i}"></label>
-          <a id="download#${i}" title="${lang.download}" class="icon icon_btn_big" href="" download="" style="display:none"></a>
-          <button id="open#${i}" title="${lang.open}" class="icon icon_btn_big" onclick="openFile(EL('download#${i}').href)" style="display:none"></button>
-          <button ${device.isModuleEnabled(Modules.UPLOAD) ? '' : none} id="edit#${i}" title="${lang.edit}" class="icon icon_btn_big" onclick="editFile(EL('download#${i}').href,${i})" style="display:none"></button>
+          <a id="download#${i}" title="${lang.download}" class="icon icon-btn-big" href="" download="" style="display:none"></a>
+          <button id="open#${i}" title="${lang.open}" class="icon icon-btn-big" onclick="openFile(EL('download#${i}').href)" style="display:none"></button>
+          <button ${device.isModuleEnabled(Modules.UPLOAD) ? '' : none} id="edit#${i}" title="${lang.edit}" class="icon icon-btn-big" onclick="editFile(EL('download#${i}').href,${i})" style="display:none"></button>
         </div>`;
     }
   }
   if (total) {
-    inner += `<div class="fs_info" style="background-image:linear-gradient(90deg,var(--prim) ${used / total * 100}%, var(--back) 0%);">${lang.fs_used} ${(used / 1000).toFixed(2)}/${(total / 1000).toFixed(2)} kB [${Math.round(used / total * 100)}%]</div>`;
+    inner += `<div class="fs-info" style="background-image:linear-gradient(90deg,var(--prim) ${used / total * 100}%, var(--back) 0%);">${lang.fs_used} ${(used / 1000).toFixed(2)}/${(total / 1000).toFixed(2)} kB [${Math.round(used / total * 100)}%]</div>`;
   } else {
-    inner += `<div class="fs_info">${lang.fs_used} ${(used / 1000).toFixed(2)} kB</div>`;
+    inner += `<div class="fs-info">${lang.fs_used} ${(used / 1000).toFixed(2)} kB</div>`;
   }
   EL('fsbr_inner').innerHTML = inner;
 }
 function openFSctrl(i) {
   const current = EL(`fs#${i}`).style.display == 'flex';
-  document.querySelectorAll('.fs_controls').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.fs-controls').forEach(el => el.style.display = 'none');
   if (!current) display(`fs#${i}`, 'flex');
 }
 

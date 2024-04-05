@@ -28,18 +28,18 @@ async function loadProj(rep) {
     const ctor = customElements.get('esp-web-install-button');
     const installButton = `
       <esp-web-install-button manifest="${manifest}">
-        <button title="${lang.p_install}" class="icon icon_btn_big" style="font-size:15px" slot="activate"></button>
+        <button title="${lang.p_install}" class="icon icon-btn-big" style="font-size:15px" slot="activate"></button>
         <!--<span slot="unsupported">${lang.p_not_support}</span>-->
         <span slot="not-allowed">${lang.p_use_https}</span>
       </esp-web-install-button>
     `;
     EL('projects_cont').innerHTML = `
       <div class="proj">
-          <div class="proj_name">
+          <div class="proj-name">
             <a href="${'https://github.com/' + rep}" target="_blank" title="${rep} v${proj.version}">${name}</a>
             ${ctor ? installButton : ''}
           </div>
-          <div class="proj_about">${proj.about}</div>
+          <div class="proj-about">${proj.about}</div>
       </div>
     ` + EL('projects_cont').innerHTML;
   } catch (e) {

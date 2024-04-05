@@ -8,7 +8,7 @@ class ColorWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'button',
-            class: 'icon icon_btn_big',
+            class: 'icon icon-btn-big',
             name: 'el',
             text: '',
             style: {

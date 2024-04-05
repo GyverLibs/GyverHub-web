@@ -7,7 +7,7 @@ class LedWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'div',
-            class: 'w_led',
+            class: 'w-led',
             name: 'el',
         });
 
@@ -20,13 +20,13 @@ class LedWidget extends BaseWidget {
         if ('color' in data) this.$el.style.setProperty('--on-color', hexToCol(data.color));
         if ('disable' in data) this.disable(this.$el, data.disable);
         if ('value' in data) {
-            if (data.value) this.$el.classList.add('w_led_on');
-            else this.$el.classList.remove('w_led_on');
+            if (data.value) this.$el.classList.add('w-led-on');
+            else this.$el.classList.remove('w-led-on');
         }
     }
 
     static style = `
-        .w_led {
+        .w-led {
             --on-color: var(--prim);
             margin: 0 auto;
             width: 30px;
@@ -36,7 +36,7 @@ class LedWidget extends BaseWidget {
             box-shadow: inset 0 0 2px 2px var(--black);
           }
           
-          .w_led.w_led_on {
+          .w-led.w-led-on {
             background: var(--on-color);
             box-shadow: var(--on-color) 0 0 9px 1px, inset 2px 3px 0px 0px #fff3;
           }`;

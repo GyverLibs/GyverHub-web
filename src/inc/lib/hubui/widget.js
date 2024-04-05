@@ -145,7 +145,7 @@ class BaseWidget extends Widget {
 
         this.#root = makeDOM(this, {
             tag: 'div',
-            class: 'widget_main',
+            class: 'widget-main',
             style: {
                 width: data.wwidth_perc + '%',
             }
@@ -153,19 +153,19 @@ class BaseWidget extends Widget {
 
         this.#inner = makeDOM(this, {
             tag: 'div',
-            class: 'widget_inner'
+            class: 'widget-inner'
         });
         this.#root.append(this.#inner);
 
         this.#cont = makeDOM(this, {
             tag: 'div',
-            class: 'widget_label'
+            class: 'widget-label'
         });
         this.#inner.append(this.#cont);
 
         this.#hint = makeDOM(this, {
             tag: 'span',
-            class: 'whint',
+            class: 'widget-hint',
             text: '?',
             style: {
                 display: 'none',
@@ -185,19 +185,20 @@ class BaseWidget extends Widget {
 
         this.#plabel = makeDOM(this, {
             tag: 'span',
+            class: 'widget-plabel',
         });
         this.#cont.append(this.#plabel);
 
         this.#suffix = makeDOM(this, {
             tag: 'span',
-            class: 'wsuffix',
+            class: 'widget-suffix',
         });
         this.#cont.append(this.#suffix);
 
 
         this.#container = makeDOM(this, {
             tag: 'div',
-            class: 'widget_body',
+            class: 'widget-body',
             style: {
                 // minHeight: data.wheight && data.wheight > 25 ? data.wheight + 'px' : '',
                 minHeight: (data.wheight ?? 25) + 'px',
@@ -235,20 +236,20 @@ class BaseWidget extends Widget {
             this.#suffix.textContent = data.suffix;
         }
         if ('nolabel' in data) {
-            if (data.nolabel) this.#cont.classList.add('wnolabel');
-            else this.#cont.classList.remove('wnolabel');
+            if (data.nolabel) this.#cont.classList.add('widget-nolabel');
+            else this.#cont.classList.remove('widget-nolabel');
         }
         if ('square' in data) {
-            if (data.square) this.#root.classList.add('wsquare');
-            else this.#root.classList.remove('wsquare');
+            if (data.square) this.#root.classList.add('widget-square');
+            else this.#root.classList.remove('widget-square');
         }
         if ('notab' in data) {
-            if (data.notab) this.#inner.classList.add('wnotab');
-            else this.#inner.classList.remove('wnotab');
+            if (data.notab) this.#inner.classList.add('widget-notab');
+            else this.#inner.classList.remove('widget-notab');
         }
         if ('disable' in data) {
-            if (data.disable) this.#container.classList.add('wdisabled');
-            else this.#container.classList.remove('wdisabled');
+            if (data.disable) this.#container.classList.add('widget-disabled');
+            else this.#container.classList.remove('widget-disabled');
         }
         if ('hint' in data) {
             const htext = 'name: ' + this.id + '\n' + (data.hint ?? '');
@@ -257,22 +258,22 @@ class BaseWidget extends Widget {
             this.#hint.style.display = (data.hint && data.hint.length) ? 'inline-block' : 'none';
         }
         
-        if (this.nolabel) this.#cont.classList.add('wnolabel');
-        if (this.notab) this.#inner.classList.add('wnotab');
+        if (this.nolabel) this.#cont.classList.add('widget-nolabel');
+        if (this.notab) this.#inner.classList.add('widget-notab');
     }
 
     disable(el, disable) {
         if (disable) {
             el.setAttribute('disabled', '1');
-            el.classList.add('disable');
+            el.classList.add('widget-disable');
         } else {  // null/undefined/0/false
             el.removeAttribute('disabled');
-            el.classList.remove('disable');
+            el.classList.remove('widget-disable');
         }
     }
 
     disabled() {
-        return this.#container.classList.contains('wdisabled');
+        return this.#container.classList.contains('widget-disabled');
     }
 
     align(align) {

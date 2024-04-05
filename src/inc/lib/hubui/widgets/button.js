@@ -11,7 +11,7 @@ class ButtonWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'button',
-            class: 'icon w_btn',
+            class: 'icon w-btn',
             name: 'el',
             text: "",
             style: {
@@ -94,16 +94,16 @@ class ButtonWidget extends BaseWidget {
     }
 
     static style = `
-        .w_btn {
+        .w-btn {
             cursor: pointer;
             margin: -3px;
           }
           
-          .w_btn:hover {
+          .w-btn:hover {
             filter: brightness(1.15);
           }
           
-          .w_btn:active {
+          .w-btn:active {
             filter: brightness(0.7);
           }`;
 }

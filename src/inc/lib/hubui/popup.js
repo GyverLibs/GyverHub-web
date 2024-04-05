@@ -1,51 +1,51 @@
 function makeDialog(title, text, buttons, additional = []) {
   const $box = document.createElement('div');
-  $box.className = 'dialog_box';
+  $box.className = 'dialog-box';
 
   const $d = document.createElement('div');
   $box.append($d);
-  $d.className = 'ui_col ui_dialog';
+  $d.className = 'ui-col ui-dialog';
 
   if (title) {
     const $title = document.createElement('div');
     $d.append($title);
-    $title.className = 'ui_row ui_head';
+    $title.className = 'ui-row ui-head';
     $title.textContent = title;
   }
 
   if (text) {
     const $text = document.createElement('div');
     $d.append($text);
-    $text.className = 'ui_row';
+    $text.className = 'ui-row';
 
     const $label = document.createElement('label');
     $text.append($label);
-    $label.className = 'dialog_row';
+    $label.className = 'dialog-row';
     $label.textContent = text;
   }
 
   for (add of additional) {
     const $add = document.createElement('div');
     $d.append($add);
-    $add.className = 'ui_row';
+    $add.className = 'ui-row';
     $add.append(add);
   }
 
   if (buttons) {
     const $buttons = document.createElement('div');
     $d.append($buttons);
-    $buttons.className = 'ui_row';
+    $buttons.className = 'ui-row';
 
     $buttons.append(document.createElement('div'));
 
     const $row = document.createElement('div');
     $buttons.append($row);
-    $row.className = 'ui_btn_row';
+    $row.className = 'ui-row-btn';
 
     for (const i of buttons) {
       const $btn = document.createElement('button');
       $row.append($btn);
-      $btn.className = 'ui_btn ui_btn_mini';
+      $btn.className = 'ui-btn ui-btn-mini';
       $btn.textContent = i.text;
       $btn.addEventListener('click', i.click);
     }
@@ -106,7 +106,7 @@ function asyncPrompt(text, placeh = '', title = null) {
       tag: 'input',
       type: 'text',
       value: placeh,
-      class: 'ui_inp',
+      class: 'ui-inp',
     });
 
     const $box = makeDialog(title, text, [
@@ -135,7 +135,7 @@ function asyncPromptArea(text, placeh = '', title = null, readonly = false) {
       tag: 'textarea',
       value: placeh,
       readOnly: readonly,
-      className: 'ui_inp ui_area ui_area_wrap',
+      className: 'ui-inp ui-area ui-area-wrap',
       rows: 20,
     });
 
@@ -162,24 +162,24 @@ function asyncPromptArea(text, placeh = '', title = null, readonly = false) {
 
 function makePinDialog(title, canCancel, inputHandler) {
   const $box = document.createElement('div');
-  $box.className = 'dialog_box';
+  $box.className = 'dialog-box';
 
   const $d = document.createElement('div');
   $box.append($d);
-  $d.className = 'ui_col ui_dialog';
+  $d.className = 'ui-col ui-dialog';
 
   const $title = document.createElement('div');
   $d.append($title);
-  $title.className = 'ui_row ui_head';
+  $title.className = 'ui-row ui-head';
   $title.textContent = title;
 
   const $inpRow = document.createElement('div');
   $d.append($inpRow);
-  $inpRow.className = 'ui_row pass_inp_inner';
+  $inpRow.className = 'ui-row pin-input-inner';
 
   const $input = document.createElement('input');
   $inpRow.append($input);
-  $input.className = 'ui_inp pass_inp';
+  $input.className = 'ui-inp pin-input';
   $input.type = 'number';
   $input.pattern = '[0-9]*';
   $input.inputMode = 'numeric';
@@ -187,7 +187,7 @@ function makePinDialog(title, canCancel, inputHandler) {
   $d.addEventListener('click', e => {
     const $b = e.target;
     if (!($b instanceof HTMLButtonElement)) return;
-    if ($b.classList.contains('pin_cancel')) {
+    if ($b.classList.contains('pin-cancel')) {
       inputHandler(null);
       return;
     }
@@ -203,40 +203,40 @@ function makePinDialog(title, canCancel, inputHandler) {
   for (let i = 0; i < 3; i++) {
     const $row = document.createElement('div');
     $d.append($row);
-    $row.className = 'ui_row pin_inner';
+    $row.className = 'ui-row pin-inner';
 
     for (let j = 0; j < 3; j++) {
       const $b = document.createElement('button');
       $row.append($b);
-      $b.className = 'ui_btn pin_btn';
+      $b.className = 'ui-btn pin-btn';
       $b.textContent = "" + (i * 3 + j + 1);
     }
   }
 
   const $row = document.createElement('div');
   $d.append($row);
-  $row.className = 'ui_row pin_inner';
+  $row.className = 'ui-row pin-inner';
   {
     const $b = document.createElement('button');
     $row.append($b);
 
     if (canCancel) {
-      $b.className = 'ui_btn pin_btn pin_cancel';
+      $b.className = 'ui-btn pin-btn pin-cancel';
       $b.textContent = lang.cancel;
     } else {
-      $b.className = 'ui_btn pin_btn pin_no_btn';
+      $b.className = 'ui-btn pin-btn pin-no-btn';
     }
   }
   {
     const $b = document.createElement('button');
     $row.append($b);
-    $b.className = 'ui_btn pin_btn';
+    $b.className = 'ui-btn pin-btn';
     $b.textContent = "0";
   }
   {
     const $b = document.createElement('button');
     $row.append($b);
-    $b.className = 'ui_btn pin_btn pin_red_btn';
+    $b.className = 'ui-btn pin-btn pin-red-btn';
     $b.textContent = "<";
   }
 

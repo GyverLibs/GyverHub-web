@@ -8,7 +8,7 @@ class SwitchWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'div',
-            class: 'switch_cont',
+            class: 'switch-cont',
             children: [
                 {
                     tag: 'label',
@@ -59,7 +59,7 @@ class SwitchIconWidget extends BaseWidget {
 
         this.makeLayout({
             tag: 'div',
-            class: 'icon icon_btn_big w_swicon',
+            class: 'icon icon-btn-big w-swicon',
             name: 'el',
             style: {
                 fontSize: '45px',
@@ -68,8 +68,8 @@ class SwitchIconWidget extends BaseWidget {
             events: {
                 click: () => {
                     if (this.$el.getAttribute('disabled')) return;
-                    this.$el.classList.toggle('w_swicon_on');
-                    this.set(this.$el.classList.contains('w_swicon_on') ? 1 : 0);
+                    this.$el.classList.toggle('w-swicon-on');
+                    this.set(this.$el.classList.contains('w-swicon-on') ? 1 : 0);
                 }
             }
         });
@@ -81,8 +81,8 @@ class SwitchIconWidget extends BaseWidget {
         super.update(data);
 
         if ('value' in data) {
-            if (Number(data.value) == 1) this.$el.classList.add('w_swicon_on');
-            else this.$el.classList.remove('w_swicon_on');
+            if (Number(data.value) == 1) this.$el.classList.add('w-swicon-on');
+            else this.$el.classList.remove('w-swicon-on');
         }
         if ('fsize' in data) {
             this.$el.style.fontSize = data.fsize + 'px';
@@ -94,7 +94,7 @@ class SwitchIconWidget extends BaseWidget {
     }
 
     static style = `
-        .w_swicon {
+        .w-swicon {
             --on-color: var(--prim);
             border-radius: 50%;
             aspect-ratio: 1;
@@ -107,7 +107,7 @@ class SwitchIconWidget extends BaseWidget {
             border: 2px solid var(--on-color);
           }
           
-          .w_swicon_on {
+          .w-swicon-on {
             color: var(--tab);
             background: var(--on-color);
           }`;
