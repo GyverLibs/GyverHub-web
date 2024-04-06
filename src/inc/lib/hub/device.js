@@ -49,6 +49,9 @@ class Device extends EventEmitter {
 
   skip_prd = 1000;  // skip updates
   tout_prd = 2500;  // connection timeout
+  object_tout = 1500;
+  get_tout = 1500;
+  ping_prd = 3000;
 
   // external
   granted = false;
@@ -62,8 +65,8 @@ class Device extends EventEmitter {
     super();
     this._hub = hub;
     this.info = hub.config.getDevice(id);
-    this.#input_queue = new InputQueue(1000, 1000);  // TODO config
-    this.#pingTimer = new AsyncTimer(3000, async () => {
+    this.#input_queue = new InputQueue(this.object_tout, this.get_tout);  // TODO config
+    this.#pingTimer = new AsyncTimer(this.ping_prd, async () => {
       try {
         await this.#postAndWait('ping', ['OK', 'update', 'refresh', 'print']);
         this.dispatchEvent(new DeviceConnectionStatusEvent(this, true)); // TODO

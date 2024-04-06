@@ -81,7 +81,7 @@ hub.addEventListener('devicecreated', ev => {  // found new device OR requested 
     for (const $i of document.querySelectorAll('.dev-conn'))
       $i.style.display = '';
 
-    const conn = e.device.getConnection().name; // TODO ? - typo?
+    const conn = e.device.getConnection()?.name; // TODO ? - typo?
     EL(`device#${e.device.info.id}`).className = conn ? "device" : 'device offline';
     if (conn && conn !== 'WS')
       display(`${conn}#${e.device.info.id}`, 'inline-block');

@@ -5,7 +5,7 @@ class InputQueue {
   #object_timeout;
   #get_timeout;
 
-  constructor(object_timeout, get_timeout){
+  constructor(object_timeout, get_timeout) { // TODO wtf??
     this.#object_timeout = object_timeout;
     this.#get_timeout = get_timeout;
   }
@@ -31,7 +31,7 @@ class InputQueue {
 
   async get(types) {
     let timed_out = false;
-    let release = () => {};
+    let release = () => { };
 
     setTimeout(() => {
       timed_out = true;
