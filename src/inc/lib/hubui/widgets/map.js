@@ -67,27 +67,34 @@ class MapWidget extends BaseWidget {
             });
 
             L_canvasLayer().delegate(this).addTo(this.map);
-            this.map.setView(('latlon' in data) ? data.latlon : mapZeroPos, 10);
+            this.map.setView(('value' in data) ? data.value : mapZeroPos, 10);
             this.update(data);
         });
     }
 
     update(data) {
         super.update(data);
-        if ('latlon' in data) {
-            this.map.panTo(data.latlon);
-            this._setMarker(data.latlon);
+        if ('value' in data) {
+            this.map.panTo(data.value);
+            this._setMarker(data.value);
         }
-        if ('data' in data) this.cvdata = this.cvdata.concat(data.data);
+        if ('data' in data) {
+            this.cvdata = this.cvdata.concat(data.data);
+            this.map.panTo(this.map.getCenter());   // force redraw canvas
+        }
     }
 
     onDrawLayer(info) {
         let cx = info.canvas.getContext('2d');
         cx.clearRect(0, 0, info.canvas.width, info.canvas.height);
+        canvasDefault(cx, L_scale(info));
+        let cfg = new CanvasConfig();
+        cfg.scale = L_scale(info);
         showCanvasAPI(
             info.canvas,
+            cfg,
             this.cvdata,
-            L_scale(info),
+            null,
             (x, y) => {
                 let point = L_toPoint(info, [x / 1000000.0, y / 1000000.0]);
                 return [point.x, point.y];
@@ -106,8 +113,7 @@ class MapWidget extends BaseWidget {
     }
 
     _send(pos) {
-        this.set(pos.lat.toFixed(6) + ',' + pos.lng.toFixed(6)).then(() => this._setMarker(pos));
-        // this.setSuffix('[' + e.latlng.lat.toFixed(3) + ',' + e.latlng.lng.toFixed(3) + ']');
+        this.set(pos.lat.toFixed(6) + ';' + pos.lng.toFixed(6)).then(() => this._setMarker(pos));
     }
 
     static style = `

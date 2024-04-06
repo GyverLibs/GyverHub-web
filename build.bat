@@ -1,1 +1,1 @@
-python build.py build   
+python build.py build --version dev%RANDOM%

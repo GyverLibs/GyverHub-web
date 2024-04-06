@@ -32,7 +32,7 @@ class GaugeBaseWidget extends BaseWidget {
         this.#cstyle = window.getComputedStyle(this.$el);
 
         this.update(data);
-        wait2Frame().then(() => this.#redraw());
+        waitRender(this.$el).then(() => this.#redraw());
     }
 
     close() {

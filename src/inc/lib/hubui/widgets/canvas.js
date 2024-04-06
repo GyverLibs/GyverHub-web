@@ -1,9 +1,9 @@
 class CanvasWidget extends BaseWidget {
     static wtype = 'canvas';
     $el;
-    cvdata = [];
     #scale = 1;
     #resize_h;
+    cfg = new CanvasConfig();
 
     constructor(data, renderer) {
         super(data, renderer);
@@ -24,13 +24,35 @@ class CanvasWidget extends BaseWidget {
 
         this.#resize();
         this.#resize_h = this.#resize.bind(this);
-        window.addEventListener('resize', this.#resize_h);
+        window.addEventListener('resize', () => {
+            let cv = this.$el;
+            let cx = cv.getContext("2d");
+            let img = new Image();
+            img.src = cv.toDataURL();
+            img.crossorigin = 'anonymous';
+            let params = {};
+            ['fillStyle', 'strokeStyle', 'lineWidth', 'lineCap', 'lineJoin', 'textBaseline', 'textAlign', 'font'].forEach(param => {
+                params[param] = cx[param];
+            });
 
-        wait2Frame().then(() => {
-            this.#resize();
+            img.onload = () => {
+                let bufw = cv.width;
+                this.#resize_h();
+                cx.drawImage(img, 0, 0, cv.width, cv.width * img.height / img.width);
+                for (let param in params) cx[param] = params[param];
+                let scale = cv.width / bufw;
+                let size_name = canvasGetFont(cx);
+                canvasSetFont(cx, [size_name[0] * scale, size_name[1]]);
+                cx.lineWidth *= scale;
+            }
         });
 
-        this.update(data);
+        waitRender(this.$el).then(() => {
+            this.#resize();
+            canvasDefault(this.$el.getContext("2d"), this.#scale);
+            this.update(data);
+        });
+
         this.disable(this.$el, data.disable);
     }
 
@@ -38,10 +60,7 @@ class CanvasWidget extends BaseWidget {
         super.update(data);
 
         if ('active' in data) this.$el.style.cursor = data.active ? 'pointer' : '';
-        if ('data' in data) {
-            this.cvdata = this.cvdata.concat(data.data);
-            this.#show(data.data);
-        }
+        if ('data' in data) this.#show(data.data);
     }
 
     close() {
@@ -71,17 +90,18 @@ class CanvasWidget extends BaseWidget {
         this.$el.style.height = rh + 'px';
         this.$el.width = Math.floor(rw * ratio);
         this.$el.height = Math.floor(rh * ratio);
-        this.#show(this.cvdata);
     }
 
     #show(data) {
         if (!this.$el.parentNode.clientWidth) return;
         const cv = this.$el;
+        this.cfg.scale = this.#scale;
 
         showCanvasAPI(
             cv,
+            this.cfg,
+            [],
             data,
-            this.#scale,
             (x, y) => {
                 x *= this.#scale;
                 y *= this.#scale;

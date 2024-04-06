@@ -1,3 +1,10 @@
+class SystemErrorEvent extends Event {
+  constructor(text) {
+    super('systemerror');
+    this.text = text;
+  }
+}
+
 class GyverHub extends EventEmitter {
   /** @type {Config} */
   config;
@@ -294,7 +301,7 @@ class GyverHub extends EventEmitter {
 
     const re = /(#[0-9a-f][0-9a-f])([:,\]\}])/ig;
     if (data.match(re)) {
-      this.onHubError('Device has newer API version. Update App!');
+      this.dispatchEvent(new SystemErrorEvent('Device has newer API version. Update App!'));
       return;
     }
 
@@ -302,11 +309,14 @@ class GyverHub extends EventEmitter {
       data = JSON.parse(data);
     } catch (e) {
       console.log('Wrong packet (JSON): ' + e + ' in: ' + data);
-      // this.onHubError('Wrong packet (JSON)');
+      this.dispatchEvent(new SystemErrorEvent('Wrong packet (JSON)'));
       return;
     }
 
-    if (!data.id) return this.onHubError('Wrong packet (ID)');
+    if (!data.id) {
+      this.dispatchEvent(new SystemErrorEvent('Wrong packet (ID)'));
+      return;
+    }
     if (data.client && this.clientId != data.client) return;
     const type = data.type;
     delete data.type;

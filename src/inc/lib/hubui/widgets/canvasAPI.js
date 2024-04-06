@@ -1,29 +1,47 @@
+class CanvasConfig {
+    fillF = 1;
+    strokeF = 1;
+    shapeF = 0;
+    elMode = 'CENTER';
+    recMode = 'CORNER';
+    imgMode = 'CORNER';
+    scale = 1;
+}
+
+function canvasDefault(cx, scale) {
+    cx.fillStyle = 'white';
+    cx.strokeStyle = 'black';
+    cx.lineWidth = scale;
+    cx.lineCap = "round";
+    cx.lineJoin = "miter";
+    cx.textBaseline = 'alphabetic';
+    cx.textAlign = 'left';
+    cx.font = Math.round(20 * scale) + 'px Arial';
+}
+function canvasGetFont(cx) {
+    return cx.font.split('px ');
+}
+function canvasSetFont(cx, size_name) {
+    cx.font = size_name[0] + 'px ' + size_name[1];
+}
+
 const canvas_const = ['MITER', 'ROUND', 'BEVEL', 'SQUARE', 'PROJECT', 'CORNER', 'CORNERS', 'CENTER', 'RADIUS', 'LEFT', 'RIGHT', 'TOP', 'BOTTOM', 'BASELINE'];
 const canvas_cmd = ['clear', 'background', 'fill', 'noFill', 'stroke', 'noStroke', 'strokeWeight', 'strokeJoin', 'strokeCap', 'rectMode', 'ellipseMode', 'imageMode', 'image', 'textFont', 'textSize', 'textAlign', 'text', 'point', 'line', 'rect', 'arc', 'ellipse', 'circle', 'bezier', 'beginShape', 'endShape', 'vertex', 'bezierVertex', 'pixelScale', 'rotate', 'translate', 'push', 'pop'];
 
-function showCanvasAPI(cv, data, scale, mapxy, fileHandler) {
-    function radians(deg) {
-        return deg * 0.01745329251;
-    }
-    const cx = cv.getContext("2d");
-
-    let _scale = scale;
-    let _fillF = 1;
-    let _strokeF = 1;
-    let _shapeF = 0;
-    let _elMode = 'CENTER';
-    let _recMode = 'CORNER';
-    let _imgMode = 'CORNER';
+function showCanvasAPI(cv, cfg, data, bufdata, mapxy, fileHandler) {
+    let cx = cv.getContext('2d');
+    let _data = bufdata ? bufdata : [...data];  // keep data for clear()
+    let _scale = cfg.scale;
 
     function apply() {
-        if (_fillF) cx.fill();
-        if (_strokeF) cx.stroke();
+        if (cfg.fillF) cx.fill();
+        if (cfg.strokeF) cx.stroke();
     }
     function drawEllipse(args) {
         cx.beginPath();
         let xy = mapxy(args[0], args[1]);
         let wh = [args[2] * _scale / 2, args[3] * _scale / 2];
-        switch (_elMode) {
+        switch (cfg.elMode) {
             case 'CENTER':
                 break;
             case 'RADIUS':
@@ -41,19 +59,21 @@ function showCanvasAPI(cv, data, scale, mapxy, fileHandler) {
         cx.ellipse(xy[0], xy[1], wh[0], wh[1], 0, 0, 2 * Math.PI);
         apply();
     }
+    function radians(deg) {
+        return deg * 0.01745329251;
+    }
 
-    for (let i in data) {
-        i = Number(i);
-        const item = data[i];
+    while (_data.length) {
+        let item = _data.shift();
 
         if (item.match(/^\d+$/)) {  // cmd only
             let cmd = canvas_cmd[Number(item)];
 
             switch (cmd) {
-                case 'clear': cx.clearRect(0, 0, cv.width, cv.height); break;
-                case 'noFill': _fillF = 0; break;
-                case 'noStroke': _strokeF = 0; break;
-                case 'beginShape': _shapeF = 1; cx.beginPath(); break;
+                case 'clear': data = [..._data]; cx.clearRect(0, 0, cv.width, cv.height); break;
+                case 'noFill': cfg.fillF = 0; break;
+                case 'noStroke': cfg.strokeF = 0; break;
+                case 'beginShape': cfg.shapeF = 1; cx.beginPath(); break;
                 case 'push': cx.save(); break;
                 case 'pop': cx.restore(); break;
             }
@@ -78,11 +98,11 @@ function showCanvasAPI(cv, data, scale, mapxy, fileHandler) {
                     cx.fillStyle = b;
                     break;
                 case 'fill':
-                    _fillF = 1;
+                    cfg.fillF = 1;
                     cx.fillStyle = args[0];
                     break;
                 case 'stroke':
-                    _strokeF = 1;
+                    cfg.strokeF = 1;
                     cx.strokeStyle = args[0];
                     break;
                 case 'strokeWeight':
@@ -103,30 +123,27 @@ function showCanvasAPI(cv, data, scale, mapxy, fileHandler) {
                     }
                     break;
                 case 'rectMode':
-                    _recMode = canvas_const[args[0]];
+                    cfg.recMode = canvas_const[args[0]];
                     break;
                 case 'ellipseMode':
-                    _elMode = canvas_const[args[0]];
+                    cfg.elMode = canvas_const[args[0]];
                     break;
                 case 'imageMode':
-                    _imgMode = canvas_const[args[0]];
+                    cfg.imgMode = canvas_const[args[0]];
                     break;
                 case 'image':
-                    let img = new Image();
                     let path = args.shift();
+                    let http = path.startsWith('http://') || path.startsWith('https://');
+                    if (!http && !fileHandler) break;
 
-                    if (path.startsWith('http://') || path.startsWith('https://')) {
-                        img.src = checkGitLink(path);
-                    } else {
-                        if (fileHandler) fileHandler(path, img);
-                    }
+                    let img = new Image();
 
                     img.onload = () => {
                         let pos = [...args];
                         if (pos.length == 3) pos[3] = pos[2] * img.height / img.width;
 
                         if (pos.length == 2) { // x,y
-                            switch (_imgMode) {
+                            switch (cfg.imgMode) {
                                 case 'CORNERS':
                                 case 'CORNER':
                                     cx.drawImage(img, ...mapxy(pos[0], pos[1]));
@@ -136,7 +153,7 @@ function showCanvasAPI(cv, data, scale, mapxy, fileHandler) {
                                     break;
                             }
                         } else {    // x,y,w,h
-                            switch (_imgMode) {
+                            switch (cfg.imgMode) {
                                 case 'CORNER':
                                     pos = [...mapxy(pos[0], pos[1]), pos[2] * _scale, pos[3] * _scale];
                                     break;
@@ -153,14 +170,23 @@ function showCanvasAPI(cv, data, scale, mapxy, fileHandler) {
                             }
                             cx.drawImage(img, ...pos);
                         }
-                        if (i + 1 < data.length) showCanvasAPI(cv, data.slice(i + 1), scale, mapxy, fileHandler);
+                        showCanvasAPI(cv, cfg, data, _data, mapxy, fileHandler);
+                    }
+                    img.onerror = () => {
+                        // TODO
+                    }
+
+                    if (http) {
+                        img.src = checkGitLink(path);
+                    } else {
+                        fileHandler(path, img);
                     }
                     return;
                 case 'textFont':
-                    cx.font = cx.font.split('px ')[0] + 'px ' + args[0];
+                    canvasSetFont(cx, [canvasGetFont(cx)[0], args[0]]);
                     break;
                 case 'textSize':
-                    cx.font = args[0] * _scale + 'px ' + cx.font.split('px ')[1];
+                    canvasSetFont(cx, [args[0] * _scale, canvasGetFont(cx)[1]]);
                     break;
                 case 'textAlign':
                     switch (canvas_const[args[0]]) {
@@ -176,8 +202,8 @@ function showCanvasAPI(cv, data, scale, mapxy, fileHandler) {
                     }
                     break;
                 case 'text':
-                    if (_fillF) cx.fillText(args[0], ...mapxy(args[1], args[2]));
-                    if (_strokeF) cx.strokeText(args[0], ...mapxy(args[1], args[2]));
+                    if (cfg.fillF) cx.fillText(args[0], ...mapxy(args[1], args[2]));
+                    if (cfg.strokeF) cx.strokeText(args[0], ...mapxy(args[1], args[2]));
                     break;
                 case 'point':
                     cx.beginPath();
@@ -187,13 +213,13 @@ function showCanvasAPI(cv, data, scale, mapxy, fileHandler) {
                     cx.beginPath();
                     cx.moveTo(...mapxy(args[0], args[1]));
                     cx.lineTo(...mapxy(args[2], args[3]));
-                    if (_strokeF) cx.stroke();
+                    if (cfg.strokeF) cx.stroke();
                     break;
                 case 'rect':
                     cx.beginPath();
                     let xy = mapxy(args[0], args[1]);
                     let wh = [args[2] * _scale, args[3] * _scale];
-                    switch (_recMode) {
+                    switch (cfg.recMode) {
                         case 'CENTER':
                             xy = [xy[0] - wh[0] / 2, xy[1] - wh[1] / 2];
                             break;
@@ -214,8 +240,8 @@ function showCanvasAPI(cv, data, scale, mapxy, fileHandler) {
                         cx.roundRect(xy[0], xy[1], wh[0], wh[1], r);
                         apply();
                     } else {
-                        if (_fillF) cx.fillRect(xy[0], xy[1], wh[0], wh[1]);
-                        if (_strokeF) cx.strokeRect(xy[0], xy[1], wh[0], wh[1]);
+                        if (cfg.fillF) cx.fillRect(xy[0], xy[1], wh[0], wh[1]);
+                        if (cfg.strokeF) cx.strokeRect(xy[0], xy[1], wh[0], wh[1]);
                     }
                     break;
                 case 'arc':
@@ -230,7 +256,7 @@ function showCanvasAPI(cv, data, scale, mapxy, fileHandler) {
                     drawEllipse([args[0], args[1], args[2], args[2]]);
                     break;
                 case 'bezier':
-                    if (_strokeF) {
+                    if (cfg.strokeF) {
                         args = [...mapxy(args[0], args[1]), ...mapxy(args[2], args[3]), ...mapxy(args[4], args[5]), ...mapxy(args[6], args[7])];
                         cx.beginPath();
                         cx.moveTo(args[0], args[1]);
@@ -243,16 +269,16 @@ function showCanvasAPI(cv, data, scale, mapxy, fileHandler) {
                     apply();
                     break;
                 case 'vertex':
-                    if (_shapeF) {
-                        _shapeF = 0;
+                    if (cfg.shapeF) {
+                        cfg.shapeF = 0;
                         cx.moveTo(...mapxy(args[0], args[1]));
                     } else {
                         cx.lineTo(...mapxy(args[0], args[1]));
                     }
                     break;
                 case 'bezierVertex':
-                    if (_shapeF) {
-                        _shapeF = 0;
+                    if (cfg.shapeF) {
+                        cfg.shapeF = 0;
                         cx.moveTo(...mapxy(args[4], args[5]));
                     }
                     cx.bezierCurveTo(...mapxy(args[0], args[1]), ...mapxy(args[2], args[3]), ...mapxy(args[4], args[5]));

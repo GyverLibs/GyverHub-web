@@ -23,7 +23,7 @@ class PlotWidget extends BaseWidget {
             this.#cv.resize();
         });
 
-        wait2Frame().then(() => {
+        waitRender(this.$el).then(() => {
             this.#cv.redraw();
         });
 

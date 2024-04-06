@@ -163,3 +163,7 @@ hub.addEventListener('discoverfinished', () => {
 hub.addEventListener('protocolerror', ev => {
   showPopupError(ev.text);
 });
+
+hub.addEventListener('systemerror', e => {
+  showPopupError(e.text);
+});

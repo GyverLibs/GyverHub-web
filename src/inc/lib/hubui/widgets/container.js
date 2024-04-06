@@ -32,7 +32,7 @@ class ContainerWidget extends BaseContainer {
             tag: 'div',
             class: 'cont-title',
             style: {
-                color: this.data.color ? hexToCol(this.data.color) : 'var(--font)',
+                color: hexToCol(this.data.color, 'var(--font)'),
             },
             text: this.data.label,
         });
