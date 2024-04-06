@@ -69,8 +69,8 @@ async function otaUrl(url, type) {
 async function uploadOta(file, type) {
     const dev = hub.dev(focused);
 
-    if (!file.name.endsWith(dev.info.ota_t)) {
-      asyncAlert(lang.wrong_ota + ' .' + dev.info.ota_t);
+    if (!file.name.endsWith(dev.info.ota_type)) {
+      asyncAlert(lang.wrong_ota + ' .' + dev.info.ota_type);
       return;
     }
   

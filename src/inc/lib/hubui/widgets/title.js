@@ -38,7 +38,7 @@ class TitleWidget extends BaseWidget {
 
         if ('value' in data) this.$label.textContent = data.value;
         if ('color' in data) this.$cont.style.color = hexToCol(data.color);
-        if ('fsize' in data) this.$cont.style.fontSize = data.fsize + 'px';
+        if ('font_size' in data) this.$cont.style.fontSize = data.font_size + 'px';
         if ('align' in data) this.align(data.align);
         if ('icon' in data) this.$icon.innerHTML = data.icon ? (getIcon(data.icon) + ' ') : '';
     }

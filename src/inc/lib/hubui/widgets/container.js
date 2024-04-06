@@ -31,6 +31,9 @@ class ContainerWidget extends BaseContainer {
         if (this.data.label) children.push({
             tag: 'div',
             class: 'cont-title',
+            style: {
+                color: this.data.color ? hexToCol(this.data.color) : 'var(--font)',
+            },
             text: this.data.label,
         });
 
@@ -54,6 +57,18 @@ class ContainerWidget extends BaseContainer {
         font-size: 28px;
         padding-top: 6px;
         padding-bottom: 3px;
+      }
+
+      .container-row {
+        display: flex;
+        min-height: 50px;
+        box-sizing: border-box;
+      }
+      
+      .container-col {
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
       }`;
 }
 
@@ -69,9 +84,7 @@ class SpoilerWidget extends BaseContainer {
 
     build() {
         let children = [];
-        let right = '';
-        let down = '';
-console.log(this.data);
+
         children.push({
             tag: 'div',
             class: 'spoiler-inner',
@@ -81,7 +94,7 @@ console.log(this.data);
             events: {
                 click: () => {
                     this.$root.classList.toggle('spoiler-hidden');
-                    this.$arrow.innerText = this.$root.classList.contains('spoiler-hidden') ? right : down;
+                    this.$arrow.classList.toggle('spoiler-icon-rot');
                 }
             },
             children: [
@@ -89,11 +102,12 @@ console.log(this.data);
                     tag: 'div',
                     name: 'arrow',
                     class: 'icon spoiler-icon',
-                    text: right,
+                    text: '',
                 },
                 {
                     tag: 'div',
                     text: this.data.label ?? 'Spoiler',
+                    style: { paddingLeft: '2px', },
                 }
             ]
         });
@@ -101,7 +115,7 @@ console.log(this.data);
         children.push({
             tag: 'div',
             name: 'root',
-            class: (this.data.rowcol == 'col' ? 'container-col' : 'container-row') + ' spoiler-hidden',
+            class: (this.data.rowcol == 'col' ? 'container-col' : 'container-row') + ' spoiler-cont spoiler-hidden',
         });
 
         makeDOM(this, {
@@ -114,29 +128,39 @@ console.log(this.data);
     }
 
     static style = `
+    .spoiler-cont {
+        transform: scaleY(1);    
+        transform-origin: top;
+        transition: transform 0.12s ease;
+    }
     .spoiler-hidden {
-        display: none;
+        transform: scaleY(0);
     }
     .spoiler-icon {
-        padding-right: 4px;
-        padding-left: 14px;
-        width: 20px;
-        text-align: center;
+        width: 23px;
+        height: 23px;
         display: flex;
         align-items: center;
+        justify-content: center;
+        transition: transform 0.12s ease;
+    }
+    .spoiler-icon-rot {
+        transform: rotate(90deg);
     }
     .spoiler-inner {
         display: flex;
+        align-items: center;
         padding: 7px 0px;
         background: var(--prim);
         color: white;
         box-shadow: 0px 3px 0px 0px inset #ffffff05, 0 0 10px 0px #00000021, 0px -3px 1px 0px inset #00000010;
         border-radius: 8px;
-        margin: 2px;
+        margin: 3px;
         margin-top: 6px;
         cursor: pointer;
         font-size: 26px;
         user-select: none;
+        padding-left: 5px;
       }
       .spoiler-inner:hover {
         filter: brightness(1.05);

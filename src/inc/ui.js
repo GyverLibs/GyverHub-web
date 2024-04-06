@@ -74,11 +74,11 @@ async function show_screen(nscreen) {
       $title.textContent = dev.info.name + '/ota';
       enterMenu('menu_ota');
 
-      const ota_t = '.' + dev.info.ota_t;
-      EL('ota_upload').accept = ota_t;
-      EL('ota_upload_fs').accept = ota_t;
-      EL('ota_url_f').value = "http://flash" + ota_t;
-      EL('ota_url_fs').value = "http://filesystem" + ota_t;
+      const ota_type = '.' + dev.info.ota_type;
+      EL('ota_upload').accept = ota_type;
+      EL('ota_upload_fs').accept = ota_type;
+      EL('ota_url_f').value = "http://flash" + ota_type;
+      EL('ota_url_fs').value = "http://filesystem" + ota_type;
       display('fs_otaf', dev.isModuleEnabled(Modules.OTA) ? 'block' : 'none');
       display('fs_otaurl', dev.isModuleEnabled(Modules.OTA_URL) ? 'block' : 'none');
       break;

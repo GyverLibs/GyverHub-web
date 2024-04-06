@@ -210,9 +210,17 @@ class GyverHub extends EventEmitter {
           infoChanged = true;
         }
       }
-      if (device.info.ws_port && !data.ws_port) {
-        device.info.ws_port = 0;  // TODO delete
-        infoChanged = true;
+      let checkData = {
+        ws_port: data.ws_port,
+        http_port: data.http_port,
+        udp_port: data.udp_port,
+        http_transfer: data.http_transfer,
+      }
+      for (const key in checkData) {
+        if (device.info[key] && !checkData[key]) {
+          device.info[key] = 0;
+          infoChanged = true;
+        }
       }
 
       if (conn) device.addConnection(conn);

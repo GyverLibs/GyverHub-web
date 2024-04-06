@@ -84,9 +84,9 @@ class SwitchIconWidget extends BaseWidget {
             if (Number(data.value) == 1) this.$el.classList.add('w-swicon-on');
             else this.$el.classList.remove('w-swicon-on');
         }
-        if ('fsize' in data) {
-            this.$el.style.fontSize = data.fsize + 'px';
-            this.$el.style.width = data.fsize * 1.7 + 'px';
+        if ('font_size' in data) {
+            this.$el.style.fontSize = data.font_size + 'px';
+            this.$el.style.width = data.font_size * 1.7 + 'px';
         }
         if ('icon' in data) this.$el.innerHTML = getIcon(data.icon);
         if ('color' in data) this.$el.style.setProperty('--on-color', hexToCol(data.color));

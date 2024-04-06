@@ -61,8 +61,8 @@ class ButtonWidget extends BaseWidget {
             this.$el.style.color = this.#color;
             this.$el.style.fill = this.#color;
         }
-        if ('fsize' in data) {
-            this.#fontSize = data.fsize + 'px';
+        if ('font_size' in data) {
+            this.#fontSize = data.font_size + 'px';
 
             const size = this.#fontSize;
             this.$el.style.fontSize = size;

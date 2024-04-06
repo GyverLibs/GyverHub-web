@@ -56,14 +56,14 @@ class MenuWidget extends Widget {
             height: 100%;
             background-color: #0008;
             z-index: 2;
-            animation: opac .1s;
+            animation: opac .15s;
             backdrop-filter: blur(4px);
           }
           
           .menu {
             display: block;
             max-height: 0;
-            transition: max-height .1s ease-out;
+            transition: max-height .15s ease-out;
             overflow: hidden;
             position: fixed;
             top: 50px;
@@ -77,7 +77,7 @@ class MenuWidget extends Widget {
           
           .menu-show {
             max-height: 100%;
-            transition: max-height .1s ease-in;
+            transition: max-height .15s ease-in;
           }
           
           .menu-item {

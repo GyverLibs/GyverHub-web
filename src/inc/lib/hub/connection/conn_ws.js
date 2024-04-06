@@ -6,7 +6,7 @@ class WebSocketConnection extends Connection {
   #packet_buffer;
   #reconnect;
 
-  onConnChange(s){}
+  onConnChange(s) { }
 
   constructor(hub) {
     super(hub);
@@ -24,31 +24,38 @@ class WebSocketConnection extends Connection {
     return this.#ws && this.#ws.readyState == 1;
   }
 
-  async begin(){}
-  async discover(){}
-  async search(){}
+  async begin() { }
+  async discover() { }
+  async search() { }
 
   async connect() {
     if (this.#ws) return;
 
     this._setState(ConnectionState.CONNECTING);
     this.#reconnect = true;
-    this.#ws = await WebSocketConnection.#wsOpenAsync(`ws://${this.options.ip}:${this.options.port}/`, ['hub'], this.options.connect_timeout);
 
-    this._setState(ConnectionState.CONNECTED);
-    this.#packet_buffer.clear();
+    try {
+      this.#ws = await WebSocketConnection.#wsOpenAsync(`ws://${this.options.ip}:${this.options.port}/`, ['hub'], this.options.connect_timeout);
 
-    this.#ws.onclose = async () => {
+      this._setState(ConnectionState.CONNECTED);
+      this.#packet_buffer.clear();
+
+      this.#ws.onclose = async () => {
+        this._setState(ConnectionState.DISCONNECTED);
+        this.#ws = undefined;
+        await sleep(500);
+        if (this.#reconnect)
+          await this.connect();
+      };
+
+      this.#ws.onmessage = (e) => {
+        this.#packet_buffer.push(e.data);
+      };
+
+    } catch (e) {
+      console.log(e);
       this._setState(ConnectionState.DISCONNECTED);
-      this.#ws = undefined;
-      await sleep(500);
-      if (this.#reconnect)
-        await this.connect();
-    };
-
-    this.#ws.onmessage = (e) => {
-      this.#packet_buffer.push(e.data);
-    };
+    }
   }
 
   async disconnect() {
@@ -84,7 +91,13 @@ class WebSocketConnection extends Connection {
         else rej(e ?? new TimeoutError());
       }
 
-      const ws = new WebSocket(url, protos);
+      let ws;
+      try {
+        ws = new WebSocket(url, protos);
+      } catch (e) {
+        console.log(e);
+        return;
+      }
       ws.addEventListener('open', handler);
       ws.addEventListener('error', handler);
     })

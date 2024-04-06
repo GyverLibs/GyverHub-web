@@ -21,7 +21,7 @@ class IconWidget extends BaseWidget {
     update(data) {
         super.update(data);
         if ('icon' in data) this.$el.innerHTML = getIcon(data.icon);
-        if ('fsize' in data) this.$el.style.fontSize = data.fsize + 'px';
+        if ('font_size' in data) this.$el.style.fontSize = data.font_size + 'px';
         if ('color' in data) this.$el.style.setProperty('--on-color', hexToCol(data.color));
         if ('value' in data) {
             if (Number(data.value)) this.$el.classList.add('w-icon-on');

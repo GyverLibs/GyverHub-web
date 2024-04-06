@@ -119,7 +119,7 @@ class DisplayWidget extends BaseWidget {
         super.update(data);
         if ('value' in data) this.$el.value = data.value;
         if ('color' in data) this.$el.style.background = hexToCol(data.color);
-        if ('fsize' in data) this.$el.style.fontSize = data.fsize + 'px';
+        if ('font_size' in data) this.$el.style.fontSize = data.font_size + 'px';
         if ('rows' in data) this.$el.rows = data.rows;
         if ('disable' in data) this.disable(this.$el, data.disable);
     }

@@ -35,7 +35,7 @@ class LabelWidget extends BaseWidget {
 
         if ('value' in data) this.$lbl.textContent = data.value;
         if ('color' in data) this.$lbl_cont.style.color = hexToCol(data.color);
-        if ('fsize' in data) this.$lbl_cont.style.fontSize = data.fsize + 'px';
+        if ('font_size' in data) this.$lbl_cont.style.fontSize = data.font_size + 'px';
         if ('align' in data) this.align(data.align);
         if ('icon' in data) this.$lbl_icon.innerHTML = data.icon ? (getIcon(data.icon) + ' ') : '';
     }

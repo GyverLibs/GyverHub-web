@@ -141,7 +141,7 @@ class Device extends EventEmitter {
 
       case 'location':
         if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition((p) => this.sendLocation(p), undefined, { enableHighAccuracy: data.highacc });
+          navigator.geolocation.getCurrentPosition((p) => this.sendLocation(p), undefined, { enableHighAccuracy: data.high_accuracy });
         }
         break;
 
@@ -281,7 +281,9 @@ class Device extends EventEmitter {
       ws.options.ip = this.info.ip;
       ws.options.port = this.info.ws_port;
       ws.options.enabled = true;
+      
       await ws.connect();
+
       if (!ws.isConnected()) {
         await ws.disconnect();
       } else {
@@ -337,7 +339,7 @@ class Device extends EventEmitter {
 
     const crc = crc32(buffer);
 
-    if (this.isHttpAccessable() && this.info.http_t) {
+    if (this.isHttpAccessable() && this.info.http_transfer) {
       let formData = new FormData();
       formData.append('upload', file, "upload");
       await http_post(`http://${this.info.ip}:${this.info.http_port}/hub/upload?path=${path}&crc32=${crc}&client_id=${this._hub.clientId}&size=${buffer.length}`, formData)
@@ -346,7 +348,7 @@ class Device extends EventEmitter {
 
       const upl_bytes = Array.from(buffer);
       const upl_size = upl_bytes.length;
-      const max_enc_len = this.info.max_upl * 3 / 4 - 60;
+      const max_enc_len = this.info.max_upload * 3 / 4 - 60;
 
       let [cmd, data] = await this.#postAndWait('upload', ['upload_next', 'upload_err'], path, upl_size);
 
@@ -375,7 +377,7 @@ class Device extends EventEmitter {
 
     if (!progress) progress = () => { };
 
-    if (this.isHttpAccessable() && this.info.http_t) {
+    if (this.isHttpAccessable() && this.info.http_transfer) {
       return await http_fetch_blob(`http://${this.info.ip}:${this.info.http_port}/hub/fetch?path=${path}&client_id=${this._hub.clientId}`,
         type, progress, this._hub.config.get('connections', 'HTTP', 'request_timeout'));
 
@@ -430,7 +432,7 @@ class Device extends EventEmitter {
     if (!this.isModuleEnabled(Modules.OTA))
       throw new DeviceError(HubErrors.Disabled);
 
-    if (this.isHttpAccessable() && this.info.http_t) {
+    if (this.isHttpAccessable() && this.info.http_transfer) {
       let formData = new FormData();
       formData.append(type, file, "ota");
       await http_post(`http://${this.info.ip}:${this.info.http_port}/hub/ota?type=${type}&client_id=${this._hub.clientId}`, formData)
@@ -441,7 +443,7 @@ class Device extends EventEmitter {
       const buffer = new Uint8Array(fdata);
       const ota_bytes = Array.from(buffer);
       const ota_size = ota_bytes.length;
-      const max_enc_len = this.info.max_upl * 3 / 4 - 60;
+      const max_enc_len = this.info.max_upload * 3 / 4 - 60;
 
       let [cmd, data] = await this.#postAndWait('ota', ['ota_next', 'ota_done', 'ota_err'], type);
 
