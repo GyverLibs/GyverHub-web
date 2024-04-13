@@ -26,7 +26,7 @@ function canvasSetFont(cx, size_name) {
 }
 
 const canvas_const = ['MITER', 'ROUND', 'BEVEL', 'SQUARE', 'PROJECT', 'CORNER', 'CORNERS', 'CENTER', 'RADIUS', 'LEFT', 'RIGHT', 'TOP', 'BOTTOM', 'BASELINE'];
-const canvas_cmd = ['clear', 'background', 'fill', 'noFill', 'stroke', 'noStroke', 'strokeWeight', 'strokeJoin', 'strokeCap', 'rectMode', 'ellipseMode', 'imageMode', 'image', 'textFont', 'textSize', 'textAlign', 'text', 'point', 'line', 'rect', 'arc', 'ellipse', 'circle', 'bezier', 'beginShape', 'endShape', 'vertex', 'bezierVertex', 'pixelScale', 'rotate', 'translate', 'push', 'pop'];
+const canvas_cmd = ['clear', 'background', 'fill', 'noFill', 'stroke', 'noStroke', 'strokeWeight', 'strokeJoin', 'strokeCap', 'rectMode', 'ellipseMode', 'imageMode', 'image', 'textFont', 'textSize', 'textAlign', 'text', 'point', 'line', 'rect', 'arc', 'ellipse', 'circle', 'bezier', 'beginShape', 'endShape', 'vertex', 'bezierVertex', 'pixelScale', 'rotate', 'translate', 'push', 'pop', 'triangle', 'quadrangle'];
 
 function showCanvasAPI(cv, cfg, data, bufdata, mapxy, fileHandler) {
     let cx = cv.getContext('2d');
@@ -275,6 +275,23 @@ function showCanvasAPI(cv, cfg, data, bufdata, mapxy, fileHandler) {
                     } else {
                         cx.lineTo(...mapxy(args[0], args[1]));
                     }
+                    break;
+                case 'triangle':
+                    cx.beginPath();
+                    cx.moveTo(...mapxy(args[0], args[1]));
+                    cx.lineTo(...mapxy(args[2], args[3]));
+                    cx.lineTo(...mapxy(args[4], args[5]));
+                    cx.closePath();
+                    apply();
+                    break;
+                case 'quadrangle':
+                    cx.beginPath();
+                    cx.moveTo(...mapxy(args[0], args[1]));
+                    cx.lineTo(...mapxy(args[2], args[3]));
+                    cx.lineTo(...mapxy(args[4], args[5]));
+                    cx.lineTo(...mapxy(args[6], args[7]));
+                    cx.closePath();
+                    apply();
                     break;
                 case 'bezierVertex':
                     if (cfg.shapeF) {

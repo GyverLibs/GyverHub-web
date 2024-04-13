@@ -223,7 +223,6 @@ function registerPlugins() {
     JoyWidget,
     LabelWidget,
     LedWidget,
-    MapWidget,
     MenuWidget,
     PlotWidget,
     PluginLoader,
@@ -246,9 +245,13 @@ function registerPlugins() {
     DisplayWidget,
     AreaWidget,
     TitleWidget,
-    // UiFileWidget,
     SpaceWidget,
     DummyWidget,
+    // UiFileWidget,
+    
+    /*@[if_not_target:esp]*/
+    MapWidget,
+    /*@/[if_not_target:esp]*/
   ].forEach(cls => GlobalWidgets.registerClass(cls));
 
   if (localStorage.hasOwnProperty('plugins')) {

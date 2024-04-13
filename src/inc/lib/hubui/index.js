@@ -18,7 +18,6 @@
 /*@![include:inc/lib/hubui/widgets/joy.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/label.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/led.js, compile]*/
-/*@![include:inc/lib/hubui/widgets/map.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/menu.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/other.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/plot.js, compile]*/
@@ -35,3 +34,7 @@
 /*@![include:inc/lib/hubui/widgets/text.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/title.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/ui_file.js, compile]*/
+
+/*@[if_not_target:esp]*/
+/*@![include:inc/lib/hubui/widgets/map.js, compile]*/
+/*@/[if_not_target:esp]*/
