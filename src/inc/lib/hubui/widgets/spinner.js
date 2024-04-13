@@ -73,12 +73,12 @@ class SpinnerWidget extends BaseWidget {
 
     update(data) {
         super.update(data);
-        if ('value' in data) this.$el.value = data.value;
         if ('min' in data) this.$el.min = data.min;
         if ('max' in data) this.$el.max = data.max;
         if ('step' in data) this.$el.step = data.step;
         if ('dec' in data) this.#dec = data.dec;
         if ('unit' in data) this.$unit.textContent = data.unit;
+        if ('value' in data) this.$el.value = data.value;
         this.#spin(0, false);
     }
 

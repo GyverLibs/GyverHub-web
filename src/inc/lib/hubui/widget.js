@@ -195,12 +195,10 @@ class BaseWidget extends Widget {
         });
         this.#cont.append(this.#suffix);
 
-
         this.#container = makeDOM(this, {
             tag: 'div',
             class: 'widget-body',
             style: {
-                // minHeight: data.wheight && data.wheight > 25 ? data.wheight + 'px' : '',
                 minHeight: (data.wheight ?? 25) + 'px',
             }
         });

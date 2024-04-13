@@ -22,7 +22,6 @@ class SelectWidget extends BaseWidget {
 
     update(data) {
         super.update(data);
-        if ('value' in data) this.$el.value = data.value;
         if ('text' in data) {
             const options = [];
             if (data.text) {
@@ -37,6 +36,7 @@ class SelectWidget extends BaseWidget {
             }
             this.$el.replaceChildren(...options);
         }
+        if ('value' in data) this.$el.value = data.value;
         if ('color' in data) this.$el.style.color = hexToCol(data.color);
     }
 

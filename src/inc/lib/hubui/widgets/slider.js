@@ -45,12 +45,12 @@ class SliderWidget extends BaseWidget {
 
     update(data) {
         super.update(data);
-        if ('value' in data) this.$el.value = data.value;
         if ('color' in data) this.$el.style.backgroundImage = `linear-gradient(${hexToCol(data.color)}, ${hexToCol(data.color)})`;
         if ('min' in data) this.$el.min = data.min;
         if ('max' in data) this.$el.max = data.max;
         if ('step' in data) this.$el.step = data.step;
         if ('disable' in data) this.disable(this.$el, data.disable);
+        if ('value' in data) this.$el.value = data.value;
         this.#move(false);
     }
 
