@@ -135,6 +135,7 @@ class SpoilerWidget extends BaseContainer {
     }
     .spoiler-hidden {
         transform: scaleY(0);
+        height: 0;
     }
     .spoiler-icon {
         width: 23px;

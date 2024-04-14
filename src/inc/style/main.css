@@ -295,7 +295,9 @@ body.show-cli .cli {
 }
 
 body[data-screen=main] .footer {
+  /*@[if_not_target:esp]*/
   display: flex;
+  /*@/[if_not_target:esp]*/
 }
 
 .footer a {
@@ -334,7 +336,9 @@ body[data-screen=projects] .screen-projects {
 }
 
 body[data-screen=projects] .footer {
+  /*@[if_not_target:esp]*/
   display: flex;
+  /*@/[if_not_target:esp]*/
 }
 
 .proj {
@@ -379,7 +383,9 @@ body[data-screen=test] .screen-test {
 }
 
 body[data-screen=test] .footer {
+  /*@[if_not_target:esp]*/
   display: flex;
+  /*@/[if_not_target:esp]*/
 }
 
 body[data-screen=test] .header {
@@ -404,7 +410,9 @@ body[data-screen=plugins] .screen-plugins {
 }
 
 body[data-screen=plugins] .footer {
+  /*@[if_not_target:esp]*/
   display: flex;
+  /*@/[if_not_target:esp]*/
 }
 
 .plugin-inner {
