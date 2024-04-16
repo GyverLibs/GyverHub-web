@@ -34,7 +34,7 @@
 /*@![include:inc/lib/hubui/widgets/text.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/title.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/tags.js, compile]*/
-/*@![include:inc/lib/hubui/widgets/ui_file.js, compile]*/
+/*@![include:inc/lib/hubui/widgets/uiCont.js, compile]*/
 
 /*@[if_not_target:esp]*/
 /*@![include:inc/lib/hubui/widgets/map.js, compile]*/

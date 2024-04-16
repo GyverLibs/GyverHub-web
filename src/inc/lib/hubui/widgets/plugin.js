@@ -64,10 +64,10 @@ class LoadWidget extends Widget {
             }
         });
 
-        const w = this.renderer._getPlugin(data.type);
+        const w = this.renderer.getWidgetByType(data.type);
         if (w) this.#apply(w);
         else this.renderer.addEventListener('pluginloaded', () => {
-            const w = this.renderer._getPlugin(data.type);
+            const w = this.renderer.getWidgetByType(data.type);
             if (w) this.#apply(w);
         });
 

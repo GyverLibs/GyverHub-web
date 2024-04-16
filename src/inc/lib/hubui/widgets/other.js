@@ -18,5 +18,16 @@ class DummyWidget extends Widget {
 
     constructor(data, renderer) {
         super(data, renderer);
+        if (!data.id) return;
+        
+        const w = this.renderer.getWidgetById(data.id);
+        if (w) {
+            if (w) w.update(data);
+        } else {
+            this.renderer.addEventListener('uiloaded', () => {
+                const w = this.renderer.getWidgetById(data.id);
+                if (w) w.update(data);
+            });
+        }
     }
 }

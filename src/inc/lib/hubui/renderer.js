@@ -33,7 +33,7 @@ class Renderer extends EventEmitter {
   device;
   #widgets;
   #idMap;
-  #idMapExt;
+  // #idMapExt;
   #files;
   #filesLoaded;
   widgetBase;
@@ -44,7 +44,7 @@ class Renderer extends EventEmitter {
     this.device = device;
     this.#widgets = [];
     this.#idMap = new Map();
-    this.#idMapExt = new Map();
+    // this.#idMapExt = new Map();
     this.#files = [];
     this.#filesLoaded = false;
   }
@@ -53,7 +53,7 @@ class Renderer extends EventEmitter {
     this.close();
     this.#widgets.length = 0;
     this.#idMap.clear();
-    this.#idMapExt.clear();
+    // this.#idMapExt.clear();
     this.#files.length = 0;
     this.#filesLoaded = false;
 
@@ -94,7 +94,7 @@ class Renderer extends EventEmitter {
    */
   _makeWidgets(cont, type, data, isExt = false) {
     this.#updateWWidth(type, data);
-    const idMap = isExt ? this.#idMapExt : this.#idMap;
+    // const idMap = isExt ? this.#idMapExt : this.#idMap;
 
     for (const ctrl of data) {
       if (!ctrl.type) continue;
@@ -107,7 +107,8 @@ class Renderer extends EventEmitter {
       }
 
       const obj = new cls(ctrl, this);
-      idMap.set(obj.id, obj)
+      // idMap.set(obj.id, obj);
+      this.#idMap.set(obj.id, obj);
       cont.push(obj);
     }
   }
@@ -196,8 +197,11 @@ class Renderer extends EventEmitter {
     }
   }
 
-  _getPlugin(wtype) {
+  getWidgetByType(wtype) {
     return this.widgetBase.classes.get(wtype);
+  }
+  getWidgetById(id) {
+    return this.#idMap.get(id);
   }
 }
 
@@ -248,7 +252,7 @@ function registerPlugins() {
     SpaceWidget,
     DummyWidget,
     TagsWidget,
-    UiFileWidget,
+    UiContainer,
     
     /*@[if_not_target:esp]*/
     MapWidget,

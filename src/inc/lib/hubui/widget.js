@@ -78,6 +78,7 @@ class Widget {
      * @returns {Promise<undefined>}
      */
     async set(value, ack = true) {
+        if (!this.id) return;
         value = value.toString();
         if (this.set_timer) {
             this.set_buf = value;

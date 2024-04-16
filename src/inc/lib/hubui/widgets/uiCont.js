@@ -1,4 +1,4 @@
-class UiFileWidget extends Widget {
+class UiContainer extends Widget {
     static wtype = 'ui_file';
     $el;
 
@@ -46,12 +46,13 @@ class UiFileWidget extends Widget {
 
     #setControls(controls) {
         const children = [];
-        this.renderer._makeWidgets(children, this.data.rowcol, controls, true);
+        this.renderer._makeWidgets(children, this.data.rowcol, controls);
         this.$el.replaceChildren()
         for (const w of children) {
             const $w = w.build();
             if ($w) this.$el.append($w);
         }
+        this.renderer.dispatchEvent(new Event('uiloaded'));
     }
 
     build() {
