@@ -20,7 +20,7 @@ class TabsWidget extends BaseWidget {
                             this.$ul.scrollLeft += e.deltaY;
                         },
                         click: e => {
-                            if (this.$el.getAttribute("disabled")) return;
+                            if (this.disabled()) return;
                             const tabId = e.target.dataset.tabId;
                             if (tabId === undefined) return;
                             this.set(tabId);
@@ -43,7 +43,7 @@ class TabsWidget extends BaseWidget {
         if ('text' in data) {
             const tabs = [];
             if (data.text) {
-                const labels = data.text.split(/[,;]/);
+                const labels = data.text.split(';');
                 for (const i in labels) {
                     const $i = makeDOM(null, {
                         tag: 'li',

@@ -286,21 +286,8 @@ class GyverHub extends EventEmitter {
   async _parsePacket(conn, data, ip = null, port = null) {
     if (!data || !data.length) return;
 
-    data = data.trim()
-      .replaceAll("#{", "{")
-      .replaceAll("}#", "}")
-      .replaceAll(/([^\\])\\([^\"\\nrt])/ig, "$1\\\\$2")
-      .replaceAll(/\t/ig, "\\t")
-      .replaceAll(/\n/ig, "\\n")
-      .replaceAll(/\r/ig, "\\r");
-
-    for (const code in HubCodes) {
-      const re = new RegExp(`(#${Number(code).toString(16)})([:,\\]\\}])`, "ig");
-      data = data.replaceAll(re, `"${HubCodes[code]}"$2`);
-    }
-
-    const re = /(#[0-9a-f][0-9a-f])([:,\]\}])/ig;
-    if (data.match(re)) {
+    data = decodeHubJson(data);
+    if (!data) {
       this.dispatchEvent(new SystemErrorEvent('Device has newer API version. Update App!'));
       return;
     }

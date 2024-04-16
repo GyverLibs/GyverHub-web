@@ -22,7 +22,7 @@ class SliderWidget extends BaseWidget {
                 },
                 wheel: e => {
                     e.preventDefault();
-                    if (this.$el.getAttribute("disabled")) return;
+                    if (this.disabled()) return;
                     this.$el.value = Number(this.$el.value) - Math.sign(Number(e.deltaY)) * Number(this.$el.step);
                     this.#move();
                 },

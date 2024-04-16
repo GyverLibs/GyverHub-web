@@ -3,35 +3,29 @@ function getMyPlugins(plugins, ondelete) {
   for (let wtype in plugins) {
     let plugin = makeDOM(this, {
       tag: 'div',
-      class: 'myplugin',
+      class: 'tags',
       name: 'el',
       children: [
         {
-          tag: 'div',
-          class: 'myplugin-inner',
-          children: [
-            {
-              tag: 'span',
-              class: 'myplugin-wtype',
-              text: wtype,
-              events: {
-                click: async () => {
-                  asyncPromptArea(wtype, plugins[wtype], null, true);
-                }
-              }
-            },
-            {
-              tag: 'span',
-              class: 'icon i-myplugin',
-              text: '',
-              events: {
-                click: async () => {
-                  if (!await asyncConfirm(lang.delete_plugin + ' ' + wtype + '?')) return;
-                  await ondelete(wtype);
-                }
-              }
+          tag: 'span',
+          class: 'tags-wtype',
+          text: wtype,
+          events: {
+            click: async () => {
+              asyncPromptArea(wtype, plugins[wtype], null, true);
             }
-          ]
+          }
+        },
+        {
+          tag: 'span',
+          class: 'icon i-tags',
+          text: '',
+          events: {
+            click: async () => {
+              if (!await asyncConfirm(lang.delete_plugin + ' ' + wtype + '?')) return;
+              await ondelete(wtype);
+            }
+          }
         }
       ],
     });

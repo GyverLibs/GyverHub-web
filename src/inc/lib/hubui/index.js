@@ -33,6 +33,7 @@
 /*@![include:inc/lib/hubui/widgets/tabs.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/text.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/title.js, compile]*/
+/*@![include:inc/lib/hubui/widgets/tags.js, compile]*/
 /*@![include:inc/lib/hubui/widgets/ui_file.js, compile]*/
 
 /*@[if_not_target:esp]*/

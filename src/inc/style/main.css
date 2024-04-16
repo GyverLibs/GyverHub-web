@@ -453,32 +453,29 @@ body[data-screen=plugins] .footer {
   filter: brightness(1.15);
 }
 
-.myplugin {
-  display: inline-block;
+.tags {
+  display: inline-flex;
+  align-items: center;
   padding: 3px 6px;
-  background: var(--prim);
   border-radius: 5px;
   margin: 2px 2px;
+  background: var(--prim);
   color: var(--font_inv);
+  height: 24px;
 }
 
-.myplugin-inner {
-  display: flex;
-  align-items: center;
-}
-
-.i-myplugin {
+.i-tags {
   color: var(--font_inv);
   font-size: 20px !important;
   padding-left: 7px;
   cursor: pointer;
 }
 
-.myplugin-wtype {
+.tags-wtype {
   cursor: pointer;
 }
 
-.myplugin-wtype:hover {
+.tags-wtype:hover {
   text-decoration: underline;
 }
 

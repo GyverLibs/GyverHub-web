@@ -13,7 +13,7 @@ class FlagsWidget extends BaseWidget {
             name: 'el',
             events: {
                 click: e => {
-                    if (this.$el.getAttribute("disabled")) return;
+                    if (this.disabled()) return;
                     const i = e.target.dataset.flagIndex;
                     if (i === undefined) return;
                     const unset = e.target.classList.contains('checked');
@@ -32,7 +32,7 @@ class FlagsWidget extends BaseWidget {
     update(data) {
         super.update(data);
         if ('value' in data) this.#value = Number(data.value);
-        if ('text' in data) this.#items = data.text.split(/[,;]/);
+        if ('text' in data) this.#items = data.text.split(';');
         if ('color' in data) this.$el.style.setProperty('--checked-color', hexToCol(data.color));
         if ('disable' in data) this.disable(this.$el, data.disable);
         this.#render();

@@ -1,5 +1,3 @@
-
-
 const HubCodes = [
     'api_v',
     'id',
@@ -136,4 +134,26 @@ const HubCodes = [
     'rowcol',
     'spoiler',
     'http_port',
+    'tags',
 ];
+
+function decodeHubJson(data) {
+    if (!data || !data.length) return null;
+
+    data = data.trim()
+      .replaceAll("#{", "{")
+      .replaceAll("}#", "}")
+      .replaceAll(/([^\\])\\([^\"\\nrt])/ig, "$1\\\\$2")
+      .replaceAll(/\t/ig, "\\t")
+      .replaceAll(/\n/ig, "\\n")
+      .replaceAll(/\r/ig, "\\r");
+
+    for (const code in HubCodes) {
+      const re = new RegExp(`(#${Number(code).toString(16)})([:,\\]\\}])`, "ig");
+      data = data.replaceAll(re, `"${HubCodes[code]}"$2`);
+    }
+
+    const re = /(#[0-9a-f][0-9a-f])([:,\]\}])/ig;
+    if (data.match(re)) return null;
+    else return data;
+}

@@ -18,6 +18,7 @@
 /*@![include:inc/config.js, compile]*/
 
 /*@[if_not_target:esp]*/
+/*@![include:inc/test.js, compile]*/
 /*@![include:inc/projects.js, compile]*/
 /*@![include:inc/plugins.js, compile]*/
 /*@/[if_not_target:esp]*/

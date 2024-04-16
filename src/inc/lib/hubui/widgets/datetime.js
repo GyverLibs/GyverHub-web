@@ -30,6 +30,7 @@ class DateWidget extends BaseWidget {
         super.update(data);
         if ('value' in data) this.$el.value = new Date(data.value * 1000).toISOString().split('T')[0];
         if ('color' in data) this.$el.style.color = hexToCol(data.color);
+        if ('disable' in data) this.disable(this.$el, data.disable);
     }
 }
 
@@ -66,6 +67,7 @@ class TimeWidget extends BaseWidget {
         super.update(data);
         if ('value' in data) this.$el.value = new Date(data.value * 1000).toISOString().split('T')[1].split('.')[0];
         if ('color' in data) this.$el.style.color = hexToCol(data.color);
+        if ('disable' in data) this.disable(this.$el, data.disable);
     }
 }
 
@@ -102,6 +104,7 @@ class DateTimeWidget extends BaseWidget {
         super.update(data);
         if ('value' in data) this.$el.value = new Date(data.value * 1000).toISOString().split('.')[0];
         if ('color' in data) this.$el.style.color = hexToCol(data.color);
+        if ('disable' in data) this.disable(this.$el, data.disable);
     }
 
     static style = `

@@ -247,7 +247,8 @@ function registerPlugins() {
     TitleWidget,
     SpaceWidget,
     DummyWidget,
-    // UiFileWidget,
+    TagsWidget,
+    UiFileWidget,
     
     /*@[if_not_target:esp]*/
     MapWidget,

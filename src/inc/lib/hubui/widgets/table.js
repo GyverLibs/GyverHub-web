@@ -50,8 +50,8 @@ class TableWidget extends BaseWidget {
     }
 
     #render() {
-        const aligns = this.#align.split(/[,;]/);
-        const widths = this.#width.split(/[,;]/);
+        const aligns = this.#align.split(';');
+        const widths = this.#width.split(';');
         const table = parseCSV(this.#data);
         const items = [];
         for (const row of table) {
