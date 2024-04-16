@@ -47,7 +47,8 @@ class TabsWidget extends BaseWidget {
                 for (const i in labels) {
                     const $i = makeDOM(null, {
                         tag: 'li',
-                        text: labels[i].trim(),
+                        // text: labels[i].trim(),
+                        children: makeIconLabel(labels[i].trim()),
                     });
                     $i.dataset.tabId = i;
                     tabs.push($i);

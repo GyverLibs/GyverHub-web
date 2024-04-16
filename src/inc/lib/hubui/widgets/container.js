@@ -28,14 +28,17 @@ class ContainerWidget extends BaseContainer {
         let obj = {};
         let children = [];
 
-        if (this.data.label) children.push({
-            tag: 'div',
-            class: 'cont-title',
-            style: {
-                color: hexToCol(this.data.color, 'var(--font)'),
-            },
-            text: this.data.label,
-        });
+        if (this.data.label) {
+            children.push({
+                tag: 'div',
+                class: 'cont-title',
+                style: {
+                    color: hexToCol(this.data.color, 'var(--font)'),
+                    fontSize: (this.data.fsize ?? '23px') + ' !important',
+                },
+                children: makeIconLabel(this.data.label),
+            });
+        }
 
         children.push({
             tag: 'div',
@@ -54,7 +57,7 @@ class ContainerWidget extends BaseContainer {
     static style = `
     .cont-title {
         text-align: center;
-        font-size: 28px;
+        font-size: 23px;
         padding-top: 6px;
         padding-bottom: 3px;
       }
@@ -89,16 +92,17 @@ class SpoilerWidget extends BaseContainer {
             tag: 'div',
             class: 'spoiler-inner',
             style: {
-                background: hexToCol(this.data.color),
+                background: hexToCol(this.data.color, 'var(--tab)'),
+                fontSize: this.data.fsize ?? '23px',
             },
             events: {
                 click: () => {
                     this.$root.classList.toggle('spoiler-hidden');
-                    this.$arrow.classList.toggle('spoiler-icon-rot');
+                    if (this.$arrow) this.$arrow.classList.toggle('spoiler-icon-rot');
                 }
             },
             children: [
-                {
+                startsIcon(this.data.label) ? null : {
                     tag: 'div',
                     name: 'arrow',
                     class: 'icon spoiler-icon',
@@ -106,7 +110,7 @@ class SpoilerWidget extends BaseContainer {
                 },
                 {
                     tag: 'div',
-                    text: this.data.label ?? 'Spoiler',
+                    children: makeIconLabel(this.data.label ?? 'Spoiler'),
                     style: { paddingLeft: '2px', },
                 }
             ]
@@ -152,14 +156,14 @@ class SpoilerWidget extends BaseContainer {
         display: flex;
         align-items: center;
         padding: 7px 0px;
-        background: var(--prim);
-        color: white;
+        background: var(--tab);
+        color: var(--font);
         box-shadow: 0px 3px 0px 0px inset #ffffff05, 0 0 10px 0px #00000021, 0px -3px 1px 0px inset #00000010;
         border-radius: 8px;
         margin: 3px;
         margin-top: 6px;
         cursor: pointer;
-        font-size: 26px;
+        font-size: 23px;
         user-select: none;
         padding-left: 5px;
       }

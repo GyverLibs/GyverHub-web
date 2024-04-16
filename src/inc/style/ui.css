@@ -4,10 +4,13 @@
 .icon {
   font-weight: bold;
   font-family: 'FA5';
-  font-size: 28px;
   background: none;
   border: none;
   user-select: none;
+}
+
+.icon-pad {
+  padding-right: 0.3em;
 }
 
 .icon-min {
@@ -25,6 +28,7 @@
 }
 
 .icon-btn-big {
+  font-size: 28px;
   cursor: pointer;
   color: var(--prim);
   padding: 0px 6px;
@@ -73,7 +77,7 @@
 
 .i-inline {
   user-select: none !important;
-  font-size: 18px !important;
+  font-size: 18px;
   padding-right: 5px;
 }
 

@@ -26,10 +26,10 @@ class MenuWidget extends Widget {
             this.$el.append(makeDOM(null, {
                 tag: 'div',
                 class: i == data.value ? "menu-item menu-act" : "menu-item",
-                text: labels[i].trim(),
+                children: makeIconLabel(labels[i].trim()),
                 events: {
                     click: () => this.#openMenu(i)
-                }
+                },
             }));
         }
         this.$el.append(makeDOM(null, { tag: 'hr' }));

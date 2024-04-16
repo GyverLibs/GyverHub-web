@@ -1,7 +1,7 @@
 
 // ===================== RENDER =====================
 function makeDOM(self, obj) {
-  if (typeof obj === 'string' || obj instanceof Node || !obj.tag) return obj;
+  if (!obj || typeof obj === 'string' || obj instanceof Node || !obj.tag) return obj;
   const $el = document.createElement(obj.tag);
 
   for (let [key, value] of Object.entries(obj)) {
@@ -15,7 +15,7 @@ function makeDOM(self, obj) {
       case 'name': self['$' + value] = $el; break;
       case 'style': for (const [skey, sval] of Object.entries(value)) $el.style[skey] = sval; break;
       case 'events': for (const [ev, handler] of Object.entries(value)) $el.addEventListener(ev, handler.bind(self)); break;
-      case 'children': for (const i of value) $el.append(makeDOM(self, i)); break;
+      case 'children': for (const i of value) if (i) $el.append(makeDOM(self, i)); break;
       default: $el[key] = value; break;
     }
   }
@@ -162,4 +162,28 @@ function adjustColor(col, ratio) {
     col <<= 8;
   }
   return newcol;
+}
+
+
+function startsIcon(str) {
+  return str.charCodeAt(0) >= 50000;
+}
+
+function makeIconLabel(label) {
+  let ilabel = [];
+  if (startsIcon(label)) {
+    ilabel.push(makeDOM(null, {
+      tag: 'span',
+      class: 'icon icon-pad',
+      style: { pointerEvents: 'none' },
+      text: label.slice(0, 1),
+    }));
+    label = label.slice(1);
+  }
+  ilabel.push(makeDOM(null, {
+    tag: 'span',
+    text: label,
+    style: { pointerEvents: 'none' },
+  }));
+  return ilabel;
 }

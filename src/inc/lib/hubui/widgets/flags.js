@@ -43,9 +43,9 @@ class FlagsWidget extends BaseWidget {
         let val = this.#value;
         for (const i in this.#items) {
             const $i = makeDOM(null, {
-                tag: 'label',
+                tag: 'div',
                 class: 'w-flags' + (val & 1 ? ' checked' : ''),
-                text: this.#items[i],
+                children: makeIconLabel(this.#items[i]),
             });
             $i.dataset.flagIndex = i;
             labels.push($i);

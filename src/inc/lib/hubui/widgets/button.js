@@ -2,7 +2,7 @@ class ButtonWidget extends BaseWidget {
     static wtype = 'button';
     $el;
     #color = 'var(--prim)';
-    #fontSize = '45px';
+    #fontSize = '43px';
     #inline = true;
     #pressed = false;
 

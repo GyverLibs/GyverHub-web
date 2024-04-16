@@ -216,6 +216,7 @@ body[data-screen=ui] .header-connection-icon {
 
 .header-icon {
   cursor: pointer;
+  font-size: 28px;
   width: 27px;
   display: none;
 }
@@ -444,7 +445,7 @@ body[data-screen=plugins] .footer {
 }
 
 .i-plugin {
-  font-size: 21px !important;
+  font-size: 21px;
   cursor: pointer;
   color: var(--prim);
 }
@@ -466,7 +467,7 @@ body[data-screen=plugins] .footer {
 
 .i-tags {
   color: var(--font_inv);
-  font-size: 20px !important;
+  font-size: 20px;
   padding-left: 7px;
   cursor: pointer;
 }

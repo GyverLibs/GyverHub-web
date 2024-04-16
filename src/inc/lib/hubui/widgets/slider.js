@@ -2,41 +2,50 @@ class SliderWidget extends BaseWidget {
     static wtype = 'slider';
     $el;
     $out;
+    $icon;
 
     constructor(data, renderer) {
         super(data, renderer);
 
-        this.makeLayout({
-            tag: 'input',
-            class: 'w-slider',
-            name: 'el',
-            type: 'range',
-            min: 0,
-            max: 100,
-            step: 1,
-            dec: 0,
-            value: 0,
-            events: {
-                input: () => {
-                    this.#move()
-                },
-                wheel: e => {
-                    e.preventDefault();
-                    if (this.disabled()) return;
-                    this.$el.value = Number(this.$el.value) - Math.sign(Number(e.deltaY)) * Number(this.$el.step);
-                    this.#move();
+        this.makeLayout(
+            {
+                tag: 'div',
+                class: 'icon w-slider-icon',
+                name: 'icon',
+                text: '',
+            },
+            {
+                tag: 'input',
+                class: 'w-slider',
+                name: 'el',
+                type: 'range',
+                min: 0,
+                max: 100,
+                step: 1,
+                dec: 0,
+                value: 0,
+                events: {
+                    input: () => {
+                        this.#move()
+                    },
+                    wheel: e => {
+                        e.preventDefault();
+                        if (this.disabled()) return;
+                        this.$el.value = Number(this.$el.value) - Math.sign(Number(e.deltaY)) * Number(this.$el.step);
+                        this.#move();
+                    },
                 },
             },
-        }, {
-            tag: 'div',
-            class: 'w-slider-out',
-            children: [
-                {
-                    tag: 'output',
-                    name: 'out'
-                }
-            ]
-        });
+            {
+                tag: 'div',
+                class: 'w-slider-out',
+                children: [
+                    {
+                        tag: 'output',
+                        name: 'out'
+                    }
+                ]
+            });
 
         this.update(data);
 
@@ -51,6 +60,7 @@ class SliderWidget extends BaseWidget {
         if ('step' in data) this.$el.step = data.step;
         if ('disable' in data) this.disable(this.$el, data.disable);
         if ('value' in data) this.$el.value = data.value;
+        if ('icon' in data) this.$icon.innerHTML = getIcon(data.icon);
         this.#move(false);
     }
 
@@ -106,5 +116,14 @@ class SliderWidget extends BaseWidget {
             z-index: 1;
             width: 100px;
             padding-right: 10px;
+          }
+          
+          .w-slider-icon {
+            margin-right: -110px;
+            pointer-events: none;
+            text-align: left;
+            z-index: 1;
+            width: 100px;
+            padding-left: 10px;
           }`;
 }
