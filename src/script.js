@@ -24,7 +24,6 @@
 /*@/[if_not_target:esp]*/
 
 /*@![include:inc/ui.js, compile]*/
-/*@![include:inc/test.js, compile]*/
 /*@![include:inc/fs.js, compile]*/
 /*@![include:inc/ota.js, compile]*/
 /*@![include:inc/index.js, compile]*/
