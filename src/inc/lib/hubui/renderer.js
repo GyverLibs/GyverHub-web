@@ -11,7 +11,7 @@ class WidgetBase {
   registerText(text, replacewtype = null) {
     text = text.trim();
     if (text.endsWith(';')) text = text.slice(0, -1);
-    let wtype = text.match(/static wtype\s?=\s?'(\w+)'/);
+    let wtype = text.match(/static\s*wtype\s*=\s*['"](\w+)['"]\s*;/);
     if (!wtype || wtype.length < 2) return null;
     wtype = wtype[1];
     if (replacewtype) text = text.replace(wtype, replacewtype);

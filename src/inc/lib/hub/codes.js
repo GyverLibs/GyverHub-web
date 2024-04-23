@@ -135,6 +135,7 @@ const HubCodes = [
     'spoiler',
     'http_port',
     'tags',
+    'packet_id',
 ];
 
 function decodeHubJson(data) {

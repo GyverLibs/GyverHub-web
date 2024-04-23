@@ -401,6 +401,12 @@ async function sendCLI() {
   EL('cli_input').value = "";
 }
 
+function client_inp_h(arg) {
+  while (arg.value.length > 8 || !arg.value.match(/^[0-9A-Fa-f]+$/)) {
+    arg.value = arg.value.slice(0, -1);
+  }
+}
+
 // =========== PIN ===========
 function make_pin(arg) {
   if (arg.value.length >= 4) arg.value = arg.value.hashCode();

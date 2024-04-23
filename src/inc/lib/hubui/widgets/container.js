@@ -111,7 +111,7 @@ class SpoilerWidget extends BaseContainer {
                 {
                     tag: 'div',
                     children: makeIconLabel(this.data.label ?? 'Spoiler'),
-                    style: { paddingLeft: '2px', },
+                    style: { paddingLeft: '3px', },
                 }
             ]
         });
@@ -161,11 +161,11 @@ class SpoilerWidget extends BaseContainer {
         box-shadow: 0px 3px 0px 0px inset #ffffff05, 0 0 10px 0px #00000021, 0px -3px 1px 0px inset #00000010;
         border-radius: 8px;
         margin: 3px;
-        margin-top: 6px;
         cursor: pointer;
         font-size: 23px;
         user-select: none;
         padding-left: 5px;
+        min-height: 30px;
       }
       .spoiler-inner:hover {
         filter: brightness(1.05);

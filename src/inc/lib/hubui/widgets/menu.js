@@ -85,7 +85,7 @@ class MenuWidget extends Widget {
             height: 35px;
             line-height: 35px;
             font-size: 20px;
-            padding-left: 10px;
+            padding-left: 8px;
             border: 5px solid transparent;
             border-width: 0 0 0 5px;
           }

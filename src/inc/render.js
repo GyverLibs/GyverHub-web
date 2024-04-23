@@ -8,7 +8,7 @@ function add_device(device, dev) {
   <div class="device ${device.isConnected() ? '' : 'offline'}" id="device#${dev.id}" onclick="device_h('${dev.id}')" title="${dev.id} [${dev.prefix}]">
     <div id="d_head#${dev.id}">
       <div class="dev-icon">
-        <span class="icon icon-min" id="icon#${dev.id}">${getIcon(icon) ?? ''}</span>
+        <span class="icon icon-min" id="icon#${dev.id}">${getIcon(icon)}</span>
       </div>
       <div class="dev-title">
         <span class="dev-name" id="name#${dev.id}">${dev.name}</span><sup class="dev-conn" id="SERIAL#${dev.id}">S</sup><sup class="dev-conn" id="BLE#${dev.id}">B</sup><sup class="dev-conn" id="HTTP#${dev.id}">W</sup><sup class="dev-conn" id="MQTT#${dev.id}">M</sup><sup class="dev-conn" id="TG#${dev.id}">T</sup>
@@ -619,7 +619,7 @@ function renderBody() {
           <div class="ui-row">
             <label class="ui-label"><slot name="lang.cfg_id"></slot></label>
             <div class="ui-inp-row">
-              <input class="ui-inp" type="text" id="client_id" data-hub-config="hub.client_id" onchange="update_cfg(this)" oninput="if(this.value.length>8)this.value=this.value.slice(0,-1)">
+              <input class="ui-inp" type="text" id="client_id" data-hub-config="hub.client_id" onchange="update_cfg(this)" oninput="client_inp_h(this)">
             </div>
           </div>
   
@@ -781,7 +781,7 @@ function renderBody() {
           <hr>
 
           <div class="cfg-info">
-            <a href="https://fontawesome.com/v5/search?o=r&m=free&s=solid" target="_blank">Fontawesome</a>
+            <a href="https://fontawesome.com/v6/search?o=r&m=free&s=solid" target="_blank">Fontawesome</a>
             <a href="https://github.com/Simonwep/pickr" target="_blank">Pickr</a>
             <a href="https://github.com/mqttjs/MQTT.js" target="_blank">MQTT.js</a>
             <a href="https://github.com/ghornich/sort-paths" target="_blank">sort-paths.js</a>
@@ -807,11 +807,12 @@ function renderBody() {
   </div>
 
   <div class="footer">
-    <a href="https://alexgyver.ru/support_alex/" target="_blank"><span class="icon i-footer" title="Support"></span></a>
+    <a style="cursor:pointer" data-action="show_screen" data-screen="main"><span class="icon i-footer" title="Home"></span></a>
     <a style="cursor:pointer" data-action="show_screen" data-screen="projects"><span class="icon i-footer" title="Projects"></span></a>
     <a style="cursor:pointer" data-action="show_screen" data-screen="plugins"><span class="icon i-footer" title="Plugins"></span></a>
     <a style="cursor:pointer" data-action="show_screen" data-screen="test"><span class="icon i-footer" title="Plugin Test"></span></a>
     <a href="https://github.com/GyverLibs/GyverHub/wiki" target="_blank"><span class="icon i-footer" title="Wiki"></span></a>
+    <a href="https://alexgyver.ru/support_alex/" target="_blank"><span class="icon i-footer" title="Support"></span></a>
   </div>
   `;
 
