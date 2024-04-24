@@ -111,7 +111,7 @@ class SpoilerWidget extends BaseContainer {
                 {
                     tag: 'div',
                     children: makeIconLabel(this.data.label ?? 'Spoiler'),
-                    style: { paddingLeft: '3px', },
+                    style: { paddingLeft: '5px', },
                 }
             ]
         });

@@ -58,6 +58,7 @@ class TabsWidget extends BaseWidget {
         }
         if ('value' in data) this.#change(Number(data.value));
         if ('color' in data) this.$ul.style.setProperty('--active-item-color', hexToCol(data.color));
+        if ('font_size' in data) this.$el.style.fontSize = data.font_size + 'px';
     }
 
     #change(num, move = true) {
@@ -72,6 +73,7 @@ class TabsWidget extends BaseWidget {
     static style = `
         .w-tabs {
             width: 100%;
+            font-size: 19px;
           }
           
           .w-tabs>ul {
@@ -79,7 +81,6 @@ class TabsWidget extends BaseWidget {
             padding: 0;
             display: flex;
             list-style-type: none;
-            font-size: 19px;
             flex-direction: row;
             overflow-x: scroll;
             white-space: nowrap;

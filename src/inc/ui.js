@@ -252,6 +252,12 @@ async function ui_custom_js_h() {
     addDOM('device_js', 'script', res, EL('plugins'));
   }
 }
+async function ui_custom_ui_h() {
+  const res = await asyncPromptArea(lang.i_ui, hub.dev(focused).info.custom_ui, null, false, false);
+  if (res !== null) {
+    hub.dev(focused).info.custom_ui = res;
+  }
+}
 
 // ============== MENU =============
 function menu_show(state) {
@@ -450,6 +456,21 @@ function showControls(device, controls) {
     });
   }
 
+  let custom_ui = device.info.custom_ui;
+  if (custom_ui && custom_ui.length) {
+    custom_ui = decodeHubJson(custom_ui);
+    if (custom_ui) {
+      try {
+        let add_controls = JSON.parse(custom_ui);
+        controls = add_controls.concat(controls);
+      } catch (e) {
+        console.log('JSON parse error in custom_ui from ' + text);
+      }
+    } else {
+      console.log('Device has newer API version. Update App!');
+    }
+  }
+  
   renderer.update(controls);
 
   const $root = EL('controls');

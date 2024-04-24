@@ -35,6 +35,7 @@ class FlagsWidget extends BaseWidget {
         if ('text' in data) this.#items = data.text.split(';');
         if ('color' in data) this.$el.style.setProperty('--checked-color', hexToCol(data.color));
         if ('disable' in data) this.disable(this.$el, data.disable);
+        if ('font_size' in data) this.$el.style.fontSize = data.font_size + 'px';
         this.#render();
     }
 
@@ -56,11 +57,10 @@ class FlagsWidget extends BaseWidget {
 
     static style = `
         .w-flags {
-            padding: 4px 13px;
+            padding: 5px 12px;
             margin: 3px;
             border-radius: 35px;
             background: var(--dark);
-            font-size: 18px;
             color: var(--font);
             user-select: none;
             --checked-color: var(--prim);
@@ -83,5 +83,6 @@ class FlagsWidget extends BaseWidget {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
+            font-size: 19px;
           }`;
 }

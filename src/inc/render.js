@@ -223,6 +223,11 @@ function renderBody() {
           <hr>
   
           <div class="ui-row">
+            <label class="ui-label"><slot name="lang.i_ui"></slot></label>
+            <button class="icon icon-btn-big" onclick="ui_custom_ui_h()"></button>
+          </div>
+
+          <div class="ui-row">
             <label class="ui-label"><slot name="lang.i_css"></slot></label>
             <button class="icon icon-btn-big" onclick="ui_custom_css_h()"></button>
           </div>

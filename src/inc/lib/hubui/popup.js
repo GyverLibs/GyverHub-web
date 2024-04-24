@@ -129,13 +129,13 @@ function asyncPrompt(text, placeh = '', title = null) {
   });
 }
 
-function asyncPromptArea(text, placeh = '', title = null, readonly = false) {
+function asyncPromptArea(text, placeh = '', title = null, readonly = false, wrap = true) {
   return new Promise(resolve => {
     const $input = makeDOM(this, {
       tag: 'textarea',
       value: placeh,
       readOnly: readonly,
-      className: 'ui-inp ui-area ui-area-wrap',
+      className: 'ui-inp ui-area' + (wrap ? ' ui-area-wrap' : ''),
       rows: 20,
     });
 

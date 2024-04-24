@@ -63,6 +63,7 @@ hub.addEventListener('deviceadded', (ev) => {  // found new device (search)
   dev.main_width = 450;
   dev.custom_css = '';
   dev.custom_js = '';
+  dev.custom_ui = '';
   dev.plugins = {};
   add_device(ev.device, dev);
 });

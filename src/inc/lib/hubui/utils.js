@@ -167,7 +167,7 @@ function getIcon(icon) {
 
 function startsIcon(str) {
     if (str.charCodeAt(0) >= 50000) return 1;
-    else if (str.match(/^f[0-9a-f]{3}\s/)) return 4;
+    else if (str.match(/^f[0-9a-f]{3}/)) return 4;
     return 0;
 }
 
@@ -176,16 +176,17 @@ function makeIconLabel(label) {
 
     let iconpad = startsIcon(label);
     if (iconpad) {
+        let icon = getIcon(label.slice(0, iconpad));
+        label = label.slice(iconpad).trim();
         ilabel.push(makeDOM(null, {
             tag: 'span',
-            class: 'icon icon-pad',
+            class: 'icon' + (label.length ? ' icon-pad' : ''),
             style: { pointerEvents: 'none' },
-            text: getIcon(label.slice(0, iconpad)),
+            text: icon,
         }));
-        label = label.slice(iconpad).trim();
     }
 
-    ilabel.push(makeDOM(null, {
+    if (label.length) ilabel.push(makeDOM(null, {
         tag: 'span',
         text: label,
         style: { pointerEvents: 'none' },
