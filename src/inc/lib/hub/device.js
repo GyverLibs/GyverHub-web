@@ -252,8 +252,9 @@ class Device extends EventEmitter {
   }
 
   async set(name, value) {
-    const [cmd, data] = await this.#postAndWait('set', ['ui', 'ack'], name, value);
+    const [cmd, data] = await this.#postAndWait('set', ['ui', 'ack', 'refresh'], name, value);
     if (cmd === 'ui') return data;
+    if (cmd === 'refresh') return 1;
     if (data.name !== name) throw new HubError("set / ack check failed!");
     return undefined;
   }

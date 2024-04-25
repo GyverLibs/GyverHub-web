@@ -1,4 +1,5 @@
 /*@![include:inc/lib/hubui/widget.js, compile]*/
+/*@![include:inc/lib/hubui/widget_line.js, compile]*/
 /*@![include:inc/lib/hubui/utils.js, compile]*/
 /*@![include:inc/lib/hubui/renderer.js, compile]*/
 /*@![include:inc/lib/hubui/popup.js, compile]*/
