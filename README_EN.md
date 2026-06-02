@@ -1,15 +1,11 @@
-This is an automatic translation, may be incorrect in some places. See sources and examples!
+This is an automatic translation and may be incorrect in some places. See the source README and examples for authoritative information.
 
-### App
-- [Android](https://github.com/GyverLibs/GyverHub-app/releases/latest)
-- [Windows](https://github.com/neko-neko-nyan/gyverhub-desktop/releases/latest)
+# GyverHub-web
+Client of GyverHub platform
 
-### folders
-- ** App ** - version for the application or local work in browser
-- ** ESP ** - Version for ESP (place files in FS along the path `/hub/`)
-- ** Lib ** - JavaScript Library
-- ** src ** - source
+> It's the dev version! The client is available herehttp://hub.gyver.ru/dev/,The current version of the library is[dev](https://github.com/GyverLibs/GyverHub/tree/dev)
 
-## assembly
-- `Build.py` compiles the source and scatters into folders (the` ESP_h` folders with a binary .g site and `Host` with a version for hosting are additionally appeared).`clean.py` deleys extra folders
-- To start the launch, you need to install the modules `RCSMIN` and` RJSMIN`
+### Annex
+- Android: [Google Play](https://play.google.com/store/apps/details?id=ru.alexgyver.GyverHub), [download APK](https://github.com/GyverLibs/GyverHub-app/releases/latest), [source](https://github.com/GyverLibs/GyverHub-app)
+- iOS: [App Store](https://apps.apple.com/kz/app/gyverhub/id6474273925), [source](https://github.com/GyverLibs/GyverHub-app)
+- Desktop (Windows/Linux/Mac): [download](https://github.com/neko-neko-nyan/gyverhub-desktop/releases/latest), [source](https://github.com/neko-neko-nyan/gyverhub-desktop)
